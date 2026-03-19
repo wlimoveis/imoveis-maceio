@@ -16,25 +16,25 @@ window.SUPABASE_CONFIG = {
     }
 };
 
-// Inicializar o cliente Supabase
+// Inicializar o cliente Supabase IMEDIATAMENTE após carregar
 (function initializeSupabase() {
-    console.log('🔧 Inicializando cliente Supabase - PRODUÇÃO...');
+    console.log('🔧 Inicializando cliente Supabase...');
 
     if (typeof supabase === 'undefined') {
         console.error('❌ Biblioteca Supabase não carregada!');
+        console.log('📦 Tentando carregar dinamicamente');
+
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+        script.onload = function () {
+            console.log('✅ Biblioteca Supabase carregada dinamicamente');
+            setupSupabaseClient();
+        };
+        document.head.appendChild(script);
         return;
     }
 
-    try {
-        window.supabaseClient = supabase.createClient(
-            window.SUPABASE_CONFIG.url,
-            window.SUPABASE_CONFIG.key,
-            window.SUPABASE_CONFIG.options
-        );
-        console.log('✅ Cliente Supabase de PRODUÇÃO criado');
-    } catch (error) {
-        console.error('❌ Erro ao criar cliente Supabase:', error);
-    }
+    setupSupabaseClient();
 })();
 
 function setupSupabaseClient() {
