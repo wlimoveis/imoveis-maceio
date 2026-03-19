@@ -9,8 +9,8 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
         KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
         ADMIN_PASSWORD: "wl654",
         PDF_PASSWORD: "doc123"
-    };
-}
+        };
+    }
     
     // Exportar para escopo global se não existir
     window.SUPABASE_CONSTANTS = SUPABASE_CONSTANTS;
