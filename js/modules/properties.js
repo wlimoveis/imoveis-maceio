@@ -9,14 +9,15 @@ window.currentFilter = 'todos';
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
-        console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
-        window.SUPABASE_CONSTANTS = {
-            URL: 'https://syztbxvpdaplpetmixmt.supabase.co',
-            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5enRieHZwZGFwbHpetG1peG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODY0OTAsImV4cCI6MjA3OTc2MjQ5MH0.SISlMoO1kLWbIgx9pze8Dv1O-kfQ_TAFDX6yPUxfJxo',
-            ADMIN_PASSWORD: "wl654",
-            PDF_PASSWORD: "doc123"
+    console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
+    window.SUPABASE_CONSTANTS = {
+        URL: 'https://wxdiowpswepsvklumgvx.supabase.co',  // <-- NOVO!
+        KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',  // <-- NOVA!
+        ADMIN_PASSWORD: "wl654",
+        PDF_PASSWORD: "doc123"
         };
     }
+
     
     if (!window.SUPABASE_URL) window.SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
     if (!window.SUPABASE_KEY) window.SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
