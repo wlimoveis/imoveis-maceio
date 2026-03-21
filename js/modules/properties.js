@@ -1169,7 +1169,7 @@ window.addToLocalProperties = function(newProperty) {
     return propertyWithId;
 };
 
-// ========== 12. EXCLUIR IMÓVEL ==========
+// ========== 12. EXCLUIR IMÓVEL - VERSÃO COMPLETA COM EXCLUSÃO DE ARQUIVOS ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
 
@@ -1179,17 +1179,44 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nEsta ação NÃO pode não ser desfeita.`)) {
+    if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nATENÇÃO: Todas as imagens e PDFs serão excluídos permanentemente!`)) {
         console.log('❌ Exclusão cancelada pelo usuário');
         return false;
     }
 
+    // --- NOVA ETAPA 1: Coletar URLs e excluir arquivos físicos ---
+    const imageUrls = property.images && property.images !== 'EMPTY'
+        ? property.images.split(',').filter(url => url && url.trim() !== '')
+        : [];
+    const pdfUrls = property.pdfs && property.pdfs !== 'EMPTY'
+        ? property.pdfs.split(',').filter(url => url && url.trim() !== '')
+        : [];
+    const allFileUrls = [...imageUrls, ...pdfUrls];
+
+    let deletionResult = { success: true, deleted: 0, errors: [] };
+    if (allFileUrls.length > 0) {
+        console.log(`🗑️ Excluindo ${allFileUrls.length} arquivo(s) do storage...`);
+        if (window.StorageManager && typeof window.StorageManager.deleteFilesFromStorage === 'function') {
+            deletionResult = await window.StorageManager.deleteFilesFromStorage(allFileUrls);
+            if (!deletionResult.success) {
+                console.warn(`⚠️ Apenas ${deletionResult.deleted}/${allFileUrls.length} arquivos excluídos.`);
+                if (!confirm(`Alguns arquivos não puderam ser excluídos.\n\nDeseja continuar com a exclusão do imóvel mesmo assim?`)) {
+                    console.log('❌ Exclusão cancelada devido a erros nos arquivos.');
+                    console.groupEnd();
+                    return false;
+                }
+            }
+        } else {
+            console.error('❌ StorageManager não disponível. Arquivos não serão excluídos fisicamente.');
+            alert('⚠️ Aviso: Sistema de exclusão de arquivos não disponível. O imóvel será removido, mas os arquivos podem permanecer no servidor.');
+        }
+    }
+
+    // --- ETAPA 2: Excluir o registro do imóvel do Supabase ---
     let supabaseSuccess = false;
     let supabaseError = null;
-
     if (window.ensureSupabaseCredentials()) {
         const validId = window.validateIdForSupabase?.(id) || id;
-        
         try {
             const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
                 method: 'DELETE',
@@ -1199,7 +1226,6 @@ window.deleteProperty = async function(id) {
                     'Prefer': 'return=representation'
                 }
             });
-
             if (response.ok) {
                 supabaseSuccess = true;
             } else {
@@ -1210,10 +1236,10 @@ window.deleteProperty = async function(id) {
         }
     }
 
+    // --- ETAPA 3: Remover do array local e salvar no localStorage ---
     window.properties = window.properties.filter(p => p.id !== id);
-    
     const saved = window.savePropertiesToStorage();
-    
+
     if (!saved) {
         console.error('❌ Falha ao salvar após exclusão!');
         alert('⚠️ Erro ao salvar alterações localmente!');
@@ -1221,26 +1247,30 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
+    // Atualiza interface
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos', true);
     }
-
     if (typeof window.loadPropertyList === 'function') {
         setTimeout(() => {
             window.loadPropertyList();
         }, 100);
     }
 
+    // Mensagem final consolidada
+    let mensagem = `✅ Imóvel "${property.title}" excluído com sucesso!\n\n`;
+    mensagem += `📁 ${deletionResult.deleted}/${allFileUrls.length} arquivo(s) removido(s) do storage.`;
+    if (deletionResult.errors.length > 0) {
+        mensagem += `\n⚠️ ${deletionResult.errors.length} arquivo(s) não puderam ser excluídos.`;
+    }
     if (supabaseSuccess) {
-        alert(`✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!\n\nFoi removido do servidor e não voltará a aparecer.`);
-    } else {
-        let errorMessage = supabaseError ? 
-            `\n\nErro no servidor: ${supabaseError.substring(0, 100)}...` : 
-            '\n\nMotivo: Conexão com servidor falhou.';
-
-        alert(`⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.${errorMessage}\n\nO imóvel ainda existe no servidor e reaparecerá ao sincronizar.`);
+        mensagem += `\n🌐 Sincronizado com o servidor.`;
+    } else if (supabaseError) {
+        mensagem += `\n⚠️ Servidor: ${supabaseError.substring(0, 100)}...`;
     }
 
+    alert(mensagem);
+    console.log(`✅ Imóvel ${id} excluído permanentemente`);
     console.groupEnd();
     return supabaseSuccess;
 };
