@@ -981,9 +981,9 @@ if (typeof window.validateIdForSupabase !== 'function') {
     };
 }
 
-// ========== 9. ATUALIZAR IMÓVEL - VERSÃO COMPLETA CORRIGIDA ==========
+// ========== 9. ATUALIZAR IMÓVEL - VERSÃO CORRIGIDA COM SUPORTE A NOVOS ARQUIVOS ==========
 window.updateProperty = async function(id, propertyData) {
-    console.group('📤 updateProperty - VERSÃO CORRIGIDA');
+    console.group('📤 updateProperty - VERSÃO CORRIGIDA COM SUPORTE A NOVOS ARQUIVOS');
 
     if (!id || id === 'null' || id === 'undefined') {
         console.error('❌ ID inválido fornecido:', id);
@@ -991,7 +991,7 @@ window.updateProperty = async function(id, propertyData) {
             console.log(`🔄 Usando editingPropertyId: ${window.editingPropertyId}`);
             id = window.editingPropertyId;
         } else {
-            alert('❌ ERGO: Não foi possível identificar o imóvel para atualização!');
+            alert('❌ ERRO: Não foi possível identificar o imóvel para atualização!');
             console.groupEnd();
             return { success: false, localOnly: true, error: 'ID inválido' };
         }
@@ -1005,7 +1005,10 @@ window.updateProperty = async function(id, propertyData) {
         return { success: false, localOnly: true, error: 'Imóvel não encontrado' };
     }
 
+    const existingProperty = window.properties[index];
+
     try {
+        // Formatar preço
         if (propertyData.price) {
             if (window.SharedCore?.PriceFormatter?.formatForInput) {
                 propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
@@ -1018,31 +1021,109 @@ window.updateProperty = async function(id, propertyData) {
             }
         }
 
+        // Formatar features
+        if (propertyData.features) {
+            propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) || '[]';
+        }
+
+        // Garantir has_video como booleano
+        propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) || false;
+
+        // ========== NOVO: PROCESSAR NOVOS ARQUIVOS DE MÍDIA ==========
+        let imagesResult = existingProperty.images || '';
+        let pdfsResult = existingProperty.pdfs || '';
+
+        // Verificar se há novos arquivos no MediaSystem
+        if (typeof MediaSystem !== 'undefined') {
+            const hasNewFiles = (MediaSystem.state.files && MediaSystem.state.files.length > 0) ||
+                               (MediaSystem.state.pdfs && MediaSystem.state.pdfs.length > 0);
+            
+            if (hasNewFiles) {
+                console.log('📸 Novos arquivos detectados no MediaSystem, processando upload...');
+                console.log(`   - Arquivos: ${MediaSystem.state.files?.length || 0}`);
+                console.log(`   - PDFs: ${MediaSystem.state.pdfs?.length || 0}`);
+                
+                // Fazer upload dos novos arquivos
+                const tempId = `temp_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+                const mediaResult = await MediaSystem.uploadAll(tempId, propertyData.title || existingProperty.title);
+                
+                // Mesclar imagens existentes com novas
+                if (mediaResult.images && mediaResult.images !== 'EMPTY') {
+                    const newImageUrls = mediaResult.images.split(',').filter(url => url && url.trim() !== '');
+                    const existingImageUrls = imagesResult && imagesResult !== 'EMPTY' 
+                        ? imagesResult.split(',').filter(url => url && url.trim() !== '')
+                        : [];
+                    
+                    // Combinar URLs existentes com novas (evitar duplicatas)
+                    const combinedImages = [...existingImageUrls, ...newImageUrls];
+                    imagesResult = combinedImages.join(',');
+                    console.log(`✅ ${newImageUrls.length} nova(s) imagem(ns) adicionada(s). Total: ${combinedImages.length}`);
+                }
+                
+                // Mesclar PDFs existentes com novos
+                if (mediaResult.pdfs && mediaResult.pdfs !== 'EMPTY') {
+                    const newPdfUrls = mediaResult.pdfs.split(',').filter(url => url && url.trim() !== '');
+                    const existingPdfUrls = pdfsResult && pdfsResult !== 'EMPTY'
+                        ? pdfsResult.split(',').filter(url => url && url.trim() !== '')
+                        : [];
+                    
+                    // Combinar URLs existentes com novas
+                    const combinedPdfs = [...existingPdfUrls, ...newPdfUrls];
+                    pdfsResult = combinedPdfs.join(',');
+                    console.log(`✅ ${newPdfUrls.length} novo(s) PDF(s) adicionado(s). Total: ${combinedPdfs.length}`);
+                }
+                
+                // Limpar o estado do MediaSystem após o upload
+                setTimeout(() => {
+                    if (typeof MediaSystem.resetState === 'function') {
+                        MediaSystem.resetState();
+                        console.log('🧹 Estado do MediaSystem limpo após edição');
+                    }
+                }, 500);
+            } else {
+                console.log('ℹ️ Nenhum novo arquivo detectado no MediaSystem, mantendo mídia existente');
+            }
+        }
+
+        // Preparar dados atualizados
         const processedData = {
             ...propertyData,
-            has_video: window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) || false
+            has_video: propertyData.has_video,
+            images: imagesResult,
+            pdfs: pdfsResult
         };
 
         const updateData = {
-            title: processedData.title || window.properties[index].title,
-            price: processedData.price || window.properties[index].price,
-            location: processedData.location || window.properties[index].location,
-            description: processedData.description || window.properties[index].description || '',
-            features: processedData.features || window.properties[index].features || '[]',
-            type: processedData.type || window.properties[index].type || 'residencial',
+            title: processedData.title || existingProperty.title,
+            price: processedData.price || existingProperty.price,
+            location: processedData.location || existingProperty.location,
+            description: processedData.description || existingProperty.description || '',
+            features: processedData.features || existingProperty.features || '[]',
+            type: processedData.type || existingProperty.type || 'residencial',
             has_video: processedData.has_video,
-            badge: processedData.badge || window.properties[index].badge || 'Novo',
-            rural: processedData.type === 'rural' || window.properties[index].rural || false,
-            images: processedData.images || window.properties[index].images || '',
-            pdfs: processedData.pdfs || window.properties[index].pdfs || ''
+            badge: processedData.badge || existingProperty.badge || 'Novo',
+            rural: processedData.type === 'rural' || existingProperty.rural || false,
+            images: processedData.images || existingProperty.images || '',
+            pdfs: processedData.pdfs || existingProperty.pdfs || ''
         };
 
+        console.log('📦 Dados a serem atualizados:', {
+            title: updateData.title,
+            price: updateData.price,
+            location: updateData.location,
+            imagesCount: updateData.images ? updateData.images.split(',').filter(u => u.trim()).length : 0,
+            pdfsCount: updateData.pdfs ? updateData.pdfs.split(',').filter(u => u.trim()).length : 0,
+            has_video: updateData.has_video
+        });
+
+        // Atualizar localmente primeiro
         const localSuccess = window.updateLocalProperty(id, updateData);
         
         if (!localSuccess) {
             throw new Error('Falha ao atualizar localmente');
         }
 
+        // Sincronizar com Supabase
         let supabaseSuccess = false;
         let supabaseError = null;
         let supabaseResponse = null;
@@ -1051,45 +1132,89 @@ window.updateProperty = async function(id, propertyData) {
         
         if (hasSupabase) {
             try {
-                const validId = window.validateIdForSupabase?.(id) || id;
+                // Usar validateIdForSupabase global se disponível, senão fallback
+                const validId = (typeof window.validateIdForSupabase === 'function' && window.validateIdForSupabase !== window.validateIdForSupabaseFallback)
+                    ? window.validateIdForSupabase(id)
+                    : (() => {
+                        console.log('⚠️ Usando validação local para ID');
+                        if (!id) return null;
+                        if (typeof id === 'number' && !isNaN(id) && id > 0) return id;
+                        if (typeof id === 'string') {
+                            const cleanId = id.replace(/[^0-9]/g, '');
+                            const numericId = parseInt(cleanId);
+                            if (!isNaN(numericId) && numericId > 0) return numericId;
+                        }
+                        return null;
+                    })();
                 
-                const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'apikey': window.SUPABASE_KEY,
-                        'Authorization': `Bearer ${window.SUPABASE_KEY}`,
-                        'Prefer': 'return=representation'
-                    },
-                    body: JSON.stringify(updateData)
-                });
+                if (validId) {
+                    console.log(`🔑 Atualizando Supabase com ID: ${validId}`);
+                    
+                    // Dados para enviar ao Supabase (sem campos que podem causar conflito)
+                    const supabaseUpdateData = {
+                        title: updateData.title,
+                        price: updateData.price,
+                        location: updateData.location,
+                        description: updateData.description,
+                        features: updateData.features,
+                        type: updateData.type,
+                        has_video: updateData.has_video,
+                        badge: updateData.badge,
+                        rural: updateData.rural,
+                        images: updateData.images,
+                        pdfs: updateData.pdfs,
+                        updated_at: new Date().toISOString()
+                    };
+                    
+                    const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': window.SUPABASE_KEY,
+                            'Authorization': `Bearer ${window.SUPABASE_KEY}`,
+                            'Prefer': 'return=representation'
+                        },
+                        body: JSON.stringify(supabaseUpdateData)
+                    });
 
-                if (response.ok) {
-                    supabaseSuccess = true;
-                    supabaseResponse = await response.json();
+                    if (response.ok) {
+                        supabaseSuccess = true;
+                        supabaseResponse = await response.json();
+                        console.log('✅ Supabase atualizado com sucesso');
+                    } else {
+                        supabaseError = await response.text();
+                        console.error('❌ Erro Supabase:', response.status, supabaseError);
+                    }
                 } else {
-                    supabaseError = await response.text();
+                    console.warn('⚠️ ID inválido para Supabase, pulando sincronização');
+                    supabaseError = 'ID inválido para sincronização';
                 }
             } catch (error) {
                 supabaseError = error.message;
+                console.error('❌ Erro ao atualizar Supabase:', error);
             }
         }
 
         const imagesCount = updateData.images ? updateData.images.split(',').filter(p => p.trim()).length : 0;
+        const pdfsCount = updateData.pdfs ? updateData.pdfs.split(',').filter(p => p.trim()).length : 0;
         
+        // Mensagem de confirmação
         if (supabaseSuccess) {
-            let msg = `✅ Imóvel "${updateData.title}" atualizado PERMANENTEMENTE!\n`;
+            let msg = `✅ Imóvel "${updateData.title}" atualizado PERMANENTEMENTE!\n\n`;
             msg += `💰 Preço: ${updateData.price}\n`;
             msg += `📍 Local: ${updateData.location}\n`;
             if (imagesCount > 0) msg += `📸 ${imagesCount} imagem(ns)\n`;
-            if (updateData.has_video) msg += `🎬 Agora tem vídeo\n`;
+            if (pdfsCount > 0) msg += `📄 ${pdfsCount} PDF(s)\n`;
+            if (updateData.has_video) msg += `🎬 Marcado como "Tem vídeo"\n`;
             alert(msg);
             return { success: true, localOnly: false, data: supabaseResponse };
         } else {
-            let msg = `⚠️ Imóvel "${updateData.title}" atualizado apenas LOCALMENTE.\n`;
+            let msg = `⚠️ Imóvel "${updateData.title}" atualizado apenas LOCALMENTE.\n\n`;
             msg += `💰 Preço: ${updateData.price}\n`;
-            msg += `📍 Local: ${updateData.location}\n\n`;
-            msg += `📱 As alterações foram salvas no seu navegador.\n`;
+            msg += `📍 Local: ${updateData.location}\n`;
+            if (imagesCount > 0) msg += `📸 ${imagesCount} imagem(ns)\n`;
+            if (pdfsCount > 0) msg += `📄 ${pdfsCount} PDF(s)\n`;
+            msg += `\n📱 As alterações foram salvas no seu navegador.\n`;
             msg += `🌐 Para salvar no servidor, verifique a conexão com internet.`;
             
             if (updateData.has_video) {
@@ -1109,6 +1234,8 @@ window.updateProperty = async function(id, propertyData) {
         console.groupEnd();
         alert(`❌ ERRO: Não foi possível atualizar o imóvel.\n\n${error.message}`);
         return { success: false, localOnly: true, error: error.message };
+    } finally {
+        console.groupEnd();
     }
 };
 
