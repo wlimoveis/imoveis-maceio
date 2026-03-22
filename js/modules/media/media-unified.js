@@ -1,5 +1,5 @@
-// js/modules/media/media-unified.js - VERSÃO COMPLETA E FUNCIONAL
-console.log('🔄 media-unified.js - VERSÃO COMPLETA E FUNCIONAL');
+// js/modules/media/media-unified.js - VERSÃO COMPLETA E FUNCIONAL COM EXCLUSÃO FÍSICA
+console.log('🔄 media-unified.js - VERSÃO COMPLETA E FUNCIONAL COM EXCLUSÃO FÍSICA');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -91,7 +91,8 @@ const MediaSystem = {
                     type: this.getFileTypeFromUrl(url),
                     isExisting: true,
                     markedForDeletion: false,
-                    isNew: false  // Importante: arquivos existentes NÃO são novos
+                    isNew: false,  // Importante: arquivos existentes NÃO são novos
+                    storagePath: this.extractStoragePathFromUrl(finalUrl) // Armazenar o caminho para exclusão
                 };
             });
         }
@@ -110,7 +111,8 @@ const MediaSystem = {
                 name: this.extractFileName(url),
                 isExisting: true,
                 markedForDeletion: false,
-                type: 'application/pdf'
+                type: 'application/pdf',
+                storagePath: this.extractStoragePathFromUrl(url) // Armazenar o caminho para exclusão
             }));
         }
         
@@ -261,7 +263,7 @@ const MediaSystem = {
             
             console.log(`📊 ${newFiles.length} arquivo(s) novo(s) identificado(s) para upload`);
             
-            // 2. Processar exclusões
+            // 2. Processar exclusões (AGORA COM EXCLUSÃO FÍSICA)
             await this.processDeletions();
             
             // 3. Upload de NOVOS arquivos de mídia
@@ -430,6 +432,116 @@ const MediaSystem = {
         });
     },
 
+    // ========== FUNÇÃO CRÍTICA: EXCLUSÃO FÍSICA DE ARQUIVOS DO STORAGE ==========
+    async deleteFilesFromStorage(urls) {
+        if (!urls || urls.length === 0) {
+            console.log('📭 Nenhum arquivo para excluir');
+            return { success: true, deleted: 0, errors: [] };
+        }
+        
+        console.log(`🗑️ Excluindo ${urls.length} arquivo(s) do Supabase Storage...`);
+        
+        const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+        const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+        const bucket = this.config.buckets[this.config.currentSystem];
+        
+        const deleteResults = {
+            success: true,
+            deleted: 0,
+            errors: []
+        };
+        
+        for (let i = 0; i < urls.length; i++) {
+            const url = urls[i];
+            try {
+                // Extrair o caminho do arquivo da URL
+                const filePath = this.extractStoragePathFromUrl(url);
+                
+                if (!filePath) {
+                    console.warn(`⚠️ Não foi possível extrair caminho da URL: ${url}`);
+                    deleteResults.errors.push({ url, error: 'Não foi possível extrair caminho' });
+                    continue;
+                }
+                
+                console.log(`🗑️ [${i+1}/${urls.length}] Excluindo: ${filePath}`);
+                
+                const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${filePath}`;
+                
+                const response = await fetch(deleteUrl, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'apikey': SUPABASE_KEY
+                    }
+                });
+                
+                if (response.ok) {
+                    deleteResults.deleted++;
+                    console.log(`✅ Arquivo excluído com sucesso: ${filePath}`);
+                } else {
+                    const errorText = await response.text();
+                    console.error(`❌ Falha ao excluir ${filePath}: ${response.status}`, errorText);
+                    deleteResults.errors.push({ url, status: response.status, error: errorText });
+                    deleteResults.success = false;
+                }
+                
+            } catch (error) {
+                console.error(`❌ Erro ao excluir arquivo ${url}:`, error);
+                deleteResults.errors.push({ url, error: error.message });
+                deleteResults.success = false;
+            }
+        }
+        
+        console.log(`📊 Exclusão concluída: ${deleteResults.deleted}/${urls.length} excluídos, ${deleteResults.errors.length} erros`);
+        
+        return deleteResults;
+    },
+
+    // ========== FUNÇÃO AUXILIAR: EXTRAIR CAMINHO DO STORAGE DA URL ==========
+    extractStoragePathFromUrl: function(url) {
+        if (!url || typeof url !== 'string') return null;
+        
+        try {
+            // Remover query string se houver
+            const cleanUrl = url.split('?')[0];
+            
+            // Extrair o caminho após /object/public/
+            const publicPattern = '/storage/v1/object/public/';
+            const publicIndex = cleanUrl.indexOf(publicPattern);
+            
+            if (publicIndex !== -1) {
+                const relativePath = cleanUrl.substring(publicIndex + publicPattern.length);
+                return relativePath;
+            }
+            
+            // Tentar extrair de URL com padrão diferente
+            const objectPattern = '/storage/v1/object/';
+            const objectIndex = cleanUrl.indexOf(objectPattern);
+            
+            if (objectIndex !== -1) {
+                const afterObject = cleanUrl.substring(objectIndex + objectPattern.length);
+                // Pode ser "public/" ou "authenticated/" ou outro
+                const slashIndex = afterObject.indexOf('/');
+                if (slashIndex !== -1) {
+                    return afterObject.substring(slashIndex + 1);
+                }
+            }
+            
+            // Se a URL for apenas o nome do arquivo (caso de fallback)
+            if (!url.includes('http') && !url.includes('/')) {
+                const bucket = this.config.buckets[this.config.currentSystem];
+                return `${bucket}/${url}`;
+            }
+            
+            console.warn(`⚠️ Não foi possível extrair storage path da URL: ${url}`);
+            return null;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao extrair storage path:`, error);
+            return null;
+        }
+    },
+
     // ========== FUNÇÃO SIMPLIFICADA PARA ADMIN.JS ==========
     getOrderedMediaUrls: function() {
         console.log('📋 Obtendo URLs ordenadas...');
@@ -566,19 +678,48 @@ const MediaSystem = {
         return false;
     },
 
-    // ========== PROCESSAR EXCLUSÕES ==========
+    // ========== PROCESSAR EXCLUSÕES (AGORA COM EXCLUSÃO FÍSICA) ==========
     async processDeletions() {
         const imagesToDelete = this.state.existing.filter(item => item.markedForDeletion);
         const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
         
-        if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
-            console.log(`🗑️ Processando exclusões: ${imagesToDelete.length} imagem(ns), ${pdfsToDelete.length} PDF(s)`);
+        const filesToDelete = [...imagesToDelete, ...pdfsToDelete];
+        
+        if (filesToDelete.length > 0) {
+            console.log(`🗑️ Processando exclusões FÍSICAS: ${imagesToDelete.length} imagem(ns), ${pdfsToDelete.length} PDF(s)`);
             
+            // Extrair URLs dos arquivos marcados para exclusão
+            const urlsToDelete = filesToDelete
+                .map(item => item.url)
+                .filter(url => url && !url.startsWith('blob:'));
+            
+            if (urlsToDelete.length > 0) {
+                console.log(`🗑️ Excluindo ${urlsToDelete.length} arquivo(s) do Storage...`);
+                
+                // Executar exclusão física no Supabase Storage
+                const deleteResult = await this.deleteFilesFromStorage(urlsToDelete);
+                
+                if (deleteResult.success) {
+                    console.log(`✅ ${deleteResult.deleted} arquivo(s) excluído(s) com sucesso do Storage`);
+                } else {
+                    console.warn(`⚠️ Exclusão parcial: ${deleteResult.deleted} excluídos, ${deleteResult.errors.length} erros`);
+                }
+            }
+            
+            // Remover os itens dos arrays de estado (exclusão lógica)
             this.state.existing = this.state.existing.filter(item => !item.markedForDeletion);
             this.state.existingPdfs = this.state.existingPdfs.filter(item => !item.markedForDeletion);
+            
+            return { 
+                imagesToDelete: imagesToDelete.length, 
+                pdfsToDelete: pdfsToDelete.length,
+                physicallyDeleted: urlsToDelete.length,
+                deleteResult: deleteResult
+            };
         }
         
-        return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
+        console.log('📭 Nenhum arquivo marcado para exclusão');
+        return { imagesToDelete: 0, pdfsToDelete: 0, physicallyDeleted: 0 };
     },
 
     // ========== UI ==========
@@ -969,7 +1110,8 @@ const MediaSystem = {
                 name: this.extractFileName(url),
                 isExisting: true,
                 markedForDeletion: false,
-                type: 'application/pdf'
+                type: 'application/pdf',
+                storagePath: this.extractStoragePathFromUrl(url)
             }));
         }
         
@@ -1112,7 +1254,7 @@ window.MediaSystem = MediaSystem;
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
-    console.log('✅ Sistema de mídia COMPLETO E FUNCIONAL pronto');
+    console.log('✅ Sistema de mídia COMPLETO E FUNCIONAL com exclusão física pronto');
 }, 1000);
 
-console.log('✅ media-unified.js COMPLETO E FUNCIONAL carregado');
+console.log('✅ media-unified.js COMPLETO E FUNCIONAL com exclusão física carregado');
