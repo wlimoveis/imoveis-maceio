@@ -1169,21 +1169,81 @@ window.addToLocalProperties = function(newProperty) {
     return propertyWithId;
 };
 
-// ========== 12. EXCLUIR IMÓVEL ==========
+// ========== 12. EXCLUIR IMÓVEL (VERSÃO CORRIGIDA COM EXCLUSÃO FÍSICA DE ARQUIVOS) ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
 
     const property = window.properties.find(p => p.id === id);
     if (!property) {
         alert('❌ Imóvel não encontrado!');
+        console.groupEnd();
         return false;
     }
 
     if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nEsta ação NÃO pode não ser desfeita.`)) {
         console.log('❌ Exclusão cancelada pelo usuário');
+        console.groupEnd();
         return false;
     }
 
+    let mediaDeletionSuccess = true;
+    let mediaDeletionError = null;
+
+    // --- NOVA LÓGICA: EXCLUIR ARQUIVOS FÍSICOS PRIMEIRO ---
+    if (typeof MediaSystem !== 'undefined' && typeof MediaSystem.deleteFilesFromStorage === 'function') {
+        // Extrair todas as URLs de mídia (imagens e PDFs) do imóvel
+        const imageUrls = property.images && property.images !== 'EMPTY' 
+            ? property.images.split(',').filter(url => url && url.trim() !== '') 
+            : [];
+        const pdfUrls = property.pdfs && property.pdfs !== 'EMPTY' 
+            ? property.pdfs.split(',').filter(url => url && url.trim() !== '') 
+            : [];
+        const allFileUrls = [...imageUrls, ...pdfUrls];
+
+        if (allFileUrls.length > 0) {
+            console.log(`🗑️ Iniciando exclusão física de ${allFileUrls.length} arquivo(s) associados ao imóvel.`);
+            try {
+                const deletionResult = await MediaSystem.deleteFilesFromStorage(allFileUrls);
+                if (!deletionResult.success) {
+                    console.warn(`⚠️ Exclusão de arquivos teve falhas: ${deletionResult.failedCount} erro(s).`);
+                    mediaDeletionError = `Falha ao excluir ${deletionResult.failedCount} arquivo(s) físicos.`;
+                    // Não paramos o fluxo, mas marcamos como não 100% bem-sucedido.
+                    mediaDeletionSuccess = false;
+                } else {
+                    console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos fisicamente do Storage.`);
+                }
+            } catch (error) {
+                console.error('❌ Erro crítico ao tentar excluir arquivos físicos:', error);
+                mediaDeletionError = error.message;
+                mediaDeletionSuccess = false;
+                
+                // Perguntar ao usuário se deseja continuar mesmo com erro na exclusão dos arquivos
+                const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS FÍSICOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro do imóvel? Os arquivos órfãos permanecerão no Storage.`);
+                if (!userConfirmed) {
+                    console.log('❌ Exclusão cancelada pelo usuário devido a erro na exclusão de arquivos.');
+                    alert('❌ Exclusão cancelada para preservar a integridade dos arquivos.');
+                    console.groupEnd();
+                    return false;
+                }
+            }
+        } else {
+            console.log('📭 Imóvel sem arquivos de mídia para excluir.');
+        }
+    } else {
+        console.warn('⚠️ MediaSystem.deleteFilesFromStorage não disponível. Pulando exclusão física de arquivos.');
+        // Se não tiver a função, a exclusão de arquivos não é possível, mas ainda podemos tentar excluir o registro.
+        // Avisamos o usuário.
+        const proceedWithoutMediaDeletion = confirm(`⚠️ O sistema de exclusão de arquivos não está disponível.\n\nOs arquivos de mídia do imóvel "${property.title}" NÃO serão removidos do Storage, permanecendo como arquivos órfãos.\n\nDeseja continuar apenas com a exclusão do registro do imóvel?`);
+        if (!proceedWithoutMediaDeletion) {
+            console.log('❌ Exclusão cancelada pelo usuário.');
+            console.groupEnd();
+            return false;
+        }
+        mediaDeletionSuccess = false;
+        mediaDeletionError = 'Sistema de exclusão de arquivos indisponível.';
+    }
+
+    // --- CONTINUAR COM A EXCLUSÃO DO REGISTRO NO SUPABASE E LOCAL ---
     let supabaseSuccess = false;
     let supabaseError = null;
 
@@ -1210,6 +1270,7 @@ window.deleteProperty = async function(id) {
         }
     }
 
+    // Excluir localmente independentemente do resultado do Supabase
     window.properties = window.properties.filter(p => p.id !== id);
     
     const saved = window.savePropertiesToStorage();
@@ -1231,15 +1292,29 @@ window.deleteProperty = async function(id) {
         }, 100);
     }
 
+    // Montar mensagem final
+    let finalMessage = '';
     if (supabaseSuccess) {
-        alert(`✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!\n\nFoi removido do servidor e não voltará a aparecer.`);
+        finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!\n\n`;
+        finalMessage += `✓ Registro removido do servidor.\n`;
+        if (mediaDeletionSuccess) {
+            finalMessage += `✓ Arquivos de mídia excluídos fisicamente do Storage.`;
+        } else {
+            finalMessage += `⚠️ ATENÇÃO: Falha na exclusão física dos arquivos de mídia (${mediaDeletionError || 'erro desconhecido'}). Os arquivos podem permanecer no Storage como órfãos.`;
+        }
     } else {
-        let errorMessage = supabaseError ? 
-            `\n\nErro no servidor: ${supabaseError.substring(0, 100)}...` : 
-            '\n\nMotivo: Conexão com servidor falhou.';
-
-        alert(`⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.${errorMessage}\n\nO imóvel ainda existe no servidor e reaparecerá ao sincronizar.`);
+        finalMessage = `⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.\n\n`;
+        finalMessage += `✓ Registro removido do seu navegador.\n`;
+        if (!supabaseError && !window.ensureSupabaseCredentials()) {
+            finalMessage += `🌐 O servidor não estava acessível. O imóvel ainda existe no servidor e reaparecerá ao sincronizar.\n`;
+        } else if (supabaseError) {
+            finalMessage += `❌ Erro no servidor: ${supabaseError.substring(0, 100)}...\n`;
+        }
+        if (!mediaDeletionSuccess) {
+            finalMessage += `⚠️ ATENÇÃO: Os arquivos de mídia NÃO foram excluídos.`;
+        }
     }
+    alert(finalMessage);
 
     console.groupEnd();
     return supabaseSuccess;
