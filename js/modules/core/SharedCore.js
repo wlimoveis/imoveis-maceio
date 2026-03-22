@@ -1,6 +1,69 @@
 // js/modules/core/SharedCore.js - COM FUNÇÕES UNIFICADAS DE FEATURES E VIDEO
 console.log('🔧 SharedCore.js carregado - COM FUNÇÕES UNIFICADAS DE FEATURES E VIDEO');
 
+// ==================== CONFIGURAÇÃO CENTRAL DO SISTEMA ====================
+// ÚNICO LOCAL para configurar URLs, versões e módulos de suporte
+// ✅ QUALQUER NOVO MÓDULO DO SUPPORT SYSTEM DEVE SER ADICIONADO APENAS AQUI!
+window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
+    // Versão atual do sistema (para cache busting)
+    version: '2.0.0',
+    
+    // Repositório de suporte (APENAS UM LUGAR PARA ALTERAR!)
+    supportBaseUrl: 'https://wlimoveis.github.io/weberlessa-support/',
+    
+    // ========== LISTA ÚNICA DE MÓDULOS DO SUPPORT SYSTEM ==========
+    // ✅ ADICIONAR NOVOS MÓDULOS SOMENTE AQUI!
+    supportModules: [
+        'debug/core/diagnostic-registry.js',
+        'performance/performance-system.js',
+        'debug/utils/core-diagnostics.js',
+        'debug/utils/storage-diagnostics.js',
+        'debug/utils/gallery-diagnostics.js',
+        'debug/utils/admin-diagnostics.js',
+        'debug/diagnostics/diagnostics53.js',
+        'debug/diagnostics/diagnostics54.js',
+        'debug/diagnostics/diagnostics55.js',
+        'debug/diagnostics/diagnostics56.js',
+        'debug/diagnostics/diagnostics57.js',
+        'debug/diagnostics/diagnostics58.js',
+        'debug/diagnostics/diagnostics59.js',
+        'debug/diagnostics/diagnostics60.js',
+        'debug/diagnostics/diagnostics61.js',
+        'debug/diagnostics/diagnostics62.js',
+        'debug/diagnostics/diagnostics63.js',
+        'debug/function-verifier.js',
+        'debug/media-logger.js',
+        'debug/media-recovery.js', 
+        'debug/pdf-logger.js',
+        'debug/utils/media-debug.js',
+        'debug/filters/filter-fallbacks.js',
+        'debug/events/event-manager.js',
+        'debug/duplication-checker.js',
+        'debug/emergency-recovery.js',
+        'debug/validation.js',
+        'debug/validation-essentials.js',
+        'debug/simple-checker.js',
+        'debug/media-migration-check.js',
+        'debug/migration-cleanup.js'
+    ],
+    
+    // Função auxiliar para obter URL completa com versionamento
+    getSupportUrl: function(modulePath) {
+        return this.supportBaseUrl + modulePath + (this.version ? `?v=${this.version}` : '');
+    },
+    
+    // Verificar se deve carregar módulos de suporte
+    shouldLoadSupport: function() {
+        return window.location.search.includes('debug=true') || 
+               window.location.search.includes('test=true') ||
+               window.location.hostname.includes('localhost') ||
+               window.location.hostname.includes('127.0.0.1');
+    }
+};
+
+console.log('⚙️ [CONFIG] SYSTEM_CONFIG carregado. Support URL:', window.SYSTEM_CONFIG.supportBaseUrl);
+console.log('📦 [CONFIG] Total de módulos:', window.SYSTEM_CONFIG.supportModules.length);
+
 // ========== CONSTANTES SUPABASE FIXAS (IMPORTANTE!) ==========
 // Verificar se já foi declarado por outro módulo (media-unified.js)
 if (typeof SUPABASE_CONSTANTS === 'undefined') {
