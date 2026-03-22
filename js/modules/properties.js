@@ -967,19 +967,57 @@ window.addNewProperty = async function(propertyData) {
 };
 
 // ========== 8. FUNÇÃO AUXILIAR: Validar ID para Supabase (FALLBACK APENAS) ==========
+// Garantir que validateIdForSupabase está disponível globalmente
 if (typeof window.validateIdForSupabase !== 'function') {
+    console.warn('⚠️ validateIdForSupabase não encontrado, criando implementação robusta...');
+    
     window.validateIdForSupabase = function(propertyId) {
-        console.warn('⚠️ Usando fallback local para validateIdForSupabase');
-        if (!propertyId) return null;
-        if (typeof propertyId === 'number' && !isNaN(propertyId) && propertyId > 0) return propertyId;
+        if (!propertyId && propertyId !== 0) return null;
+        
+        // Se for número e positivo
+        if (typeof propertyId === 'number' && !isNaN(propertyId) && propertyId > 0) {
+            return propertyId;
+        }
+        
+        // Se for string, extrair números
         if (typeof propertyId === 'string') {
+            // Tentar converter diretamente
+            const directNum = parseInt(propertyId);
+            if (!isNaN(directNum) && directNum > 0) return directNum;
+            
+            // Extrair apenas números
             const cleanId = propertyId.replace(/[^0-9]/g, '');
             const numericId = parseInt(cleanId);
             if (!isNaN(numericId) && numericId > 0) return numericId;
         }
+        
+        console.warn(`⚠️ Não foi possível validar ID: ${propertyId}`);
         return null;
     };
+    
+    // Marcar como fallback para debug
+    window.validateIdForSupabase.isFallback = true;
 }
+
+// Versão melhorada que tenta usar a global primeiro
+window.validateIdForSupabaseEnhanced = function(propertyId) {
+    // Tentar usar a função principal se disponível e não for o fallback
+    if (window.validateIdForSupabase && 
+        typeof window.validateIdForSupabase === 'function' && 
+        !window.validateIdForSupabase.isFallback) {
+        return window.validateIdForSupabase(propertyId);
+    }
+    
+    // Fallback próprio
+    console.log('🔄 Usando validateIdForSupabaseEnhanced fallback');
+    if (!propertyId) return null;
+    if (typeof propertyId === 'number' && propertyId > 0) return propertyId;
+    if (typeof propertyId === 'string') {
+        const num = parseInt(propertyId);
+        if (!isNaN(num) && num > 0) return num;
+    }
+    return null;
+};
 
 // ========== 9. ATUALIZAR IMÓVEL - VERSÃO CORRIGIDA COM SUPORTE A NOVOS ARQUIVOS ==========
 window.updateProperty = async function(id, propertyData) {
