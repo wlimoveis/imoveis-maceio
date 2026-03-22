@@ -556,108 +556,74 @@
 <!-- ========== CARREGAMENTO CONDICIONAL DE MÓDULOS DE SUPORTE ========== -->
 <script>
 (() => {
-    // DEBUG: Marcar início da execução apenas em debug/test/local
-    const shouldLoadSupport = 
-        window.location.search.includes('debug=true') || 
-        window.location.search.includes('test=true') ||
-        window.location.hostname.includes('localhost') ||
-        window.location.hostname.includes('127.0.0.1');
-
-    // Debouncing para evitar múltiplos carregamentos
-    if (!window.supportModulesLoaded) {
-        window.supportModulesLoaded = false;
-    }
-
-    if (window.supportModulesLoaded) {
-        if (shouldLoadSupport) console.log('⚡ [SUPORTE] Módulos já carregados, ignorando repetição');
-        return;
-    }
-
-    if (shouldLoadSupport) {
-        console.log('🔧 [SUPORTE] Carregando módulos do repositório de suporte...');
+    // Aguardar configuração do SharedCore (único local com a lista de módulos)
+    const waitForConfig = setInterval(() => {
+        if (window.SYSTEM_CONFIG) {
+            clearInterval(waitForConfig);
+            loadSupportModules();
+        }
+    }, 100);
+    
+    // Timeout de segurança - apenas aguarda, NÃO contém lista duplicada
+    setTimeout(() => {
+        if (!window.SYSTEM_CONFIG) {
+            console.error('❌ [SUPORTE] SYSTEM_CONFIG não encontrado. Verifique se SharedCore.js carregou.');
+        }
+    }, 3000);
+    
+    function loadSupportModules() {
+        const config = window.SYSTEM_CONFIG;
+        
+        if (!config) {
+            console.error('❌ [SUPORTE] Configuração não disponível');
+            return;
+        }
+        
+        if (!config.shouldLoadSupport()) {
+            console.log('🚀 [SUPORTE] Modo produção - sem módulos de suporte');
+            return;
+        }
+        
+        if (window.supportModulesLoaded) {
+            console.log('⚡ [SUPORTE] Módulos já carregados');
+            return;
+        }
+        
+        console.log('🔧 [SUPORTE] Carregando módulos do repositório:', config.supportBaseUrl);
         window.supportModulesLoaded = true;
-
-        // Array de módulos a carregar
-        const supportModules = [
-            'debug/core/diagnostic-registry.js',
-            'performance/performance-system.js',
-            'debug/utils/core-diagnostics.js',
-            'debug/utils/storage-diagnostics.js',
-            'debug/utils/gallery-diagnostics.js',
-            'debug/utils/admin-diagnostics.js',
-            'debug/diagnostics/diagnostics53.js',
-            'debug/diagnostics/diagnostics54.js',
-            'debug/diagnostics/diagnostics55.js',
-            'debug/diagnostics/diagnostics56.js',
-            'debug/diagnostics/diagnostics57.js',
-            'debug/diagnostics/diagnostics58.js',
-            'debug/diagnostics/diagnostics59.js',
-            'debug/diagnostics/diagnostics60.js',
-            'debug/diagnostics/diagnostics61.js',
-            'debug/diagnostics/diagnostics62.js',
-            'debug/diagnostics/diagnostics63.js',
-            'debug/function-verifier.js',
-            'debug/media-logger.js',
-            'debug/media-recovery.js', 
-            'debug/pdf-logger.js',
-            'debug/utils/media-debug.js',
-            'debug/filters/filter-fallbacks.js',
-            'debug/events/event-manager.js',
-            'debug/duplication-checker.js',
-            'debug/emergency-recovery.js',
-            'debug/validation.js',
-            'debug/validation-essentials.js',
-            'debug/simple-checker.js',
-            'debug/media-migration-check.js',
-            'debug/migration-cleanup.js'            
-       ];
-
-        const baseUrl = 'https://github.com/wlimoveis/weberlessa-support/';
+        
         let loadedCount = 0;
-
-        supportModules.forEach(modulePath => {
-            const fullUrl = baseUrl + modulePath;
-            console.log(`🔧 [SUPORTE] Tentando carregar: ${fullUrl}`);
-
+        const totalModules = config.supportModules.length;
+        
+        config.supportModules.forEach(modulePath => {
+            const fullUrl = config.getSupportUrl(modulePath);
+            
             const script = document.createElement('script');
             script.src = fullUrl;
             script.defer = true;
-
+            
             script.onload = () => {
                 loadedCount++;
-                console.log(`✅ [SUPORTE] ${modulePath} carregado (${loadedCount}/${supportModules.length})`);
-
-                if (loadedCount === supportModules.length) {
-                    console.log('🎉 [SUPORTE] TODOS os módulos carregados com sucesso!');
-
-                    // Executar verificações automáticas
+                console.log(`✅ [SUPORTE] ${modulePath} (${loadedCount}/${totalModules})`);
+                
+                if (loadedCount === totalModules) {
+                    console.log('🎉 [SUPORTE] TODOS os módulos carregados!');
                     setTimeout(() => {
-                        if (typeof window.runSupportChecks === 'function') {
-                            window.runSupportChecks();
-                        } else {
-                            if (typeof window.verifySystemFunctions === 'function') {
-                                window.verifySystemFunctions();
-                            }
-                            if (typeof window.checkModuleDuplications === 'function') {
-                                window.checkModuleDuplications();
-                            }
-                        }
+                        if (typeof window.runSupportChecks === 'function') window.runSupportChecks();
+                        else if (typeof window.verifySystemFunctions === 'function') window.verifySystemFunctions();
                     }, 1000);
                 }
             };
-
-            script.onerror = (error) => {
-                console.error(`❌ [SUPORTE] Falha ao carregar: ${modulePath}`, error);
-                console.error(`❌ [SUPORTE] URL falhou: ${fullUrl}`);
+            
+            script.onerror = () => {
+                console.error(`❌ [SUPORTE] Falha: ${modulePath}`);
+                console.error(`   URL: ${fullUrl}`);
             };
-
+            
             document.head.appendChild(script);
         });
-
-        console.log(`📦 [SUPORTE] Total de módulos: ${supportModules.length}`);
-        console.log('🔗 [SUPORTE] Repositório: https://github.com/rclessa25-hub/weberlessa-support');
-    } else {
-        console.log('🚀 [SUPORTE] Site principal em modo produção - sem módulos de suporte');
+        
+        console.log(`📦 [SUPORTE] Total: ${totalModules} módulos`);
     }
 })();
 </script>
