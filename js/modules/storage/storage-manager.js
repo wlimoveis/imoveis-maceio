@@ -2,34 +2,52 @@
 console.log('🗄️ storage-manager.js carregado - Módulo de exclusão de arquivos');
 
 const StorageManager = (function() {
-    // Constantes do Supabase (extraídas do window, com verificação segura)
+    // Armazenar configuração internamente
     let SUPABASE_URL = null;
     let SUPABASE_KEY = null;
     
-    // Tentar obter as constantes de forma segura
-    try {
+    /**
+     * Função para obter as configurações de forma segura
+     * Tenta obter de múltiplas fontes possíveis
+     */
+    function getSupabaseConfig() {
+        // Se já temos a configuração, retornar
+        if (SUPABASE_URL && SUPABASE_KEY) {
+            return { url: SUPABASE_URL, key: SUPABASE_KEY };
+        }
+        
+        // Tentar obter de window.SUPABASE_CONSTANTS
         if (window.SUPABASE_CONSTANTS && typeof window.SUPABASE_CONSTANTS === 'object') {
             SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+            if (SUPABASE_URL && SUPABASE_KEY) {
+                console.log('✅ StorageManager: Configuração carregada de SUPABASE_CONSTANTS');
+                return { url: SUPABASE_URL, key: SUPABASE_KEY };
+            }
         }
         
-        // Fallback para variáveis globais individuais
-        if (!SUPABASE_URL && window.SUPABASE_URL) {
+        // Tentar obter de variáveis globais individuais
+        if (window.SUPABASE_URL && window.SUPABASE_KEY) {
             SUPABASE_URL = window.SUPABASE_URL;
-        }
-        if (!SUPABASE_KEY && window.SUPABASE_KEY) {
             SUPABASE_KEY = window.SUPABASE_KEY;
+            console.log('✅ StorageManager: Configuração carregada de variáveis globais');
+            return { url: SUPABASE_URL, key: SUPABASE_KEY };
         }
         
-        if (!SUPABASE_URL || !SUPABASE_KEY) {
-            console.warn('⚠️ StorageManager: SUPABASE_CONSTANTS não está disponível!');
-        } else {
-            console.log('✅ StorageManager: Configuração do Supabase carregada');
+        // Tentar obter do SharedCore
+        if (window.SharedCore && window.SharedCore.SUPABASE_CONSTANTS) {
+            SUPABASE_URL = window.SharedCore.SUPABASE_CONSTANTS.URL;
+            SUPABASE_KEY = window.SharedCore.SUPABASE_CONSTANTS.KEY;
+            if (SUPABASE_URL && SUPABASE_KEY) {
+                console.log('✅ StorageManager: Configuração carregada do SharedCore');
+                return { url: SUPABASE_URL, key: SUPABASE_KEY };
+            }
         }
-    } catch (error) {
-        console.error('❌ StorageManager: Erro ao carregar configuração:', error);
+        
+        console.warn('⚠️ StorageManager: Não foi possível obter configuração do Supabase');
+        return { url: null, key: null };
     }
-
+    
     /**
      * Função privada para extrair o nome do arquivo de uma URL.
      * @param {string} url - A URL completa ou o caminho do arquivo.
@@ -51,7 +69,7 @@ const StorageManager = (function() {
             }
             return fileName;
         } catch (e) {
-            console.warn('⚠️ Não foi possível extrair nome do arquivo de:', url);
+            console.warn('⚠️ StorageManager: Não foi possível extrair nome do arquivo de:', url);
             return null;
         }
     };
@@ -67,8 +85,13 @@ const StorageManager = (function() {
             return { success: true, deleted: 0, errors: [] };
         }
 
+        // Obter configuração atualizada
+        var config = getSupabaseConfig();
+        var currentUrl = config.url;
+        var currentKey = config.key;
+        
         // Verificar configuração
-        if (!SUPABASE_URL || !SUPABASE_KEY) {
+        if (!currentUrl || !currentKey) {
             console.error('❌ StorageManager: Configuração do Supabase ausente.');
             return { 
                 success: false, 
@@ -98,14 +121,14 @@ const StorageManager = (function() {
             }
 
             var filePath = bucket + '/' + fileName;
-            var deleteUrl = SUPABASE_URL + '/storage/v1/object/' + filePath;
+            var deleteUrl = currentUrl + '/storage/v1/object/' + filePath;
 
             try {
                 var response = await fetch(deleteUrl, {
                     method: 'DELETE',
                     headers: {
-                        'Authorization': 'Bearer ' + SUPABASE_KEY,
-                        'apikey': SUPABASE_KEY
+                        'Authorization': 'Bearer ' + currentKey,
+                        'apikey': currentKey
                     }
                 });
 
@@ -142,10 +165,26 @@ const StorageManager = (function() {
             errors: errors
         };
     };
+    
+    /**
+     * Função para atualizar a configuração manualmente
+     * @param {Object} config - Configuração do Supabase
+     */
+    var updateConfig = function(config) {
+        if (config && config.URL && config.KEY) {
+            SUPABASE_URL = config.URL;
+            SUPABASE_KEY = config.KEY;
+            console.log('✅ StorageManager: Configuração atualizada manualmente');
+            return true;
+        }
+        return false;
+    };
 
     // API Pública do módulo
     return {
-        deleteFilesFromStorage: deleteFilesFromStorage
+        deleteFilesFromStorage: deleteFilesFromStorage,
+        updateConfig: updateConfig,
+        getConfig: getSupabaseConfig
     };
 })();
 
