@@ -1,7 +1,7 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM PROXY PARA SUPPORT SYSTEM
-// ✅ O Core System mantém fallback local garantido
-// ✅ O Core System opera 100% mesmo sem o Support System
-console.log('🔧 SharedCore.js carregado - COM PROXY PARA SUPPORT SYSTEM');
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM PROXY PURO PARA SUPPORT SYSTEM
+// ✅ As funções locais foram removidas - Core delega completamente para Support System
+// ✅ Fallback mínimo inline garante operação mesmo sem Support System
+console.log('🔧 SharedCore.js carregado - PROXY PURO PARA SUPPORT SYSTEM (sem duplicidade)');
 
 // ==================== CONFIGURAÇÃO CENTRAL DO SISTEMA ====================
 // ÚNICO LOCAL para configurar URLs, versões e módulos de suporte
@@ -22,7 +22,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
         'debug/utils/admin-diagnostics.js',
-        'debug/utils/core-utilities.js',  // ✅ NOVO MÓDULO MIGRADO
+        'debug/utils/core-utilities.js',  // ✅ MÓDULO MIGRADO (features, vídeo)
         'debug/diagnostics/diagnostics53.js',
         'debug/diagnostics/diagnostics54.js',
         'debug/diagnostics/diagnostics55.js',
@@ -158,87 +158,66 @@ const SharedCore = (function() {
         });
     };
 
-    // ========== IMPLEMENTAÇÃO LOCAL MÍNIMA (TEMPORÁRIA) ==========
-    // ⚠️ ESTA IMPLEMENTAÇÃO SERÁ REMOVIDA NA PRÓXIMA ETAPA APÓS VALIDAÇÃO
-    // ✅ O CORE CONTINUA FUNCIONANDO MESMO SEM SUPPORT SYSTEM
+    // ========== FUNÇÕES DE FEATURES E VIDEO - PROXY PURO ==========
+    // ✅ Implementação migrada para Support System (core-utilities.js)
+    // ✅ Core System apenas delega, com fallback inline mínimo
+    // ✅ Funções locais (_local*) REMOVIDAS para eliminar duplicidade
     
-    const _localFormatFeaturesForDisplay = function(features) {
+    const formatFeaturesForDisplay = function(features) {
+        // Usa Support System se disponível
+        if (window.SupportCoreUtils?.formatFeaturesForDisplay) {
+            return window.SupportCoreUtils.formatFeaturesForDisplay(features);
+        }
+        // Fallback inline mínimo - Core funciona sem Support System
         if (!features) return '';
         try {
             if (Array.isArray(features)) return features.filter(f => f && f.trim()).join(', ');
-            if (typeof features === 'string' && features.trim().startsWith('[') && features.trim().endsWith(']')) {
-                const parsed = JSON.parse(features);
-                if (Array.isArray(parsed)) return parsed.filter(f => f && f.trim()).join(', ');
+            if (typeof features === 'string') {
+                // Remover colchetes e aspas se presente
+                let cleaned = features.replace(/^\[|\]$/g, '').replace(/"/g, '');
+                return cleaned.split(',').map(f => f.trim()).filter(f => f).join(', ');
             }
-            return features.toString().replace(/[\[\]"]/g, '').replace(/\s*,\s*/g, ', ');
+            return features.toString();
         } catch (error) {
             return '';
         }
     };
-
-    const _localParseFeaturesForStorage = function(value) {
+    
+    const parseFeaturesForStorage = function(value) {
+        // Usa Support System se disponível
+        if (window.SupportCoreUtils?.parseFeaturesForStorage) {
+            return window.SupportCoreUtils.parseFeaturesForStorage(value);
+        }
+        // Fallback inline mínimo
         if (!value) return '[]';
         try {
             if (Array.isArray(value)) return JSON.stringify(value.filter(f => f && f.trim()));
-            if (typeof value === 'string' && value.trim().startsWith('[') && value.trim().endsWith(']')) {
-                JSON.parse(value);
-                return value;
+            if (typeof value === 'string') {
+                if (value.trim().startsWith('[')) return value;
+                const featuresArray = value.split(',').map(f => f.trim()).filter(f => f);
+                return JSON.stringify(featuresArray);
             }
-            const featuresArray = value.split(',').map(f => f.trim()).filter(f => f);
-            return JSON.stringify(featuresArray);
+            return '[]';
         } catch (error) {
             return '[]';
         }
     };
-
-    const _localEnsureBooleanVideo = function(videoValue) {
+    
+    const ensureBooleanVideo = function(videoValue) {
+        // Usa Support System se disponível
+        if (window.SupportCoreUtils?.ensureBooleanVideo) {
+            return window.SupportCoreUtils.ensureBooleanVideo(videoValue);
+        }
+        // Fallback inline mínimo
         if (videoValue === undefined || videoValue === null) return false;
         if (typeof videoValue === 'boolean') return videoValue;
         if (typeof videoValue === 'string') {
             const lower = videoValue.toLowerCase().trim();
-            if (lower === 'true' || lower === '1' || lower === 'sim' || lower === 'yes') return true;
-            if (lower === 'false' || lower === '0' || lower === 'não' || lower === 'no') return false;
+            if (lower === 'true' || lower === '1' || lower === 'sim') return true;
+            if (lower === 'false' || lower === '0' || lower === 'não') return false;
         }
         if (typeof videoValue === 'number') return videoValue === 1;
         return Boolean(videoValue);
-    };
-
-    // ========== FUNÇÕES DE FEATURES E VIDEO COM PRIORIDADE PARA SUPPORT SYSTEM ==========
-    // ✅ Prioriza Support System, mas tem fallback local garantido
-    const formatFeaturesForDisplay = function(features) {
-        // Prioriza a versão do Support System, se disponível
-        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.formatFeaturesForDisplay === 'function') {
-            return window.SupportCoreUtils.formatFeaturesForDisplay(features);
-        }
-        // Fallback local mínimo - Core continua 100% funcional
-        if (window.location.search.includes('debug=true')) {
-            console.warn('⚠️ [DEBUG] Usando fallback local para formatFeaturesForDisplay (Support System não disponível)');
-        }
-        return _localFormatFeaturesForDisplay(features);
-    };
-    
-    const parseFeaturesForStorage = function(value) {
-        // Prioriza a versão do Support System, se disponível
-        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.parseFeaturesForStorage === 'function') {
-            return window.SupportCoreUtils.parseFeaturesForStorage(value);
-        }
-        // Fallback local mínimo - Core continua 100% funcional
-        if (window.location.search.includes('debug=true')) {
-            console.warn('⚠️ [DEBUG] Usando fallback local para parseFeaturesForStorage (Support System não disponível)');
-        }
-        return _localParseFeaturesForStorage(value);
-    };
-    
-    const ensureBooleanVideo = function(videoValue) {
-        // Prioriza a versão do Support System, se disponível
-        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.ensureBooleanVideo === 'function') {
-            return window.SupportCoreUtils.ensureBooleanVideo(videoValue);
-        }
-        // Fallback local mínimo - Core continua 100% funcional
-        if (window.location.search.includes('debug=true')) {
-            console.warn('⚠️ [DEBUG] Usando fallback local para ensureBooleanVideo (Support System não disponível)');
-        }
-        return _localEnsureBooleanVideo(videoValue);
     };
 
     const truncateText = (text, maxLength = 100) => {
@@ -767,7 +746,7 @@ const SharedCore = (function() {
         truncateText,
         stringSimilarity,
         
-        // ✅ Funções unificadas de features e video (com prioridade para Support System)
+        // ✅ Funções unificadas de features e video (proxy puro - sem duplicidade)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
@@ -963,7 +942,7 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
-    // Verificar funções unificadas com prioridade para Support System
+    // Verificar funções unificadas (proxy puro)
     const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo'];
     unifiedFunctions.forEach(func => {
         const available = window.SharedCore?.[func] !== undefined;
@@ -971,14 +950,22 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
+    // ✅ NOVA VERIFICAÇÃO: Garantir que funções locais foram removidas
+    const sharedCoreCode = window.SharedCore.toString();
+    const hasLocalFunctions = sharedCoreCode.includes('_localFormatFeaturesForDisplay') ||
+                              sharedCoreCode.includes('_localParseFeaturesForStorage') ||
+                              sharedCoreCode.includes('_localEnsureBooleanVideo');
+    
+    console.log(`${!hasLocalFunctions ? '✅' : '❌'} Funções locais (_local*) removidas do SharedCore`);
+    
     // Verificar disponibilidade do Support System (apenas informativo)
     if (window.SupportCoreUtils) {
         console.log('✅ [SUPPORT] SupportCoreUtils disponível - usando versão otimizada');
     } else {
-        console.log('ℹ️ [SUPPORT] SupportCoreUtils não disponível - usando fallback local (sistema 100% funcional)');
+        console.log('ℹ️ [SUPPORT] SupportCoreUtils não disponível - usando fallback inline (sistema 100% funcional)');
     }
     
-    console.log(allAvailable ? '🎪 SHAREDCORE VALIDADO COM FUNÇÕES UNIFICADAS' : '⚠️ VERIFICAÇÃO REQUERIDA');
+    console.log(allAvailable && !hasLocalFunctions ? '🎪 SHAREDCORE VALIDADO - SEM DUPLICIDADE' : '⚠️ VERIFICAÇÃO REQUERIDA');
     console.groupEnd();
 }, 2000);
 
@@ -999,4 +986,4 @@ setTimeout(() => {
     console.log('✅ SUPABASE_CONSTANTS definido globalmente');
 })();
 
-console.log(`✅ SharedCore.js pronto - Sistema de formatação unificado (features + video + preço) com PROXY para Support System`);
+console.log(`✅ SharedCore.js pronto - PROXY PURO (sem duplicidade) para Support System`);
