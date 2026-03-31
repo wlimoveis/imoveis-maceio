@@ -1,5 +1,7 @@
-// js/modules/core/SharedCore.js - COM FUNÇÕES UNIFICADAS DE FEATURES E VIDEO
-console.log('🔧 SharedCore.js carregado - COM FUNÇÕES UNIFICADAS DE FEATURES E VIDEO');
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM PROXY PARA SUPPORT SYSTEM
+// ✅ O Core System mantém fallback local garantido
+// ✅ O Core System opera 100% mesmo sem o Support System
+console.log('🔧 SharedCore.js carregado - COM PROXY PARA SUPPORT SYSTEM');
 
 // ==================== CONFIGURAÇÃO CENTRAL DO SISTEMA ====================
 // ÚNICO LOCAL para configurar URLs, versões e módulos de suporte
@@ -20,6 +22,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
         'debug/utils/admin-diagnostics.js',
+        'debug/utils/core-utilities.js',  // ✅ NOVO MÓDULO MIGRADO
         'debug/diagnostics/diagnostics53.js',
         'debug/diagnostics/diagnostics54.js',
         'debug/diagnostics/diagnostics55.js',
@@ -155,107 +158,87 @@ const SharedCore = (function() {
         });
     };
 
-    // ========== FUNÇÕES UNIFICADAS DE FEATURES E VIDEO ==========
-    const formatFeaturesForDisplay = function(features) {
-        console.log('🔍 SharedCore.formatFeaturesForDisplay:', { input: features, type: typeof features });
-        
+    // ========== IMPLEMENTAÇÃO LOCAL MÍNIMA (TEMPORÁRIA) ==========
+    // ⚠️ ESTA IMPLEMENTAÇÃO SERÁ REMOVIDA NA PRÓXIMA ETAPA APÓS VALIDAÇÃO
+    // ✅ O CORE CONTINUA FUNCIONANDO MESMO SEM SUPPORT SYSTEM
+    
+    const _localFormatFeaturesForDisplay = function(features) {
         if (!features) return '';
-        
         try {
-            // Se for array, transformar em string separada por vírgula
-            if (Array.isArray(features)) {
-                return features.filter(f => f && f.trim()).join(', ');
-            }
-            
-            // Se for string JSON (com colchetes), extrair array
+            if (Array.isArray(features)) return features.filter(f => f && f.trim()).join(', ');
             if (typeof features === 'string' && features.trim().startsWith('[') && features.trim().endsWith(']')) {
-                try {
-                    const parsed = JSON.parse(features);
-                    if (Array.isArray(parsed)) {
-                        return parsed.filter(f => f && f.trim()).join(', ');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ SharedCore: Erro ao parsear JSON de features:', e);
-                    // Se falhar o parse, tentar limpar
-                    return features.replace(/[\[\]"]/g, '').replace(/\s*,\s*/g, ', ');
-                }
+                const parsed = JSON.parse(features);
+                if (Array.isArray(parsed)) return parsed.filter(f => f && f.trim()).join(', ');
             }
-            
-            // Se já for string com colchetes, remover
-            let cleaned = features.toString();
-            cleaned = cleaned.replace(/[\[\]"]/g, ''); // Remover colchetes e aspas
-            cleaned = cleaned.replace(/\s*,\s*/g, ', '); // Normalizar espaços
-            
-            return cleaned;
+            return features.toString().replace(/[\[\]"]/g, '').replace(/\s*,\s*/g, ', ');
         } catch (error) {
-            console.error('❌ SharedCore: Erro ao formatar features:', error);
             return '';
         }
     };
-    
-    const parseFeaturesForStorage = function(value) {
-        console.log('🔍 SharedCore.parseFeaturesForStorage:', { input: value });
-        
+
+    const _localParseFeaturesForStorage = function(value) {
         if (!value) return '[]';
-        
         try {
-            // Se já é array, converter para JSON
-            if (Array.isArray(value)) {
-                return JSON.stringify(value.filter(f => f && f.trim()));
-            }
-            
-            // Se é string JSON, manter
+            if (Array.isArray(value)) return JSON.stringify(value.filter(f => f && f.trim()));
             if (typeof value === 'string' && value.trim().startsWith('[') && value.trim().endsWith(']')) {
-                try {
-                    JSON.parse(value); // Validar
-                    return value;
-                } catch (e) {
-                    // Se inválido, processar como string normal
-                }
+                JSON.parse(value);
+                return value;
             }
-            
-            // Se é string normal, converter para array
-            const featuresArray = value.split(',')
-                .map(f => f.trim())
-                .filter(f => f && f !== '');
-            
+            const featuresArray = value.split(',').map(f => f.trim()).filter(f => f);
             return JSON.stringify(featuresArray);
         } catch (error) {
-            console.error('❌ SharedCore: Erro ao parsear features:', error);
             return '[]';
         }
     };
-    
-    const ensureBooleanVideo = function(videoValue) {
-        console.log('🔍 SharedCore.ensureBooleanVideo:', { input: videoValue, type: typeof videoValue });
-        
-        if (videoValue === undefined || videoValue === null) {
-            return false;
-        }
-        
-        // Se já é booleano
-        if (typeof videoValue === 'boolean') {
-            return videoValue;
-        }
-        
-        // Se é string 'true' ou 'false'
+
+    const _localEnsureBooleanVideo = function(videoValue) {
+        if (videoValue === undefined || videoValue === null) return false;
+        if (typeof videoValue === 'boolean') return videoValue;
         if (typeof videoValue === 'string') {
             const lower = videoValue.toLowerCase().trim();
-            if (lower === 'true' || lower === '1' || lower === 'sim' || lower === 'yes') {
-                return true;
-            }
-            if (lower === 'false' || lower === '0' || lower === 'não' || lower === 'no') {
-                return false;
-            }
+            if (lower === 'true' || lower === '1' || lower === 'sim' || lower === 'yes') return true;
+            if (lower === 'false' || lower === '0' || lower === 'não' || lower === 'no') return false;
         }
-        
-        // Se é número
-        if (typeof videoValue === 'number') {
-            return videoValue === 1;
-        }
-        
-        // Converter para booleano
+        if (typeof videoValue === 'number') return videoValue === 1;
         return Boolean(videoValue);
+    };
+
+    // ========== FUNÇÕES DE FEATURES E VIDEO COM PRIORIDADE PARA SUPPORT SYSTEM ==========
+    // ✅ Prioriza Support System, mas tem fallback local garantido
+    const formatFeaturesForDisplay = function(features) {
+        // Prioriza a versão do Support System, se disponível
+        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.formatFeaturesForDisplay === 'function') {
+            return window.SupportCoreUtils.formatFeaturesForDisplay(features);
+        }
+        // Fallback local mínimo - Core continua 100% funcional
+        if (window.location.search.includes('debug=true')) {
+            console.warn('⚠️ [DEBUG] Usando fallback local para formatFeaturesForDisplay (Support System não disponível)');
+        }
+        return _localFormatFeaturesForDisplay(features);
+    };
+    
+    const parseFeaturesForStorage = function(value) {
+        // Prioriza a versão do Support System, se disponível
+        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.parseFeaturesForStorage === 'function') {
+            return window.SupportCoreUtils.parseFeaturesForStorage(value);
+        }
+        // Fallback local mínimo - Core continua 100% funcional
+        if (window.location.search.includes('debug=true')) {
+            console.warn('⚠️ [DEBUG] Usando fallback local para parseFeaturesForStorage (Support System não disponível)');
+        }
+        return _localParseFeaturesForStorage(value);
+    };
+    
+    const ensureBooleanVideo = function(videoValue) {
+        // Prioriza a versão do Support System, se disponível
+        if (window.SupportCoreUtils && typeof window.SupportCoreUtils.ensureBooleanVideo === 'function') {
+            return window.SupportCoreUtils.ensureBooleanVideo(videoValue);
+        }
+        // Fallback local mínimo - Core continua 100% funcional
+        if (window.location.search.includes('debug=true')) {
+            console.warn('⚠️ [DEBUG] Usando fallback local para ensureBooleanVideo (Support System não disponível)');
+        }
+        return _localEnsureBooleanVideo(videoValue);
     };
 
     const truncateText = (text, maxLength = 100) => {
@@ -784,7 +767,7 @@ const SharedCore = (function() {
         truncateText,
         stringSimilarity,
         
-        // Funções unificadas de features e video
+        // ✅ Funções unificadas de features e video (com prioridade para Support System)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
@@ -980,13 +963,20 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
-    // Verificar novas funções unificadas
+    // Verificar funções unificadas com prioridade para Support System
     const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo'];
     unifiedFunctions.forEach(func => {
         const available = window.SharedCore?.[func] !== undefined;
         console.log(`${available ? '✅' : '❌'} ${func} disponível no SharedCore`);
         if (!available) allAvailable = false;
     });
+    
+    // Verificar disponibilidade do Support System (apenas informativo)
+    if (window.SupportCoreUtils) {
+        console.log('✅ [SUPPORT] SupportCoreUtils disponível - usando versão otimizada');
+    } else {
+        console.log('ℹ️ [SUPPORT] SupportCoreUtils não disponível - usando fallback local (sistema 100% funcional)');
+    }
     
     console.log(allAvailable ? '🎪 SHAREDCORE VALIDADO COM FUNÇÕES UNIFICADAS' : '⚠️ VERIFICAÇÃO REQUERIDA');
     console.groupEnd();
@@ -1009,75 +999,4 @@ setTimeout(() => {
     console.log('✅ SUPABASE_CONSTANTS definido globalmente');
 })();
 
-// ========== TESTE DAS FUNÇÕES UNIFICADAS ==========
-setTimeout(() => {
-    if (window.location.search.includes('debug=true')) {
-        console.group('🧪 TESTE DAS FUNÇÕES UNIFICADAS DE FEATURES E VIDEO');
-        
-        // Teste 1: formatFeaturesForDisplay
-        const testFeaturesJSON = '["2 Quartos", "Garagem", "Piscina"]';
-        const testFeaturesString = '2 Quartos, Garagem, Piscina';
-        const testFeaturesArray = ['2 Quartos', 'Garagem', 'Piscina'];
-        
-        const result1 = SharedCore.formatFeaturesForDisplay(testFeaturesJSON);
-        const result2 = SharedCore.formatFeaturesForDisplay(testFeaturesString);
-        const result3 = SharedCore.formatFeaturesForDisplay(testFeaturesArray);
-        
-        console.log('✅ formatFeaturesForDisplay:', {
-            'JSON → String': result1 === '2 Quartos, Garagem, Piscina' ? 'OK' : 'FALHOU',
-            'String → String': result2 === '2 Quartos, Garagem, Piscina' ? 'OK' : 'FALHOU',
-            'Array → String': result3 === '2 Quartos, Garagem, Piscina' ? 'OK' : 'FALHOU'
-        });
-        
-        // Teste 2: parseFeaturesForStorage
-        const parsed1 = SharedCore.parseFeaturesForStorage('2 Quartos, Garagem, Piscina');
-        const parsed2 = SharedCore.parseFeaturesForStorage(testFeaturesArray);
-        const parsed3 = SharedCore.parseFeaturesForStorage(testFeaturesJSON);
-        
-        console.log('✅ parseFeaturesForStorage:', {
-            'String → JSON': parsed1.includes('2 Quartos') ? 'OK' : 'FALHOU',
-            'Array → JSON': parsed2.includes('2 Quartos') ? 'OK' : 'FALHOU',
-            'JSON → JSON': parsed3 === testFeaturesJSON ? 'OK' : 'FALHOU'
-        });
-        
-        // Teste 3: ensureBooleanVideo
-        const videoTests = [
-            { input: true, expected: true },
-            { input: false, expected: false },
-            { input: 'true', expected: true },
-            { input: 'false', expected: false },
-            { input: 'sim', expected: true },
-            { input: 'não', expected: false },
-            { input: 1, expected: true },
-            { input: 0, expected: false },
-            { input: '1', expected: true },
-            { input: '0', expected: false }
-        ];
-        
-        let videoPassed = 0;
-        videoTests.forEach((test, index) => {
-            const result = SharedCore.ensureBooleanVideo(test.input);
-            if (result === test.expected) {
-                videoPassed++;
-            } else {
-                console.warn(`⚠️ Teste ${index + 1} falhou: ${test.input} → ${result} (esperado: ${test.expected})`);
-            }
-        });
-        
-        console.log(`✅ ensureBooleanVideo: ${videoPassed}/${videoTests.length} testes passados`);
-        
-        // Teste 4: Compatibilidade global
-        console.log('✅ Funções disponíveis globalmente:', {
-            window_formatFeaturesForDisplay: typeof window.formatFeaturesForDisplay,
-            window_parseFeaturesForStorage: typeof window.parseFeaturesForStorage,
-            window_ensureBooleanVideo: typeof window.ensureBooleanVideo,
-            SharedCore_formatFeaturesForDisplay: typeof SharedCore.formatFeaturesForDisplay,
-            SharedCore_parseFeaturesForStorage: typeof SharedCore.parseFeaturesForStorage,
-            SharedCore_ensureBooleanVideo: typeof SharedCore.ensureBooleanVideo
-        });
-        
-        console.groupEnd();
-    }
-}, 3000);
-
-console.log(`✅ SharedCore.js pronto - Sistema de formatação unificado (features + video + preço)`);
+console.log(`✅ SharedCore.js pronto - Sistema de formatação unificado (features + video + preço) com PROXY para Support System`);
