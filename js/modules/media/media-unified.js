@@ -430,77 +430,135 @@ const MediaSystem = {
         });
     },
 
-    // ========== NOVA FUNÇÃO: EXCLUSÃO FÍSICA DE ARQUIVOS NO STORAGE ==========
+    // ========== EXCLUSÃO FÍSICA DE ARQUIVO ÚNICO NO STORAGE ==========
+    /**
+     * Exclui um único arquivo do Supabase Storage
+     * @param {string} fileUrl - URL pública do arquivo a ser excluído
+     * @returns {Promise<Object>} Resultado da operação
+     */
+    async deleteFileFromStorage(fileUrl) {
+        if (!fileUrl) {
+            console.warn('📭 Nenhuma URL fornecida para exclusão.');
+            return { success: false, error: 'No URL provided' };
+        }
+
+        console.log(`🗑️ Iniciando exclusão física de arquivo único: ${fileUrl.substring(0, 80)}...`);
+        
+        try {
+            const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+            const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+            const bucket = this.config.buckets[this.config.currentSystem];
+            
+            // Extrair o caminho do arquivo dentro do bucket a partir da URL pública
+            // Formato da URL pública: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{filePath}
+            const publicPathPattern = `/storage/v1/object/public/${bucket}/`;
+            const pathIndex = fileUrl.indexOf(publicPathPattern);
+            let filePath = null;
+
+            if (pathIndex !== -1) {
+                filePath = fileUrl.substring(pathIndex + publicPathPattern.length);
+                // Remover query string se existir
+                filePath = filePath.split('?')[0];
+            } else {
+                // Tentar extrair nome do arquivo como fallback
+                const urlParts = fileUrl.split('/');
+                const fileName = urlParts[urlParts.length - 1].split('?')[0];
+                if (fileName && fileName.includes('_')) {
+                    filePath = fileName;
+                    console.warn(`⚠️ Usando nome de arquivo como fallback: ${filePath}`);
+                } else {
+                    console.warn(`⚠️ Não foi possível determinar o caminho do arquivo para: ${fileUrl.substring(0, 100)}`);
+                    return { success: false, error: 'Could not extract file path from URL' };
+                }
+            }
+
+            if (!filePath) {
+                return { success: false, error: 'Empty file path' };
+            }
+
+            // Decodificar o nome do arquivo se necessário
+            try {
+                filePath = decodeURIComponent(filePath);
+            } catch (e) {
+                // Manter o original se não conseguir decodificar
+            }
+
+            const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
+            console.log(`🗑️ Executando DELETE: ${deleteUrl.substring(0, 100)}...`);
+
+            const response = await fetch(deleteUrl, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'apikey': SUPABASE_KEY
+                }
+            });
+
+            if (response.ok) {
+                console.log(`✅ Arquivo excluído com sucesso: ${filePath}`);
+                return { success: true, deletedUrl: fileUrl, filePath: filePath };
+            } else {
+                let errorText = '';
+                try {
+                    errorText = await response.text();
+                } catch(e) {}
+                console.error(`❌ Falha ao excluir ${filePath}: ${response.status} - ${errorText}`);
+                return { success: false, error: `HTTP ${response.status}: ${errorText}`, status: response.status };
+            }
+            
+        } catch (error) {
+            console.error(`❌ Erro ao excluir arquivo:`, error);
+            return { success: false, error: error.message };
+        }
+    },
+
+    // ========== EXCLUSÃO FÍSICA DE MÚLTIPLOS ARQUIVOS NO STORAGE ==========
     async deleteFilesFromStorage(urls) {
         if (!urls || urls.length === 0) {
             console.log('📭 Nenhuma URL fornecida para exclusão.');
-            return { success: true, deletedCount: 0 };
+            return { success: true, deletedCount: 0, failedCount: 0 };
         }
 
         console.log(`🗑️ Iniciando exclusão física de ${urls.length} arquivo(s) do Storage...`);
-        const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-        const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-        const bucket = this.config.buckets[this.config.currentSystem];
         let deletedCount = 0;
         let failedCount = 0;
+        const errors = [];
 
         for (let i = 0; i < urls.length; i++) {
             const fileUrl = urls[i];
+            console.log(`[${i+1}/${urls.length}] Processando: ${fileUrl.substring(0, 80)}...`);
+            
             try {
-                // Extrair o caminho do arquivo dentro do bucket a partir da URL pública
-                // Formato da URL pública: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{filePath}
-                const publicPathPattern = `/storage/v1/object/public/${bucket}/`;
-                const pathIndex = fileUrl.indexOf(publicPathPattern);
-                let filePath = null;
-
-                if (pathIndex !== -1) {
-                    filePath = fileUrl.substring(pathIndex + publicPathPattern.length);
+                // Usar o método deleteFileFromStorage para cada arquivo
+                const result = await this.deleteFileFromStorage(fileUrl);
+                
+                if (result.success) {
+                    deletedCount++;
+                    console.log(`✅ [${i+1}/${urls.length}] Excluído com sucesso`);
                 } else {
-                    // Fallback: tenta extrair o nome do arquivo da URL para construir o caminho
-                    const urlParts = fileUrl.split('/');
-                    const fileName = urlParts[urlParts.length - 1].split('?')[0];
-                    if (fileName && fileName.includes('_')) {
-                        filePath = fileName;
-                        console.warn(`⚠️ Usando nome de arquivo como fallback para exclusão: ${filePath}`);
-                    } else {
-                        console.warn(`⚠️ Não foi possível determinar o caminho do arquivo para: ${fileUrl}`);
-                        failedCount++;
-                        continue;
-                    }
+                    failedCount++;
+                    errors.push({ url: fileUrl, error: result.error });
+                    console.warn(`⚠️ [${i+1}/${urls.length}] Falha: ${result.error}`);
                 }
-
-                if (filePath) {
-                    const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
-                    console.log(`🗑️ Tentando excluir: ${deleteUrl}`);
-
-                    const response = await fetch(deleteUrl, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Bearer ${SUPABASE_KEY}`,
-                            'apikey': SUPABASE_KEY
-                        }
-                    });
-
-                    if (response.ok) {
-                        deletedCount++;
-                        console.log(`✅ Arquivo excluído: ${filePath}`);
-                    } else {
-                        const errorText = await response.text();
-                        console.error(`❌ Falha ao excluir ${filePath}: ${response.status} - ${errorText}`);
-                        failedCount++;
-                    }
-                }
-
+                
                 // Pequeno delay para não sobrecarregar a API do Supabase
                 await new Promise(resolve => setTimeout(resolve, 100));
+                
             } catch (error) {
-                console.error(`❌ Erro ao processar exclusão do arquivo ${fileUrl}:`, error);
                 failedCount++;
+                errors.push({ url: fileUrl, error: error.message });
+                console.error(`❌ [${i+1}/${urls.length}] Erro: ${error.message}`);
             }
         }
 
         console.log(`🗑️ Exclusão concluída: ${deletedCount} excluídos, ${failedCount} falhas.`);
-        return { success: failedCount === 0, deletedCount, failedCount };
+        
+        return { 
+            success: failedCount === 0, 
+            deletedCount, 
+            failedCount,
+            errors: errors.length > 0 ? errors : undefined
+        };
     },
 
     // ========== FUNÇÃO SIMPLIFICADA PARA ADMIN.JS ==========
