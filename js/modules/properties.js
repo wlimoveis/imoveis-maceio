@@ -6,6 +6,19 @@ window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
 
+// ========== FALLBACK INLINE MÍNIMO E SEGURO PARA VALIDAÇÃO DE ID ==========
+// A implementação real está no Support System (core-utilities.js)
+// Este é apenas um fallback caso o Support System não esteja disponível
+if (typeof window.validateIdForSupabase !== 'function') {
+    window.validateIdForSupabase = function(propertyId) {
+        if (!propertyId) return null;
+        // Fallback mais seguro: tenta converter para número. Se falhar, retorna o original.
+        const num = Number(propertyId);
+        return !isNaN(num) && num > 0 ? num : null;
+    };
+    console.log('ℹ️ [properties.js] Fallback de validação de ID ativado.');
+}
+
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
@@ -900,24 +913,7 @@ window.addNewProperty = async function(propertyData) {
     }
 };
 
-// ========== 8. FUNÇÃO AUXILIAR: Validar ID para Supabase (FALLBACK APENAS) ==========
-// A implementação real está no validation-essentials.js
-// Este é apenas um fallback caso o Support System não esteja disponível
-if (typeof window.validateIdForSupabase !== 'function') {
-    window.validateIdForSupabase = function(propertyId) {
-        console.warn('⚠️ Usando fallback local para validateIdForSupabase');
-        if (!propertyId) return null;
-        if (typeof propertyId === 'number' && !isNaN(propertyId) && propertyId > 0) return propertyId;
-        if (typeof propertyId === 'string') {
-            const cleanId = propertyId.replace(/[^0-9]/g, '');
-            const numericId = parseInt(cleanId);
-            if (!isNaN(numericId) && numericId > 0) return numericId;
-        }
-        return null;
-    };
-}
-
-// ========== 9. ATUALIZAR IMÓVEL - VERSÃO COMPLETA CORRIGIDA ==========
+// ========== 8. ATUALIZAR IMÓVEL - VERSÃO COMPLETA CORRIGIDA ==========
 window.updateProperty = async function(id, propertyData) {
     console.group('📤 updateProperty - VERSÃO CORRIGIDA');
 
@@ -1048,7 +1044,7 @@ window.updateProperty = async function(id, propertyData) {
     }
 };
 
-// ========== 10. FUNÇÃO CRÍTICA: Atualizar propriedade localmente ==========
+// ========== 9. FUNÇÃO CRÍTICA: Atualizar propriedade localmente ==========
 window.updateLocalProperty = function(propertyId, updatedData) {
     console.group(`💾 updateLocalProperty: ${propertyId}`);
     
@@ -1117,7 +1113,7 @@ window.updateLocalProperty = function(propertyId, updatedData) {
     return true;
 };
 
-// ========== 11. FUNÇÃO CRÍTICA: Adicionar propriedade localmente ==========
+// ========== 10. FUNÇÃO CRÍTICA: Adicionar propriedade localmente ==========
 window.addToLocalProperties = function(newProperty) {
     console.group('➕ addToLocalProperties');
     
@@ -1169,7 +1165,7 @@ window.addToLocalProperties = function(newProperty) {
     return propertyWithId;
 };
 
-// ========== 12. EXCLUIR IMÓVEL (VERSÃO CORRIGIDA COM EXCLUSÃO FÍSICA DE ARQUIVOS) ==========
+// ========== 11. EXCLUIR IMÓVEL (VERSÃO CORRIGIDA COM EXCLUSÃO FÍSICA DE ARQUIVOS) ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
 
@@ -1320,7 +1316,7 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== 13. CARREGAR LISTA PARA ADMIN ==========
+// ========== 12. CARREGAR LISTA PARA ADMIN ==========
 window.loadPropertyList = function() {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1376,8 +1372,6 @@ window.loadPropertyList = function() {
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 console.log('✅ properties.js VERSÃO OTIMIZADA CARREGADA');
-
-// DEFINÇÃO DA FUNÇÃO runLowPriority FOI REMOVIDA - AGORA USA A VERSÃO GLOBAL DO SUPPORT SYSTEM
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
