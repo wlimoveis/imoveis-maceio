@@ -70,7 +70,8 @@ class PropertyTemplateEngine {
     }
     
     _generateTemplate(property) {
-        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) || '';
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
         const formatPrice = (price) => {
             if (window.SharedCore?.PriceFormatter?.formatForCard) {
@@ -115,7 +116,8 @@ class PropertyTemplateEngine {
         const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
         const hasGallery = imageCount > 1;
         const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) || false;
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
         
         if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
@@ -257,7 +259,8 @@ class PropertyTemplateEngine {
             // Atualizar features se fornecido
             if (propertyData.features !== undefined) {
                 const featuresElement = card.querySelector('[data-features-field]');
-                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) || '';
+                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
                 
                 if (featuresElement) {
                     if (displayFeatures) {
@@ -273,7 +276,8 @@ class PropertyTemplateEngine {
             // Atualizar indicador de vídeo
             if (propertyData.has_video !== undefined) {
                 const videoIndicator = card.querySelector('.video-indicator');
-                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) || false;
+                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
                 
                 if (hasVideo && !videoIndicator) {
                     const imageSection = card.querySelector('.property-image');
@@ -473,10 +477,11 @@ window.loadPropertiesData = async function () {
 
         window.properties = propertiesData || getInitialProperties();
         
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
         window.properties = window.properties.map(prop => ({
             ...prop,
-            has_video: window.SharedCore?.ensureBooleanVideo?.(prop.has_video) || false,
-            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) || '[]'
+            has_video: window.SharedCore?.ensureBooleanVideo?.(prop.has_video) ?? false,
+            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) ?? '[]'
         }));
         
         const saved = window.savePropertiesToStorage();
@@ -733,12 +738,14 @@ window.addNewProperty = async function(propertyData) {
         }
 
         if (propertyData.features) {
-            propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) || '[]';
+            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+            propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
         } else {
             propertyData.features = '[]';
         }
 
-        propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) || false;
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+        propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
 
         let mediaResult = { images: '', pdfs: '' };
         let hasMedia = false;
@@ -952,7 +959,8 @@ window.updateProperty = async function(id, propertyData) {
 
         const processedData = {
             ...propertyData,
-            has_video: window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) || false
+            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+            has_video: window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false
         };
 
         const updateData = {
@@ -1059,12 +1067,14 @@ window.updateLocalProperty = function(propertyId, updatedData) {
         return false;
     }
     
+    // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
     if (updatedData.has_video !== undefined) {
-        updatedData.has_video = window.SharedCore?.ensureBooleanVideo?.(updatedData.has_video) || false;
+        updatedData.has_video = window.SharedCore?.ensureBooleanVideo?.(updatedData.has_video) ?? false;
     }
     
-    if (updatedData.features !== undefined) {
-        updatedData.features = window.SharedCore?.parseFeaturesForStorage?.(updatedData.features) || '[]';
+    // ✅ PADRÃO HARMONIZADO: Apenas garante que features seja uma string JSON
+    if (updatedData.features !== undefined && typeof updatedData.features !== 'string') {
+        updatedData.features = window.SharedCore?.parseFeaturesForStorage?.(updatedData.features) ?? '[]';
     }
     
     const existingProperty = window.properties[index];
@@ -1133,8 +1143,9 @@ window.addToLocalProperties = function(newProperty) {
         propertyWithId.updated_at = new Date().toISOString();
     }
     
-    propertyWithId.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyWithId.has_video) || false;
-    propertyWithId.features = window.SharedCore?.parseFeaturesForStorage?.(propertyWithId.features) || '[]';
+    // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+    propertyWithId.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyWithId.has_video) ?? false;
+    propertyWithId.features = window.SharedCore?.parseFeaturesForStorage?.(propertyWithId.features) ?? '[]';
     
     window.properties.unshift(propertyWithId);
     
