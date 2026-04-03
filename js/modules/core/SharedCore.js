@@ -22,7 +22,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
         'debug/utils/admin-diagnostics.js',
-        'debug/utils/core-utilities.js',  // ✅ MÓDULO MIGRADO (features, vídeo)
+        'debug/utils/core-utilities.js',  // ✅ MÓDULO MIGRADO (features, vídeo, validação ID, estado edição)
         'debug/diagnostics/diagnostics53.js',
         'debug/diagnostics/diagnostics54.js',
         'debug/diagnostics/diagnostics55.js',
@@ -218,6 +218,35 @@ const SharedCore = (function() {
         }
         if (typeof videoValue === 'number') return videoValue === 1;
         return Boolean(videoValue);
+    };
+    
+    // ========== FUNÇÕES DE VALIDAÇÃO DE ID E ESTADO DE EDIÇÃO - PROXY PURO ==========
+    // ✅ Implementação migrada para Support System (core-utilities.js)
+    // ✅ Core System apenas delega, com fallback inline mínimo
+    
+    const validateIdForSupabase = function(propertyId) {
+        // Usa Support System se disponível
+        if (window.SupportCoreUtils?.validateIdForSupabase) {
+            return window.SupportCoreUtils.validateIdForSupabase(propertyId);
+        }
+        // Fallback inline mínimo e seguro
+        if (!propertyId) return null;
+        const num = Number(propertyId);
+        return !isNaN(num) && num > 0 ? num : null;
+    };
+    
+    const manageEditingState = function(id = null) {
+        // Usa Support System se disponível
+        if (window.SupportCoreUtils?.manageEditingState) {
+            return window.SupportCoreUtils.manageEditingState(id);
+        }
+        // Fallback inline mínimo
+        if (id === null) {
+            window.editingPropertyId = null;
+            return null;
+        }
+        window.editingPropertyId = id;
+        return id;
     };
 
     const truncateText = (text, maxLength = 100) => {
@@ -751,6 +780,10 @@ const SharedCore = (function() {
         parseFeaturesForStorage,
         ensureBooleanVideo,
         
+        // ✅ Funções de validação de ID e estado de edição (proxy puro - sem duplicidade)
+        validateIdForSupabase,
+        manageEditingState,
+        
         // Sistema de formatação de preço UNIFICADO
         PriceFormatter,
         
@@ -834,7 +867,20 @@ window.SharedCore = SharedCore;
         };
     }
     
-    console.log('✅ Compatibilidade de formatação de preço e features configurada');
+    // Expor funções de validação globalmente para compatibilidade
+    if (typeof window.validateIdForSupabase === 'undefined') {
+        window.validateIdForSupabase = function(propertyId) {
+            return SharedCore.validateIdForSupabase(propertyId);
+        };
+    }
+    
+    if (typeof window.manageEditingState === 'undefined') {
+        window.manageEditingState = function(id) {
+            return SharedCore.manageEditingState(id);
+        };
+    }
+    
+    console.log('✅ Compatibilidade de formatação de preço, features e validação configurada');
 })();
 
 // ========== INICIALIZAÇÃO E COMPATIBILIDADE ==========
@@ -862,6 +908,10 @@ function initializeGlobalCompatibility() {
         formatFeaturesForDisplay: SharedCore.formatFeaturesForDisplay,
         parseFeaturesForStorage: SharedCore.parseFeaturesForStorage,
         ensureBooleanVideo: SharedCore.ensureBooleanVideo,
+        
+        // Funções de validação de ID e estado de edição
+        validateIdForSupabase: SharedCore.validateIdForSupabase,
+        manageEditingState: SharedCore.manageEditingState,
         
         // Formatação de preço (compatibilidade com código legado)
         formatPriceForInput: SharedCore.formatPriceForInput,
@@ -943,7 +993,7 @@ setTimeout(() => {
     });
     
     // Verificar funções unificadas (proxy puro)
-    const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo'];
+    const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo', 'validateIdForSupabase', 'manageEditingState'];
     unifiedFunctions.forEach(func => {
         const available = window.SharedCore?.[func] !== undefined;
         console.log(`${available ? '✅' : '❌'} ${func} disponível no SharedCore`);
@@ -954,7 +1004,9 @@ setTimeout(() => {
     const sharedCoreCode = window.SharedCore.toString();
     const hasLocalFunctions = sharedCoreCode.includes('_localFormatFeaturesForDisplay') ||
                               sharedCoreCode.includes('_localParseFeaturesForStorage') ||
-                              sharedCoreCode.includes('_localEnsureBooleanVideo');
+                              sharedCoreCode.includes('_localEnsureBooleanVideo') ||
+                              sharedCoreCode.includes('_localValidateIdForSupabase') ||
+                              sharedCoreCode.includes('_localManageEditingState');
     
     console.log(`${!hasLocalFunctions ? '✅' : '❌'} Funções locais (_local*) removidas do SharedCore`);
     
