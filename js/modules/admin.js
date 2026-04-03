@@ -51,7 +51,12 @@ window.toggleAdminPanel = function() {
 window.resetAdminFormCompletely = function(showNotification = true) {
     console.log('🧹 RESET COMPLETO DO FORMULÁRIO');
     
-    window.editingPropertyId = null;
+    // Usar função do Support System se disponível (fallback inline)
+    if (window.SupportCoreUtils?.manageEditingState) {
+        window.SupportCoreUtils.manageEditingState(null);
+    } else {
+        window.editingPropertyId = null;
+    }
     
     const fields = [
         'propTitle', 'propPrice', 'propLocation', 'propDescription',
@@ -201,7 +206,12 @@ window.editProperty = function(id) {
         cancelBtn.style.display = 'inline-block';
     }
     
-    window.editingPropertyId = property.id;
+    // Usar função do Support System se disponível (fallback inline)
+    if (window.SupportCoreUtils?.manageEditingState) {
+        window.SupportCoreUtils.manageEditingState(property.id);
+    } else {
+        window.editingPropertyId = property.id;
+    }
     
     if (window.MediaSystem && typeof window.MediaSystem.loadExisting === 'function') {
         window.MediaSystem.loadExisting(property);
