@@ -162,12 +162,9 @@ window.editProperty = function(id) {
         return price || '';
     };
     
-    // Formatar features usando SharedCore
+    // ✅ PADRÃO HARMONIZADO: Formatar features usando SharedCore com fallback
     const formatFeatures = (features) => {
-        if (window.SharedCore?.formatFeaturesForDisplay) {
-            return window.SharedCore.formatFeaturesForDisplay(features);
-        }
-        return features || '';
+        return window.SharedCore?.formatFeaturesForDisplay?.(features) ?? features ?? '';
     };
     
     const fieldMappings = {
@@ -178,7 +175,8 @@ window.editProperty = function(id) {
         'propFeatures': formatFeatures(property.features) || '',
         'propType': property.type || 'residencial',
         'propBadge': property.badge || 'Novo',
-        'propHasVideo': window.SharedCore?.ensureBooleanVideo?.(property.has_video) || false
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback
+        'propHasVideo': window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false
     };
     
     Object.entries(fieldMappings).forEach(([fieldId, value]) => {
@@ -241,7 +239,8 @@ window.saveProperty = async function() {
         
         const videoCheckbox = document.getElementById('propHasVideo');
         if (videoCheckbox) {
-            propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(videoCheckbox.checked) || false;
+            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback
+            propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(videoCheckbox.checked) ?? false;
         } else {
             propertyData.has_video = false;
         }
@@ -281,11 +280,8 @@ window.saveProperty = async function() {
             propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
         }
         
-        if (propertyData.features && window.SharedCore?.parseFeaturesForStorage) {
-            propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
-        } else {
-            propertyData.features = '[]';
-        }
+        // ✅ PADRÃO HARMONIZADO: Parse features usando SharedCore
+        propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
         
         // Processar mídias
         let imageUrls = '';
