@@ -1,10 +1,10 @@
-// js/modules/gallery.js - Sistema de galeria de fotos (CORE) - COM LOOP DE VÍDEO
-console.log('🚀 gallery.js carregado - Versão com loop de vídeo');
+// js/modules/gallery.js - Sistema de galeria de fotos (CORE) - RESPEITANDO ORDEM ORIGINAL
+console.log('🚀 gallery.js carregado - Versão respeitando ordem original');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
-window.currentVideoPlayer = null;  // Referência ao player de vídeo atual
+window.currentVideoPlayer = null;
 window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
@@ -24,8 +24,9 @@ window.createVideoThumbnail = function(videoUrl, index) {
     return `
         <div class="gallery-video-item" 
              data-video-url="${videoUrl}"
-             onclick="openVideo('${videoUrl}')"
-             style="position:relative; cursor:pointer;">
+             data-index="${index}"
+             onclick="openVideoFromGallery('${videoUrl}', ${index})"
+             style="position:relative; cursor:pointer; width:100%; height:100%;">
             <div style="position:relative; width:100%; height:100%; background:#1a1a2e;">
                 <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
                             background:rgba(0,0,0,0.7); border-radius:50%; width:50px; height:50px;
@@ -46,17 +47,26 @@ window.createVideoThumbnail = function(videoUrl, index) {
     `;
 };
 
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM ==========
+window.createImageThumbnail = function(imageUrl, index) {
+    return `
+        <div class="gallery-image-item" data-index="${index}" style="width:100%; height:100%;">
+            <img src="${imageUrl}" 
+                 style="width:100%; height:100%; object-fit:cover;"
+                 onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+        </div>
+    `;
+};
+
 // ========== FUNÇÃO PARA ABRIR VÍDEO EM LOOP ==========
-window.openVideo = function(videoUrl) {
+window.openVideoFromGallery = function(videoUrl, index) {
     if (videoUrl) {
-        // Criar modal específico para vídeo com loop
-        showVideoModal(videoUrl);
+        showVideoModal(videoUrl, index);
     }
 };
 
 // ========== MODAL DE VÍDEO COM LOOP E CONTROLES ==========
-function showVideoModal(videoUrl) {
-    // Verificar se já existe um modal de vídeo
+function showVideoModal(videoUrl, index) {
     let videoModal = document.getElementById('videoLoopModal');
     
     if (!videoModal) {
@@ -112,7 +122,6 @@ function showVideoModal(videoUrl) {
         `;
         document.body.appendChild(videoModal);
         
-        // Eventos dos botões
         const closeBtn = document.getElementById('closeVideoModal');
         const pauseBtn = document.getElementById('pauseVideoBtn');
         const playBtn = document.getElementById('playVideoBtn');
@@ -149,7 +158,6 @@ function showVideoModal(videoUrl) {
             };
         }
         
-        // Fechar ao clicar fora
         videoModal.onclick = function(e) {
             if (e.target === videoModal) {
                 if (video) {
@@ -161,7 +169,6 @@ function showVideoModal(videoUrl) {
             }
         };
         
-        // Prevenir que o clique no vídeo feche o modal
         const videoContainer = videoModal.querySelector('div[style*="position:relative"]');
         if (videoContainer) {
             videoContainer.onclick = function(e) {
@@ -170,29 +177,22 @@ function showVideoModal(videoUrl) {
         }
     }
     
-    // Configurar e abrir o vídeo
     const video = document.getElementById('loopVideo');
     if (video) {
-        // Parar vídeo anterior se existir
         video.pause();
         video.src = '';
         
-        // Carregar novo vídeo
         const source = video.querySelector('source');
         if (source) {
             source.src = videoUrl;
         }
         video.load();
-        
-        // Garantir loop ativado
         video.loop = true;
         
-        // Tentar reproduzir automaticamente
         const playPromise = video.play();
         if (playPromise !== undefined) {
             playPromise.catch(error => {
                 console.log('⚠️ Autoplay bloqueado pelo navegador:', error);
-                // Mostrar mensagem para o usuário clicar
                 const playBtn = document.getElementById('playVideoBtn');
                 if (playBtn) {
                     playBtn.style.animation = 'pulse 1s infinite';
@@ -205,40 +205,57 @@ function showVideoModal(videoUrl) {
     document.body.style.overflow = 'hidden';
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria no card do imóvel ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria MANTENDO A ORDEM ORIGINAL ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+    
+    // IMPORTANTE: Manter a ordem EXATA como está no banco de dados
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
+    const totalMediaCount = allMediaUrls.length;
+    const hasVideos = allMediaUrls.some(url => window.isVideoUrl(url));
     
-    // Separar imagens e vídeos (ambos serão exibidos!)
-    const imageUrls = allMediaUrls.filter(url => !window.isVideoUrl(url));
-    const videoUrls = allMediaUrls.filter(url => window.isVideoUrl(url));
-    
-    // COMBINAR: Imagens primeiro, depois vídeos (ou manter ordem original)
-    const allDisplayMedia = [...imageUrls, ...videoUrls];
-    const totalMediaCount = allDisplayMedia.length;
-    const hasVideos = videoUrls.length > 0;
-    
-    const firstMediaUrl = allDisplayMedia.length > 0 ? allDisplayMedia[0] : 
+    // Primeiro item da lista (respeitando ordem original)
+    const firstMediaUrl = allMediaUrls.length > 0 ? allMediaUrls[0] : 
         'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
     
-    // Verificar se o primeiro item é vídeo
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     
-    // Se for vídeo, mostrar thumbnail especial
-    if (firstIsVideo && allDisplayMedia.length === 1) {
-        // Apenas vídeo, sem imagens
+    // Gerar HTML dos dots (indicadores) baseado na ordem original
+    const dotsHtml = allMediaUrls.map((url, idx) => {
+        const isVideo = window.isVideoUrl(url);
+        const icon = isVideo ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
+        return `
+            <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
+                 data-index="${idx}"
+                 data-is-video="${isVideo}"
+                 data-url="${url}"
+                 onclick="event.stopPropagation(); event.preventDefault(); showGalleryMedia(${property.id}, ${idx})"
+                 style="${isVideo ? 'background:#9b59b6;' : ''}">
+                ${icon}
+            </div>
+        `;
+    }).join('');
+    
+    // Se for apenas um item (seja vídeo ou imagem)
+    if (totalMediaCount === 1) {
+        const isVideo = firstIsVideo;
+        
         return `
             <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-                <div class="property-gallery-container" onclick="openVideo('${firstMediaUrl}')" style="cursor:pointer;">
-                    ${window.createVideoThumbnail(firstMediaUrl, 0)}
+                <div class="property-gallery-container" 
+                     onclick="${isVideo ? `openVideoFromGallery('${firstMediaUrl}', 0)` : `openGallery(${property.id})`}" 
+                     style="cursor:pointer;">
+                    ${isVideo ? 
+                        window.createVideoThumbnail(firstMediaUrl, 0) :
+                        window.createImageThumbnail(firstMediaUrl, 0)
+                    }
                 </div>
                 
                 ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
                 
-                <div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
+                ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                     <i class="fas fa-video"></i> Tem vídeo
-                </div>
+                </div>` : ''}
                 
                 ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                     `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id})"
@@ -248,28 +265,24 @@ window.createPropertyGallery = function(property) {
                     </button>` : ''}
                 
                 <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                    <i class="fas fa-video"></i> ${totalMediaCount}
+                    ${hasVideos ? '<i class="fas fa-video"></i>' : '<i class="fas fa-image"></i>'} ${totalMediaCount}
                 </div>
             </div>`;
     }
     
-    // Caso normal: imagens + vídeos (múltiplos itens)
+    // Múltiplos itens (respeitando ordem original)
     return `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-            <div class="property-gallery-container" onclick="openGallery(${property.id})">
+            <div class="property-gallery-container" onclick="openGallery(${property.id})" style="cursor:pointer;">
                 ${firstIsVideo ? 
                     window.createVideoThumbnail(firstMediaUrl, 0) :
-                    `<img src="${firstMediaUrl}" class="property-gallery-image" alt="${property.title}"
-                         onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">`
+                    window.createImageThumbnail(firstMediaUrl, 0)
                 }
                 
                 <div class="gallery-indicator-mobile"><i class="fas fa-${hasVideos ? 'video' : 'images'}"></i><span>${totalMediaCount}</span></div>
                 
-                <div class="gallery-controls">
-                    ${allDisplayMedia.map((_, idx) => `
-                        <div class="gallery-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"
-                             onclick="event.stopPropagation(); event.preventDefault(); showGalleryMedia(${property.id}, ${idx})"></div>
-                    `).join('')}
+                <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
+                    ${dotsHtml}
                 </div>
                 
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGallery(${property.id})">
@@ -292,7 +305,7 @@ window.createPropertyGallery = function(property) {
         </div>`;
 };
 
-// ========== ABRIR GALERIA (MOSTRANDO IMAGENS E VÍDEOS) ==========
+// ========== ABRIR GALERIA (RESPEITANDO ORDEM ORIGINAL) ==========
 window.openGallery = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -300,10 +313,10 @@ window.openGallery = function(propertyId) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     if (!hasImages) return;
     
+    // Manter a ordem EXATA do banco de dados
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     
-    // Manter TODOS os arquivos (imagens E vídeos) para navegação
-    window.currentGalleryImages = allMedia;
+    window.currentGalleryImages = allMedia;  // Ordem original preservada
     window.currentGalleryIndex = 0;
     
     let galleryModal = document.getElementById('propertyGalleryModal');
@@ -329,7 +342,6 @@ window.openGallery = function(propertyId) {
                      ontouchend="handleTouchEnd(event)"></div>
                 
                 <div id="galleryCurrentMedia" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
-                    <!-- Conteúdo será inserido dinamicamente -->
                 </div>
                 
                 <div style="position:fixed; bottom:20px; left:0; right:0; display:flex; justify-content:center; gap:20px; z-index:200001;">
@@ -355,7 +367,7 @@ window.openGallery = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL COM MÍDIA CORRETA ==========
+// ========== ATUALIZAR MODAL (RESPEITANDO ORDEM) ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -366,7 +378,6 @@ function updateGalleryModalMedia() {
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
-        // Vídeo: mostrar player com loop e controles
         container.innerHTML = `
             <div style="position:relative; width:90%; max-width:900px; background:#000; border-radius:12px; overflow:hidden;">
                 <video id="galleryVideo" 
@@ -385,7 +396,6 @@ function updateGalleryModalMedia() {
             </div>
         `;
         
-        // Garantir que o vídeo tenha loop ativado e tente tocar
         const video = document.getElementById('galleryVideo');
         if (video) {
             video.loop = true;
@@ -397,7 +407,6 @@ function updateGalleryModalMedia() {
             }
         }
     } else {
-        // Imagem: mostrar imagem
         container.innerHTML = `
             <img src="${currentUrl}" class="gallery-modal-image" 
                  alt="Imagem ${window.currentGalleryIndex + 1}"
@@ -411,7 +420,7 @@ function updateGalleryModalMedia() {
     }
 }
 
-// ========== MOSTRAR MÍDIA ESPECÍFICA NO CARD ==========
+// ========== MOSTRAR MÍDIA ESPECÍFICA (RESPEITANDO ORDEM) ==========
 window.showGalleryMedia = function(propertyId, index) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -427,30 +436,38 @@ window.showGalleryMedia = function(propertyId, index) {
     
     const container = document.querySelector(`[onclick="openGallery(${propertyId})"]`);
     if (container) {
-        const img = container.querySelector('.property-gallery-image');
-        const videoContainer = container.querySelector('.gallery-video-item');
-        
-        if (isVideo && videoContainer) {
-            // Atualizar o data-video-url
-            videoContainer.setAttribute('data-video-url', mediaUrl);
-            videoContainer.setAttribute('onclick', `openVideo('${mediaUrl}')`);
-        } else if (!isVideo && img) {
-            img.src = mediaUrl;
-            img.onerror = function() {
-                this.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
-            };
+        // Atualizar a visualização principal
+        const mainContent = container.querySelector('.property-gallery-container > div:first-child');
+        if (mainContent) {
+            if (isVideo) {
+                // Substituir por thumbnail de vídeo
+                mainContent.outerHTML = window.createVideoThumbnail(mediaUrl, index);
+            } else {
+                // Substituir por imagem
+                const imgElement = mainContent.querySelector('img');
+                if (imgElement) {
+                    imgElement.src = mediaUrl;
+                } else {
+                    mainContent.outerHTML = window.createImageThumbnail(mediaUrl, index);
+                }
+            }
         }
         
+        // Atualizar dots
         const dots = container.querySelectorAll('.gallery-dot');
         dots.forEach((dot, i) => {
             dot.classList.toggle('active', i === index);
+            if (window.isVideoUrl(allMedia[i])) {
+                dot.style.background = '#9b59b6';
+            } else {
+                dot.style.background = '';
+            }
         });
     }
 };
 
 // ========== NAVEGAÇÃO ==========
 window.nextGalleryImage = function() {
-    // Parar vídeo atual se existir
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) {
         currentVideo.pause();
@@ -462,7 +479,6 @@ window.nextGalleryImage = function() {
 };
 
 window.prevGalleryImage = function() {
-    // Parar vídeo atual se existir
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) {
         currentVideo.pause();
@@ -475,7 +491,6 @@ window.prevGalleryImage = function() {
 
 // ========== FECHAR GALERIA ==========
 window.closeGallery = function() {
-    // Parar vídeo se estiver tocando
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) {
         currentVideo.pause();
@@ -490,7 +505,6 @@ window.closeGallery = function() {
         window.currentGalleryIndex = 0;
     }
     
-    // Também fechar modal de vídeo se estiver aberto
     const videoModal = document.getElementById('videoLoopModal');
     if (videoModal && videoModal.style.display === 'flex') {
         const video = document.getElementById('loopVideo');
@@ -544,7 +558,7 @@ window.setupGalleryEvents = function() {
     });
 };
 
-// Adicionar CSS para animação do botão
+// CSS para animação
 const style = document.createElement('style');
 style.textContent = `
     @keyframes pulse {
@@ -555,4 +569,4 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-console.log('✅ gallery.js carregado - Vídeos em LOOP automático!');
+console.log('✅ gallery.js carregado - Ordem original preservada! Vídeos respeitam posição no cadastro.');
