@@ -1,5 +1,5 @@
-// js/modules/media/media-unified.js - VERSÃO COMPLETA E FUNCIONAL COM EXCLUSÃO FÍSICA
-console.log('🔄 media-unified.js - VERSÃO COMPLETA E FUNCIONAL');
+// js/modules/media/media-unified.js - VERSÃO COMPLETA E FUNCIONAL COM SUPORTE A VÍDEOS
+console.log('🔄 media-unified.js - VERSÃO COMPLETA COM SUPORTE A VÍDEOS');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -83,6 +83,9 @@ const MediaSystem = {
                     finalUrl = this.reconstructSupabaseUrl(url) || url;
                 }
                 
+                // Detectar se é vídeo
+                const isVideo = this.isVideoUrl(finalUrl);
+                
                 return {
                     url: finalUrl,
                     preview: finalUrl,
@@ -91,7 +94,8 @@ const MediaSystem = {
                     type: this.getFileTypeFromUrl(url),
                     isExisting: true,
                     markedForDeletion: false,
-                    isNew: false  // Importante: arquivos existentes NÃO são novos
+                    isNew: false,  // Importante: arquivos existentes NÃO são novos
+                    isVideo: isVideo  // NOVO: flag para identificar vídeos
                 };
             });
         }
@@ -114,9 +118,20 @@ const MediaSystem = {
             }));
         }
         
-        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns), ${this.state.existingPdfs.length} PDF(s)`);
+        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
         this.updateUI();
         return this;
+    },
+
+    // ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO POR URL ==========
+    isVideoUrl: function(url) {
+        if (!url) return false;
+        const urlLower = url.toLowerCase();
+        return urlLower.includes('.mp4') || 
+               urlLower.includes('.mov') || 
+               urlLower.includes('.webm') || 
+               urlLower.includes('.avi') ||
+               urlLower.includes('video/');
     },
 
     // ========== ADICIONAR NOVOS ARQUIVOS ==========
@@ -162,6 +177,7 @@ const MediaSystem = {
             console.log(`✅ Adicionado NOVO arquivo: "${file.name}"`, {
                 isNew: true,
                 hasFile: true,
+                isVideo: isVideo,
                 size: Math.round(file.size/1024) + 'KB'
             });
             
@@ -174,10 +190,36 @@ const MediaSystem = {
         return addedCount;
     },
 
-    // ========== FUNÇÃO DE PREVIEW ==========
+    // ========== FUNÇÃO DE PREVIEW ATUALIZADA COM SUPORTE A VÍDEOS ==========
     getMediaPreviewHTML: function(item) {
         const displayName = item.name || 'Arquivo';
         const shortName = displayName.length > 20 ? displayName.substring(0, 17) + '...' : displayName;
+        
+        // NOVO: Verificar se é VÍDEO (prioridade máxima)
+        const isVideoFile = item.isVideo === true || 
+                            (item.type && item.type.startsWith('video/')) || 
+                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/)) ||
+                            (item.url && this.isVideoUrl(item.url));
+        
+        // Obter URL do vídeo (prioridade: uploadedUrl > url > preview)
+        const videoUrl = item.uploadedUrl || item.url || item.preview;
+        
+        // Se for vídeo e tiver URL válida, renderizar player de vídeo
+        if (isVideoFile && videoUrl && !videoUrl.startsWith('blob:')) {
+            console.log(`🎬 Renderizando vídeo preview: ${displayName}`);
+            return `
+                <div style="width:100%;height:70px;position:relative;background:#000;">
+                    <video style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted>
+                        <source src="${videoUrl}" type="video/mp4">
+                        <source src="${videoUrl}" type="video/quicktime">
+                        Seu navegador não suporta vídeo.
+                    </video>
+                    <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.7);color:white;padding:2px 5px;border-radius:3px;font-size:0.6rem;">
+                        <i class="fas fa-video"></i> Vídeo
+                    </div>
+                </div>
+            `;
+        }
         
         // 1. Se for arquivo NOVO não enviado (tem BLOB URL)
         if (item.isNew && !item.uploaded && item.preview && item.preview.startsWith('blob:')) {
@@ -722,6 +764,7 @@ const MediaSystem = {
         }, 50);
     },
 
+    // ========== RENDER MEDIA PREVIEW ATUALIZADO COM SUPORTE A VÍDEOS ==========
     renderMediaPreview: function() {
         const container = document.getElementById('uploadPreview');
         if (!container) {
@@ -756,27 +799,22 @@ const MediaSystem = {
             const isNew = item.isNew;
             const isUploaded = item.uploaded;
             
+            // NOVO: Determinar se é vídeo para aplicar estilo diferente
+            const isVideo = item.isVideo === true || 
+                            (item.type && item.type.startsWith('video/')) || 
+                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/)) ||
+                            (item.url && this.isVideoUrl(item.url));
+            
             // Determinar status
-            let borderColor = '#3498db';
-            let bgColor = '#e8f4fc';
-            let statusText = 'Novo';
-            let statusColor = '#3498db';
+            let borderColor = isVideo ? '#9b59b6' : '#3498db';  // Roxo para vídeos, Azul para imagens
+            let bgColor = isVideo ? '#f4ecf7' : '#e8f4fc';
+            let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : (isUploaded ? 'Salvo' : ''));
+            let statusIcon = isVideo ? '<i class="fas fa-video"></i> ' : '<i class="fas fa-image"></i> ';
             
             if (isMarked) {
                 borderColor = '#e74c3c';
                 bgColor = '#ffebee';
                 statusText = 'Excluir';
-                statusColor = '#e74c3c';
-            } else if (isExisting) {
-                borderColor = '#27ae60';
-                bgColor = '#e8f8ef';
-                statusText = 'Existente';
-                statusColor = '#27ae60';
-            } else if (isUploaded) {
-                borderColor = '#9b59b6';
-                bgColor = '#f4ecf7';
-                statusText = 'Salvo';
-                statusColor = '#9b59b6';
             }
             
             const displayName = item.name || 'Arquivo';
@@ -795,7 +833,7 @@ const MediaSystem = {
                 
                 <div style="padding:5px;font-size:0.7rem;text-align:center;height:40px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
                     <span style="display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        ${shortName}
+                        ${statusIcon}${shortName}
                     </span>
                 </div>
                 
@@ -812,7 +850,7 @@ const MediaSystem = {
                     ${isMarked ? '↺' : '×'}
                 </button>
                 
-                <div style="position:absolute;bottom:2px;left:2px;background:${statusColor};color:white;font-size:0.5rem;padding:1px 3px;border-radius:2px;z-index:10;">
+                <div style="position:absolute;bottom:2px;left:2px;background:${borderColor};color:white;font-size:0.5rem;padding:1px 3px;border-radius:2px;z-index:10;">
                     ${statusText}
                 </div>
             </div>
@@ -1182,21 +1220,29 @@ const MediaSystem = {
         }
     },
 
+    // ========== FUNÇÃO GETFILETYPEFROMURL MELHORADA ==========
     getFileTypeFromUrl: function(url) {
         if (!url) return 'image/jpeg';
         
         const urlLower = url.toLowerCase();
         
+        // Verificar VÍDEOS primeiro (prioridade máxima)
+        if (urlLower.includes('.mp4') || 
+            urlLower.includes('.mov') || 
+            urlLower.includes('.webm') || 
+            urlLower.includes('.avi') ||
+            urlLower.includes('video/')) {
+            return 'video/mp4';
+        }
+        
+        // Depois imagens
         if (urlLower.includes('.jpg') || urlLower.includes('.jpeg') || 
             urlLower.includes('.png') || urlLower.includes('.gif') || 
             urlLower.includes('.webp') || urlLower.includes('image/')) {
             return 'image/jpeg';
         }
         
-        if (urlLower.includes('.mp4') || urlLower.includes('.mov') || urlLower.includes('video/')) {
-            return 'video/mp4';
-        }
-        
+        // PDFs
         if (urlLower.includes('.pdf') || urlLower.includes('application/pdf')) {
             return 'application/pdf';
         }
@@ -1243,7 +1289,7 @@ window.MediaSystem = MediaSystem;
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
-    console.log('✅ Sistema de mídia COMPLETO E FUNCIONAL pronto');
+    console.log('✅ Sistema de mídia COMPLETO COM SUPORTE A VÍDEOS pronto');
 }, 1000);
 
-console.log('✅ media-unified.js COMPLETO E FUNCIONAL carregado');
+console.log('✅ media-unified.js COMPLETO COM SUPORTE A VÍDEOS carregado');
