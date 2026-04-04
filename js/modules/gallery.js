@@ -1,9 +1,10 @@
-// js/modules/gallery.js - Sistema de galeria de fotos (CORE) - VÍDEOS VISÍVEIS
-console.log('🚀 gallery.js carregado - Versão com vídeos visíveis na galeria');
+// js/modules/gallery.js - Sistema de galeria de fotos (CORE) - COM LOOP DE VÍDEO
+console.log('🚀 gallery.js carregado - Versão com loop de vídeo');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
+window.currentVideoPlayer = null;  // Referência ao player de vídeo atual
 window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
@@ -45,12 +46,164 @@ window.createVideoThumbnail = function(videoUrl, index) {
     `;
 };
 
-// ========== FUNÇÃO PARA ABRIR VÍDEO ==========
+// ========== FUNÇÃO PARA ABRIR VÍDEO EM LOOP ==========
 window.openVideo = function(videoUrl) {
     if (videoUrl) {
-        window.open(videoUrl, '_blank');
+        // Criar modal específico para vídeo com loop
+        showVideoModal(videoUrl);
     }
 };
+
+// ========== MODAL DE VÍDEO COM LOOP E CONTROLES ==========
+function showVideoModal(videoUrl) {
+    // Verificar se já existe um modal de vídeo
+    let videoModal = document.getElementById('videoLoopModal');
+    
+    if (!videoModal) {
+        videoModal = document.createElement('div');
+        videoModal.id = 'videoLoopModal';
+        videoModal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 200000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(5px);
+        `;
+        videoModal.innerHTML = `
+            <div style="position:relative; max-width:90%; max-height:90%; background:#000; border-radius:12px; overflow:hidden; box-shadow:0 20px 40px rgba(0,0,0,0.5);">
+                <video id="loopVideo" 
+                       style="width:100%; max-height:80vh; display:block;"
+                       autoplay
+                       loop
+                       controls
+                       controlslist="nodownload">
+                    <source src="" type="video/mp4">
+                    <source src="" type="video/quicktime">
+                    Seu navegador não suporta vídeo.
+                </video>
+                <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem;">
+                    <i class="fas fa-sync-alt"></i> Modo loop ativado
+                </div>
+                <button id="closeVideoModal" 
+                        style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; border:none; width:40px; height:40px; border-radius:50%; cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center; transition:all 0.3s;">
+                    <i class="fas fa-times"></i>
+                </button>
+                <div style="position:absolute; bottom:10px; right:10px; display:flex; gap:8px;">
+                    <button id="pauseVideoBtn" 
+                            style="background:rgba(0,0,0,0.7); color:white; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; transition:all 0.3s;">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button id="playVideoBtn" 
+                            style="background:rgba(0,0,0,0.7); color:white; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; transition:all 0.3s;">
+                        <i class="fas fa-play"></i>
+                    </button>
+                    <button id="stopVideoBtn" 
+                            style="background:rgba(0,0,0,0.7); color:white; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer; transition:all 0.3s;">
+                        <i class="fas fa-stop"></i>
+                    </button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(videoModal);
+        
+        // Eventos dos botões
+        const closeBtn = document.getElementById('closeVideoModal');
+        const pauseBtn = document.getElementById('pauseVideoBtn');
+        const playBtn = document.getElementById('playVideoBtn');
+        const stopBtn = document.getElementById('stopVideoBtn');
+        const video = document.getElementById('loopVideo');
+        
+        if (closeBtn) {
+            closeBtn.onclick = function() {
+                if (video) {
+                    video.pause();
+                    video.src = '';
+                }
+                videoModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            };
+        }
+        
+        if (pauseBtn && video) {
+            pauseBtn.onclick = function() {
+                video.pause();
+            };
+        }
+        
+        if (playBtn && video) {
+            playBtn.onclick = function() {
+                video.play();
+            };
+        }
+        
+        if (stopBtn && video) {
+            stopBtn.onclick = function() {
+                video.pause();
+                video.currentTime = 0;
+            };
+        }
+        
+        // Fechar ao clicar fora
+        videoModal.onclick = function(e) {
+            if (e.target === videoModal) {
+                if (video) {
+                    video.pause();
+                    video.src = '';
+                }
+                videoModal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        };
+        
+        // Prevenir que o clique no vídeo feche o modal
+        const videoContainer = videoModal.querySelector('div[style*="position:relative"]');
+        if (videoContainer) {
+            videoContainer.onclick = function(e) {
+                e.stopPropagation();
+            };
+        }
+    }
+    
+    // Configurar e abrir o vídeo
+    const video = document.getElementById('loopVideo');
+    if (video) {
+        // Parar vídeo anterior se existir
+        video.pause();
+        video.src = '';
+        
+        // Carregar novo vídeo
+        const source = video.querySelector('source');
+        if (source) {
+            source.src = videoUrl;
+        }
+        video.load();
+        
+        // Garantir loop ativado
+        video.loop = true;
+        
+        // Tentar reproduzir automaticamente
+        const playPromise = video.play();
+        if (playPromise !== undefined) {
+            playPromise.catch(error => {
+                console.log('⚠️ Autoplay bloqueado pelo navegador:', error);
+                // Mostrar mensagem para o usuário clicar
+                const playBtn = document.getElementById('playVideoBtn');
+                if (playBtn) {
+                    playBtn.style.animation = 'pulse 1s infinite';
+                }
+            });
+        }
+    }
+    
+    videoModal.style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+}
 
 // ========== FUNÇÃO PRINCIPAL: Criar galeria no card do imóvel ==========
 window.createPropertyGallery = function(property) {
@@ -150,7 +303,6 @@ window.openGallery = function(propertyId) {
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     
     // Manter TODOS os arquivos (imagens E vídeos) para navegação
-    // Mas vídeos serão abertos em nova aba quando clicados
     window.currentGalleryImages = allMedia;
     window.currentGalleryIndex = 0;
     
@@ -160,24 +312,41 @@ window.openGallery = function(propertyId) {
         galleryModal = document.createElement('div');
         galleryModal.id = 'propertyGalleryModal';
         galleryModal.className = 'gallery-modal';
+        galleryModal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 199999;
+            display: none;
+        `;
         galleryModal.innerHTML = `
-            <div class="gallery-modal-content">
-                <div class="gallery-swipe-area" 
+            <div style="position:relative; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
+                <div class="gallery-swipe-area" style="position:absolute; top:0; left:0; width:100%; height:100%;"
                      ontouchstart="handleTouchStart(event)"
                      ontouchend="handleTouchEnd(event)"></div>
                 
-                <div id="galleryCurrentMedia" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                <div id="galleryCurrentMedia" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
                     <!-- Conteúdo será inserido dinamicamente -->
                 </div>
                 
-                <div class="gallery-modal-controls">
-                    <button class="gallery-modal-btn" onclick="prevGalleryImage()"><i class="fas fa-chevron-left"></i></button>
-                    <div id="galleryCounter" class="gallery-counter">1 / ${window.currentGalleryImages.length}</div>
-                    <button class="gallery-modal-btn" onclick="nextGalleryImage()"><i class="fas fa-chevron-right"></i></button>
+                <div style="position:fixed; bottom:20px; left:0; right:0; display:flex; justify-content:center; gap:20px; z-index:200001;">
+                    <button class="gallery-modal-btn" onclick="prevGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <div id="galleryCounter" class="gallery-counter" style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">1 / ${window.currentGalleryImages.length}</div>
+                    <button class="gallery-modal-btn" onclick="nextGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
                 
-                <button class="gallery-modal-close" onclick="closeGallery()"><i class="fas fa-times"></i></button>
-            </div>`;
+                <button class="gallery-modal-close" onclick="closeGallery()" style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.7); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; z-index:200001;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        `;
         document.body.appendChild(galleryModal);
     }
     
@@ -197,20 +366,36 @@ function updateGalleryModalMedia() {
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
-        // Vídeo: mostrar player com botão para abrir
+        // Vídeo: mostrar player com loop e controles
         container.innerHTML = `
-            <div style="position:relative; width:90%; max-width:800px; background:#000; border-radius:8px; overflow:hidden;">
-                <video style="width:100%; max-height:80vh;" controls preload="metadata">
+            <div style="position:relative; width:90%; max-width:900px; background:#000; border-radius:12px; overflow:hidden;">
+                <video id="galleryVideo" 
+                       style="width:100%; max-height:80vh; display:block;"
+                       autoplay
+                       loop
+                       controls
+                       controlslist="nodownload">
                     <source src="${currentUrl}" type="video/mp4">
                     <source src="${currentUrl}" type="video/quicktime">
                     Seu navegador não suporta vídeo.
                 </video>
-                <button onclick="window.open('${currentUrl}', '_blank')" 
-                        style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.8rem;">
-                    <i class="fas fa-external-link-alt"></i> Abrir em nova aba
-                </button>
+                <div style="position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.6); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem;">
+                    <i class="fas fa-sync-alt"></i> Repetindo automaticamente
+                </div>
             </div>
         `;
+        
+        // Garantir que o vídeo tenha loop ativado e tente tocar
+        const video = document.getElementById('galleryVideo');
+        if (video) {
+            video.loop = true;
+            const playPromise = video.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(error => {
+                    console.log('⚠️ Autoplay bloqueado:', error);
+                });
+            }
+        }
     } else {
         // Imagem: mostrar imagem
         container.innerHTML = `
@@ -246,7 +431,6 @@ window.showGalleryMedia = function(propertyId, index) {
         const videoContainer = container.querySelector('.gallery-video-item');
         
         if (isVideo && videoContainer) {
-            // Já está mostrando vídeo, apenas atualizar se necessário
             // Atualizar o data-video-url
             videoContainer.setAttribute('data-video-url', mediaUrl);
             videoContainer.setAttribute('onclick', `openVideo('${mediaUrl}')`);
@@ -266,12 +450,24 @@ window.showGalleryMedia = function(propertyId, index) {
 
 // ========== NAVEGAÇÃO ==========
 window.nextGalleryImage = function() {
+    // Parar vídeo atual se existir
+    const currentVideo = document.getElementById('galleryVideo');
+    if (currentVideo) {
+        currentVideo.pause();
+    }
+    
     if (window.currentGalleryImages.length === 0) return;
     window.currentGalleryIndex = (window.currentGalleryIndex + 1) % window.currentGalleryImages.length;
     updateGalleryModalMedia();
 };
 
 window.prevGalleryImage = function() {
+    // Parar vídeo atual se existir
+    const currentVideo = document.getElementById('galleryVideo');
+    if (currentVideo) {
+        currentVideo.pause();
+    }
+    
     if (window.currentGalleryImages.length === 0) return;
     window.currentGalleryIndex = (window.currentGalleryIndex - 1 + window.currentGalleryImages.length) % window.currentGalleryImages.length;
     updateGalleryModalMedia();
@@ -279,12 +475,30 @@ window.prevGalleryImage = function() {
 
 // ========== FECHAR GALERIA ==========
 window.closeGallery = function() {
+    // Parar vídeo se estiver tocando
+    const currentVideo = document.getElementById('galleryVideo');
+    if (currentVideo) {
+        currentVideo.pause();
+        currentVideo.src = '';
+    }
+    
     const galleryModal = document.getElementById('propertyGalleryModal');
     if (galleryModal) {
         galleryModal.style.display = 'none';
         document.body.style.overflow = 'auto';
         window.currentGalleryImages = [];
         window.currentGalleryIndex = 0;
+    }
+    
+    // Também fechar modal de vídeo se estiver aberto
+    const videoModal = document.getElementById('videoLoopModal');
+    if (videoModal && videoModal.style.display === 'flex') {
+        const video = document.getElementById('loopVideo');
+        if (video) {
+            video.pause();
+            video.src = '';
+        }
+        videoModal.style.display = 'none';
     }
 };
 
@@ -330,4 +544,15 @@ window.setupGalleryEvents = function() {
     });
 };
 
-console.log('✅ gallery.js carregado - Vídeos agora são visíveis na galeria!');
+// Adicionar CSS para animação do botão
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes pulse {
+        0% { transform: scale(1); background: rgba(0,0,0,0.7); }
+        50% { transform: scale(1.1); background: rgba(255,0,0,0.8); }
+        100% { transform: scale(1); background: rgba(0,0,0,0.7); }
+    }
+`;
+document.head.appendChild(style);
+
+console.log('✅ gallery.js carregado - Vídeos em LOOP automático!');
