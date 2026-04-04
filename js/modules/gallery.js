@@ -1,5 +1,5 @@
-// js/modules/gallery.js - Sistema de galeria de fotos (CORE) COM FILTRO DE VÍDEOS
-console.log('🚀 gallery.js carregado - Versão core com filtro de vídeos');
+// js/modules/gallery.js - Sistema de galeria de fotos (CORE) - VÍDEOS VISÍVEIS
+console.log('🚀 gallery.js carregado - Versão com vídeos visíveis na galeria');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -8,7 +8,7 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO ==========
+// ========== FUNÇÃO PARA DETECTAR VÍDEO ==========
 window.isVideoUrl = function(url) {
     if (!url) return false;
     const urlLower = url.toLowerCase();
@@ -18,31 +18,74 @@ window.isVideoUrl = function(url) {
            urlLower.includes('.avi');
 };
 
-// ========== FUNÇÕES ESSENCIAIS DA GALERIA ==========
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
+window.createVideoThumbnail = function(videoUrl, index) {
+    return `
+        <div class="gallery-video-item" 
+             data-video-url="${videoUrl}"
+             onclick="openVideo('${videoUrl}')"
+             style="position:relative; cursor:pointer;">
+            <div style="position:relative; width:100%; height:100%; background:#1a1a2e;">
+                <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
+                            background:rgba(0,0,0,0.7); border-radius:50%; width:50px; height:50px;
+                            display:flex; align-items:center; justify-content:center; z-index:10;">
+                    <i class="fas fa-play" style="color:white; font-size:24px; margin-left:4px;"></i>
+                </div>
+                <video style="width:100%; height:100%; object-fit:cover; filter:brightness(0.7);" 
+                       preload="metadata" muted>
+                    <source src="${videoUrl}" type="video/mp4">
+                    <source src="${videoUrl}" type="video/quicktime">
+                </video>
+                <div style="position:absolute; bottom:5px; right:5px; background:rgba(0,0,0,0.6); 
+                            color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
+                    <i class="fas fa-video"></i> Vídeo
+                </div>
+            </div>
+        </div>
+    `;
+};
 
-// Criar galeria no card do imóvel
+// ========== FUNÇÃO PARA ABRIR VÍDEO ==========
+window.openVideo = function(videoUrl) {
+    if (videoUrl) {
+        window.open(videoUrl, '_blank');
+    }
+};
+
+// ========== FUNÇÃO PRINCIPAL: Criar galeria no card do imóvel ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
     
-    // Filtrar apenas imagens (excluir vídeos)
+    // Separar imagens e vídeos (ambos serão exibidos!)
     const imageUrls = allMediaUrls.filter(url => !window.isVideoUrl(url));
     const videoUrls = allMediaUrls.filter(url => window.isVideoUrl(url));
     
-    const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+    // COMBINAR: Imagens primeiro, depois vídeos (ou manter ordem original)
+    const allDisplayMedia = [...imageUrls, ...videoUrls];
+    const totalMediaCount = allDisplayMedia.length;
+    const hasVideos = videoUrls.length > 0;
     
-    // Imagem única
-    if (imageUrls.length <= 1) {
+    const firstMediaUrl = allDisplayMedia.length > 0 ? allDisplayMedia[0] : 
+        'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+    
+    // Verificar se o primeiro item é vídeo
+    const firstIsVideo = window.isVideoUrl(firstMediaUrl);
+    
+    // Se for vídeo, mostrar thumbnail especial
+    if (firstIsVideo && allDisplayMedia.length === 1) {
+        // Apenas vídeo, sem imagens
         return `
             <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-                <div class="property-gallery-container" onclick="openGallery(${property.id})">
-                    <img src="${firstImageUrl}" class="property-gallery-image" alt="${property.title}"
-                         onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+                <div class="property-gallery-container" onclick="openVideo('${firstMediaUrl}')" style="cursor:pointer;">
+                    ${window.createVideoThumbnail(firstMediaUrl, 0)}
                 </div>
                 
                 ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
                 
-                ${property.has_video || videoUrls.length > 0 ? `<div class="video-indicator"><i class="fas fa-video"></i><span>TEM VÍDEO</span></div>` : ''}
+                <div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
+                    <i class="fas fa-video"></i> Tem vídeo
+                </div>
                 
                 ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                     `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id})"
@@ -51,23 +94,28 @@ window.createPropertyGallery = function(property) {
                         <i class="fas fa-file-pdf"></i>
                     </button>` : ''}
                 
-                ${imageUrls.length > 0 ? `<div class="image-count">${imageUrls.length}</div>` : ''}
+                <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
+                    <i class="fas fa-video"></i> ${totalMediaCount}
+                </div>
             </div>`;
     }
     
-    // Múltiplas imagens
+    // Caso normal: imagens + vídeos (múltiplos itens)
     return `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
             <div class="property-gallery-container" onclick="openGallery(${property.id})">
-                <img src="${firstImageUrl}" class="property-gallery-image" alt="${property.title}"
-                     onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+                ${firstIsVideo ? 
+                    window.createVideoThumbnail(firstMediaUrl, 0) :
+                    `<img src="${firstMediaUrl}" class="property-gallery-image" alt="${property.title}"
+                         onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">`
+                }
                 
-                <div class="gallery-indicator-mobile"><i class="fas fa-images"></i><span>${imageUrls.length}</span></div>
+                <div class="gallery-indicator-mobile"><i class="fas fa-${hasVideos ? 'video' : 'images'}"></i><span>${totalMediaCount}</span></div>
                 
                 <div class="gallery-controls">
-                    ${imageUrls.map((_, index) => `
-                        <div class="gallery-dot ${index === 0 ? 'active' : ''}" data-index="${index}"
-                             onclick="event.stopPropagation(); event.preventDefault(); showGalleryImage(${property.id}, ${index})"></div>
+                    ${allDisplayMedia.map((_, idx) => `
+                        <div class="gallery-dot ${idx === 0 ? 'active' : ''}" data-index="${idx}"
+                             onclick="event.stopPropagation(); event.preventDefault(); showGalleryMedia(${property.id}, ${idx})"></div>
                     `).join('')}
                 </div>
                 
@@ -78,7 +126,9 @@ window.createPropertyGallery = function(property) {
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
-            ${property.has_video || videoUrls.length > 0 ? `<div class="video-indicator"><i class="fas fa-video"></i><span>TEM VÍDEO</span></div>` : ''}
+            ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
+                <i class="fas fa-video"></i> Tem vídeo
+            </div>` : ''}
             
             ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                 `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
@@ -89,7 +139,7 @@ window.createPropertyGallery = function(property) {
         </div>`;
 };
 
-// Abrir galeria (com filtro de vídeos)
+// ========== ABRIR GALERIA (MOSTRANDO IMAGENS E VÍDEOS) ==========
 window.openGallery = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -97,24 +147,11 @@ window.openGallery = function(propertyId) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     if (!hasImages) return;
     
-    // Filtrar apenas arquivos de IMAGEM (excluir vídeos da galeria)
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     
-    // Separar imagens de vídeos
-    const imageUrls = allMedia.filter(url => !window.isVideoUrl(url));
-    const videoUrls = allMedia.filter(url => window.isVideoUrl(url));
-    
-    // Se não houver imagens, tentar usar o primeiro vídeo
-    if (imageUrls.length === 0 && videoUrls.length > 0) {
-        // Abrir vídeo diretamente em nova aba
-        window.open(videoUrls[0], '_blank');
-        return;
-    }
-    
-    // Se não houver imagens nem vídeos, sair
-    if (imageUrls.length === 0) return;
-    
-    window.currentGalleryImages = imageUrls; // Apenas imagens na galeria
+    // Manter TODOS os arquivos (imagens E vídeos) para navegação
+    // Mas vídeos serão abertos em nova aba quando clicados
+    window.currentGalleryImages = allMedia;
     window.currentGalleryIndex = 0;
     
     let galleryModal = document.getElementById('propertyGalleryModal');
@@ -129,9 +166,9 @@ window.openGallery = function(propertyId) {
                      ontouchstart="handleTouchStart(event)"
                      ontouchend="handleTouchEnd(event)"></div>
                 
-                <img id="galleryCurrentImage" class="gallery-modal-image" 
-                     src="${window.currentGalleryImages[0]}"
-                     alt="Imagem 1 de ${window.currentGalleryImages.length}">
+                <div id="galleryCurrentMedia" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;">
+                    <!-- Conteúdo será inserido dinamicamente -->
+                </div>
                 
                 <div class="gallery-modal-controls">
                     <button class="gallery-modal-btn" onclick="prevGalleryImage()"><i class="fas fa-chevron-left"></i></button>
@@ -142,33 +179,55 @@ window.openGallery = function(propertyId) {
                 <button class="gallery-modal-close" onclick="closeGallery()"><i class="fas fa-times"></i></button>
             </div>`;
         document.body.appendChild(galleryModal);
-    } else {
-        document.getElementById('galleryCurrentImage').src = window.currentGalleryImages[0];
-        document.getElementById('galleryCounter').textContent = `1 / ${window.currentGalleryImages.length}`;
     }
     
+    updateGalleryModalMedia();
     galleryModal.style.display = 'block';
     document.body.style.overflow = 'hidden';
+};
+
+// ========== ATUALIZAR MODAL COM MÍDIA CORRETA ==========
+function updateGalleryModalMedia() {
+    const container = document.getElementById('galleryCurrentMedia');
+    const counterElement = document.getElementById('galleryCounter');
     
-    setTimeout(() => {
-        const closeBtn = galleryModal.querySelector('.gallery-modal-close');
-        if (closeBtn) closeBtn.focus();
-    }, 100);
-};
-
-// Fechar galeria
-window.closeGallery = function() {
-    const galleryModal = document.getElementById('propertyGalleryModal');
-    if (galleryModal) {
-        galleryModal.style.display = 'none';
-        document.body.style.overflow = 'auto';
-        window.currentGalleryImages = [];
-        window.currentGalleryIndex = 0;
+    if (!container || !window.currentGalleryImages.length) return;
+    
+    const currentUrl = window.currentGalleryImages[window.currentGalleryIndex];
+    const isVideo = window.isVideoUrl(currentUrl);
+    
+    if (isVideo) {
+        // Vídeo: mostrar player com botão para abrir
+        container.innerHTML = `
+            <div style="position:relative; width:90%; max-width:800px; background:#000; border-radius:8px; overflow:hidden;">
+                <video style="width:100%; max-height:80vh;" controls preload="metadata">
+                    <source src="${currentUrl}" type="video/mp4">
+                    <source src="${currentUrl}" type="video/quicktime">
+                    Seu navegador não suporta vídeo.
+                </video>
+                <button onclick="window.open('${currentUrl}', '_blank')" 
+                        style="position:absolute; bottom:10px; right:10px; background:rgba(0,0,0,0.7); color:white; border:none; padding:8px 12px; border-radius:4px; cursor:pointer; font-size:0.8rem;">
+                    <i class="fas fa-external-link-alt"></i> Abrir em nova aba
+                </button>
+            </div>
+        `;
+    } else {
+        // Imagem: mostrar imagem
+        container.innerHTML = `
+            <img src="${currentUrl}" class="gallery-modal-image" 
+                 alt="Imagem ${window.currentGalleryIndex + 1}"
+                 style="max-width:90%; max-height:80vh; object-fit:contain;"
+                 onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+        `;
     }
-};
+    
+    if (counterElement) {
+        counterElement.textContent = `${window.currentGalleryIndex + 1} / ${window.currentGalleryImages.length}`;
+    }
+}
 
-// Mostrar imagem específica
-window.showGalleryImage = function(propertyId, index) {
+// ========== MOSTRAR MÍDIA ESPECÍFICA NO CARD ==========
+window.showGalleryMedia = function(propertyId, index) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
     
@@ -176,15 +235,23 @@ window.showGalleryImage = function(propertyId, index) {
     if (!hasImages) return;
     
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
-    const images = allMedia.filter(url => !window.isVideoUrl(url));
+    if (index < 0 || index >= allMedia.length) return;
     
-    if (index < 0 || index >= images.length) return;
+    const mediaUrl = allMedia[index];
+    const isVideo = window.isVideoUrl(mediaUrl);
     
     const container = document.querySelector(`[onclick="openGallery(${propertyId})"]`);
     if (container) {
         const img = container.querySelector('.property-gallery-image');
-        if (img) {
-            img.src = images[index];
+        const videoContainer = container.querySelector('.gallery-video-item');
+        
+        if (isVideo && videoContainer) {
+            // Já está mostrando vídeo, apenas atualizar se necessário
+            // Atualizar o data-video-url
+            videoContainer.setAttribute('data-video-url', mediaUrl);
+            videoContainer.setAttribute('onclick', `openVideo('${mediaUrl}')`);
+        } else if (!isVideo && img) {
+            img.src = mediaUrl;
             img.onerror = function() {
                 this.src = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
             };
@@ -197,32 +264,31 @@ window.showGalleryImage = function(propertyId, index) {
     }
 };
 
-// Navegação
+// ========== NAVEGAÇÃO ==========
 window.nextGalleryImage = function() {
     if (window.currentGalleryImages.length === 0) return;
     window.currentGalleryIndex = (window.currentGalleryIndex + 1) % window.currentGalleryImages.length;
-    updateGalleryModal();
+    updateGalleryModalMedia();
 };
 
 window.prevGalleryImage = function() {
     if (window.currentGalleryImages.length === 0) return;
     window.currentGalleryIndex = (window.currentGalleryIndex - 1 + window.currentGalleryImages.length) % window.currentGalleryImages.length;
-    updateGalleryModal();
+    updateGalleryModalMedia();
 };
 
-function updateGalleryModal() {
-    const imageElement = document.getElementById('galleryCurrentImage');
-    const counterElement = document.getElementById('galleryCounter');
-    
-    if (imageElement && counterElement) {
-        imageElement.src = window.currentGalleryImages[window.currentGalleryIndex];
-        counterElement.textContent = `${window.currentGalleryIndex + 1} / ${window.currentGalleryImages.length}`;
-        imageElement.style.opacity = '0';
-        setTimeout(() => imageElement.style.opacity = '1', 50);
+// ========== FECHAR GALERIA ==========
+window.closeGallery = function() {
+    const galleryModal = document.getElementById('propertyGalleryModal');
+    if (galleryModal) {
+        galleryModal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+        window.currentGalleryImages = [];
+        window.currentGalleryIndex = 0;
     }
-}
+};
 
-// Touch/Swipe
+// ========== TOUCH/SWIPE ==========
 window.handleTouchStart = function(event) {
     window.touchStartX = event.changedTouches[0].screenX;
     event.stopPropagation();
@@ -243,7 +309,7 @@ function handleSwipe() {
     }
 }
 
-// Configurar eventos
+// ========== CONFIGURAR EVENTOS ==========
 window.setupGalleryEvents = function() {
     document.addEventListener('click', function(event) {
         const galleryModal = document.getElementById('propertyGalleryModal');
@@ -262,19 +328,6 @@ window.setupGalleryEvents = function() {
             case 'Escape': event.preventDefault(); window.closeGallery(); break;
         }
     });
-    
-    document.addEventListener('touchstart', window.handleTouchStart, { passive: true });
-    document.addEventListener('touchend', window.handleTouchEnd, { passive: true });
-    
-    document.addEventListener('gesturestart', function(event) {
-        const galleryModal = document.getElementById('propertyGalleryModal');
-        if (galleryModal && galleryModal.style.display === 'block') event.preventDefault();
-    });
 };
 
-// Inicialização automática (chamada pelo main.js)
-if (typeof window.setupGalleryEvents === 'function') {
-    // A configuração será feita pelo main.js
-}
-
-console.log('✅ gallery.js core carregado com filtro de vídeos');
+console.log('✅ gallery.js carregado - Vídeos agora são visíveis na galeria!');
