@@ -1,5 +1,5 @@
-// js/modules/gallery.js - COM SETAS LIQUID GLASS E ABERTURA NA IMAGEM ATUAL
-console.log('🚀 gallery.js carregado - Setas Liquid Glass + abertura na imagem atual');
+// js/modules/gallery.js - COM CONTADOR DE VISUALIZAÇÕES (Classmorphism)
+console.log('🚀 gallery.js carregado - Com contador de visualizações Classmorphism');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -17,6 +17,51 @@ window.isVideoUrl = function(url) {
            urlLower.includes('.webm') || 
            urlLower.includes('.avi');
 };
+
+// ========== FUNÇÃO PARA INCREMENTAR CONTADOR DE VISUALIZAÇÕES ==========
+window.incrementGalleryViews = function(propertyId) {
+    try {
+        // Recuperar contador atual do localStorage
+        const storageKey = `gallery_views_${propertyId}`;
+        let currentViews = parseInt(localStorage.getItem(storageKey)) || 0;
+        
+        // Incrementar
+        currentViews++;
+        localStorage.setItem(storageKey, currentViews);
+        
+        // Atualizar display se o card estiver visível
+        const viewsElement = document.querySelector(`[data-property-id="${propertyId}"] .gallery-views-counter span`);
+        if (viewsElement) {
+            viewsElement.textContent = formatViewCount(currentViews);
+        }
+        
+        return currentViews;
+    } catch (e) {
+        console.warn('Erro ao incrementar contador:', e);
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA OBTER CONTADOR DE VISUALIZAÇÕES ==========
+window.getGalleryViews = function(propertyId) {
+    try {
+        const storageKey = `gallery_views_${propertyId}`;
+        return parseInt(localStorage.getItem(storageKey)) || 0;
+    } catch (e) {
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA FORMATAR NÚMERO DE VISUALIZAÇÕES ==========
+function formatViewCount(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(1) + 'M';
+    }
+    if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'K';
+    }
+    return count.toString();
+}
 
 // ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
 window.createVideoThumbnail = function(videoUrl, index, propertyId) {
@@ -97,7 +142,7 @@ function getCurrentCardIndex(propertyId) {
     return 0;
 }
 
-// ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
+// ========== FUNÇÃO PARA NAVEGAR NA GALERIA ==========
 window.navigatePropertyGallery = function(propertyId, direction) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -108,21 +153,18 @@ window.navigatePropertyGallery = function(propertyId, direction) {
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     if (allMedia.length <= 1) return;
     
-    // Obter índice atual do card
     let currentIndex = getCurrentCardIndex(propertyId);
     
-    // Calcular novo índice
     if (direction === 'next') {
         currentIndex = (currentIndex + 1) % allMedia.length;
     } else {
         currentIndex = (currentIndex - 1 + allMedia.length) % allMedia.length;
     }
     
-    // Atualizar o card com a nova mídia
     updateCardMedia(propertyId, currentIndex);
 };
 
-// ========== FUNÇÃO PARA ATUALIZAR O CARD COM NOVA MÍDIA ==========
+// ========== FUNÇÃO PARA ATUALIZAR O CARD ==========
 function updateCardMedia(propertyId, newIndex) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -147,25 +189,22 @@ function updateCardMedia(propertyId, newIndex) {
         }
     }
     
-    // Atualizar dots
     const dots = galleryContainer.querySelectorAll('.gallery-dot');
     dots.forEach((dot, idx) => {
         dot.classList.toggle('active', idx === newIndex);
     });
     
-    // Atualizar contador mobile
     const mobileIndicator = galleryContainer.querySelector('.gallery-indicator-mobile span');
     if (mobileIndicator) {
         mobileIndicator.textContent = `${newIndex + 1}/${allMedia.length}`;
     }
     
-    // Atualizar o dataset com o novo índice
     if (galleryContainer) {
         galleryContainer.dataset.currentIndex = newIndex;
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria COM CLASSMORPHISM ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -178,6 +217,10 @@ window.createPropertyGallery = function(property) {
         'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
     
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
+    
+    // Obter contador de visualizações
+    const viewsCount = window.getGalleryViews(property.id);
+    const formattedViews = formatViewCount(viewsCount);
     
     // Gerar dots
     const dotsHtml = allMediaUrls.map((url, idx) => {
@@ -193,10 +236,22 @@ window.createPropertyGallery = function(property) {
         `;
     }).join('');
     
-    // Gerar setas de navegação (Liquid Glass)
+    // Gerar setas de navegação
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    // IMPORTANTE: onclick do container agora passa o índice atual
+    // CSS Classmorphism para os contadores
+    const classmorphismStyle = `
+        background: rgba(0, 0, 0, 0.5);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        padding: 4px 10px;
+        font-size: 0.7rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    `;
+    
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
@@ -214,48 +269,51 @@ window.createPropertyGallery = function(property) {
                 <!-- SETAS LIQUID GLASS -->
                 ${arrowsHtml}
                 
-                <!-- INDICADOR MOBILE -->
-                <div class="gallery-indicator-mobile">
-                    <i class="fas fa-images"></i>
+                <!-- CONTADOR DE IMAGENS (SUPERIOR - Classmorphism) -->
+                <div class="gallery-indicator-mobile" style="position:absolute; top:10px; right:10px; ${classmorphismStyle} z-index:20;">
+                    <i class="fas fa-images" style="margin-right:4px;"></i>
                     <span>1/${totalMediaCount}</span>
+                </div>
+                
+                <!-- CONTADOR DE VISUALIZAÇÕES (INFERIOR DIREITO - Classmorphism) -->
+                <div class="gallery-views-counter" style="position:absolute; bottom:10px; right:10px; ${classmorphismStyle} z-index:20;">
+                    <i class="fas fa-eye" style="margin-right:4px;"></i>
+                    <span>${formattedViews}</span>
                 </div>
                 
                 <!-- DOTS (indicadores) -->
                 ${totalMediaCount > 1 ? `
-                    <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
+                    <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; position:absolute; bottom:10px; left:0; right:0;">
                         ${dotsHtml}
                     </div>
                 ` : ''}
                 
                 <!-- ÍCONE EXPANDIR -->
-                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
-                    <i class="fas fa-expand"></i>
+                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
+                     style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:20;">
+                    <i class="fas fa-expand" style="color:white; font-size:14px;"></i>
                 </div>
             </div>
             
-            ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+            ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="position:absolute; top:10px; left:50px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 10px; font-size:0.7rem; color:white; z-index:20;">${property.badge}</div>` : ''}
             
-            ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
+            ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:50px; left:10px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:20px; padding:4px 8px; font-size:0.6rem; z-index:20; color:white;">
                 <i class="fas fa-video"></i> Vídeo
             </div>` : ''}
             
             ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                 `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
-                    style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.15);"
+                    style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.5); backdrop-filter:blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; transition: all 0.3s ease; z-index: 15;"
                     title="Documentos do imóvel (senha: doc123)">
                     <i class="fas fa-file-pdf"></i>
                 </button>` : ''}
-            
-            <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                <i class="fas fa-images"></i> ${totalMediaCount}
-            </div>
         </div>
     `;
     
     return containerHtml;
 };
 
-// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual ==========
+// ========== ABRIR GALERIA NA IMAGEM ATUAL ==========
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -263,14 +321,14 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     if (!hasImages) return;
     
-    const allMedia = property.images.split(',').filter(url => url.trim() !== '');
+    // INCREMENTAR CONTADOR DE VISUALIZAÇÕES
+    window.incrementGalleryViews(propertyId);
     
-    // Obter o índice atual do card
+    const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     const currentIndex = getCurrentCardIndex(propertyId);
     
-    // Configurar a galeria para abrir no índice atual
     window.currentGalleryImages = allMedia;
-    window.currentGalleryIndex = currentIndex;  // ÍNDICE CORRETO!
+    window.currentGalleryIndex = currentIndex;
     
     let galleryModal = document.getElementById('propertyGalleryModal');
     
@@ -313,7 +371,6 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
         `;
         document.body.appendChild(galleryModal);
     } else {
-        // Atualizar contador se o modal já existir
         const counterElement = document.getElementById('galleryCounter');
         if (counterElement) {
             counterElement.textContent = `${currentIndex + 1} / ${window.currentGalleryImages.length}`;
@@ -325,7 +382,7 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL (APROVEITAMENTO TOTAL DO ESPAÇO) ==========
+// ========== ATUALIZAR MODAL ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -400,7 +457,6 @@ window.closeGallery = function() {
     if (galleryModal) {
         galleryModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        // Não resetar os arrays para manter referência
     }
 };
 
@@ -437,7 +493,6 @@ window.setupGalleryEvents = function() {
         }
     });
     
-    // Adicionar CSS hover para as setas
     const style = document.createElement('style');
     style.textContent = `
         .gallery-nav-arrow:hover {
@@ -448,11 +503,18 @@ window.setupGalleryEvents = function() {
         .gallery-nav-arrow:active {
             transform: translateY(-50%) scale(0.95) !important;
         }
+        .gallery-views-counter, .gallery-indicator-mobile, .gallery-expand-icon, .pdf-access, .video-indicator, .property-badge {
+            transition: all 0.3s ease;
+        }
+        .gallery-views-counter:hover, .gallery-indicator-mobile:hover, .gallery-expand-icon:hover, .pdf-access:hover {
+            background: rgba(0, 0, 0, 0.7) !important;
+            transform: scale(1.05);
+        }
     `;
     document.head.appendChild(style);
 };
 
-// Manter compatibilidade com a função antiga (se necessário)
+// Manter compatibilidade
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Abertura na imagem atual corrigida!');
+console.log('✅ gallery.js carregado - Contador de visualizações Classmorphism implementado!');
