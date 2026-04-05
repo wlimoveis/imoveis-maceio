@@ -35,16 +35,53 @@ window.ensureSupabaseCredentials = function() {
 };
 
 // ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPPORT SYSTEM) ==========
-// Fallback inline MÍNIMO - usado apenas se Support System não estiver disponível
+// Fallback inline MELHORADO - gera estrutura compatível com gallery.js
 class MinimalTemplateEngine {
     generate(property) {
-        // Fallback mais básico possível: preserva dados essenciais e estrutura DOM
-        const displayFeatures = (window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '');
+        // Extrair primeira imagem (se existir)
+        const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
+        let firstImageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
         
+        if (hasImages) {
+            const imageUrls = property.images.split(',').filter(url => url && url.trim());
+            if (imageUrls.length > 0) {
+                firstImageUrl = imageUrls[0];
+            }
+        }
+        
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
+        
+        // Gerar estrutura COMPATÍVEL com gallery.js
         return `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image" style="height: 200px; background: linear-gradient(135deg, #1a5276, #2980b9); display: flex; align-items: center; justify-content: center; color: white;">
-                    <i class="fas fa-home" style="font-size: 3rem; opacity: 0.7;"></i>
+                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
+                    <!-- ESTRUTURA QUE O gallery.js ESPERA -->
+                    <div class="property-gallery-container" onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="cursor:pointer; position:relative; width:100%; height:100%;">
+                        <img src="${firstImageUrl}" 
+                             style="width:100%; height:100%; object-fit:cover;"
+                             alt="${property.title || 'Imóvel'}"
+                             onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+                        
+                        ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+                        
+                        ${hasVideo ? `
+                            <div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
+                                <i class="fas fa-video"></i> Vídeo
+                            </div>
+                        ` : ''}
+                        
+                        ${hasPdfs ? `
+                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; z-index: 15;">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
+                        ` : ''}
+                        
+                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    </div>
                 </div>
                 <div class="property-content">
                     <div class="property-price" data-price-field>${property.price || 'Preço sob consulta'}</div>
@@ -67,7 +104,7 @@ class MinimalTemplateEngine {
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`⚠️ [Fallback] Atualização parcial não disponível, recarregando todos os cards para ${propertyId}`);
+        console.log(`⚠️ [Fallback] Recarregando cards para atualizar ${propertyId}`);
         if (typeof window.renderProperties === 'function') {
             window.renderProperties(window.currentFilter || 'todos', true);
             return true;
@@ -76,7 +113,6 @@ class MinimalTemplateEngine {
     }
     
     clearCache() {
-        console.log('🧹 [Fallback] Cache limpo (sem efeito - fallback mínimo)');
         return 0;
     }
 }
