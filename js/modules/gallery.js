@@ -1,5 +1,5 @@
-// js/modules/gallery.js - COM SETAS LIQUID GLASS E ABERTURA NA IMAGEM ATUAL
-console.log('🚀 gallery.js carregado - Setas Liquid Glass + abertura na imagem atual');
+// js/modules/gallery.js - COM SETAS LIQUID GLASS E CONTADOR DE VISITAS GLASSMORPHISM
+console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador de Visitas Glassmorphism');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -165,7 +165,51 @@ function updateCardMedia(propertyId, newIndex) {
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS ==========
+// ========== FUNÇÃO PARA REGISTRAR VISUALIZAÇÃO ==========
+window.registerGalleryView = function(propertyId) {
+    try {
+        // Recuperar visualizações existentes do localStorage
+        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        
+        // Incrementar contagem para este imóvel
+        views[propertyId] = (views[propertyId] || 0) + 1;
+        
+        // Salvar de volta no localStorage
+        localStorage.setItem('galleryViews', JSON.stringify(views));
+        
+        // Atualizar contador na UI
+        updateViewCounter(propertyId, views[propertyId]);
+        
+        return views[propertyId];
+    } catch (error) {
+        console.error('Erro ao registrar visualização:', error);
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA OBTER VISUALIZAÇÕES ==========
+window.getGalleryViews = function(propertyId) {
+    try {
+        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        return views[propertyId] || 0;
+    } catch (error) {
+        console.error('Erro ao obter visualizações:', error);
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA ATUALIZAR CONTADOR VISUAL ==========
+function updateViewCounter(propertyId, count) {
+    const propertyCard = document.querySelector(`[data-property-id="${propertyId}"]`);
+    if (!propertyCard) return;
+    
+    const viewCounter = propertyCard.querySelector('.gallery-view-counter');
+    if (viewCounter) {
+        viewCounter.innerHTML = `<i class="fas fa-eye"></i> ${count}`;
+    }
+}
+
+// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS E CONTADOR GLASSMORPHISM ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -173,6 +217,9 @@ window.createPropertyGallery = function(property) {
     const totalMediaCount = allMediaUrls.length;
     const hasVideos = allMediaUrls.some(url => window.isVideoUrl(url));
     const currentIndex = 0;
+    
+    // Obter contagem de visualizações
+    const viewCount = window.getGalleryViews(property.id);
     
     const firstMediaUrl = allMediaUrls.length > 0 ? allMediaUrls[0] : 
         'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
@@ -196,7 +243,32 @@ window.createPropertyGallery = function(property) {
     // Gerar setas de navegação (Liquid Glass)
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    // IMPORTANTE: onclick do container agora passa o índice atual
+    // CONTADOR DE VISUALIZAÇÕES COM GLASSMORPHISM (substitui o media-count)
+    const viewCounterHtml = `
+        <div class="gallery-view-counter" 
+             onclick="event.stopPropagation();"
+             style="position:absolute; bottom:10px; left:10px; 
+                    background: rgba(255, 255, 255, 0.25);
+                    backdrop-filter: blur(10px);
+                    -webkit-backdrop-filter: blur(10px);
+                    border-radius: 20px;
+                    border: 1px solid rgba(255, 255, 255, 0.3);
+                    padding: 6px 12px;
+                    font-size: 0.75rem;
+                    color: white;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                    gap: 6px;
+                    z-index: 20;
+                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                    transition: all 0.3s ease;
+                    cursor: default;">
+            <i class="fas fa-eye" style="font-size: 0.7rem;"></i>
+            <span>${viewCount}</span>
+        </div>
+    `;
+    
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
@@ -231,6 +303,9 @@ window.createPropertyGallery = function(property) {
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
                     <i class="fas fa-expand"></i>
                 </div>
+                
+                <!-- CONTADOR DE VISUALIZAÇÕES GLASSMORPHISM (substitui o media-count) -->
+                ${viewCounterHtml}
             </div>
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
@@ -245,17 +320,13 @@ window.createPropertyGallery = function(property) {
                     title="Documentos do imóvel (senha: doc123)">
                     <i class="fas fa-file-pdf"></i>
                 </button>` : ''}
-            
-            <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                <i class="fas fa-images"></i> ${totalMediaCount}
-            </div>
         </div>
     `;
     
     return containerHtml;
 };
 
-// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual ==========
+// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual COM REGISTRO DE VISUALIZAÇÃO ==========
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -264,6 +335,9 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     if (!hasImages) return;
     
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
+    
+    // REGISTRAR VISUALIZAÇÃO quando abrir a galeria
+    window.registerGalleryView(propertyId);
     
     // Obter o índice atual do card
     const currentIndex = getCurrentCardIndex(propertyId);
@@ -437,7 +511,7 @@ window.setupGalleryEvents = function() {
         }
     });
     
-    // Adicionar CSS hover para as setas
+    // Adicionar CSS hover para as setas e efeito no contador
     const style = document.createElement('style');
     style.textContent = `
         .gallery-nav-arrow:hover {
@@ -448,11 +522,40 @@ window.setupGalleryEvents = function() {
         .gallery-nav-arrow:active {
             transform: translateY(-50%) scale(0.95) !important;
         }
+        
+        /* Efeito hover para o contador Glassmorphism */
+        .gallery-view-counter:hover {
+            background: rgba(255, 255, 255, 0.35) !important;
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        
+        /* Animação suave para o contador */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        .gallery-view-counter i {
+            transition: transform 0.3s ease;
+        }
+        
+        .gallery-view-counter:hover i {
+            transform: scale(1.2);
+        }
     `;
     document.head.appendChild(style);
 };
 
+// Inicializar eventos quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', window.setupGalleryEvents);
+} else {
+    window.setupGalleryEvents();
+}
+
 // Manter compatibilidade com a função antiga (se necessário)
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Abertura na imagem atual corrigida!');
+console.log('✅ gallery.js carregado - Contador Glassmorphism implementado!');
