@@ -8,10 +8,6 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// COR CLASSMORPHISM (gradiente azul/rosa)
-const CLASSMORPHISM_COLOR = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
-const CLASSMORPHISM_BG = 'rgba(102, 126, 234, 0.85)';
-
 // ========== FUNÇÃO PARA DETECTAR VÍDEO ==========
 window.isVideoUrl = function(url) {
     if (!url) return false;
@@ -40,7 +36,7 @@ window.createVideoThumbnail = function(videoUrl, index, propertyId) {
                     <source src="${videoUrl}" type="video/mp4">
                     <source src="${videoUrl}" type="video/quicktime">
                 </video>
-                <div style="position:absolute; bottom:5px; right:5px; background:${CLASSMORPHISM_BG}; 
+                <div style="position:absolute; bottom:5px; right:5px; background:rgba(0,0,0,0.6); 
                             color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
                     <i class="fas fa-video"></i> Vídeo
                 </div>
@@ -99,42 +95,6 @@ function getCurrentCardIndex(propertyId) {
         return parseInt(cardContainer.dataset.currentIndex);
     }
     return 0;
-}
-
-// ========== FUNÇÃO PARA INCREMENTAR CONTADOR DE VISUALIZAÇÃO ==========
-function incrementGalleryViewCounter(propertyId) {
-    try {
-        // Recupera contador atual do localStorage ou inicializa
-        const storageKey = `gallery_views_${propertyId}`;
-        let currentViews = localStorage.getItem(storageKey);
-        let views = currentViews ? parseInt(currentViews) : 0;
-        
-        // Incrementa
-        views++;
-        localStorage.setItem(storageKey, views);
-        
-        // Atualiza display no card se existir
-        const viewCounterElement = document.querySelector(`[data-property-id="${propertyId}"] .gallery-view-counter`);
-        if (viewCounterElement) {
-            viewCounterElement.innerHTML = `<i class="fas fa-eye"></i> ${views}`;
-        }
-        
-        return views;
-    } catch(e) {
-        console.warn('Erro ao incrementar contador de visualização:', e);
-        return 0;
-    }
-}
-
-// ========== FUNÇÃO PARA OBTER CONTADOR DE VISUALIZAÇÃO ==========
-function getGalleryViewCount(propertyId) {
-    try {
-        const storageKey = `gallery_views_${propertyId}`;
-        const views = localStorage.getItem(storageKey);
-        return views ? parseInt(views) : 0;
-    } catch(e) {
-        return 0;
-    }
 }
 
 // ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
@@ -219,10 +179,7 @@ window.createPropertyGallery = function(property) {
     
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     
-    // Obter contador de visualizações atual
-    const currentViews = getGalleryViewCount(property.id);
-    
-    // Gerar dots com cor ClassMorphism
+    // Gerar dots
     const dotsHtml = allMediaUrls.map((url, idx) => {
         const isVideo = window.isVideoUrl(url);
         const icon = isVideo ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
@@ -230,7 +187,7 @@ window.createPropertyGallery = function(property) {
             <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
                  data-index="${idx}"
                  onclick="event.stopPropagation(); event.preventDefault(); updateCardMedia(${property.id}, ${idx})"
-                 style="background: ${isVideo ? CLASSMORPHISM_COLOR : 'rgba(255,255,255,0.5)'};">
+                 style="${isVideo ? 'background:#9b59b6;' : ''}">
                 ${icon}
             </div>
         `;
@@ -270,52 +227,35 @@ window.createPropertyGallery = function(property) {
                     </div>
                 ` : ''}
                 
-                <!-- CONTADOR DE VISUALIZAÇÃO DA GALERIA (SUBSTITUI O .media-count ANTERIOR) -->
-                <div class="gallery-view-counter" 
-                     style="position:absolute; bottom:5px; left:5px; 
-                            background: ${CLASSMORPHISM_BG};
-                            color:white; padding:3px 8px; border-radius:15px; 
-                            font-size:0.7rem; font-weight:500; z-index:15;
-                            backdrop-filter:blur(4px);
-                            box-shadow:0 1px 4px rgba(0,0,0,0.2);">
-                    <i class="fas fa-eye"></i> ${currentViews}
-                </div>
-                
-                <!-- ÍCONE EXPANDIR (COR CLASSMORPHISM) -->
-                <div class="gallery-expand-icon" 
-                     onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
-                     style="position:absolute; top:10px; right:10px; 
-                            background: ${CLASSMORPHISM_BG};
-                            width:32px; height:32px; border-radius:50%;
-                            display:flex; align-items:center; justify-content:center;
-                            cursor:pointer; transition:all 0.3s ease; z-index:20;
-                            backdrop-filter:blur(4px);
-                            box-shadow:0 2px 8px rgba(0,0,0,0.2);">
-                    <i class="fas fa-expand" style="color:white; font-size:14px;"></i>
+                <!-- ÍCONE EXPANDIR -->
+                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
+                    <i class="fas fa-expand"></i>
                 </div>
             </div>
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
-            ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:50px; background:${CLASSMORPHISM_BG}; color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20; backdrop-filter:blur(4px);">
+            ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                 <i class="fas fa-video"></i> Vídeo
             </div>` : ''}
             
             ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                 `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
-                    style="position: absolute; bottom: 2px; right: 35px; background: ${CLASSMORPHISM_BG}; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; transition: all 0.3s ease; z-index:15; backdrop-filter:blur(4px); box-shadow: 0 2px 6px rgba(0,0,0,0.3);"
+                    style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.15);"
                     title="Documentos do imóvel (senha: doc123)">
                     <i class="fas fa-file-pdf"></i>
                 </button>` : ''}
             
-            <!-- O ANTIGO .media-count FOI REMOVIDO E SUBSTITUÍDO PELO .gallery-view-counter ACIMA -->
+            <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
+                <i class="fas fa-images"></i> ${totalMediaCount}
+            </div>
         </div>
     `;
     
     return containerHtml;
 };
 
-// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual (com incremento de visualização) ==========
+// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual ==========
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -324,9 +264,6 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     if (!hasImages) return;
     
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
-    
-    // INCREMENTA CONTADOR DE VISUALIZAÇÃO AO ABRIR A GALERIA
-    const newViewCount = incrementGalleryViewCounter(propertyId);
     
     // Obter o índice atual do card
     const currentIndex = getCurrentCardIndex(propertyId);
@@ -363,13 +300,13 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
                     <button class="gallery-modal-btn" onclick="prevGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <div id="galleryCounter" class="gallery-counter" style="background:${CLASSMORPHISM_BG}; color:white; padding:12px 20px; border-radius:25px; font-size:16px; backdrop-filter:blur(4px);">${currentIndex + 1} / ${window.currentGalleryImages.length}</div>
+                    <div id="galleryCounter" class="gallery-counter" style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">${currentIndex + 1} / ${window.currentGalleryImages.length}</div>
                     <button class="gallery-modal-btn" onclick="nextGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
                         <i class="fas fa-chevron-right"></i>
                     </button>
                 </div>
                 
-                <button class="gallery-modal-close" onclick="closeGallery()" style="position:fixed; top:20px; right:20px; background:${CLASSMORPHISM_BG}; color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; z-index:200001; backdrop-filter:blur(4px);">
+                <button class="gallery-modal-close" onclick="closeGallery()" style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.7); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; z-index:200001;">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -463,6 +400,7 @@ window.closeGallery = function() {
     if (galleryModal) {
         galleryModal.style.display = 'none';
         document.body.style.overflow = 'auto';
+        // Não resetar os arrays para manter referência
     }
 };
 
@@ -510,14 +448,6 @@ window.setupGalleryEvents = function() {
         .gallery-nav-arrow:active {
             transform: translateY(-50%) scale(0.95) !important;
         }
-        .gallery-expand-icon:hover {
-            transform: scale(1.1);
-            background: rgba(102, 126, 234, 1) !important;
-        }
-        .gallery-view-counter {
-            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-            letter-spacing: 0.3px;
-        }
     `;
     document.head.appendChild(style);
 };
@@ -525,4 +455,4 @@ window.setupGalleryEvents = function() {
 // Manter compatibilidade com a função antiga (se necessário)
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Contador de visualização implementado com ClassMorphism!');
+console.log('✅ gallery.js carregado - Abertura na imagem atual corrigida!');
