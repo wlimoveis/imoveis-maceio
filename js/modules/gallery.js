@@ -1,5 +1,5 @@
-// js/modules/gallery.js - Vídeo integrado na galeria (mesmo comportamento das fotos)
-console.log('🚀 gallery.js carregado - Vídeo integrado na galeria como foto');
+// js/modules/gallery.js - Vídeo integrado na galeria (ÍCONE UNIFICADO)
+console.log('🚀 gallery.js carregado - Ícone unificado para todos os imóveis');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -107,8 +107,9 @@ window.createPropertyGallery = function(property) {
                         <i class="fas fa-file-pdf"></i>
                     </button>` : ''}
                 
+                <!-- ÍCONE UNIFICADO: SEMPRE USAR fa-images (nunca fa-video) -->
                 <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                    ${hasVideos ? '<i class="fas fa-video"></i>' : '<i class="fas fa-image"></i>'} ${totalMediaCount}
+                    <i class="fas fa-images"></i> ${totalMediaCount}
                 </div>
             </div>`;
     }
@@ -121,7 +122,8 @@ window.createPropertyGallery = function(property) {
                     window.createImageThumbnail(firstMediaUrl, 0)
                 }
                 
-                <div class="gallery-indicator-mobile"><i class="fas fa-${hasVideos ? 'video' : 'images'}"></i><span>${totalMediaCount}</span></div>
+                <!-- ÍCONE UNIFICADO: SEMPRE USAR fa-images (nunca fa-video) -->
+                <div class="gallery-indicator-mobile"><i class="fas fa-images"></i><span>${totalMediaCount}</span></div>
                 
                 <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
                     ${dotsHtml}
@@ -147,7 +149,7 @@ window.createPropertyGallery = function(property) {
         </div>`;
 };
 
-// ========== ABRIR GALERIA (VÍDEO INTEGRADO, SEM MODAL SEPARADO) ==========
+// ========== ABRIR GALERIA ==========
 window.openGallery = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -207,7 +209,7 @@ window.openGallery = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL (VÍDEO NO MESMO CONTAINER QUE FOTO) ==========
+// ========== ATUALIZAR MODAL ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -218,7 +220,6 @@ function updateGalleryModalMedia() {
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
-        // Vídeo no MESMO tamanho que as fotos (sem ampliação automática)
         container.innerHTML = `
             <div style="width:90%; max-width:900px; background:#000; border-radius:8px; overflow:hidden;">
                 <video id="galleryVideo" 
@@ -240,7 +241,6 @@ function updateGalleryModalMedia() {
             video.play().catch(e => console.log('Autoplay bloqueado:', e));
         }
     } else {
-        // Foto no mesmo padrão
         container.innerHTML = `
             <img src="${currentUrl}" 
                  style="max-width:90%; max-height:80vh; object-fit:contain; border-radius:8px;"
@@ -359,4 +359,4 @@ window.setupGalleryEvents = function() {
     });
 };
 
-console.log('✅ gallery.js carregado - Vídeo integrado na galeria (mesmo comportamento das fotos)!');
+console.log('✅ gallery.js carregado - Ícone unificado (fa-images) para todos os imóveis!');
