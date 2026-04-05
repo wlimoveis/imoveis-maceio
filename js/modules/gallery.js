@@ -1,5 +1,5 @@
-// js/modules/gallery.js - COM SETAS LIQUID GLASS NA IMAGEM PRINCIPAL
-console.log('🚀 gallery.js carregado - Com setas Liquid Glass na imagem principal');
+// js/modules/gallery.js - COM SETAS LIQUID GLASS E ABERTURA NA IMAGEM ATUAL
+console.log('🚀 gallery.js carregado - Setas Liquid Glass + abertura na imagem atual');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -58,7 +58,7 @@ window.createImageThumbnail = function(imageUrl, index) {
 
 // ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
 function createNavigationArrows(propertyId, totalItems, currentIndex) {
-    if (totalItems <= 1) return ''; // Não mostrar setas se só tem 1 item
+    if (totalItems <= 1) return '';
     
     return `
         <button class="gallery-nav-arrow gallery-nav-prev" 
@@ -88,6 +88,15 @@ function createNavigationArrows(propertyId, totalItems, currentIndex) {
     `;
 }
 
+// ========== FUNÇÃO PARA OBTER ÍNDICE ATUAL DO CARD ==========
+function getCurrentCardIndex(propertyId) {
+    const cardContainer = document.querySelector(`[data-property-id="${propertyId}"] .property-gallery-container`);
+    if (cardContainer && cardContainer.dataset.currentIndex) {
+        return parseInt(cardContainer.dataset.currentIndex);
+    }
+    return 0;
+}
+
 // ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
 window.navigatePropertyGallery = function(propertyId, direction) {
     const property = window.properties.find(p => p.id === propertyId);
@@ -100,11 +109,7 @@ window.navigatePropertyGallery = function(propertyId, direction) {
     if (allMedia.length <= 1) return;
     
     // Obter índice atual do card
-    let currentIndex = 0;
-    const cardContainer = document.querySelector(`[data-property-id="${propertyId}"] .property-gallery-container`);
-    if (cardContainer && cardContainer.dataset.currentIndex) {
-        currentIndex = parseInt(cardContainer.dataset.currentIndex);
-    }
+    let currentIndex = getCurrentCardIndex(propertyId);
     
     // Calcular novo índice
     if (direction === 'next') {
@@ -115,11 +120,6 @@ window.navigatePropertyGallery = function(propertyId, direction) {
     
     // Atualizar o card com a nova mídia
     updateCardMedia(propertyId, currentIndex);
-    
-    // Salvar índice atual
-    if (cardContainer) {
-        cardContainer.dataset.currentIndex = currentIndex;
-    }
 };
 
 // ========== FUNÇÃO PARA ATUALIZAR O CARD COM NOVA MÍDIA ==========
@@ -158,6 +158,11 @@ function updateCardMedia(propertyId, newIndex) {
     if (mobileIndicator) {
         mobileIndicator.textContent = `${newIndex + 1}/${allMedia.length}`;
     }
+    
+    // Atualizar o dataset com o novo índice
+    if (galleryContainer) {
+        galleryContainer.dataset.currentIndex = newIndex;
+    }
 }
 
 // ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS ==========
@@ -191,13 +196,13 @@ window.createPropertyGallery = function(property) {
     // Gerar setas de navegação (Liquid Glass)
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    // Container principal do card
-    const cardHtml = `
+    // IMPORTANTE: onclick do container agora passa o índice atual
+    const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
              data-property-id="${property.id}">
             <div class="property-gallery-container" 
-                 onclick="openGallery(${property.id})" 
+                 onclick="openGalleryAtCurrentIndex(${property.id})" 
                  style="cursor:pointer; position:relative;"
                  data-current-index="0">
                 
@@ -223,7 +228,7 @@ window.createPropertyGallery = function(property) {
                 ` : ''}
                 
                 <!-- ÍCONE EXPANDIR -->
-                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGallery(${property.id})">
+                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
                     <i class="fas fa-expand"></i>
                 </div>
             </div>
@@ -247,11 +252,11 @@ window.createPropertyGallery = function(property) {
         </div>
     `;
     
-    return cardHtml;
+    return containerHtml;
 };
 
-// ========== ABRIR GALERIA MODAL (mantido igual) ==========
-window.openGallery = function(propertyId) {
+// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual ==========
+window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
     
@@ -260,8 +265,12 @@ window.openGallery = function(propertyId) {
     
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     
+    // Obter o índice atual do card
+    const currentIndex = getCurrentCardIndex(propertyId);
+    
+    // Configurar a galeria para abrir no índice atual
     window.currentGalleryImages = allMedia;
-    window.currentGalleryIndex = 0;
+    window.currentGalleryIndex = currentIndex;  // ÍNDICE CORRETO!
     
     let galleryModal = document.getElementById('propertyGalleryModal');
     
@@ -291,7 +300,7 @@ window.openGallery = function(propertyId) {
                     <button class="gallery-modal-btn" onclick="prevGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
                         <i class="fas fa-chevron-left"></i>
                     </button>
-                    <div id="galleryCounter" class="gallery-counter" style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">1 / ${window.currentGalleryImages.length}</div>
+                    <div id="galleryCounter" class="gallery-counter" style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">${currentIndex + 1} / ${window.currentGalleryImages.length}</div>
                     <button class="gallery-modal-btn" onclick="nextGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
                         <i class="fas fa-chevron-right"></i>
                     </button>
@@ -303,6 +312,12 @@ window.openGallery = function(propertyId) {
             </div>
         `;
         document.body.appendChild(galleryModal);
+    } else {
+        // Atualizar contador se o modal já existir
+        const counterElement = document.getElementById('galleryCounter');
+        if (counterElement) {
+            counterElement.textContent = `${currentIndex + 1} / ${window.currentGalleryImages.length}`;
+        }
     }
     
     updateGalleryModalMedia();
@@ -356,11 +371,6 @@ function updateGalleryModalMedia() {
     }
 }
 
-// ========== MOSTRAR MÍDIA ESPECÍFICA (compatibilidade) ==========
-window.showGalleryMedia = function(propertyId, index) {
-    updateCardMedia(propertyId, index);
-};
-
 // ========== NAVEGAÇÃO MODAL ==========
 window.nextGalleryImage = function() {
     const currentVideo = document.getElementById('galleryVideo');
@@ -390,8 +400,7 @@ window.closeGallery = function() {
     if (galleryModal) {
         galleryModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        window.currentGalleryImages = [];
-        window.currentGalleryIndex = 0;
+        // Não resetar os arrays para manter referência
     }
 };
 
@@ -443,4 +452,7 @@ window.setupGalleryEvents = function() {
     document.head.appendChild(style);
 };
 
-console.log('✅ gallery.js carregado - Setas Liquid Glass na imagem principal!');
+// Manter compatibilidade com a função antiga (se necessário)
+window.openGallery = window.openGalleryAtCurrentIndex;
+
+console.log('✅ gallery.js carregado - Abertura na imagem atual corrigida!');
