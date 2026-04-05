@@ -1,5 +1,5 @@
-// js/modules/gallery.js - COM CONTADOR DE VISUALIZAÇÕES (Classmorphism)
-console.log('🚀 gallery.js carregado - Com contador de visualizações Classmorphism');
+// js/modules/gallery.js - Substituição do contador inferior por visualizações
+console.log('🚀 gallery.js carregado - Contador inferior substituído por visualizações');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -18,31 +18,24 @@ window.isVideoUrl = function(url) {
            urlLower.includes('.avi');
 };
 
-// ========== FUNÇÃO PARA INCREMENTAR CONTADOR DE VISUALIZAÇÕES ==========
+// ========== FUNÇÕES DO CONTADOR DE VISUALIZAÇÕES ==========
 window.incrementGalleryViews = function(propertyId) {
     try {
-        // Recuperar contador atual do localStorage
         const storageKey = `gallery_views_${propertyId}`;
         let currentViews = parseInt(localStorage.getItem(storageKey)) || 0;
-        
-        // Incrementar
         currentViews++;
         localStorage.setItem(storageKey, currentViews);
         
-        // Atualizar display se o card estiver visível
         const viewsElement = document.querySelector(`[data-property-id="${propertyId}"] .gallery-views-counter span`);
         if (viewsElement) {
             viewsElement.textContent = formatViewCount(currentViews);
         }
-        
         return currentViews;
     } catch (e) {
-        console.warn('Erro ao incrementar contador:', e);
         return 0;
     }
 };
 
-// ========== FUNÇÃO PARA OBTER CONTADOR DE VISUALIZAÇÕES ==========
 window.getGalleryViews = function(propertyId) {
     try {
         const storageKey = `gallery_views_${propertyId}`;
@@ -52,14 +45,9 @@ window.getGalleryViews = function(propertyId) {
     }
 };
 
-// ========== FUNÇÃO PARA FORMATAR NÚMERO DE VISUALIZAÇÕES ==========
 function formatViewCount(count) {
-    if (count >= 1000000) {
-        return (count / 1000000).toFixed(1) + 'M';
-    }
-    if (count >= 1000) {
-        return (count / 1000).toFixed(1) + 'K';
-    }
+    if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+    if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
     return count.toString();
 }
 
@@ -194,9 +182,10 @@ function updateCardMedia(propertyId, newIndex) {
         dot.classList.toggle('active', idx === newIndex);
     });
     
-    const mobileIndicator = galleryContainer.querySelector('.gallery-indicator-mobile span');
-    if (mobileIndicator) {
-        mobileIndicator.textContent = `${newIndex + 1}/${allMedia.length}`;
+    // Atualizar contador de imagens (superior direito)
+    const imageCounter = galleryContainer.querySelector('.gallery-image-counter span');
+    if (imageCounter) {
+        imageCounter.textContent = `${newIndex + 1}/${allMedia.length}`;
     }
     
     if (galleryContainer) {
@@ -204,7 +193,7 @@ function updateCardMedia(propertyId, newIndex) {
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria COM CLASSMORPHISM ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -239,18 +228,8 @@ window.createPropertyGallery = function(property) {
     // Gerar setas de navegação
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    // CSS Classmorphism para os contadores
-    const classmorphismStyle = `
-        background: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        border-radius: 20px;
-        padding: 4px 10px;
-        font-size: 0.7rem;
-        font-weight: 500;
-        letter-spacing: 0.5px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-    `;
+    // Estilo Classmorphism para os contadores
+    const glassStyle = `background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 20px; padding: 4px 10px; font-size: 0.7rem; color: white;`;
     
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
@@ -269,26 +248,26 @@ window.createPropertyGallery = function(property) {
                 <!-- SETAS LIQUID GLASS -->
                 ${arrowsHtml}
                 
-                <!-- CONTADOR DE IMAGENS (SUPERIOR - Classmorphism) -->
-                <div class="gallery-indicator-mobile" style="position:absolute; top:10px; right:10px; ${classmorphismStyle} z-index:20;">
+                <!-- CONTADOR DE IMAGENS (POSIÇÃO ORIGINAL: SUPERIOR DIREITO) -->
+                <div class="gallery-image-counter" style="position:absolute; top:10px; right:10px; ${glassStyle} z-index:20;">
                     <i class="fas fa-images" style="margin-right:4px;"></i>
                     <span>1/${totalMediaCount}</span>
                 </div>
                 
-                <!-- CONTADOR DE VISUALIZAÇÕES (INFERIOR DIREITO - Classmorphism) -->
-                <div class="gallery-views-counter" style="position:absolute; bottom:10px; right:10px; ${classmorphismStyle} z-index:20;">
+                <!-- CONTADOR DE VISUALIZAÇÕES (SUBSTITUI O ANTIGO CONTADOR INFERIOR ESQUERDO) -->
+                <div class="gallery-views-counter" style="position:absolute; bottom:10px; left:10px; ${glassStyle} z-index:20;">
                     <i class="fas fa-eye" style="margin-right:4px;"></i>
                     <span>${formattedViews}</span>
                 </div>
                 
-                <!-- DOTS (indicadores) -->
+                <!-- DOTS (POSIÇÃO ORIGINAL: CENTRALIZADO INFERIOR) -->
                 ${totalMediaCount > 1 ? `
                     <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; position:absolute; bottom:10px; left:0; right:0;">
                         ${dotsHtml}
                     </div>
                 ` : ''}
                 
-                <!-- ÍCONE EXPANDIR -->
+                <!-- ÍCONE EXPANDIR (POSIÇÃO ORIGINAL: SUPERIOR ESQUERDO) -->
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
                      style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:20;">
                     <i class="fas fa-expand" style="color:white; font-size:14px;"></i>
@@ -303,7 +282,7 @@ window.createPropertyGallery = function(property) {
             
             ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
                 `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
-                    style="position: absolute; bottom: 10px; left: 10px; background: rgba(0,0,0,0.5); backdrop-filter:blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; transition: all 0.3s ease; z-index: 15;"
+                    style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.5); backdrop-filter:blur(8px); border: 1px solid rgba(255,255,255,0.2); border-radius: 50%; width: 32px; height: 32px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: white; transition: all 0.3s ease; z-index: 15;"
                     title="Documentos do imóvel (senha: doc123)">
                     <i class="fas fa-file-pdf"></i>
                 </button>` : ''}
@@ -498,23 +477,14 @@ window.setupGalleryEvents = function() {
         .gallery-nav-arrow:hover {
             background: rgba(255,255,255,0.35) !important;
             transform: translateY(-50%) scale(1.1) !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         }
         .gallery-nav-arrow:active {
             transform: translateY(-50%) scale(0.95) !important;
-        }
-        .gallery-views-counter, .gallery-indicator-mobile, .gallery-expand-icon, .pdf-access, .video-indicator, .property-badge {
-            transition: all 0.3s ease;
-        }
-        .gallery-views-counter:hover, .gallery-indicator-mobile:hover, .gallery-expand-icon:hover, .pdf-access:hover {
-            background: rgba(0, 0, 0, 0.7) !important;
-            transform: scale(1.05);
         }
     `;
     document.head.appendChild(style);
 };
 
-// Manter compatibilidade
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Contador de visualizações Classmorphism implementado!');
+console.log('✅ gallery.js carregado - Contador inferior substituído por visualizações (posições originais mantidas)');
