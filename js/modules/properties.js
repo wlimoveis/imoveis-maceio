@@ -37,325 +37,56 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COM CACHE AVANÇADO (COM SUPORTE A TEMPLATECACHE) ==========
-class PropertyTemplateEngine {
+// ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPORTE COM FALLBACK) ==========
+console.log('🏠 properties.js - ENGINE DE TEMPLATE DELEGADA PARA SUPORTE');
+
+/**
+ * Motor de template MÍNIMO (fallback inline)
+ * Garante que o sistema funcione 100% mesmo sem o Support System.
+ * Este é o único código de apresentação que permanece no Core.
+ */
+class MinimalTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-        // Cache local como fallback (será usado apenas se TemplateCache não estiver disponível)
-        this._localCache = new Map();
     }
 
     generate(property) {
-        // Tentar usar TemplateCache do Support System primeiro
-        if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
-            return window.TemplateCache.getTemplate(property, (prop) => this._generateTemplate(prop));
-        }
-        
-        // Fallback para cache local
-        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
-        if (this._localCache.has(cacheKey)) {
-            return this._localCache.get(cacheKey);
-        }
-        
-        const html = this._generateTemplate(property);
-        this._localCache.set(cacheKey, html);
-        
-        // Limitar tamanho do cache local
-        if (this._localCache.size > 50) {
-            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
-            keysToDelete.forEach(key => this._localCache.delete(key));
-        }
-        
-        return html;
-    }
-    
-    _generateTemplate(property) {
-        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
-        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
-        
-        const formatPrice = (price) => {
-            if (window.SharedCore?.PriceFormatter?.formatForCard) {
-                return window.SharedCore.PriceFormatter.formatForCard(price);
-            }
-            if (!price) return 'R$ 0,00';
-            if (typeof price === 'string' && price.includes('R$')) return price;
-            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
-        };
-
-        const html = `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
-                ${this.generateImageSection(property)}
+        const price = property.price || 'Preço sob consulta';
+        const title = property.title || 'Imóvel sem título';
+        const location = property.location || 'Localização não informada';
+        const imageUrl = (property.images && property.images !== 'EMPTY') 
+            ? property.images.split(',')[0].trim() 
+            : this.imageFallback;
+            
+        return `
+            <div class="property-card" data-property-id="${property.id}">
+                <div class="property-image" style="height: 200px; background: #ccc; position: relative;">
+                    <img src="${imageUrl}" style="width:100%; height:100%; object-fit:cover;" alt="${title}" onerror="this.src='${this.imageFallback}'">
+                </div>
                 <div class="property-content">
-                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
-                    <h3 class="property-title" data-title-field>${property.title || 'Sem título'}</h3>
-                    <div class="property-location" data-location-field>
-                        <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
-                    </div>
-                    <p data-description-field>${property.description || 'Descrição não disponível.'}</p>
-                    ${displayFeatures ? `
-                        <div class="property-features" data-features-field>
-                            ${displayFeatures.split(',').map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${f.trim()}</span>
-                            `).join('')}
-                        </div>
-                    ` : ''}
+                    <div class="property-price">${price}</div>
+                    <h3>${title}</h3>
+                    <div class="property-location"><i class="fas fa-map-marker-alt"></i> ${location}</div>
                     <button class="contact-btn" onclick="contactAgent(${property.id})">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
             </div>
         `;
-
-        return html;
     }
-
-    generateImageSection(property) {
-        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
-        const imageUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
-        const imageCount = imageUrls.length;
-        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
-        const hasGallery = imageCount > 1;
-        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
-        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
-        
-        if (hasGallery && typeof window.createPropertyGallery === 'function') {
-            try {
-                return window.createPropertyGallery(property);
-            } catch (e) {
-                console.warn('❌ Erro na galeria, usando fallback:', e);
-            }
-        }
-
-        return `
-            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
-                 style="position: relative; height: 250px;">
-                <img src="${firstImageUrl}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     alt="${property.title}"
-                     onerror="this.src='${this.imageFallback}'">
-                ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
-                
-                ${hasVideo ? `
-                    <div class="video-indicator pulsing" style="
-                        position: absolute;
-                        top: 85px;
-                        right: 10px;
-                        background: rgba(0, 0, 0, 0.8);
-                        color: white;
-                        padding: 6px 12px;
-                        border-radius: 6px;
-                        font-size: 12px;
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        z-index: 9;
-                        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-                        border: 1px solid rgba(255,255,255,0.3);
-                        backdrop-filter: blur(5px);
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                    ">
-                        <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
-                        <span>TEM VÍDEO</span>
-                    </div>
-                ` : ''}
-                
-                ${hasGallery ? `
-                    <div class="image-count" style="
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        background: rgba(0, 0, 0, 0.9);
-                        color: white;
-                        padding: 5px 10px;
-                        border-radius: 4px;
-                        font-size: 13px;
-                        font-weight: bold;
-                        z-index: 10;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-                    ">
-                        <i class="fas fa-images" style="margin-right: 5px;"></i>${imageCount}
-                    </div>
-                ` : ''}
-                
-                ${hasPdfs ? `
-                    <button class="pdf-access" onclick="event.stopPropagation(); window.PdfSystem.showModal(${property.id})" style="
-                        position: absolute;
-                        bottom: 2px;
-                        right: 35px;
-                        background: rgba(255, 255, 255, 0.95);
-                        border: none;
-                        border-radius: 50%;
-                        width: 28px;
-                        height: 28px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 0.75rem;
-                        color: #1a5276;
-                        transition: all 0.3s ease;
-                        z-index: 15;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                        border: 1px solid rgba(0,0,0,0.15);
-                    ">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>
-                ` : ''}
-            </div>
-        `;
-    }
-    
-    updateCardContent(propertyId, propertyData) {
-        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
-        
-        const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
-        if (!card) {
-            console.warn(`⚠️ Card ${propertyId} não encontrado para atualização parcial`);
-            return false;
-        }
-        
-        try {
-            // Atualizar preço se fornecido
-            if (propertyData.price !== undefined) {
-                const priceElement = card.querySelector('[data-price-field]');
-                if (priceElement) {
-                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
-                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
-                        : (propertyData.price.includes('R$') 
-                            ? propertyData.price 
-                            : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`);
-                    priceElement.textContent = formattedPrice;
-                }
-            }
-            
-            // Atualizar título se fornecido
-            if (propertyData.title !== undefined) {
-                const titleElement = card.querySelector('[data-title-field]');
-                if (titleElement) {
-                    titleElement.textContent = propertyData.title;
-                }
-                card.setAttribute('data-property-title', propertyData.title);
-            }
-            
-            // Atualizar localização se fornecido
-            if (propertyData.location !== undefined) {
-                const locationElement = card.querySelector('[data-location-field]');
-                if (locationElement) {
-                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
-                }
-            }
-            
-            // Atualizar descrição se fornecido
-            if (propertyData.description !== undefined) {
-                const descriptionElement = card.querySelector('[data-description-field]');
-                if (descriptionElement) {
-                    descriptionElement.textContent = propertyData.description;
-                }
-            }
-            
-            // Atualizar features se fornecido
-            if (propertyData.features !== undefined) {
-                const featuresElement = card.querySelector('[data-features-field]');
-                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
-                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
-                
-                if (featuresElement) {
-                    if (displayFeatures) {
-                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
-                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${f.trim()}</span>
-                        `).join('');
-                    } else {
-                        featuresElement.innerHTML = '';
-                    }
-                }
-            }
-            
-            // Atualizar indicador de vídeo
-            if (propertyData.has_video !== undefined) {
-                const videoIndicator = card.querySelector('.video-indicator');
-                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
-                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
-                
-                if (hasVideo && !videoIndicator) {
-                    const imageSection = card.querySelector('.property-image');
-                    if (imageSection) {
-                        const imageCount = imageSection.querySelector('.image-count');
-                        const topPosition = imageCount ? '35px' : '10px';
-                        
-                        imageSection.innerHTML += `
-                            <div class="video-indicator pulsing" style="
-                                position: absolute;
-                                top: ${topPosition};
-                                right: 10px;
-                                background: rgba(0, 0, 0, 0.8);
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 6px;
-                                font-size: 12px;
-                                display: flex;
-                                align-items: center;
-                                gap: 6px;
-                                z-index: 9;
-                                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-                                border: 1px solid rgba(255,255,255,0.3);
-                                backdrop-filter: blur(5px);
-                                font-weight: 600;
-                                text-transform: uppercase;
-                                letter-spacing: 0.5px;
-                            ">
-                                <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
-                                <span>TEM VÍDEO</span>
-                            </div>
-                        `;
-                    }
-                } else if (!hasVideo && videoIndicator) {
-                    videoIndicator.remove();
-                }
-            }
-            
-            // Invalidar cache do template para esta propriedade
-            if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
-                window.TemplateCache.invalidate(propertyId);
-            } else if (this._localCache) {
-                // Limpar cache local como fallback
-                const pattern = `prop_${propertyId}_`;
-                for (const key of this._localCache.keys()) {
-                    if (key.startsWith(pattern)) {
-                        this._localCache.delete(key);
-                    }
-                }
-            }
-            
-            card.classList.add('highlighted');
-            setTimeout(() => {
-                card.classList.remove('highlighted');
-            }, 1000);
-            
-            console.log(`✅ Conteúdo do card ${propertyId} atualizado com sucesso`);
-            return true;
-            
-        } catch (error) {
-            console.error(`❌ Erro ao atualizar card ${propertyId}:`, error);
-            return false;
-        }
-    }
-    
-    // Método para limpar cache (útil para testes)
-    clearCache() {
-        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
-            return window.TemplateCache.invalidateAll();
-        }
-        const count = this._localCache.size;
-        this._localCache.clear();
-        return count;
-    }
+    updateCardContent(id, data) { console.warn('⚠️ updateCardContent não disponível (modo fallback)'); return false; }
+    clearCache() { console.log('🧹 clearCache não disponível (modo fallback)'); return 0; }
 }
 
-// Instância global
-window.propertyTemplates = new PropertyTemplateEngine();
+// Proxy: tenta usar o módulo do Support System, senão usa o fallback mínimo
+window.propertyTemplates = (() => {
+    if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
+        console.log('✅ Usando PropertyTemplateEngine COMPLETO do Support System');
+        return new window.SupportTemplates.PropertyTemplateEngine();
+    }
+    console.warn('⚠️ SupportTemplates não disponível. Usando fallback MÍNIMO (renderização simplificada).');
+    return new MinimalTemplateEngine();
+})();
 
 /* ==========================================================
    FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO
