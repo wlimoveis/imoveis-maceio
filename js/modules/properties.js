@@ -1,4 +1,4 @@
-// js/modules/properties.js - VERSÃO OTIMIZADA (COM PROXY PARA TEMPLATE ENGINE)
+// js/modules/properties.js - VERSÃO OTIMIZADA (COM PROXY PARA TEMPLATE ENGINE E MECANISMO DE ESPERA)
 console.log('🏠 properties.js - VERSÃO OTIMIZADA - FUNÇÕES CENTRALIZADAS NO SHAREDCORE');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -37,7 +37,7 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COM PROXY PARA SUPORTE ==========
+// ========== TEMPLATE ENGINE COM PROXY PARA SUPORTE E MECANISMO DE ESPERA ==========
 // Classe MinimalTemplateEngine - Fallback mínimo (somente se Support System falhar)
 class MinimalTemplateEngine {
     constructor() {
@@ -117,20 +117,98 @@ class MinimalTemplateEngine {
     clearCache() { return 0; }
 }
 
-// Proxy: tenta usar o módulo do Support System, fallback para o mínimo
-window.propertyTemplates = (() => {
-    if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
-        console.log('✅ Usando PropertyTemplateEngine do Support System');
-        return new window.SupportTemplates.PropertyTemplateEngine();
+// Mecanismo de espera para o Support System (máx. 2 segundos)
+let templateEngineReady = false;
+let templateEnginePromise = null;
+
+function waitForTemplateEngine() {
+    if (templateEnginePromise) return templateEnginePromise;
+    
+    templateEnginePromise = new Promise((resolve) => {
+        // Verificar se já está disponível
+        if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
+            console.log('✅ SupportTemplates já disponível imediatamente');
+            templateEngineReady = true;
+            resolve(true);
+            return;
+        }
+        
+        // Aguardar até 2 segundos
+        let attempts = 0;
+        const maxAttempts = 20; // 20 * 100ms = 2 segundos
+        const interval = setInterval(() => {
+            attempts++;
+            if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
+                console.log(`✅ SupportTemplates disponível após ${attempts * 100}ms`);
+                clearInterval(interval);
+                templateEngineReady = true;
+                resolve(true);
+            } else if (attempts >= maxAttempts) {
+                console.warn('⚠️ SupportTemplates não disponível após timeout. Usando fallback mínimo.');
+                clearInterval(interval);
+                templateEngineReady = false;
+                resolve(false);
+            }
+        }, 100);
+    });
+    
+    return templateEnginePromise;
+}
+
+// Proxy assíncrono: tenta usar o módulo do Support System, fallback para o mínimo
+// Inicialização tardia - será chamada quando necessário
+let activeTemplateEngine = null;
+
+async function getTemplateEngine() {
+    if (activeTemplateEngine) return activeTemplateEngine;
+    
+    const supportAvailable = await waitForTemplateEngine();
+    
+    if (supportAvailable && window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
+        console.log('🚀 Usando PropertyTemplateEngine do Support System');
+        activeTemplateEngine = new window.SupportTemplates.PropertyTemplateEngine();
+    } else {
+        console.warn('⚠️ SupportTemplates não disponível. Usando fallback mínimo.');
+        activeTemplateEngine = new MinimalTemplateEngine();
     }
-    console.warn('⚠️ SupportTemplates não disponível. Usando fallback mínimo.');
-    return new MinimalTemplateEngine();
-})();
+    
+    return activeTemplateEngine;
+}
+
+// Proxy síncrono para compatibilidade (usa fallback imediato, mas tenta obter o real depois)
+window.propertyTemplates = new Proxy({}, {
+    get: function(target, prop) {
+        // Para métodos específicos, retornar função assíncrona ou fallback
+        if (prop === 'generate') {
+            return async function(property) {
+                const engine = await getTemplateEngine();
+                return engine.generate(property);
+            };
+        }
+        if (prop === 'updateCardContent') {
+            return async function(id, data) {
+                const engine = await getTemplateEngine();
+                return engine.updateCardContent(id, data);
+            };
+        }
+        if (prop === 'clearCache') {
+            return async function() {
+                const engine = await getTemplateEngine();
+                return engine.clearCache();
+            };
+        }
+        // Para outras propriedades, retornar undefined
+        return undefined;
+    }
+});
+
+// Também expor versão síncrona para casos onde assíncrono não é possível
+window.propertyTemplatesSync = new MinimalTemplateEngine();
 
 /* ==========================================================
    FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO
    ========================================================== */
-window.updatePropertyCard = function(propertyId, updatedData = null) {
+window.updatePropertyCard = async function(propertyId, updatedData = null) {
     console.log('🔄 Atualizando card do imóvel:', propertyId, updatedData ? 'com dados específicos' : '');
     
     const property = window.properties?.find(p => p.id === propertyId);
@@ -143,7 +221,7 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     
     // Tentar atualização parcial primeiro
     if (updatedData && window.propertyTemplates.updateCardContent) {
-        const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
+        const partialSuccess = await window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
             console.log(`✅ Atualização parcial bem-sucedida para ${propertyId}`);
             
@@ -170,7 +248,8 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     });
     
     if (cardToUpdate) {
-        const newCardHTML = window.propertyTemplates.generate(propertyToRender);
+        const engine = await getTemplateEngine();
+        const newCardHTML = engine.generate(propertyToRender);
         cardToUpdate.outerHTML = newCardHTML;
         
         console.log('✅ Card completamente substituído com todos os campos atualizados:', {
@@ -199,7 +278,7 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     } else {
         console.warn('⚠️ Card não encontrado na página, renderizando todos os imóveis');
         if (typeof window.renderProperties === 'function') {
-            window.renderProperties(window.currentFilter || 'todos');
+            await window.renderProperties(window.currentFilter || 'todos');
         }
         return false;
     }
@@ -280,7 +359,7 @@ window.loadPropertiesData = async function () {
         }
         
         loading?.updateMessage?.(finalMessage);
-        window.renderProperties('todos');
+        await window.renderProperties('todos');
 
         // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM (se disponível)
         if (typeof window.waitForAllPropertyImages === 'function') {
@@ -307,7 +386,7 @@ window.loadPropertiesData = async function () {
         loading?.setVariant?.('error');
         loading?.updateMessage?.('⚠️ Erro ao carregar imóveis');
         window.properties = getInitialProperties();
-        window.renderProperties('todos');
+        await window.renderProperties('todos');
         
     } finally {
         setTimeout(() => loading?.hide?.(), 1200);
@@ -349,11 +428,13 @@ function getInitialProperties() {
 }
 
 // ========== 3. RENDERIZAÇÃO OTIMIZADA ==========
-window.renderProperties = function(filter = 'todos', forceClearCache = false) {
+window.renderProperties = async function(filter = 'todos', forceClearCache = false) {
     console.log(`🎨 Renderizando propriedades (filtro: ${filter})${forceClearCache ? ' - CACHE LIMPO' : ''}`);
     
-    if (forceClearCache && window.propertyTemplates && window.propertyTemplates.clearCache) {
-        window.propertyTemplates.clearCache();
+    const engine = await getTemplateEngine();
+    
+    if (forceClearCache && engine && engine.clearCache) {
+        engine.clearCache();
     }
     
     const container = document.getElementById('properties-container');
@@ -374,9 +455,10 @@ window.renderProperties = function(filter = 'todos', forceClearCache = false) {
         return;
     }
 
-    container.innerHTML = filtered.map(prop => 
-        window.propertyTemplates.generate(prop)
-    ).join('');
+    // Gerar HTML para cada propriedade (assíncrono)
+    const htmlPromises = filtered.map(prop => engine.generate(prop));
+    const htmls = await Promise.all(htmlPromises);
+    container.innerHTML = htmls.join('');
 
     console.log(`✅ ${filtered.length} imóveis renderizados (filtro: ${filter})`);
     
@@ -619,7 +701,7 @@ window.addNewProperty = async function(propertyData) {
         console.log('🎨 Atualizando interface...');
         
         if (typeof window.renderProperties === 'function') {
-            window.renderProperties('todos', true);
+            await window.renderProperties('todos', true);
         }
         
         if (typeof window.loadPropertyList === 'function') {
@@ -1060,7 +1142,7 @@ window.deleteProperty = async function(id) {
     }
 
     if (typeof window.renderProperties === 'function') {
-        window.renderProperties('todos', true);
+        await window.renderProperties('todos', true);
     }
 
     if (typeof window.loadPropertyList === 'function') {
@@ -1161,9 +1243,9 @@ if (document.readyState === 'loading') {
 
         // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM
         if (typeof window.runLowPriority === 'function') {
-            window.runLowPriority(() => {
+            window.runLowPriority(async () => {
                 if (typeof window.loadPropertiesData === 'function') {
-                    window.loadPropertiesData();
+                    await window.loadPropertiesData();
                 }
 
                 window.runLowPriority(() => {
@@ -1178,9 +1260,9 @@ if (document.readyState === 'loading') {
                 console.log('ℹ️ runLowPriority não disponível (modo debug: função do Support System não carregada)');
             }
             
-            setTimeout(() => {
+            setTimeout(async () => {
                 if (typeof window.loadPropertiesData === 'function') {
-                    window.loadPropertiesData();
+                    await window.loadPropertiesData();
                 }
                 setTimeout(() => {
                     if (typeof window.setupFilters === 'function') {
@@ -1193,9 +1275,9 @@ if (document.readyState === 'loading') {
 } else {
     // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM
     if (typeof window.runLowPriority === 'function') {
-        window.runLowPriority(() => {
+        window.runLowPriority(async () => {
             if (typeof window.loadPropertiesData === 'function') {
-                window.loadPropertiesData();
+                await window.loadPropertiesData();
             }
 
             window.runLowPriority(() => {
@@ -1210,9 +1292,9 @@ if (document.readyState === 'loading') {
             console.log('ℹ️ runLowPriority não disponível (modo debug: função do Support System não carregada)');
         }
         
-        setTimeout(() => {
+        setTimeout(async () => {
             if (typeof window.loadPropertiesData === 'function') {
-                window.loadPropertiesData();
+                await window.loadPropertiesData();
             }
             setTimeout(() => {
                 if (typeof window.setupFilters === 'function') {
