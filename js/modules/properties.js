@@ -35,12 +35,16 @@ window.ensureSupabaseCredentials = function() {
 };
 
 // ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPPORT SYSTEM) ==========
-// Fallback inline MELHORADO - gera estrutura compatível com gallery.js
+// Fallback inline MELHORADO - gera estrutura COMPATÍVEL com gallery.js
 class MinimalTemplateEngine {
+    constructor() {
+        this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+    }
+
     generate(property) {
         // Extrair primeira imagem (se existir)
         const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
-        let firstImageUrl = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
+        let firstImageUrl = this.imageFallback;
         
         if (hasImages) {
             const imageUrls = property.images.split(',').filter(url => url && url.trim());
@@ -53,49 +57,81 @@ class MinimalTemplateEngine {
         const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
-        // Gerar estrutura COMPATÍVEL com gallery.js
+        const formatPrice = (price) => {
+            if (!price) return 'R$ 0,00';
+            if (typeof price === 'string' && price.includes('R$')) return price;
+            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
+        };
+        
+        // ========== ESTRUTURA COMPATÍVEL COM gallery.js ==========
+        // O gallery.js procura por .property-gallery-container e .property-image
         return `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-                    <!-- ESTRUTURA QUE O gallery.js ESPERA -->
-                    <div class="property-gallery-container" onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="cursor:pointer; position:relative; width:100%; height:100%;">
+                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px; overflow: hidden;">
+                    <!-- ESTRUTURA QUE O gallery.js ESPERA PARA INJETAR A GALERIA -->
+                    <div class="property-gallery-container" 
+                         onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
+                         style="cursor:pointer; position:relative; width:100%; height:100%;">
+                        
+                        <!-- Imagem principal (fallback enquanto gallery.js não carrega) -->
                         <img src="${firstImageUrl}" 
                              style="width:100%; height:100%; object-fit:cover;"
                              alt="${property.title || 'Imóvel'}"
-                             onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+                             data-original-src="${firstImageUrl}"
+                             onerror="this.src='${this.imageFallback}'">
                         
-                        ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
-                        
-                        ${hasVideo ? `
-                            <div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
-                                <i class="fas fa-video"></i> Vídeo
+                        <!-- Badge do imóvel (Destaque, Luxo, etc.) -->
+                        ${property.badge ? `
+                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="position: absolute; top: 15px; left: 15px; background: var(--gold); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; z-index: 10;">
+                                ${property.badge}
                             </div>
                         ` : ''}
                         
+                        <!-- Indicador de VÍDEO (estilo consistente com gallery.js) -->
+                        ${hasVideo ? `
+                            <div class="video-indicator" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 5px; z-index: 10; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                                <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
+                                <span>Vídeo</span>
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Botão de acesso a PDFs -->
                         ${hasPdfs ? `
-                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; z-index: 15;">
+                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
                                 <i class="fas fa-file-pdf"></i>
                             </button>
                         ` : ''}
                         
-                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer;">
+                        <!-- Ícone de expandir (abrir galeria) -->
+                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; z-index: 10;">
                             <i class="fas fa-expand"></i>
                         </div>
                     </div>
                 </div>
-                <div class="property-content">
-                    <div class="property-price" data-price-field>${property.price || 'Preço sob consulta'}</div>
-                    <h3 class="property-title" data-title-field>${property.title || 'Imóvel'}</h3>
-                    <div class="property-location" data-location-field>
+                
+                <div class="property-content" style="padding: 1.5rem;">
+                    <div class="property-price" data-price-field style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
+                        ${formatPrice(property.price)}
+                    </div>
+                    <h3 class="property-title" data-title-field style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
+                        ${property.title || 'Imóvel'}
+                    </h3>
+                    <div class="property-location" data-location-field style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
                         <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
                     </div>
-                    <p data-description-field>${(property.description || 'Descrição não disponível.').substring(0, 100)}${(property.description || '').length > 100 ? '...' : ''}</p>
+                    <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
+                        ${(property.description || 'Descrição não disponível.').substring(0, 120)}${(property.description || '').length > 120 ? '...' : ''}
+                    </p>
                     ${displayFeatures ? `
-                        <div class="property-features" data-features-field>
-                            ${displayFeatures.split(',').slice(0, 3).map(f => `<span class="feature-tag">${f.trim()}</span>`).join('')}
+                        <div class="property-features" data-features-field style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
+                            ${displayFeatures.split(',').slice(0, 4).map(f => `
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">
+                                    ${f.trim()}
+                                </span>
+                            `).join('')}
                         </div>
                     ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})">
+                    <button class="contact-btn" onclick="contactAgent(${property.id})" style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
@@ -104,7 +140,7 @@ class MinimalTemplateEngine {
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`⚠️ [Fallback] Recarregando cards para atualizar ${propertyId}`);
+        console.log(`⚠️ [Fallback] Recarregando todos os cards para atualizar ${propertyId}`);
         if (typeof window.renderProperties === 'function') {
             window.renderProperties(window.currentFilter || 'todos', true);
             return true;
@@ -113,6 +149,7 @@ class MinimalTemplateEngine {
     }
     
     clearCache() {
+        console.log('🧹 [Fallback] Cache limpo (fallback mínimo)');
         return 0;
     }
 }
@@ -132,7 +169,8 @@ window.propertyTemplates = (() => {
         const checkSupportInterval = setInterval(() => {
             if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
                 console.log('✅ [properties.js] SupportTemplates carregado tardiamente, substituindo engine');
-                window.propertyTemplates = new window.SupportTemplates.PropertyTemplateEngine();
+                const newEngine = new window.SupportTemplates.PropertyTemplateEngine();
+                window.propertyTemplates = newEngine;
                 clearInterval(checkSupportInterval);
                 
                 // Re-renderizar para aplicar template completo
@@ -300,6 +338,8 @@ window.loadPropertiesData = async function () {
             finalMessage = `✨ ${propertyCount} opções incríveis!`;
         } else if (propertyCount <= 20) {
             finalMessage = `🏘️ ${propertyCount} oportunidades em Maceió!`;
+        } else {
+            finalMessage = `🏆 ${propertyCount} imóveis disponíveis!`;
         }
         
         loading?.updateMessage?.(finalMessage);
