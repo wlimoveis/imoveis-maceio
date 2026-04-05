@@ -23,6 +23,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/gallery-diagnostics.js',
         'debug/utils/admin-diagnostics.js',
         'debug/utils/core-utilities.js',  // ✅ MÓDULO MIGRADO (features, vídeo, validação ID, estado edição)
+        'debug/templates/property-template.js',  // 🆕 NOVO MÓDULO: Template Engine para cards
         'debug/diagnostics/diagnostics53.js',
         'debug/diagnostics/diagnostics54.js',
         'debug/diagnostics/diagnostics55.js',
