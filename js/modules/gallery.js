@@ -1,5 +1,5 @@
-// js/modules/gallery.js - APROVEITAMENTO TOTAL DO ESPAÇO (sem espaços vazios)
-console.log('🚀 gallery.js carregado - Aproveitamento total do espaço da galeria');
+// js/modules/gallery.js - COM SETAS LIQUID GLASS NA IMAGEM PRINCIPAL
+console.log('🚀 gallery.js carregado - Com setas Liquid Glass na imagem principal');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -19,7 +19,7 @@ window.isVideoUrl = function(url) {
 };
 
 // ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
-window.createVideoThumbnail = function(videoUrl, index) {
+window.createVideoThumbnail = function(videoUrl, index, propertyId) {
     return `
         <div class="gallery-video-item" 
              data-video-url="${videoUrl}"
@@ -56,13 +56,118 @@ window.createImageThumbnail = function(imageUrl, index) {
     `;
 };
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
+// ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
+function createNavigationArrows(propertyId, totalItems, currentIndex) {
+    if (totalItems <= 1) return ''; // Não mostrar setas se só tem 1 item
+    
+    return `
+        <button class="gallery-nav-arrow gallery-nav-prev" 
+                onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${propertyId}, 'prev')"
+                style="position:absolute; left:10px; top:50%; transform:translateY(-50%); 
+                       width:40px; height:40px; border-radius:50%; 
+                       background:rgba(255,255,255,0.2); 
+                       backdrop-filter:blur(8px);
+                       border:1px solid rgba(255,255,255,0.3);
+                       color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
+                       font-size:18px; transition:all 0.3s ease; z-index:25;
+                       box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+            <i class="fas fa-chevron-left"></i>
+        </button>
+        <button class="gallery-nav-arrow gallery-nav-next" 
+                onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${propertyId}, 'next')"
+                style="position:absolute; right:10px; top:50%; transform:translateY(-50%); 
+                       width:40px; height:40px; border-radius:50%; 
+                       background:rgba(255,255,255,0.2); 
+                       backdrop-filter:blur(8px);
+                       border:1px solid rgba(255,255,255,0.3);
+                       color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
+                       font-size:18px; transition:all 0.3s ease; z-index:25;
+                       box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    `;
+}
+
+// ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
+window.navigatePropertyGallery = function(propertyId, direction) {
+    const property = window.properties.find(p => p.id === propertyId);
+    if (!property) return;
+    
+    const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+    if (!hasImages) return;
+    
+    const allMedia = property.images.split(',').filter(url => url.trim() !== '');
+    if (allMedia.length <= 1) return;
+    
+    // Obter índice atual do card
+    let currentIndex = 0;
+    const cardContainer = document.querySelector(`[data-property-id="${propertyId}"] .property-gallery-container`);
+    if (cardContainer && cardContainer.dataset.currentIndex) {
+        currentIndex = parseInt(cardContainer.dataset.currentIndex);
+    }
+    
+    // Calcular novo índice
+    if (direction === 'next') {
+        currentIndex = (currentIndex + 1) % allMedia.length;
+    } else {
+        currentIndex = (currentIndex - 1 + allMedia.length) % allMedia.length;
+    }
+    
+    // Atualizar o card com a nova mídia
+    updateCardMedia(propertyId, currentIndex);
+    
+    // Salvar índice atual
+    if (cardContainer) {
+        cardContainer.dataset.currentIndex = currentIndex;
+    }
+};
+
+// ========== FUNÇÃO PARA ATUALIZAR O CARD COM NOVA MÍDIA ==========
+function updateCardMedia(propertyId, newIndex) {
+    const property = window.properties.find(p => p.id === propertyId);
+    if (!property) return;
+    
+    const allMedia = property.images.split(',').filter(url => url.trim() !== '');
+    if (newIndex < 0 || newIndex >= allMedia.length) return;
+    
+    const mediaUrl = allMedia[newIndex];
+    const isVideo = window.isVideoUrl(mediaUrl);
+    
+    const propertyCard = document.querySelector(`[data-property-id="${propertyId}"]`);
+    if (!propertyCard) return;
+    
+    const galleryContainer = propertyCard.querySelector('.property-gallery-container');
+    const mainContent = galleryContainer.querySelector('div:first-child');
+    
+    if (mainContent) {
+        if (isVideo) {
+            mainContent.outerHTML = window.createVideoThumbnail(mediaUrl, newIndex, propertyId);
+        } else {
+            mainContent.outerHTML = window.createImageThumbnail(mediaUrl, newIndex);
+        }
+    }
+    
+    // Atualizar dots
+    const dots = galleryContainer.querySelectorAll('.gallery-dot');
+    dots.forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === newIndex);
+    });
+    
+    // Atualizar contador mobile
+    const mobileIndicator = galleryContainer.querySelector('.gallery-indicator-mobile span');
+    if (mobileIndicator) {
+        mobileIndicator.textContent = `${newIndex + 1}/${allMedia.length}`;
+    }
+}
+
+// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
     const totalMediaCount = allMediaUrls.length;
     const hasVideos = allMediaUrls.some(url => window.isVideoUrl(url));
+    const currentIndex = 0;
     
     const firstMediaUrl = allMediaUrls.length > 0 ? allMediaUrls[0] : 
         'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
@@ -76,57 +181,48 @@ window.createPropertyGallery = function(property) {
         return `
             <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
                  data-index="${idx}"
-                 onclick="event.stopPropagation(); event.preventDefault(); showGalleryMedia(${property.id}, ${idx})"
+                 onclick="event.stopPropagation(); event.preventDefault(); updateCardMedia(${property.id}, ${idx})"
                  style="${isVideo ? 'background:#9b59b6;' : ''}">
                 ${icon}
             </div>
         `;
     }).join('');
     
-    if (totalMediaCount === 1) {
-        const isVideo = firstIsVideo;
-        return `
-            <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-                <div class="property-gallery-container" onclick="openGallery(${property.id})" style="cursor:pointer;">
-                    ${isVideo ? 
-                        window.createVideoThumbnail(firstMediaUrl, 0) :
-                        window.createImageThumbnail(firstMediaUrl, 0)
-                    }
-                </div>
-                
-                ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
-                
-                ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
-                    <i class="fas fa-video"></i> Vídeo
-                </div>` : ''}
-                
-                ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
-                    `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id})"
-                            style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.15);"
-                            title="Documentos do imóvel (senha: doc123)">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>` : ''}
-                
-                <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                    <i class="fas fa-images"></i> ${totalMediaCount}
-                </div>
-            </div>`;
-    }
+    // Gerar setas de navegação (Liquid Glass)
+    const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    return `
-        <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px;">
-            <div class="property-gallery-container" onclick="openGallery(${property.id})" style="cursor:pointer;">
+    // Container principal do card
+    const cardHtml = `
+        <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+             style="position: relative; height: 250px;"
+             data-property-id="${property.id}">
+            <div class="property-gallery-container" 
+                 onclick="openGallery(${property.id})" 
+                 style="cursor:pointer; position:relative;"
+                 data-current-index="0">
+                
                 ${firstIsVideo ? 
-                    window.createVideoThumbnail(firstMediaUrl, 0) :
+                    window.createVideoThumbnail(firstMediaUrl, 0, property.id) :
                     window.createImageThumbnail(firstMediaUrl, 0)
                 }
                 
-                <div class="gallery-indicator-mobile"><i class="fas fa-images"></i><span>${totalMediaCount}</span></div>
+                <!-- SETAS LIQUID GLASS -->
+                ${arrowsHtml}
                 
-                <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
-                    ${dotsHtml}
+                <!-- INDICADOR MOBILE -->
+                <div class="gallery-indicator-mobile">
+                    <i class="fas fa-images"></i>
+                    <span>1/${totalMediaCount}</span>
                 </div>
                 
+                <!-- DOTS (indicadores) -->
+                ${totalMediaCount > 1 ? `
+                    <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
+                        ${dotsHtml}
+                    </div>
+                ` : ''}
+                
+                <!-- ÍCONE EXPANDIR -->
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGallery(${property.id})">
                     <i class="fas fa-expand"></i>
                 </div>
@@ -144,10 +240,17 @@ window.createPropertyGallery = function(property) {
                     title="Documentos do imóvel (senha: doc123)">
                     <i class="fas fa-file-pdf"></i>
                 </button>` : ''}
-        </div>`;
+            
+            <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
+                <i class="fas fa-images"></i> ${totalMediaCount}
+            </div>
+        </div>
+    `;
+    
+    return cardHtml;
 };
 
-// ========== ABRIR GALERIA (COM APROVEITAMENTO TOTAL DO ESPAÇO) ==========
+// ========== ABRIR GALERIA MODAL (mantido igual) ==========
 window.openGallery = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -207,7 +310,7 @@ window.openGallery = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL - APROVEITAMENTO TOTAL DO ESPAÇO ==========
+// ========== ATUALIZAR MODAL (APROVEITAMENTO TOTAL DO ESPAÇO) ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -218,7 +321,6 @@ function updateGalleryModalMedia() {
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
-        // VÍDEO: ocupa 100% do espaço disponível
         container.innerHTML = `
             <div style="width:100%; height:100%; background:#000; display:flex; align-items:center; justify-content:center;">
                 <video id="galleryVideo" 
@@ -240,7 +342,6 @@ function updateGalleryModalMedia() {
             video.play().catch(e => console.log('Autoplay bloqueado:', e));
         }
     } else {
-        // IMAGEM: ocupa 100% do espaço disponível (sem bordas/sobras)
         container.innerHTML = `
             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;">
                 <img src="${currentUrl}" 
@@ -255,45 +356,12 @@ function updateGalleryModalMedia() {
     }
 }
 
-// ========== MOSTRAR MÍDIA ESPECÍFICA ==========
+// ========== MOSTRAR MÍDIA ESPECÍFICA (compatibilidade) ==========
 window.showGalleryMedia = function(propertyId, index) {
-    const property = window.properties.find(p => p.id === propertyId);
-    if (!property) return;
-    
-    const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
-    if (!hasImages) return;
-    
-    const allMedia = property.images.split(',').filter(url => url.trim() !== '');
-    if (index < 0 || index >= allMedia.length) return;
-    
-    const mediaUrl = allMedia[index];
-    const isVideo = window.isVideoUrl(mediaUrl);
-    
-    const container = document.querySelector(`[onclick="openGallery(${propertyId})"]`);
-    if (container) {
-        const mainContent = container.querySelector('.property-gallery-container > div:first-child');
-        if (mainContent) {
-            if (isVideo) {
-                mainContent.outerHTML = window.createVideoThumbnail(mediaUrl, index);
-            } else {
-                const imgElement = mainContent.querySelector('img');
-                if (imgElement) {
-                    imgElement.src = mediaUrl;
-                } else {
-                    mainContent.outerHTML = window.createImageThumbnail(mediaUrl, index);
-                }
-            }
-        }
-        
-        const dots = container.querySelectorAll('.gallery-dot');
-        dots.forEach((dot, i) => {
-            dot.classList.toggle('active', i === index);
-            dot.style.background = window.isVideoUrl(allMedia[i]) ? '#9b59b6' : '';
-        });
-    }
+    updateCardMedia(propertyId, index);
 };
 
-// ========== NAVEGAÇÃO ==========
+// ========== NAVEGAÇÃO MODAL ==========
 window.nextGalleryImage = function() {
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) currentVideo.pause();
@@ -359,6 +427,20 @@ window.setupGalleryEvents = function() {
             case 'Escape': event.preventDefault(); window.closeGallery(); break;
         }
     });
+    
+    // Adicionar CSS hover para as setas
+    const style = document.createElement('style');
+    style.textContent = `
+        .gallery-nav-arrow:hover {
+            background: rgba(255,255,255,0.35) !important;
+            transform: translateY(-50%) scale(1.1) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+        }
+        .gallery-nav-arrow:active {
+            transform: translateY(-50%) scale(0.95) !important;
+        }
+    `;
+    document.head.appendChild(style);
 };
 
-console.log('✅ gallery.js carregado - Aproveitamento total do espaço (100% width/height)');
+console.log('✅ gallery.js carregado - Setas Liquid Glass na imagem principal!');
