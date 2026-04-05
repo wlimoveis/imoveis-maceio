@@ -1,5 +1,5 @@
-// js/modules/gallery.js - Vídeo integrado na galeria (ÍCONE UNIFICADO)
-console.log('🚀 gallery.js carregado - Ícone unificado para todos os imóveis');
+// js/modules/gallery.js - APROVEITAMENTO TOTAL DO ESPAÇO (sem espaços vazios)
+console.log('🚀 gallery.js carregado - Aproveitamento total do espaço da galeria');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -107,7 +107,6 @@ window.createPropertyGallery = function(property) {
                         <i class="fas fa-file-pdf"></i>
                     </button>` : ''}
                 
-                <!-- ÍCONE UNIFICADO: SEMPRE USAR fa-images (nunca fa-video) -->
                 <div class="media-count" style="position:absolute; bottom:5px; left:5px; background:rgba(0,0,0,0.6); color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
                     <i class="fas fa-images"></i> ${totalMediaCount}
                 </div>
@@ -122,7 +121,6 @@ window.createPropertyGallery = function(property) {
                     window.createImageThumbnail(firstMediaUrl, 0)
                 }
                 
-                <!-- ÍCONE UNIFICADO: SEMPRE USAR fa-images (nunca fa-video) -->
                 <div class="gallery-indicator-mobile"><i class="fas fa-images"></i><span>${totalMediaCount}</span></div>
                 
                 <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
@@ -149,7 +147,7 @@ window.createPropertyGallery = function(property) {
         </div>`;
 };
 
-// ========== ABRIR GALERIA ==========
+// ========== ABRIR GALERIA (COM APROVEITAMENTO TOTAL DO ESPAÇO) ==========
 window.openGallery = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -209,7 +207,7 @@ window.openGallery = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL ==========
+// ========== ATUALIZAR MODAL - APROVEITAMENTO TOTAL DO ESPAÇO ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -220,10 +218,11 @@ function updateGalleryModalMedia() {
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
+        // VÍDEO: ocupa 100% do espaço disponível
         container.innerHTML = `
-            <div style="width:90%; max-width:900px; background:#000; border-radius:8px; overflow:hidden;">
+            <div style="width:100%; height:100%; background:#000; display:flex; align-items:center; justify-content:center;">
                 <video id="galleryVideo" 
-                       style="width:100%; max-height:80vh; display:block;"
+                       style="width:100%; height:100%; object-fit:contain;"
                        autoplay
                        loop
                        controls
@@ -241,10 +240,13 @@ function updateGalleryModalMedia() {
             video.play().catch(e => console.log('Autoplay bloqueado:', e));
         }
     } else {
+        // IMAGEM: ocupa 100% do espaço disponível (sem bordas/sobras)
         container.innerHTML = `
-            <img src="${currentUrl}" 
-                 style="max-width:90%; max-height:80vh; object-fit:contain; border-radius:8px;"
-                 onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+            <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;">
+                <img src="${currentUrl}" 
+                     style="width:100%; height:100%; object-fit:contain;"
+                     onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
+            </div>
         `;
     }
     
@@ -359,4 +361,4 @@ window.setupGalleryEvents = function() {
     });
 };
 
-console.log('✅ gallery.js carregado - Ícone unificado (fa-images) para todos os imóveis!');
+console.log('✅ gallery.js carregado - Aproveitamento total do espaço (100% width/height)');
