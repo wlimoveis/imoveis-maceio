@@ -1,6 +1,7 @@
 // js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM PROXY PURO PARA SUPPORT SYSTEM
 // ✅ As funções locais foram removidas - Core delega completamente para Support System
 // ✅ Fallback mínimo inline garante operação mesmo sem Support System
+// ✅ Dispara evento supportModulesLoaded quando módulos do Support System estão prontos
 console.log('🔧 SharedCore.js carregado - PROXY PURO PARA SUPPORT SYSTEM (sem duplicidade)');
 
 // ==================== CONFIGURAÇÃO CENTRAL DO SISTEMA ====================
@@ -1039,4 +1040,40 @@ setTimeout(() => {
     console.log('✅ SUPABASE_CONSTANTS definido globalmente');
 })();
 
+// ========== DISPARAR EVENTO QUANDO MÓDULOS DO SUPPORT SYSTEM ESTIVEREM PRONTOS ==========
+// Este evento é usado pelo properties.js para fazer upgrade para o template completo
+setTimeout(() => {
+    // Verificar se os módulos do Support System já estão disponíveis
+    const checkSupportModules = () => {
+        if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
+            console.log('🎉 [SharedCore] Módulos do Support System detectados! Disparando evento supportModulesLoaded');
+            window.dispatchEvent(new CustomEvent('supportModulesLoaded', { 
+                detail: { 
+                    timestamp: Date.now(),
+                    modules: ['property-template', 'core-utilities']
+                }
+            }));
+            return true;
+        }
+        return false;
+    };
+    
+    // Tentar imediatamente
+    if (!checkSupportModules()) {
+        // Se não estiver disponível, aguardar até 3 segundos
+        let attempts = 0;
+        const maxAttempts = 30; // 30 * 100ms = 3 segundos
+        const interval = setInterval(() => {
+            attempts++;
+            if (checkSupportModules()) {
+                clearInterval(interval);
+            } else if (attempts >= maxAttempts) {
+                clearInterval(interval);
+                console.log('ℹ️ [SharedCore] Módulos do Support System não detectados após timeout. Continuando com fallback.');
+            }
+        }, 100);
+    }
+}, 100);
+
 console.log(`✅ SharedCore.js pronto - PROXY PURO (sem duplicidade) para Support System`);
+console.log('📡 Evento supportModulesLoaded será disparado quando os módulos estiverem prontos');
