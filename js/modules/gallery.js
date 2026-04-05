@@ -1,5 +1,7 @@
-// js/modules/gallery.js - Substituição do contador inferior por visualizações
-console.log('🚀 gallery.js carregado - Contador inferior substituído por visualizações');
+// js/modules/gallery.js - Substituição do contador inferior duplicado por visualizações
+// (Mantendo 100% do código original, alterando APENAS o que foi solicitado)
+
+console.log('🚀 gallery.js carregado - Setas Liquid Glass + abertura na imagem atual');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -18,7 +20,7 @@ window.isVideoUrl = function(url) {
            urlLower.includes('.avi');
 };
 
-// ========== FUNÇÕES DO CONTADOR DE VISUALIZAÇÕES ==========
+// ========== FUNÇÕES DO CONTADOR DE VISUALIZAÇÕES (NOVAS) ==========
 window.incrementGalleryViews = function(propertyId) {
     try {
         const storageKey = `gallery_views_${propertyId}`;
@@ -130,7 +132,7 @@ function getCurrentCardIndex(propertyId) {
     return 0;
 }
 
-// ========== FUNÇÃO PARA NAVEGAR NA GALERIA ==========
+// ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
 window.navigatePropertyGallery = function(propertyId, direction) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -152,7 +154,7 @@ window.navigatePropertyGallery = function(propertyId, direction) {
     updateCardMedia(propertyId, currentIndex);
 };
 
-// ========== FUNÇÃO PARA ATUALIZAR O CARD ==========
+// ========== FUNÇÃO PARA ATUALIZAR O CARD COM NOVA MÍDIA ==========
 function updateCardMedia(propertyId, newIndex) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -183,7 +185,7 @@ function updateCardMedia(propertyId, newIndex) {
     });
     
     // Atualizar contador de imagens (superior direito)
-    const imageCounter = galleryContainer.querySelector('.gallery-image-counter span');
+    const imageCounter = galleryContainer.querySelector('.gallery-indicator-mobile span');
     if (imageCounter) {
         imageCounter.textContent = `${newIndex + 1}/${allMedia.length}`;
     }
@@ -193,7 +195,7 @@ function updateCardMedia(propertyId, newIndex) {
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -225,7 +227,6 @@ window.createPropertyGallery = function(property) {
         `;
     }).join('');
     
-    // Gerar setas de navegação
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
     // Estilo Classmorphism para os contadores
@@ -248,26 +249,26 @@ window.createPropertyGallery = function(property) {
                 <!-- SETAS LIQUID GLASS -->
                 ${arrowsHtml}
                 
-                <!-- CONTADOR DE IMAGENS (POSIÇÃO ORIGINAL: SUPERIOR DIREITO) -->
-                <div class="gallery-image-counter" style="position:absolute; top:10px; right:10px; ${glassStyle} z-index:20;">
+                <!-- CONTADOR DE IMAGENS (SUPERIOR DIREITO - MANTIDO ORIGINAL) -->
+                <div class="gallery-indicator-mobile" style="position:absolute; top:10px; right:10px; ${glassStyle} z-index:20;">
                     <i class="fas fa-images" style="margin-right:4px;"></i>
                     <span>1/${totalMediaCount}</span>
                 </div>
                 
-                <!-- CONTADOR DE VISUALIZAÇÕES (SUBSTITUI O ANTIGO CONTADOR INFERIOR ESQUERDO) -->
+                <!-- CONTADOR DE VISUALIZAÇÕES (INFERIOR ESQUERDO - SUBSTITUI O MEDIA-COUNT DUPLICADO) -->
                 <div class="gallery-views-counter" style="position:absolute; bottom:10px; left:10px; ${glassStyle} z-index:20;">
                     <i class="fas fa-eye" style="margin-right:4px;"></i>
                     <span>${formattedViews}</span>
                 </div>
                 
-                <!-- DOTS (POSIÇÃO ORIGINAL: CENTRALIZADO INFERIOR) -->
+                <!-- DOTS (indicadores) -->
                 ${totalMediaCount > 1 ? `
                     <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; position:absolute; bottom:10px; left:0; right:0;">
                         ${dotsHtml}
                     </div>
                 ` : ''}
                 
-                <!-- ÍCONE EXPANDIR (POSIÇÃO ORIGINAL: SUPERIOR ESQUERDO) -->
+                <!-- ÍCONE EXPANDIR (SUPERIOR ESQUERDO) -->
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
                      style="position:absolute; top:10px; left:10px; background:rgba(0,0,0,0.5); backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,0.2); border-radius:50%; width:32px; height:32px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:20;">
                     <i class="fas fa-expand" style="color:white; font-size:14px;"></i>
@@ -292,7 +293,7 @@ window.createPropertyGallery = function(property) {
     return containerHtml;
 };
 
-// ========== ABRIR GALERIA NA IMAGEM ATUAL ==========
+// ========== FUNÇÃO: Abrir galeria na imagem atual (MODIFICADA PARA INCREMENTAR VISUALIZAÇÕES) ==========
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -361,7 +362,7 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL ==========
+// ========== ATUALIZAR MODAL (APROVEITAMENTO TOTAL DO ESPAÇO) ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -477,6 +478,7 @@ window.setupGalleryEvents = function() {
         .gallery-nav-arrow:hover {
             background: rgba(255,255,255,0.35) !important;
             transform: translateY(-50%) scale(1.1) !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
         }
         .gallery-nav-arrow:active {
             transform: translateY(-50%) scale(0.95) !important;
@@ -487,4 +489,4 @@ window.setupGalleryEvents = function() {
 
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Contador inferior substituído por visualizações (posições originais mantidas)');
+console.log('✅ gallery.js carregado - Contador inferior substituído por visualizações (Classmorphism)');
