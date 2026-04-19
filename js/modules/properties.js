@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO CORRIGIDA (ESTRUTURA IDÊNTICA À ORIGINAL)
-console.log('🏠 properties.js - VERSÃO CORRIGIDA - ESTRUTURA ORIGINAL RESTAURADA');
+// js/modules/properties.js - VERSÃO OTIMIZADA COM ENGINE DELEGADA PARA SUPORTE (CORRIGIDA)
+console.log('🏠 properties.js - ENGINE DE TEMPLATE DELEGADA PARA SUPORTE - VERSÃO CORRIGIDA');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,303 +34,237 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COM CACHE AVANÇADO (MESMA ESTRUTURA DA ORIGINAL) ==========
-class PropertyTemplateEngine {
+// ========== TEMPLATE ENGINE COMPLETO (COM TODOS OS CAMPOS) ==========
+class MinimalTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-        this._localCache = new Map();
     }
 
-    generate(property) {
-        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
-        if (this._localCache.has(cacheKey)) {
-            return this._localCache.get(cacheKey);
-        }
-        
-        const html = this._generateTemplate(property);
-        this._localCache.set(cacheKey, html);
-        
-        if (this._localCache.size > 50) {
-            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
-            keysToDelete.forEach(key => this._localCache.delete(key));
-        }
-        
-        return html;
-    }
-    
-    _generateTemplate(property) {
-        // ✅ Processamento completo das features (como na versão original)
-        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
-        
-        const formatPrice = (price) => {
-            if (window.SharedCore?.PriceFormatter?.formatForCard) {
-                return window.SharedCore.PriceFormatter.formatForCard(price);
-            }
-            if (!price) return 'R$ 0,00';
-            if (typeof price === 'string' && price.includes('R$')) return price;
-            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
-        };
-
-        // ✅ ESTRUTURA IDÊNTICA À VERSÃO ORIGINAL
-        const html = `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
-                ${this.generateImageSection(property)}
-                <div class="property-content">
-                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
-                    <h3 class="property-title" data-title-field>${property.title || 'Sem título'}</h3>
-                    <div class="property-location" data-location-field>
-                        <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
-                    </div>
-                    <p data-description-field>${property.description || 'Descrição não disponível.'}</p>
-                    ${displayFeatures ? `
-                        <div class="property-features" data-features-field>
-                            ${displayFeatures.split(',').map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${f.trim()}</span>
-                            `).join('')}
-                        </div>
-                    ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})">
-                        <i class="fab fa-whatsapp"></i> Entrar em Contato
-                    </button>
-                </div>
-            </div>
-        `;
-
-        return html;
-    }
-
+    // ✅ Gera a seção da imagem (pode ser substituída pelo gallery.js)
     generateImageSection(property) {
-        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
-        const imageUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
-        const imageCount = imageUrls.length;
-        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
-        const hasGallery = imageCount > 1;
+        const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim()) : [];
+        const hasMultipleImages = imageUrls.length > 1;
+        const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : this.imageFallback;
+        
         const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
         const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
         
-        // ✅ PRIORIZA USAR A FUNÇÃO DE GALERIA COMPLETA (COM SETAS FUNCIONAIS)
-        if (hasGallery && typeof window.createPropertyGallery === 'function') {
+        // Se tem múltiplas imagens e a função de galeria existe, usa ela
+        if (hasMultipleImages && typeof window.createPropertyGallery === 'function') {
             try {
                 return window.createPropertyGallery(property);
             } catch (e) {
                 console.warn('❌ Erro na galeria, usando fallback:', e);
             }
         }
-
-        // ✅ FALLBACK: Gera a seção de imagem (sem o conteúdo inferior)
+        
+        // Fallback: imagem simples
         return `
-            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
-                 style="position: relative; height: 250px;">
-                <img src="${firstImageUrl}" 
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     alt="${property.title}"
-                     onerror="this.src='${this.imageFallback}'">
-                ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+            <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px; overflow: hidden;">
+                <div class="property-gallery-container" 
+                     onclick="openGalleryAtCurrentIndex(${property.id})" 
+                     style="cursor:pointer; position:relative; width:100%; height:100%;"
+                     data-current-index="0"
+                     data-property-id="${property.id}">
+                    
+                    <img src="${firstImageUrl}" 
+                         style="width:100%; height:100%; object-fit:cover;"
+                         alt="${property.title || 'Imóvel'}"
+                         onerror="this.src='${this.imageFallback}">
+                    
+                    ${property.badge ? `
+                        <div class="property-badge ${property.rural ? 'rural-badge' : ''}" 
+                             style="position: absolute; top: 15px; left: 15px; background: var(--gold); 
+                                    color: white; padding: 0.4rem 1rem; border-radius: 20px; 
+                                    font-size: 0.8rem; font-weight: bold; z-index: 15;">
+                            ${property.badge}
+                        </div>
+                    ` : ''}
+                    
+                    ${hasVideo ? `
+                        <div class="video-indicator" 
+                             style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); 
+                                    color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; 
+                                    display: flex; align-items: center; gap: 5px; z-index: 15; 
+                                    backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                            <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
+                            <span>Vídeo</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasMultipleImages ? `
+                        <div class="image-count" style="position:absolute; bottom:10px; right:10px; 
+                                    background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; 
+                                    font-size:0.7rem; z-index:20;">
+                            <i class="fas fa-images"></i> ${imageUrls.length}
+                        </div>
+                    ` : ''}
+                    
+                    ${hasPdfs ? `
+                        <button class="pdf-access" 
+                                onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
+                                style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); 
+                                       border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; 
+                                       display: flex; align-items: center; justify-content: center; font-size: 0.75rem; 
+                                       color: #1a5276; transition: all 0.3s ease; z-index: 15; 
+                                       box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+                            <i class="fas fa-file-pdf"></i>
+                        </button>
+                    ` : ''}
+                    
+                    <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
+                         style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; 
+                                width:28px; height:28px; border-radius:50%; display:flex; align-items:center; 
+                                justify-content:center; font-size:0.8rem; cursor:pointer; transition:all 0.3s ease; 
+                                z-index:20;">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+    
+    // ✅ Gera o conteúdo completo do card (com descrição e features)
+    generateContentSection(property) {
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
+        
+        const formatPrice = (price) => {
+            if (!price) return 'R$ 0,00';
+            if (typeof price === 'string' && price.includes('R$')) return price;
+            const numericPrice = String(price).replace(/\D/g, '');
+            if (!numericPrice) return 'R$ 0,00';
+            const formatted = numericPrice.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return `R$ ${formatted}`;
+        };
+        
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        const imageUrls = property.images && property.images !== 'EMPTY' 
+            ? property.images.split(',').filter(url => url && url.trim()) 
+            : [];
+        const imageCount = imageUrls.length;
+        const pdfCount = hasPdfs ? property.pdfs.split(',').filter(p => p.trim()).length : 0;
+        
+        return `
+            <div class="property-content" style="padding: 1.5rem;">
+                <div class="property-price" data-price-field 
+                     style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
+                    ${formatPrice(property.price)}
+                </div>
                 
-                ${hasVideo ? `
-                    <div class="video-indicator pulsing" style="
-                        position: absolute;
-                        top: 85px;
-                        right: 10px;
-                        background: rgba(0, 0, 0, 0.8);
-                        color: white;
-                        padding: 6px 12px;
-                        border-radius: 6px;
-                        font-size: 12px;
-                        display: flex;
-                        align-items: center;
-                        gap: 6px;
-                        z-index: 9;
-                        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-                        border: 1px solid rgba(255,255,255,0.3);
-                        backdrop-filter: blur(5px);
-                        font-weight: 600;
-                        text-transform: uppercase;
-                        letter-spacing: 0.5px;
-                    ">
-                        <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
-                        <span>TEM VÍDEO</span>
+                <h3 class="property-title" data-title-field 
+                    style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
+                    ${property.title || 'Imóvel sem título'}
+                </h3>
+                
+                <div class="property-location" data-location-field 
+                     style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
+                    <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
+                </div>
+                
+                <!-- ✅ DESCRIÇÃO COMPLETA DO IMÓVEL -->
+                <div class="property-description" data-description-field 
+                     style="margin-bottom: 1rem; color: #555; line-height: 1.6; font-size: 0.95rem;">
+                    ${property.description || 'Descrição não disponível.'}
+                </div>
+                
+                <!-- ✅ CARACTERÍSTICAS/FEATURES -->
+                ${displayFeatures ? `
+                    <div class="property-features" data-features-field 
+                         style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                        ${displayFeatures.split(',').map(f => `
+                            <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" 
+                                  style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; 
+                                         border-radius: 20px; font-size: 0.85rem;">
+                                ${f.trim()}
+                            </span>
+                        `).join('')}
                     </div>
                 ` : ''}
                 
-                ${hasGallery ? `
-                    <div class="image-count" style="
-                        position: absolute;
-                        top: 10px;
-                        right: 10px;
-                        background: rgba(0, 0, 0, 0.9);
-                        color: white;
-                        padding: 5px 10px;
-                        border-radius: 4px;
-                        font-size: 13px;
-                        font-weight: bold;
-                        z-index: 10;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
-                    ">
-                        <i class="fas fa-images" style="margin-right: 5px;"></i>${imageCount}
-                    </div>
-                ` : ''}
+                <!-- ✅ METADADOS DO IMÓVEL (QUANTIDADE DE MÍDIAS) -->
+                <div class="property-media-info" 
+                     style="display: flex; gap: 15px; margin-bottom: 1rem; font-size: 0.8rem; color: #888; border-top: 1px solid #eee; padding-top: 0.8rem;">
+                    ${imageCount > 0 ? `<span><i class="fas fa-images"></i> ${imageCount} foto(s)</span>` : ''}
+                    ${property.has_video ? `<span><i class="fas fa-video"></i> Tem vídeo</span>` : ''}
+                    ${pdfCount > 0 ? `<span><i class="fas fa-file-pdf"></i> ${pdfCount} documento(s)</span>` : ''}
+                </div>
                 
-                ${hasPdfs ? `
-                    <button class="pdf-access" onclick="event.stopPropagation(); window.PdfSystem.showModal(${property.id})" style="
-                        position: absolute;
-                        bottom: 2px;
-                        right: 35px;
-                        background: rgba(255, 255, 255, 0.95);
-                        border: none;
-                        border-radius: 50%;
-                        width: 28px;
-                        height: 28px;
-                        cursor: pointer;
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        font-size: 0.75rem;
-                        color: #1a5276;
-                        transition: all 0.3s ease;
-                        z-index: 15;
-                        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                        border: 1px solid rgba(0,0,0,0.15);
-                    ">
-                        <i class="fas fa-file-pdf"></i>
-                    </button>
-                ` : ''}
+                <button class="contact-btn" onclick="contactAgent(${property.id})" 
+                        style="background: linear-gradient(45deg, var(--primary), var(--secondary)); 
+                               color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; 
+                               font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; 
+                               display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <i class="fab fa-whatsapp"></i> Entrar em Contato
+                </button>
+            </div>
+        `;
+    }
+    
+    // ✅ Gera o card COMPLETO
+    generate(property) {
+        return `
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
+                ${this.generateImageSection(property)}
+                ${this.generateContentSection(property)}
             </div>
         `;
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
+        console.log(`🔄 [Fallback] Atualizando card ${propertyId}`);
         
         const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
         if (!card) {
-            console.warn(`⚠️ Card ${propertyId} não encontrado para atualização parcial`);
+            console.warn(`⚠️ Card ${propertyId} não encontrado`);
             return false;
         }
         
-        try {
-            if (propertyData.price !== undefined) {
-                const priceElement = card.querySelector('[data-price-field]');
-                if (priceElement) {
-                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
-                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
-                        : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
-                    priceElement.textContent = formattedPrice;
-                }
-            }
-            
-            if (propertyData.title !== undefined) {
-                const titleElement = card.querySelector('[data-title-field]');
-                if (titleElement) {
-                    titleElement.textContent = propertyData.title;
-                }
-                card.setAttribute('data-property-title', propertyData.title);
-            }
-            
-            if (propertyData.location !== undefined) {
-                const locationElement = card.querySelector('[data-location-field]');
-                if (locationElement) {
-                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
-                }
-            }
-            
-            if (propertyData.description !== undefined) {
-                const descriptionElement = card.querySelector('[data-description-field]');
-                if (descriptionElement) {
-                    descriptionElement.textContent = propertyData.description;
-                }
-            }
-            
-            if (propertyData.features !== undefined) {
-                const featuresElement = card.querySelector('[data-features-field]');
-                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
-                
-                if (featuresElement) {
-                    if (displayFeatures) {
-                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
-                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${f.trim()}</span>
-                        `).join('');
-                    } else {
-                        featuresElement.innerHTML = '';
-                    }
-                }
-            }
-            
-            if (propertyData.has_video !== undefined) {
-                const videoIndicator = card.querySelector('.video-indicator');
-                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
-                
-                if (hasVideo && !videoIndicator) {
-                    const imageSection = card.querySelector('.property-image');
-                    if (imageSection) {
-                        const imageCount = imageSection.querySelector('.image-count');
-                        const topPosition = imageCount ? '35px' : '10px';
-                        
-                        imageSection.innerHTML += `
-                            <div class="video-indicator pulsing" style="
-                                position: absolute;
-                                top: ${topPosition};
-                                right: 10px;
-                                background: rgba(0, 0, 0, 0.8);
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 6px;
-                                font-size: 12px;
-                                display: flex;
-                                align-items: center;
-                                gap: 6px;
-                                z-index: 9;
-                                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
-                                border: 1px solid rgba(255,255,255,0.3);
-                                backdrop-filter: blur(5px);
-                                font-weight: 600;
-                                text-transform: uppercase;
-                                letter-spacing: 0.5px;
-                            ">
-                                <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
-                                <span>TEM VÍDEO</span>
-                            </div>
-                        `;
-                    }
-                } else if (!hasVideo && videoIndicator) {
-                    videoIndicator.remove();
-                }
-            }
-            
-            if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
-                window.TemplateCache.invalidate(propertyId);
-            } else if (this._localCache) {
-                const pattern = `prop_${propertyId}_`;
-                for (const key of this._localCache.keys()) {
-                    if (key.startsWith(pattern)) {
-                        this._localCache.delete(key);
-                    }
-                }
-            }
-            
-            card.classList.add('highlighted');
-            setTimeout(() => {
-                card.classList.remove('highlighted');
-            }, 1000);
-            
-            console.log(`✅ Conteúdo do card ${propertyId} atualizado com sucesso`);
-            return true;
-            
-        } catch (error) {
-            console.error(`❌ Erro ao atualizar card ${propertyId}:`, error);
-            return false;
+        // Atualizar campos individuais
+        if (propertyData.price !== undefined) {
+            const priceEl = card.querySelector('[data-price-field]');
+            if (priceEl) priceEl.textContent = propertyData.price;
         }
+        
+        if (propertyData.title !== undefined) {
+            const titleEl = card.querySelector('[data-title-field]');
+            if (titleEl) titleEl.textContent = propertyData.title;
+            card.setAttribute('data-property-title', propertyData.title);
+        }
+        
+        if (propertyData.location !== undefined) {
+            const locationEl = card.querySelector('[data-location-field]');
+            if (locationEl) locationEl.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
+        }
+        
+        if (propertyData.description !== undefined) {
+            const descEl = card.querySelector('[data-description-field]');
+            if (descEl) descEl.textContent = propertyData.description;
+        }
+        
+        if (propertyData.features !== undefined) {
+            const featuresEl = card.querySelector('[data-features-field]');
+            if (featuresEl) {
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                if (displayFeatures) {
+                    featuresEl.innerHTML = displayFeatures.split(',').map(f => `
+                        <span class="feature-tag">${f.trim()}</span>
+                    `).join('');
+                }
+            }
+        }
+        
+        return true;
     }
     
     clearCache() {
-        const count = this._localCache.size;
-        this._localCache.clear();
-        return count;
+        console.log('🧹 [Fallback] Cache limpo');
+        return 0;
     }
 }
 
-// Instância global
-window.propertyTemplates = new PropertyTemplateEngine();
+// Instancia o template engine
+window.propertyTemplates = new MinimalTemplateEngine();
 
 // ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO ==========
 window.updatePropertyCard = function(propertyId, updatedData = null) {
@@ -344,6 +278,7 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     
     const propertyToRender = updatedData ? { ...property, ...updatedData } : property;
     
+    // Tentar atualização parcial primeiro
     if (updatedData && window.propertyTemplates.updateCardContent) {
         const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
@@ -358,6 +293,7 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         }
     }
     
+    // Se falhar, substituição completa
     console.log(`🔄 Realizando substituição completa do card ${propertyId}`);
     
     const allCards = document.querySelectorAll('.property-card');
@@ -1288,4 +1224,4 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO CORRIGIDA - Estrutura idêntica à versão original funcional!');
+console.log('🎯 VERSÃO CORRIGIDA - Card completo com descrição e features!');
