@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA CORRIGIDA (COM TODOS OS CAMPOS)
-console.log('🏠 properties.js - VERSÃO COMPLETA CORRIGIDA');
+// js/modules/properties.js - VERSÃO CORRIGIDA (ESTRUTURA IDÊNTICA À ORIGINAL)
+console.log('🏠 properties.js - VERSÃO CORRIGIDA - ESTRUTURA ORIGINAL RESTAURADA');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,299 +34,303 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COMPLETO (COM TODOS OS CAMPOS DO IMÓVEL) ==========
-class MinimalTemplateEngine {
+// ========== TEMPLATE ENGINE COM CACHE AVANÇADO (MESMA ESTRUTURA DA ORIGINAL) ==========
+class PropertyTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+        this._localCache = new Map();
     }
 
     generate(property) {
-        // Extrair imagens e verificar se tem múltiplas
-        const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
-        const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim()) : [];
-        const hasMultipleImages = imageUrls.length > 1;
-        const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : this.imageFallback;
+        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
+        if (this._localCache.has(cacheKey)) {
+            return this._localCache.get(cacheKey);
+        }
+        
+        const html = this._generateTemplate(property);
+        this._localCache.set(cacheKey, html);
+        
+        if (this._localCache.size > 50) {
+            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
+            keysToDelete.forEach(key => this._localCache.delete(key));
+        }
+        
+        return html;
+    }
+    
+    _generateTemplate(property) {
+        // ✅ Processamento completo das features (como na versão original)
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
+        
+        const formatPrice = (price) => {
+            if (window.SharedCore?.PriceFormatter?.formatForCard) {
+                return window.SharedCore.PriceFormatter.formatForCard(price);
+            }
+            if (!price) return 'R$ 0,00';
+            if (typeof price === 'string' && price.includes('R$')) return price;
+            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
+        };
+
+        // ✅ ESTRUTURA IDÊNTICA À VERSÃO ORIGINAL
+        const html = `
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
+                ${this.generateImageSection(property)}
+                <div class="property-content">
+                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
+                    <h3 class="property-title" data-title-field>${property.title || 'Sem título'}</h3>
+                    <div class="property-location" data-location-field>
+                        <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
+                    </div>
+                    <p data-description-field>${property.description || 'Descrição não disponível.'}</p>
+                    ${displayFeatures ? `
+                        <div class="property-features" data-features-field>
+                            ${displayFeatures.split(',').map(f => `
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${f.trim()}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                    <button class="contact-btn" onclick="contactAgent(${property.id})">
+                        <i class="fab fa-whatsapp"></i> Entrar em Contato
+                    </button>
+                </div>
+            </div>
+        `;
+
+        return html;
+    }
+
+    generateImageSection(property) {
+        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
+        const imageCount = imageUrls.length;
+        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
+        const hasGallery = imageCount > 1;
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
         
         // ✅ PRIORIZA USAR A FUNÇÃO DE GALERIA COMPLETA (COM SETAS FUNCIONAIS)
-        if (hasMultipleImages && typeof window.createPropertyGallery === 'function') {
+        if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
                 return window.createPropertyGallery(property);
             } catch (e) {
                 console.warn('❌ Erro na galeria, usando fallback:', e);
             }
         }
-        
-        // ========== FALLBACK COMPLETO - COM TODOS OS CAMPOS DO IMÓVEL ==========
-        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
-        
-        // ✅ CORRIGIDO: Processamento completo das features
-        let displayFeatures = '';
-        if (property.features) {
-            try {
-                let featuresArray = [];
-                if (typeof property.features === 'string') {
-                    if (property.features.startsWith('[')) {
-                        featuresArray = JSON.parse(property.features);
-                    } else {
-                        featuresArray = property.features.split(',').map(f => f.trim());
-                    }
-                } else if (Array.isArray(property.features)) {
-                    featuresArray = property.features;
-                }
-                displayFeatures = featuresArray.map(f => `
-                    <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" 
-                          style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; 
-                                 border-radius: 20px; font-size: 0.85rem;">
-                        ${f}
-                    </span>
-                `).join('');
-            } catch (e) {
-                console.warn('Erro ao processar features:', e);
-                displayFeatures = '';
-            }
-        }
-        
-        // ✅ CORRIGIDO: Formatação completa do preço
-        const formatPrice = (price) => {
-            if (!price) return 'R$ 0,00';
-            if (typeof price === 'string' && price.includes('R$')) return price;
-            const numericPrice = String(price).replace(/\D/g, '');
-            if (!numericPrice) return 'R$ 0,00';
-            const formatted = numericPrice.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-            return `R$ ${formatted}`;
-        };
-        
-        // ✅ CORRIGIDO: Descrição completa (sem truncamento)
-        const description = property.description || 'Descrição não disponível.';
-        
-        // Gerar setas de navegação
-        const arrowsHtml = hasMultipleImages ? `
-            <button class="gallery-nav-arrow gallery-nav-prev" 
-                    onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${property.id}, 'prev')"
-                    style="position:absolute; left:10px; top:50%; transform:translateY(-50%); 
-                           width:40px; height:40px; border-radius:50%; 
-                           background:rgba(255,255,255,0.2); 
-                           backdrop-filter:blur(8px);
-                           border:1px solid rgba(255,255,255,0.3);
-                           color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
-                           font-size:18px; transition:all 0.3s ease; z-index:25;
-                           box-shadow:0 2px 10px rgba(0,0,0,0.2);">
-                <i class="fas fa-chevron-left"></i>
-            </button>
-            <button class="gallery-nav-arrow gallery-nav-next" 
-                    onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${property.id}, 'next')"
-                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); 
-                           width:40px; height:40px; border-radius:50%; 
-                           background:rgba(255,255,255,0.2); 
-                           backdrop-filter:blur(8px);
-                           border:1px solid rgba(255,255,255,0.3);
-                           color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
-                           font-size:18px; transition:all 0.3s ease; z-index:25;
-                           box-shadow:0 2px 10px rgba(0,0,0,0.2);">
-                <i class="fas fa-chevron-right"></i>
-            </button>
-        ` : '';
-        
-        // Gerar dots (indicadores)
-        const dotsHtml = hasMultipleImages ? imageUrls.map((url, idx) => {
-            const isVideoUrl = window.isVideoUrl ? window.isVideoUrl(url) : false;
-            const icon = isVideoUrl ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
-            return `
-                <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
-                     data-index="${idx}"
-                     onclick="event.stopPropagation(); event.preventDefault(); updateCardMedia(${property.id}, ${idx})"
-                     style="${isVideoUrl ? 'background:#9b59b6;' : ''}">
-                    ${icon}
-                </div>
-            `;
-        }).join('') : '';
-        
-        // Contador de imagens
-        const counterHtml = hasMultipleImages ? `
-            <div class="gallery-indicator-mobile" style="position:absolute; bottom:10px; right:10px; 
-                        background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; 
-                        font-size:0.7rem; z-index:20;">
-                <i class="fas fa-images"></i>
-                <span>1/${imageUrls.length}</span>
-            </div>
-        ` : '';
-        
-        // Contador de visualizações
-        const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
-        const viewCounterHtml = `
-            <div class="gallery-view-counter" 
-                 onclick="event.stopPropagation();"
-                 style="position:absolute; bottom:10px; left:10px; 
-                        background: rgba(255, 255, 255, 0.25);
-                        backdrop-filter: blur(10px);
-                        -webkit-backdrop-filter: blur(10px);
-                        border-radius: 20px;
-                        border: 1px solid rgba(255, 255, 255, 0.3);
-                        padding: 6px 12px;
-                        font-size: 0.75rem;
+
+        // ✅ FALLBACK: Gera a seção de imagem (sem o conteúdo inferior)
+        return `
+            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+                 style="position: relative; height: 250px;">
+                <img src="${firstImageUrl}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     alt="${property.title}"
+                     onerror="this.src='${this.imageFallback}'">
+                ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+                
+                ${hasVideo ? `
+                    <div class="video-indicator pulsing" style="
+                        position: absolute;
+                        top: 85px;
+                        right: 10px;
+                        background: rgba(0, 0, 0, 0.8);
                         color: white;
-                        font-weight: 500;
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                        font-size: 12px;
                         display: flex;
                         align-items: center;
                         gap: 6px;
-                        z-index: 20;
-                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                        transition: all 0.3s ease;
-                        cursor: default;">
-                <i class="fas fa-eye" style="font-size: 0.7rem;"></i>
-                <span>${viewCount}</span>
-            </div>
-        `;
-        
-        // Ícone de expandir
-        const expandIconHtml = `
-            <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
-                 style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; 
-                        width:28px; height:28px; border-radius:50%; display:flex; align-items:center; 
-                        justify-content:center; font-size:0.8rem; cursor:pointer; transition:all 0.3s ease; 
-                        z-index:20;">
-                <i class="fas fa-expand"></i>
-            </div>
-        `;
-        
-        // ✅ HTML COMPLETO DO CARD COM TODOS OS CAMPOS
-        return `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image ${property.rural ? 'rural-image' : ''}" 
-                     style="position: relative; height: 250px; overflow: hidden;">
-                    
-                    <div class="property-gallery-container" 
-                         onclick="openGalleryAtCurrentIndex(${property.id})" 
-                         style="cursor:pointer; position:relative; width:100%; height:100%;"
-                         data-current-index="0"
-                         data-property-id="${property.id}">
-                        
-                        <img src="${firstImageUrl}" 
-                             style="width:100%; height:100%; object-fit:cover;"
-                             alt="${property.title || 'Imóvel'}"
-                             data-original-src="${firstImageUrl}"
-                             data-image-index="0"
-                             data-total-images="${imageUrls.length}"
-                             onerror="this.src='${this.imageFallback}'">
-                        
-                        ${arrowsHtml}
-                        
-                        ${property.badge ? `
-                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" 
-                                 style="position: absolute; top: 15px; left: 15px; background: var(--gold); 
-                                        color: white; padding: 0.4rem 1rem; border-radius: 20px; 
-                                        font-size: 0.8rem; font-weight: bold; z-index: 15;">
-                                ${property.badge}
-                            </div>
-                        ` : ''}
-                        
-                        ${hasVideo ? `
-                            <div class="video-indicator" 
-                                 style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); 
-                                        color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; 
-                                        display: flex; align-items: center; gap: 5px; z-index: 15; 
-                                        backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
-                                <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
-                                <span>Vídeo</span>
-                            </div>
-                        ` : ''}
-                        
-                        ${counterHtml}
-                        
-                        ${hasMultipleImages ? `
-                            <div class="gallery-controls" 
-                                 style="position:absolute; bottom:15px; left:0; right:0; 
-                                        display:flex; justify-content:center; gap:8px; z-index:20;">
-                                ${dotsHtml}
-                            </div>
-                        ` : ''}
-                        
-                        ${expandIconHtml}
-                        ${viewCounterHtml}
-                        
-                        ${hasPdfs ? `
-                            <button class="pdf-access" 
-                                    onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
-                                    style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); 
-                                           border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; 
-                                           display: flex; align-items: center; justify-content: center; font-size: 0.75rem; 
-                                           color: #1a5276; transition: all 0.3s ease; z-index: 15; 
-                                           box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        ` : ''}
+                        z-index: 9;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                        border: 1px solid rgba(255,255,255,0.3);
+                        backdrop-filter: blur(5px);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    ">
+                        <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
+                        <span>TEM VÍDEO</span>
                     </div>
-                </div>
+                ` : ''}
                 
-                <!-- ✅ CONTEÚDO COMPLETO DO CARD (COM TODOS OS CAMPOS) -->
-                <div class="property-content" style="padding: 1.5rem;">
-                    <div class="property-price" data-price-field 
-                         style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
-                        ${formatPrice(property.price)}
+                ${hasGallery ? `
+                    <div class="image-count" style="
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0, 0, 0, 0.9);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        font-weight: bold;
+                        z-index: 10;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+                    ">
+                        <i class="fas fa-images" style="margin-right: 5px;"></i>${imageCount}
                     </div>
-                    
-                    <h3 class="property-title" data-title-field 
-                        style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
-                        ${property.title || 'Imóvel sem título'}
-                    </h3>
-                    
-                    <div class="property-location" data-location-field 
-                         style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
-                        <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
-                    </div>
-                    
-                    <!-- ✅ DESCRIÇÃO COMPLETA DO IMÓVEL (SEM TRUNCAMENTO) -->
-                    <div class="property-description" data-description-field 
-                         style="margin-bottom: 1rem; color: #555; line-height: 1.6; font-size: 0.95rem;">
-                        ${description}
-                    </div>
-                    
-                    <!-- ✅ CARACTERÍSTICAS/FEATURES COMPLETAS -->
-                    ${displayFeatures ? `
-                        <div class="property-features" data-features-field 
-                             style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
-                            ${displayFeatures}
-                        </div>
-                    ` : ''}
-                    
-                    <!-- ✅ METADADOS DO IMÓVEL (OPCIONAL - MOSTRA QUANTIDADE DE MÍDIAS) -->
-                    <div class="property-media-info" 
-                         style="display: flex; gap: 15px; margin-bottom: 1rem; font-size: 0.8rem; color: #888; border-top: 1px solid #eee; padding-top: 0.8rem;">
-                        ${imageUrls.length > 0 ? `<span><i class="fas fa-images"></i> ${imageUrls.length} foto(s)</span>` : ''}
-                        ${hasVideo ? `<span><i class="fas fa-video"></i> Tem vídeo</span>` : ''}
-                        ${hasPdfs ? `<span><i class="fas fa-file-pdf"></i> ${property.pdfs.split(',').filter(p => p.trim()).length} documento(s)</span>` : ''}
-                    </div>
-                    
-                    <button class="contact-btn" onclick="contactAgent(${property.id})" 
-                            style="background: linear-gradient(45deg, var(--primary), var(--secondary)); 
-                                   color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; 
-                                   font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; 
-                                   display: flex; align-items: center; justify-content: center; gap: 8px;">
-                        <i class="fab fa-whatsapp"></i> Entrar em Contato
+                ` : ''}
+                
+                ${hasPdfs ? `
+                    <button class="pdf-access" onclick="event.stopPropagation(); window.PdfSystem.showModal(${property.id})" style="
+                        position: absolute;
+                        bottom: 2px;
+                        right: 35px;
+                        background: rgba(255, 255, 255, 0.95);
+                        border: none;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.75rem;
+                        color: #1a5276;
+                        transition: all 0.3s ease;
+                        z-index: 15;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                        border: 1px solid rgba(0,0,0,0.15);
+                    ">
+                        <i class="fas fa-file-pdf"></i>
                     </button>
-                </div>
+                ` : ''}
             </div>
         `;
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`⚠️ [Fallback] Recarregando todos os cards para atualizar ${propertyId}`);
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties(window.currentFilter || 'todos', true);
-            return true;
+        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
+        
+        const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
+        if (!card) {
+            console.warn(`⚠️ Card ${propertyId} não encontrado para atualização parcial`);
+            return false;
         }
-        return false;
+        
+        try {
+            if (propertyData.price !== undefined) {
+                const priceElement = card.querySelector('[data-price-field]');
+                if (priceElement) {
+                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
+                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
+                        : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
+                    priceElement.textContent = formattedPrice;
+                }
+            }
+            
+            if (propertyData.title !== undefined) {
+                const titleElement = card.querySelector('[data-title-field]');
+                if (titleElement) {
+                    titleElement.textContent = propertyData.title;
+                }
+                card.setAttribute('data-property-title', propertyData.title);
+            }
+            
+            if (propertyData.location !== undefined) {
+                const locationElement = card.querySelector('[data-location-field]');
+                if (locationElement) {
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
+                }
+            }
+            
+            if (propertyData.description !== undefined) {
+                const descriptionElement = card.querySelector('[data-description-field]');
+                if (descriptionElement) {
+                    descriptionElement.textContent = propertyData.description;
+                }
+            }
+            
+            if (propertyData.features !== undefined) {
+                const featuresElement = card.querySelector('[data-features-field]');
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                
+                if (featuresElement) {
+                    if (displayFeatures) {
+                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
+                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${f.trim()}</span>
+                        `).join('');
+                    } else {
+                        featuresElement.innerHTML = '';
+                    }
+                }
+            }
+            
+            if (propertyData.has_video !== undefined) {
+                const videoIndicator = card.querySelector('.video-indicator');
+                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
+                
+                if (hasVideo && !videoIndicator) {
+                    const imageSection = card.querySelector('.property-image');
+                    if (imageSection) {
+                        const imageCount = imageSection.querySelector('.image-count');
+                        const topPosition = imageCount ? '35px' : '10px';
+                        
+                        imageSection.innerHTML += `
+                            <div class="video-indicator pulsing" style="
+                                position: absolute;
+                                top: ${topPosition};
+                                right: 10px;
+                                background: rgba(0, 0, 0, 0.8);
+                                color: white;
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                font-size: 12px;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                z-index: 9;
+                                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                                border: 1px solid rgba(255,255,255,0.3);
+                                backdrop-filter: blur(5px);
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                            ">
+                                <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
+                                <span>TEM VÍDEO</span>
+                            </div>
+                        `;
+                    }
+                } else if (!hasVideo && videoIndicator) {
+                    videoIndicator.remove();
+                }
+            }
+            
+            if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
+                window.TemplateCache.invalidate(propertyId);
+            } else if (this._localCache) {
+                const pattern = `prop_${propertyId}_`;
+                for (const key of this._localCache.keys()) {
+                    if (key.startsWith(pattern)) {
+                        this._localCache.delete(key);
+                    }
+                }
+            }
+            
+            card.classList.add('highlighted');
+            setTimeout(() => {
+                card.classList.remove('highlighted');
+            }, 1000);
+            
+            console.log(`✅ Conteúdo do card ${propertyId} atualizado com sucesso`);
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao atualizar card ${propertyId}:`, error);
+            return false;
+        }
     }
     
     clearCache() {
-        console.log('🧹 [Fallback] Cache limpo (fallback mínimo)');
-        return 0;
+        const count = this._localCache.size;
+        this._localCache.clear();
+        return count;
     }
 }
 
-// ========== INSTANCIA O TEMPLATE ENGINE ==========
-window.propertyTemplates = new MinimalTemplateEngine();
+// Instância global
+window.propertyTemplates = new PropertyTemplateEngine();
 
 // ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO ==========
 window.updatePropertyCard = function(propertyId, updatedData = null) {
@@ -344,10 +348,12 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
             console.log(`✅ Atualização parcial bem-sucedida para ${propertyId}`);
+            
             const index = window.properties.findIndex(p => p.id === propertyId);
             if (index !== -1) {
                 window.properties[index] = { ...window.properties[index], ...updatedData };
             }
+            
             return true;
         }
     }
@@ -444,7 +450,7 @@ window.loadPropertiesData = async function () {
         window.properties = window.properties.map(prop => ({
             ...prop,
             has_video: window.SharedCore?.ensureBooleanVideo?.(prop.has_video) ?? false,
-            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) ?? (prop.features || '[]')
+            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) ?? '[]'
         }));
         
         const saved = window.savePropertiesToStorage();
@@ -762,7 +768,7 @@ window.addNewProperty = async function(propertyData) {
             const maxLocalId = window.properties.length > 0 ? 
                 Math.max(...window.properties.map(p => parseInt(p.id) || 0)) : 0;
             newId = maxLocalId + 1;
-            console.log(`⚠️ ID local temporário: ${newId} (sem conexão Supabase)`);
+            console.log(`⚠️ ID local temporário: ${newId}`);
         }
 
         const newProperty = {
@@ -795,7 +801,7 @@ window.addNewProperty = async function(propertyData) {
                 localStorage.setItem('properties_backup_' + Date.now(), JSON.stringify([newProperty]));
             } catch (backupError) {
                 console.error('❌ Backup também falhou!');
-                alert('⚠️ ATENÇÃO: Não foi possível salvar o imóvel localmente!\n\nO imóvel aparecerá agora mas pode desaparecer ao recarregar.');
+                alert('⚠️ ATENÇÃO: Não foi possível salvar o imóvel localmente!');
             }
         }
 
@@ -863,12 +869,7 @@ window.addNewProperty = async function(propertyData) {
 
     } catch (error) {
         console.error('❌ ERRO CRÍTICO ao adicionar imóvel:', error);
-        
-        let errorMessage = '❌ Erro ao cadastrar imóvel:\n';
-        errorMessage += error.message || 'Erro desconhecido';
-        
-        alert(errorMessage);
-        
+        alert(`❌ Erro ao cadastrar imóvel:\n${error.message || 'Erro desconhecido'}`);
         console.groupEnd();
         return null;
     }
@@ -1047,13 +1048,7 @@ window.updateLocalProperty = function(propertyId, updatedData) {
         return false;
     }
     
-    console.log(`✅ Imóvel ${propertyId} atualizado localmente:`, {
-        título: updatedData.title || existingProperty.title,
-        preço: updatedData.price || existingProperty.price,
-        localização: updatedData.location || existingProperty.location,
-        descrição: updatedData.description?.substring(0, 50),
-        video: updatedData.has_video
-    });
+    console.log(`✅ Imóvel ${propertyId} atualizado localmente`);
     
     if (typeof window.loadPropertyList === 'function') {
         setTimeout(() => {
@@ -1142,47 +1137,6 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    let mediaDeletionSuccess = true;
-    let mediaDeletionError = null;
-
-    if (typeof MediaSystem !== 'undefined' && typeof MediaSystem.deleteFilesFromStorage === 'function') {
-        const imageUrls = property.images && property.images !== 'EMPTY' 
-            ? property.images.split(',').filter(url => url && url.trim() !== '') 
-            : [];
-        const pdfUrls = property.pdfs && property.pdfs !== 'EMPTY' 
-            ? property.pdfs.split(',').filter(url => url && url.trim() !== '') 
-            : [];
-        const allFileUrls = [...imageUrls, ...pdfUrls];
-
-        if (allFileUrls.length > 0) {
-            console.log(`🗑️ Iniciando exclusão física de ${allFileUrls.length} arquivo(s)`);
-            try {
-                const deletionResult = await MediaSystem.deleteFilesFromStorage(allFileUrls);
-                if (!deletionResult.success) {
-                    console.warn(`⚠️ Exclusão de arquivos teve falhas: ${deletionResult.failedCount} erro(s).`);
-                    mediaDeletionError = `Falha ao excluir ${deletionResult.failedCount} arquivo(s) físicos.`;
-                    mediaDeletionSuccess = false;
-                } else {
-                    console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos fisicamente`);
-                }
-            } catch (error) {
-                console.error('❌ Erro crítico ao tentar excluir arquivos físicos:', error);
-                mediaDeletionError = error.message;
-                mediaDeletionSuccess = false;
-                
-                const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS FÍSICOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro do imóvel?`);
-                if (!userConfirmed) {
-                    console.log('❌ Exclusão cancelada');
-                    alert('❌ Exclusão cancelada');
-                    console.groupEnd();
-                    return false;
-                }
-            }
-        } else {
-            console.log('📭 Imóvel sem arquivos de mídia para excluir.');
-        }
-    }
-
     let supabaseSuccess = false;
     let supabaseError = null;
 
@@ -1232,23 +1186,13 @@ window.deleteProperty = async function(id) {
 
     let finalMessage = '';
     if (supabaseSuccess) {
-        finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!\n\n`;
-        finalMessage += `✓ Registro removido do servidor.\n`;
-        if (mediaDeletionSuccess) {
-            finalMessage += `✓ Arquivos de mídia excluídos fisicamente do Storage.`;
-        } else {
-            finalMessage += `⚠️ ATENÇÃO: Falha na exclusão física dos arquivos de mídia.`;
-        }
+        finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!`;
     } else {
         finalMessage = `⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.\n\n`;
-        finalMessage += `✓ Registro removido do seu navegador.\n`;
         if (!supabaseError && !window.ensureSupabaseCredentials()) {
-            finalMessage += `🌐 O servidor não estava acessível. O imóvel ainda existe no servidor.\n`;
+            finalMessage += `🌐 O servidor não estava acessível. O imóvel ainda existe no servidor.`;
         } else if (supabaseError) {
-            finalMessage += `❌ Erro no servidor: ${supabaseError.substring(0, 100)}...\n`;
-        }
-        if (!mediaDeletionSuccess) {
-            finalMessage += `⚠️ ATENÇÃO: Os arquivos de mídia NÃO foram excluídos.`;
+            finalMessage += `❌ Erro no servidor: ${supabaseError.substring(0, 100)}...`;
         }
     }
     alert(finalMessage);
@@ -1313,7 +1257,7 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO COMPLETA CORRIGIDA CARREGADA');
+console.log('✅ properties.js VERSÃO CORRIGIDA CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1344,4 +1288,4 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA CORRIGIDA - Todos os campos do imóvel são exibidos corretamente!');
+console.log('🎯 VERSÃO CORRIGIDA - Estrutura idêntica à versão original funcional!');
