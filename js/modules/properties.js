@@ -35,24 +35,30 @@ window.ensureSupabaseCredentials = function() {
 };
 
 // ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPPORT SYSTEM) ==========
-// Fallback inline MELHORADO - gera estrutura COMPATÍVEL com gallery.js
+// Fallback inline MELHORADO - COM SUPORTE COMPLETO A SETAS DE NAVEGAÇÃO
 class MinimalTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
     }
 
     generate(property) {
-        // Extrair primeira imagem (se existir)
+        // Extrair imagens e verificar se tem múltiplas
         const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
-        let firstImageUrl = this.imageFallback;
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim()) : [];
+        const hasMultipleImages = imageUrls.length > 1;
+        const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : this.imageFallback;
         
-        if (hasImages) {
-            const imageUrls = property.images.split(',').filter(url => url && url.trim());
-            if (imageUrls.length > 0) {
-                firstImageUrl = imageUrls[0];
+        // ✅ PRIORIZA USAR A FUNÇÃO DE GALERIA COMPLETA (COM SETAS FUNCIONAIS)
+        if (hasMultipleImages && typeof window.createPropertyGallery === 'function') {
+            try {
+                return window.createPropertyGallery(property);
+            } catch (e) {
+                console.warn('❌ Erro na galeria, usando fallback:', e);
+                // Fallback para o método manual se falhar
             }
         }
         
+        // FALLBACK: Gerar HTML manual com suporte a setas
         const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
         const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
@@ -63,75 +69,207 @@ class MinimalTemplateEngine {
             return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         };
         
-        // ========== ESTRUTURA COMPATÍVEL COM gallery.js ==========
-        // O gallery.js procura por .property-gallery-container e .property-image
+        // Gerar setas de navegação (Liquid Glass) se tiver múltiplas imagens
+        const arrowsHtml = hasMultipleImages ? `
+            <button class="gallery-nav-arrow gallery-nav-prev" 
+                    onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${property.id}, 'prev')"
+                    style="position:absolute; left:10px; top:50%; transform:translateY(-50%); 
+                           width:40px; height:40px; border-radius:50%; 
+                           background:rgba(255,255,255,0.2); 
+                           backdrop-filter:blur(8px);
+                           border:1px solid rgba(255,255,255,0.3);
+                           color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
+                           font-size:18px; transition:all 0.3s ease; z-index:25;
+                           box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+                <i class="fas fa-chevron-left"></i>
+            </button>
+            <button class="gallery-nav-arrow gallery-nav-next" 
+                    onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${property.id}, 'next')"
+                    style="position:absolute; right:10px; top:50%; transform:translateY(-50%); 
+                           width:40px; height:40px; border-radius:50%; 
+                           background:rgba(255,255,255,0.2); 
+                           backdrop-filter:blur(8px);
+                           border:1px solid rgba(255,255,255,0.3);
+                           color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
+                           font-size:18px; transition:all 0.3s ease; z-index:25;
+                           box-shadow:0 2px 10px rgba(0,0,0,0.2);">
+                <i class="fas fa-chevron-right"></i>
+            </button>
+        ` : '';
+        
+        // Gerar dots (indicadores)
+        const dotsHtml = hasMultipleImages ? imageUrls.map((url, idx) => {
+            const isVideoUrl = window.isVideoUrl ? window.isVideoUrl(url) : false;
+            const icon = isVideoUrl ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
+            return `
+                <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
+                     data-index="${idx}"
+                     onclick="event.stopPropagation(); event.preventDefault(); updateCardMedia(${property.id}, ${idx})"
+                     style="${isVideoUrl ? 'background:#9b59b6;' : ''}">
+                    ${icon}
+                </div>
+            `;
+        }).join('') : '';
+        
+        // Contador de imagens
+        const counterHtml = hasMultipleImages ? `
+            <div class="gallery-indicator-mobile" style="position:absolute; bottom:10px; right:10px; 
+                        background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; 
+                        font-size:0.7rem; z-index:20;">
+                <i class="fas fa-images"></i>
+                <span>1/${imageUrls.length}</span>
+            </div>
+        ` : '';
+        
+        // Contador de visualizações (Glassmorphism)
+        const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
+        const viewCounterHtml = `
+            <div class="gallery-view-counter" 
+                 onclick="event.stopPropagation();"
+                 style="position:absolute; bottom:10px; left:10px; 
+                        background: rgba(255, 255, 255, 0.25);
+                        backdrop-filter: blur(10px);
+                        -webkit-backdrop-filter: blur(10px);
+                        border-radius: 20px;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        padding: 6px 12px;
+                        font-size: 0.75rem;
+                        color: white;
+                        font-weight: 500;
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        z-index: 20;
+                        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+                        transition: all 0.3s ease;
+                        cursor: default;">
+                <i class="fas fa-eye" style="font-size: 0.7rem;"></i>
+                <span>${viewCount}</span>
+            </div>
+        `;
+        
+        // Ícone de expandir
+        const expandIconHtml = `
+            <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})"
+                 style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; 
+                        width:28px; height:28px; border-radius:50%; display:flex; align-items:center; 
+                        justify-content:center; font-size:0.8rem; cursor:pointer; transition:all 0.3s ease; 
+                        z-index:20;">
+                <i class="fas fa-expand"></i>
+            </div>
+        `;
+        
         return `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px; overflow: hidden;">
-                    <!-- ESTRUTURA QUE O gallery.js ESPERA PARA INJETAR A GALERIA -->
+                <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+                     style="position: relative; height: 250px; overflow: hidden;">
+                    
                     <div class="property-gallery-container" 
-                         onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
-                         style="cursor:pointer; position:relative; width:100%; height:100%;">
+                         onclick="openGalleryAtCurrentIndex(${property.id})" 
+                         style="cursor:pointer; position:relative; width:100%; height:100%;"
+                         data-current-index="0"
+                         data-property-id="${property.id}">
                         
-                        <!-- Imagem principal (fallback enquanto gallery.js não carrega) -->
+                        <!-- Imagem principal -->
                         <img src="${firstImageUrl}" 
                              style="width:100%; height:100%; object-fit:cover;"
                              alt="${property.title || 'Imóvel'}"
                              data-original-src="${firstImageUrl}"
+                             data-image-index="0"
+                             data-total-images="${imageUrls.length}"
                              onerror="this.src='${this.imageFallback}'">
                         
-                        <!-- Badge do imóvel (Destaque, Luxo, etc.) -->
+                        <!-- Setas de navegação Liquid Glass -->
+                        ${arrowsHtml}
+                        
+                        <!-- Badge do imóvel -->
                         ${property.badge ? `
-                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="position: absolute; top: 15px; left: 15px; background: var(--gold); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; z-index: 10;">
+                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" 
+                                 style="position: absolute; top: 15px; left: 15px; background: var(--gold); 
+                                        color: white; padding: 0.4rem 1rem; border-radius: 20px; 
+                                        font-size: 0.8rem; font-weight: bold; z-index: 15;">
                                 ${property.badge}
                             </div>
                         ` : ''}
                         
-                        <!-- Indicador de VÍDEO (estilo consistente com gallery.js) -->
+                        <!-- Indicador de VÍDEO -->
                         ${hasVideo ? `
-                            <div class="video-indicator" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 5px; z-index: 10; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
+                            <div class="video-indicator" 
+                                 style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); 
+                                        color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; 
+                                        display: flex; align-items: center; gap: 5px; z-index: 15; 
+                                        backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
                                 <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
                                 <span>Vídeo</span>
                             </div>
                         ` : ''}
                         
+                        <!-- Contador de imagens -->
+                        ${counterHtml}
+                        
+                        <!-- Dots (indicadores) -->
+                        ${hasMultipleImages ? `
+                            <div class="gallery-controls" 
+                                 style="position:absolute; bottom:15px; left:0; right:0; 
+                                        display:flex; justify-content:center; gap:8px; z-index:20;">
+                                ${dotsHtml}
+                            </div>
+                        ` : ''}
+                        
+                        <!-- Ícone de expandir -->
+                        ${expandIconHtml}
+                        
+                        <!-- Contador de visualizações Glassmorphism -->
+                        ${viewCounterHtml}
+                        
                         <!-- Botão de acesso a PDFs -->
                         ${hasPdfs ? `
-                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
+                            <button class="pdf-access" 
+                                    onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
+                                    style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); 
+                                           border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; 
+                                           display: flex; align-items: center; justify-content: center; font-size: 0.75rem; 
+                                           color: #1a5276; transition: all 0.3s ease; z-index: 15; 
+                                           box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
                                 <i class="fas fa-file-pdf"></i>
                             </button>
                         ` : ''}
-                        
-                        <!-- Ícone de expandir (abrir galeria) -->
-                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; z-index: 10;">
-                            <i class="fas fa-expand"></i>
-                        </div>
                     </div>
                 </div>
                 
                 <div class="property-content" style="padding: 1.5rem;">
-                    <div class="property-price" data-price-field style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
+                    <div class="property-price" data-price-field 
+                         style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
                         ${formatPrice(property.price)}
                     </div>
-                    <h3 class="property-title" data-title-field style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
+                    <h3 class="property-title" data-title-field 
+                        style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
                         ${property.title || 'Imóvel'}
                     </h3>
-                    <div class="property-location" data-location-field style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
+                    <div class="property-location" data-location-field 
+                         style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
                         <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
                     </div>
                     <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
                         ${(property.description || 'Descrição não disponível.').substring(0, 120)}${(property.description || '').length > 120 ? '...' : ''}
                     </p>
                     ${displayFeatures ? `
-                        <div class="property-features" data-features-field style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
+                        <div class="property-features" data-features-field 
+                             style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
                             ${displayFeatures.split(',').slice(0, 4).map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" 
+                                      style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; 
+                                             border-radius: 20px; font-size: 0.85rem;">
                                     ${f.trim()}
                                 </span>
                             `).join('')}
                         </div>
                     ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})" style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button class="contact-btn" onclick="contactAgent(${property.id})" 
+                            style="background: linear-gradient(45deg, var(--primary), var(--secondary)); 
+                                   color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; 
+                                   font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; 
+                                   display: flex; align-items: center; justify-content: center; gap: 8px;">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
@@ -156,13 +294,11 @@ class MinimalTemplateEngine {
 
 // Proxy: tenta usar módulo do Support System, fallback para mínimo
 window.propertyTemplates = (() => {
-    // Tentar carregar do Support System (se já disponível)
     if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
         console.log('✅ [properties.js] Usando PropertyTemplateEngine do Support System');
         return new window.SupportTemplates.PropertyTemplateEngine();
     }
     
-    // Se não estiver disponível agora, tentar novamente mais tarde
     if (!window._propertyTemplatesProxyAttempted) {
         window._propertyTemplatesProxyAttempted = true;
         
@@ -173,14 +309,12 @@ window.propertyTemplates = (() => {
                 window.propertyTemplates = newEngine;
                 clearInterval(checkSupportInterval);
                 
-                // Re-renderizar para aplicar template completo
                 if (typeof window.renderProperties === 'function') {
                     window.renderProperties(window.currentFilter || 'todos', true);
                 }
             }
         }, 500);
         
-        // Timeout: para de tentar após 10 segundos
         setTimeout(() => {
             clearInterval(checkSupportInterval);
             if (!window.SupportTemplates?.PropertyTemplateEngine) {
@@ -205,7 +339,6 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     
     const propertyToRender = updatedData ? { ...property, ...updatedData } : property;
     
-    // Tentar atualização parcial primeiro (via template engine)
     if (updatedData && window.propertyTemplates.updateCardContent) {
         const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
@@ -220,7 +353,6 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         }
     }
     
-    // Se falhar a atualização parcial, fazer substituição completa
     console.log(`🔄 Realizando substituição completa do card ${propertyId}`);
     
     const allCards = document.querySelectorAll('.property-card');
@@ -538,7 +670,7 @@ window.contactAgent = function(id) {
     window.open(whatsappURL, '_blank');
 };
 
-// ========== 7. ADICIONAR NOVO IMÓVEL - VERSÃO CORRIGIDA ==========
+// ========== 7. ADICIONAR NOVO IMÓVEL ==========
 window.addNewProperty = async function(propertyData) {
     console.group('➕ ADICIONANDO NOVO IMÓVEL - VERSÃO CORRIGIDA');
 
@@ -742,7 +874,7 @@ window.addNewProperty = async function(propertyData) {
     }
 };
 
-// ========== 8. ATUALIZAR IMÓVEL - VERSÃO COMPLETA CORRIGIDA ==========
+// ========== 8. ATUALIZAR IMÓVEL ==========
 window.updateProperty = async function(id, propertyData) {
     console.group('📤 updateProperty - VERSÃO CORRIGIDA');
 
