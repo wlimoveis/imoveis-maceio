@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO OTIMIZADA COM ENGINE DELEGADA PARA SUPORTE
-console.log('🏠 properties.js - ENGINE DE TEMPLATE DELEGADA PARA SUPORTE');
+// js/modules/properties.js - VERSÃO OTIMIZADA (COM FALLBACKS CONDICIONAIS)
+console.log('🏠 properties.js - VERSÃO OTIMIZADA - FUNÇÕES CENTRALIZADAS NO SHAREDCORE');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -7,9 +7,12 @@ window.editingPropertyId = null;
 window.currentFilter = 'todos';
 
 // ========== FALLBACK INLINE MÍNIMO E SEGURO PARA VALIDAÇÃO DE ID ==========
+// A implementação real está no Support System (core-utilities.js)
+// Este é apenas um fallback caso o Support System não esteja disponível
 if (typeof window.validateIdForSupabase !== 'function') {
     window.validateIdForSupabase = function(propertyId) {
         if (!propertyId) return null;
+        // Fallback mais seguro: tenta converter para número. Se falhar, retorna o original.
         const num = Number(propertyId);
         return !isNaN(num) && num > 0 ? num : null;
     };
@@ -19,12 +22,12 @@ if (typeof window.validateIdForSupabase !== 'function') {
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
-        console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
-        window.SUPABASE_CONSTANTS = {
-            URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
-            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
-            ADMIN_PASSWORD: "wl654",
-            PDF_PASSWORD: "doc123"
+    console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
+    window.SUPABASE_CONSTANTS = {
+        URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
+        KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
+        ADMIN_PASSWORD: "wl654",
+        PDF_PASSWORD: "doc123"
         };
     }
     
@@ -34,166 +37,329 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPPORT SYSTEM) ==========
-// Fallback inline MELHORADO - gera estrutura COMPATÍVEL com gallery.js
-class MinimalTemplateEngine {
+// ========== TEMPLATE ENGINE COM CACHE AVANÇADO (COM SUPORTE A TEMPLATECACHE) ==========
+class PropertyTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+        // Cache local como fallback (será usado apenas se TemplateCache não estiver disponível)
+        this._localCache = new Map();
     }
 
     generate(property) {
-        // Extrair primeira imagem (se existir)
-        const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
-        let firstImageUrl = this.imageFallback;
-        
-        if (hasImages) {
-            const imageUrls = property.images.split(',').filter(url => url && url.trim());
-            if (imageUrls.length > 0) {
-                firstImageUrl = imageUrls[0];
-            }
+        // Tentar usar TemplateCache do Support System primeiro
+        if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
+            return window.TemplateCache.getTemplate(property, (prop) => this._generateTemplate(prop));
         }
         
-        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        // Fallback para cache local
+        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
+        if (this._localCache.has(cacheKey)) {
+            return this._localCache.get(cacheKey);
+        }
+        
+        const html = this._generateTemplate(property);
+        this._localCache.set(cacheKey, html);
+        
+        // Limitar tamanho do cache local
+        if (this._localCache.size > 50) {
+            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
+            keysToDelete.forEach(key => this._localCache.delete(key));
+        }
+        
+        return html;
+    }
+    
+    _generateTemplate(property) {
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
         const formatPrice = (price) => {
+            if (window.SharedCore?.PriceFormatter?.formatForCard) {
+                return window.SharedCore.PriceFormatter.formatForCard(price);
+            }
             if (!price) return 'R$ 0,00';
             if (typeof price === 'string' && price.includes('R$')) return price;
             return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         };
-        
-        // ========== ESTRUTURA COMPATÍVEL COM gallery.js ==========
-        // O gallery.js procura por .property-gallery-container e .property-image
-        return `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px; overflow: hidden;">
-                    <!-- ESTRUTURA QUE O gallery.js ESPERA PARA INJETAR A GALERIA -->
-                    <div class="property-gallery-container" 
-                         onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
-                         style="cursor:pointer; position:relative; width:100%; height:100%;">
-                        
-                        <!-- Imagem principal (fallback enquanto gallery.js não carrega) -->
-                        <img src="${firstImageUrl}" 
-                             style="width:100%; height:100%; object-fit:cover;"
-                             alt="${property.title || 'Imóvel'}"
-                             data-original-src="${firstImageUrl}"
-                             onerror="this.src='${this.imageFallback}'">
-                        
-                        <!-- Badge do imóvel (Destaque, Luxo, etc.) -->
-                        ${property.badge ? `
-                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="position: absolute; top: 15px; left: 15px; background: var(--gold); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; z-index: 10;">
-                                ${property.badge}
-                            </div>
-                        ` : ''}
-                        
-                        <!-- Indicador de VÍDEO (estilo consistente com gallery.js) -->
-                        ${hasVideo ? `
-                            <div class="video-indicator" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 5px; z-index: 10; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
-                                <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
-                                <span>Vídeo</span>
-                            </div>
-                        ` : ''}
-                        
-                        <!-- Botão de acesso a PDFs -->
-                        ${hasPdfs ? `
-                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        ` : ''}
-                        
-                        <!-- Ícone de expandir (abrir galeria) -->
-                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; z-index: 10;">
-                            <i class="fas fa-expand"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="property-content" style="padding: 1.5rem;">
-                    <div class="property-price" data-price-field style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
-                        ${formatPrice(property.price)}
-                    </div>
-                    <h3 class="property-title" data-title-field style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
-                        ${property.title || 'Imóvel'}
-                    </h3>
-                    <div class="property-location" data-location-field style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
+
+        const html = `
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
+                ${this.generateImageSection(property)}
+                <div class="property-content">
+                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
+                    <h3 class="property-title" data-title-field>${property.title || 'Sem título'}</h3>
+                    <div class="property-location" data-location-field>
                         <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
                     </div>
-                    <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
-                        ${(property.description || 'Descrição não disponível.').substring(0, 120)}${(property.description || '').length > 120 ? '...' : ''}
-                    </p>
+                    <p data-description-field>${property.description || 'Descrição não disponível.'}</p>
                     ${displayFeatures ? `
-                        <div class="property-features" data-features-field style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
-                            ${displayFeatures.split(',').slice(0, 4).map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">
-                                    ${f.trim()}
-                                </span>
+                        <div class="property-features" data-features-field>
+                            ${displayFeatures.split(',').map(f => `
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${f.trim()}</span>
                             `).join('')}
                         </div>
                     ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})" style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button class="contact-btn" onclick="contactAgent(${property.id})">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
             </div>
         `;
+
+        return html;
+    }
+
+    generateImageSection(property) {
+        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
+        const imageCount = imageUrls.length;
+        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
+        const hasGallery = imageCount > 1;
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        
+        if (hasGallery && typeof window.createPropertyGallery === 'function') {
+            try {
+                return window.createPropertyGallery(property);
+            } catch (e) {
+                console.warn('❌ Erro na galeria, usando fallback:', e);
+            }
+        }
+
+        return `
+            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+                 style="position: relative; height: 250px;">
+                <img src="${firstImageUrl}" 
+                     style="width: 100%; height: 100%; object-fit: cover;"
+                     alt="${property.title}"
+                     onerror="this.src='${this.imageFallback}'">
+                ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+                
+                ${hasVideo ? `
+                    <div class="video-indicator pulsing" style="
+                        position: absolute;
+                        top: 85px;
+                        right: 10px;
+                        background: rgba(0, 0, 0, 0.8);
+                        color: white;
+                        padding: 6px 12px;
+                        border-radius: 6px;
+                        font-size: 12px;
+                        display: flex;
+                        align-items: center;
+                        gap: 6px;
+                        z-index: 9;
+                        box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                        border: 1px solid rgba(255,255,255,0.3);
+                        backdrop-filter: blur(5px);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    ">
+                        <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
+                        <span>TEM VÍDEO</span>
+                    </div>
+                ` : ''}
+                
+                ${hasGallery ? `
+                    <div class="image-count" style="
+                        position: absolute;
+                        top: 10px;
+                        right: 10px;
+                        background: rgba(0, 0, 0, 0.9);
+                        color: white;
+                        padding: 5px 10px;
+                        border-radius: 4px;
+                        font-size: 13px;
+                        font-weight: bold;
+                        z-index: 10;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+                    ">
+                        <i class="fas fa-images" style="margin-right: 5px;"></i>${imageCount}
+                    </div>
+                ` : ''}
+                
+                ${hasPdfs ? `
+                    <button class="pdf-access" onclick="event.stopPropagation(); window.PdfSystem.showModal(${property.id})" style="
+                        position: absolute;
+                        bottom: 2px;
+                        right: 35px;
+                        background: rgba(255, 255, 255, 0.95);
+                        border: none;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.75rem;
+                        color: #1a5276;
+                        transition: all 0.3s ease;
+                        z-index: 15;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                        border: 1px solid rgba(0,0,0,0.15);
+                    ">
+                        <i class="fas fa-file-pdf"></i>
+                    </button>
+                ` : ''}
+            </div>
+        `;
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`⚠️ [Fallback] Recarregando todos os cards para atualizar ${propertyId}`);
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties(window.currentFilter || 'todos', true);
-            return true;
+        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
+        
+        const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
+        if (!card) {
+            console.warn(`⚠️ Card ${propertyId} não encontrado para atualização parcial`);
+            return false;
         }
-        return false;
+        
+        try {
+            // Atualizar preço se fornecido
+            if (propertyData.price !== undefined) {
+                const priceElement = card.querySelector('[data-price-field]');
+                if (priceElement) {
+                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
+                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
+                        : (propertyData.price.includes('R$') 
+                            ? propertyData.price 
+                            : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`);
+                    priceElement.textContent = formattedPrice;
+                }
+            }
+            
+            // Atualizar título se fornecido
+            if (propertyData.title !== undefined) {
+                const titleElement = card.querySelector('[data-title-field]');
+                if (titleElement) {
+                    titleElement.textContent = propertyData.title;
+                }
+                card.setAttribute('data-property-title', propertyData.title);
+            }
+            
+            // Atualizar localização se fornecido
+            if (propertyData.location !== undefined) {
+                const locationElement = card.querySelector('[data-location-field]');
+                if (locationElement) {
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
+                }
+            }
+            
+            // Atualizar descrição se fornecido
+            if (propertyData.description !== undefined) {
+                const descriptionElement = card.querySelector('[data-description-field]');
+                if (descriptionElement) {
+                    descriptionElement.textContent = propertyData.description;
+                }
+            }
+            
+            // Atualizar features se fornecido
+            if (propertyData.features !== undefined) {
+                const featuresElement = card.querySelector('[data-features-field]');
+                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                
+                if (featuresElement) {
+                    if (displayFeatures) {
+                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
+                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${f.trim()}</span>
+                        `).join('');
+                    } else {
+                        featuresElement.innerHTML = '';
+                    }
+                }
+            }
+            
+            // Atualizar indicador de vídeo
+            if (propertyData.has_video !== undefined) {
+                const videoIndicator = card.querySelector('.video-indicator');
+                // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
+                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
+                
+                if (hasVideo && !videoIndicator) {
+                    const imageSection = card.querySelector('.property-image');
+                    if (imageSection) {
+                        const imageCount = imageSection.querySelector('.image-count');
+                        const topPosition = imageCount ? '35px' : '10px';
+                        
+                        imageSection.innerHTML += `
+                            <div class="video-indicator pulsing" style="
+                                position: absolute;
+                                top: ${topPosition};
+                                right: 10px;
+                                background: rgba(0, 0, 0, 0.8);
+                                color: white;
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                font-size: 12px;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                z-index: 9;
+                                box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+                                border: 1px solid rgba(255,255,255,0.3);
+                                backdrop-filter: blur(5px);
+                                font-weight: 600;
+                                text-transform: uppercase;
+                                letter-spacing: 0.5px;
+                            ">
+                                <i class="fas fa-video" style="color: #FFD700; font-size: 14px;"></i>
+                                <span>TEM VÍDEO</span>
+                            </div>
+                        `;
+                    }
+                } else if (!hasVideo && videoIndicator) {
+                    videoIndicator.remove();
+                }
+            }
+            
+            // Invalidar cache do template para esta propriedade
+            if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
+                window.TemplateCache.invalidate(propertyId);
+            } else if (this._localCache) {
+                // Limpar cache local como fallback
+                const pattern = `prop_${propertyId}_`;
+                for (const key of this._localCache.keys()) {
+                    if (key.startsWith(pattern)) {
+                        this._localCache.delete(key);
+                    }
+                }
+            }
+            
+            card.classList.add('highlighted');
+            setTimeout(() => {
+                card.classList.remove('highlighted');
+            }, 1000);
+            
+            console.log(`✅ Conteúdo do card ${propertyId} atualizado com sucesso`);
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao atualizar card ${propertyId}:`, error);
+            return false;
+        }
     }
     
+    // Método para limpar cache (útil para testes)
     clearCache() {
-        console.log('🧹 [Fallback] Cache limpo (fallback mínimo)');
-        return 0;
+        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
+            return window.TemplateCache.invalidateAll();
+        }
+        const count = this._localCache.size;
+        this._localCache.clear();
+        return count;
     }
 }
 
-// Proxy: tenta usar módulo do Support System, fallback para mínimo
-window.propertyTemplates = (() => {
-    // Tentar carregar do Support System (se já disponível)
-    if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
-        console.log('✅ [properties.js] Usando PropertyTemplateEngine do Support System');
-        return new window.SupportTemplates.PropertyTemplateEngine();
-    }
-    
-    // Se não estiver disponível agora, tentar novamente mais tarde
-    if (!window._propertyTemplatesProxyAttempted) {
-        window._propertyTemplatesProxyAttempted = true;
-        
-        const checkSupportInterval = setInterval(() => {
-            if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
-                console.log('✅ [properties.js] SupportTemplates carregado tardiamente, substituindo engine');
-                const newEngine = new window.SupportTemplates.PropertyTemplateEngine();
-                window.propertyTemplates = newEngine;
-                clearInterval(checkSupportInterval);
-                
-                // Re-renderizar para aplicar template completo
-                if (typeof window.renderProperties === 'function') {
-                    window.renderProperties(window.currentFilter || 'todos', true);
-                }
-            }
-        }, 500);
-        
-        // Timeout: para de tentar após 10 segundos
-        setTimeout(() => {
-            clearInterval(checkSupportInterval);
-            if (!window.SupportTemplates?.PropertyTemplateEngine) {
-                console.log('ℹ️ [properties.js] SupportTemplates não disponível, mantendo fallback mínimo');
-            }
-        }, 10000);
-    }
-    
-    console.warn('⚠️ [properties.js] SupportTemplates não disponível. Usando fallback mínimo.');
-    return new MinimalTemplateEngine();
-})();
+// Instância global
+window.propertyTemplates = new PropertyTemplateEngine();
 
-// ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO ==========
+/* ==========================================================
+   FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO
+   ========================================================== */
 window.updatePropertyCard = function(propertyId, updatedData = null) {
     console.log('🔄 Atualizando card do imóvel:', propertyId, updatedData ? 'com dados específicos' : '');
     
@@ -205,7 +371,7 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     
     const propertyToRender = updatedData ? { ...property, ...updatedData } : property;
     
-    // Tentar atualização parcial primeiro (via template engine)
+    // Tentar atualização parcial primeiro
     if (updatedData && window.propertyTemplates.updateCardContent) {
         const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
@@ -271,6 +437,8 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
 
 // ========== 1. FUNÇÃO OTIMIZADA: CARREGAMENTO UNIFICADO ==========
 window.loadPropertiesData = async function () {
+    // ✅ PRIMEIRO: (NÃO HÁ MAIS CHAMADA A checkPropertySystem AQUI)
+    
     const loading = window.LoadingManager?.show?.(
         'Carregando imóveis...', 
         'Buscando as melhores oportunidades em Maceió',
@@ -309,6 +477,7 @@ window.loadPropertiesData = async function () {
 
         window.properties = propertiesData || getInitialProperties();
         
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
         window.properties = window.properties.map(prop => ({
             ...prop,
             has_video: window.SharedCore?.ensureBooleanVideo?.(prop.has_video) ?? false,
@@ -338,15 +507,15 @@ window.loadPropertiesData = async function () {
             finalMessage = `✨ ${propertyCount} opções incríveis!`;
         } else if (propertyCount <= 20) {
             finalMessage = `🏘️ ${propertyCount} oportunidades em Maceió!`;
-        } else {
-            finalMessage = `🏆 ${propertyCount} imóveis disponíveis!`;
         }
         
         loading?.updateMessage?.(finalMessage);
         window.renderProperties('todos');
 
+        // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM (se disponível)
         if (typeof window.waitForAllPropertyImages === 'function') {
             const imagesLoaded = await window.waitForAllPropertyImages();
+
             if (imagesLoaded >= (document.querySelectorAll('.property-image img').length || 0)) {
                 loading?.setVariant?.('success');
                 loading?.updateMessage?.(finalMessage + ' 🖼️');
@@ -354,6 +523,13 @@ window.loadPropertiesData = async function () {
                 loading?.setVariant?.('success');
                 loading?.updateMessage?.(`${finalMessage} (${imagesLoaded} imagens carregadas)`);
             }
+        } else {
+            // Fallback simples - função não essencial do Support System
+            // O sistema continua funcionando normalmente sem ela
+            if (window.location.search.includes('debug=true')) {
+                console.log('ℹ️ waitForAllPropertyImages não disponível (modo debug: função do Support System não carregada)');
+            }
+            // Em produção, nenhuma mensagem é exibida
         }
         
     } catch (error) {
@@ -421,7 +597,7 @@ window.renderProperties = function(filter = 'todos', forceClearCache = false) {
         return;
     }
 
-    const filtered = window.filterProperties(window.properties, filter);
+    const filtered = this.filterProperties(window.properties, filter);
     
     if (filtered.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>';
@@ -562,11 +738,13 @@ window.addNewProperty = async function(propertyData) {
         }
 
         if (propertyData.features) {
+            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
             propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
         } else {
             propertyData.features = '[]';
         }
 
+        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
         propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
 
         let mediaResult = { images: '', pdfs: '' };
@@ -752,7 +930,7 @@ window.updateProperty = async function(id, propertyData) {
             console.log(`🔄 Usando editingPropertyId: ${window.editingPropertyId}`);
             id = window.editingPropertyId;
         } else {
-            alert('❌ ERRO: Não foi possível identificar o imóvel para atualização!');
+            alert('❌ ERGO: Não foi possível identificar o imóvel para atualização!');
             console.groupEnd();
             return { success: false, localOnly: true, error: 'ID inválido' };
         }
@@ -781,6 +959,7 @@ window.updateProperty = async function(id, propertyData) {
 
         const processedData = {
             ...propertyData,
+            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
             has_video: window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false
         };
 
@@ -888,10 +1067,12 @@ window.updateLocalProperty = function(propertyId, updatedData) {
         return false;
     }
     
+    // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
     if (updatedData.has_video !== undefined) {
         updatedData.has_video = window.SharedCore?.ensureBooleanVideo?.(updatedData.has_video) ?? false;
     }
     
+    // ✅ PADRÃO HARMONIZADO: Apenas garante que features seja uma string JSON
     if (updatedData.features !== undefined && typeof updatedData.features !== 'string') {
         updatedData.features = window.SharedCore?.parseFeaturesForStorage?.(updatedData.features) ?? '[]';
     }
@@ -962,6 +1143,7 @@ window.addToLocalProperties = function(newProperty) {
         propertyWithId.updated_at = new Date().toISOString();
     }
     
+    // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback nullish coalescing
     propertyWithId.has_video = window.SharedCore?.ensureBooleanVideo?.(propertyWithId.has_video) ?? false;
     propertyWithId.features = window.SharedCore?.parseFeaturesForStorage?.(propertyWithId.features) ?? '[]';
     
@@ -994,7 +1176,7 @@ window.addToLocalProperties = function(newProperty) {
     return propertyWithId;
 };
 
-// ========== 11. EXCLUIR IMÓVEL ==========
+// ========== 11. EXCLUIR IMÓVEL (VERSÃO CORRIGIDA COM EXCLUSÃO FÍSICA DE ARQUIVOS) ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
 
@@ -1005,7 +1187,7 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nEsta ação NÃO pode ser desfeita.`)) {
+    if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nEsta ação NÃO pode não ser desfeita.`)) {
         console.log('❌ Exclusão cancelada pelo usuário');
         console.groupEnd();
         return false;
@@ -1014,7 +1196,9 @@ window.deleteProperty = async function(id) {
     let mediaDeletionSuccess = true;
     let mediaDeletionError = null;
 
+    // --- NOVA LÓGICA: EXCLUIR ARQUIVOS FÍSICOS PRIMEIRO ---
     if (typeof MediaSystem !== 'undefined' && typeof MediaSystem.deleteFilesFromStorage === 'function') {
+        // Extrair todas as URLs de mídia (imagens e PDFs) do imóvel
         const imageUrls = property.images && property.images !== 'EMPTY' 
             ? property.images.split(',').filter(url => url && url.trim() !== '') 
             : [];
@@ -1030,6 +1214,7 @@ window.deleteProperty = async function(id) {
                 if (!deletionResult.success) {
                     console.warn(`⚠️ Exclusão de arquivos teve falhas: ${deletionResult.failedCount} erro(s).`);
                     mediaDeletionError = `Falha ao excluir ${deletionResult.failedCount} arquivo(s) físicos.`;
+                    // Não paramos o fluxo, mas marcamos como não 100% bem-sucedido.
                     mediaDeletionSuccess = false;
                 } else {
                     console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos fisicamente do Storage.`);
@@ -1039,6 +1224,7 @@ window.deleteProperty = async function(id) {
                 mediaDeletionError = error.message;
                 mediaDeletionSuccess = false;
                 
+                // Perguntar ao usuário se deseja continuar mesmo com erro na exclusão dos arquivos
                 const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS FÍSICOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro do imóvel? Os arquivos órfãos permanecerão no Storage.`);
                 if (!userConfirmed) {
                     console.log('❌ Exclusão cancelada pelo usuário devido a erro na exclusão de arquivos.');
@@ -1052,6 +1238,8 @@ window.deleteProperty = async function(id) {
         }
     } else {
         console.warn('⚠️ MediaSystem.deleteFilesFromStorage não disponível. Pulando exclusão física de arquivos.');
+        // Se não tiver a função, a exclusão de arquivos não é possível, mas ainda podemos tentar excluir o registro.
+        // Avisamos o usuário.
         const proceedWithoutMediaDeletion = confirm(`⚠️ O sistema de exclusão de arquivos não está disponível.\n\nOs arquivos de mídia do imóvel "${property.title}" NÃO serão removidos do Storage, permanecendo como arquivos órfãos.\n\nDeseja continuar apenas com a exclusão do registro do imóvel?`);
         if (!proceedWithoutMediaDeletion) {
             console.log('❌ Exclusão cancelada pelo usuário.');
@@ -1062,6 +1250,7 @@ window.deleteProperty = async function(id) {
         mediaDeletionError = 'Sistema de exclusão de arquivos indisponível.';
     }
 
+    // --- CONTINUAR COM A EXCLUSÃO DO REGISTRO NO SUPABASE E LOCAL ---
     let supabaseSuccess = false;
     let supabaseError = null;
 
@@ -1088,6 +1277,7 @@ window.deleteProperty = async function(id) {
         }
     }
 
+    // Excluir localmente independentemente do resultado do Supabase
     window.properties = window.properties.filter(p => p.id !== id);
     
     const saved = window.savePropertiesToStorage();
@@ -1109,6 +1299,7 @@ window.deleteProperty = async function(id) {
         }, 100);
     }
 
+    // Montar mensagem final
     let finalMessage = '';
     if (supabaseSuccess) {
         finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE do sistema!\n\n`;
@@ -1191,12 +1382,14 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO OTIMIZADA COM ENGINE DELEGADA CARREGADA');
+console.log('✅ properties.js VERSÃO OTIMIZADA CARREGADA');
 
+// Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🏠 DOM carregado - inicializando properties...');
 
+        // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM
         if (typeof window.runLowPriority === 'function') {
             window.runLowPriority(() => {
                 if (typeof window.loadPropertiesData === 'function') {
@@ -1210,6 +1403,11 @@ if (document.readyState === 'loading') {
                 });
             });
         } else {
+            // Fallback - função não essencial do Support System não disponível
+            if (window.location.search.includes('debug=true')) {
+                console.log('ℹ️ runLowPriority não disponível (modo debug: função do Support System não carregada)');
+            }
+            
             setTimeout(() => {
                 if (typeof window.loadPropertiesData === 'function') {
                     window.loadPropertiesData();
@@ -1223,6 +1421,7 @@ if (document.readyState === 'loading') {
         }
     });
 } else {
+    // AGORA USA A FUNÇÃO GLOBAL DO SUPPORT SYSTEM
     if (typeof window.runLowPriority === 'function') {
         window.runLowPriority(() => {
             if (typeof window.loadPropertiesData === 'function') {
@@ -1236,6 +1435,11 @@ if (document.readyState === 'loading') {
             });
         });
     } else {
+        // Fallback - função não essencial do Support System não disponível
+        if (window.location.search.includes('debug=true')) {
+            console.log('ℹ️ runLowPriority não disponível (modo debug: função do Support System não carregada)');
+        }
+        
         setTimeout(() => {
             if (typeof window.loadPropertiesData === 'function') {
                 window.loadPropertiesData();
@@ -1249,7 +1453,9 @@ if (document.readyState === 'loading') {
     }
 }
 
+// Exportar funções necessárias
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO OTIMIZADA - Template Engine delegada para Support System.');
-console.log('💡 Adicione ?debug=true na URL para carregar o template completo do Support System.');
+console.log('🎯 VERSÃO OTIMIZADA - TODAS AS FUNÇÕES DE DIAGNÓSTICO, TESTE, VERIFICAÇÃO E MONITORAMENTO FORAM REMOVIDAS DO CORE SYSTEM.');
+console.log('💡 As funções de diagnóstico foram migradas para o Support System (storage-diagnostics.js).');
+console.log('💡 Adicione ?debug=true na URL para ativar as funcionalidades de diagnóstico no Support System.');
