@@ -1,4 +1,4 @@
-/* css/gallery.css - ESTILOS OTIMIZADOS (100 linhas) */
+/* css/gallery.css - ESTILOS OTIMIZADOS (247 linhas - VERSÃO ATUALIZADA) */
 
 /* ANIMAÇÕES */
 @keyframes pulseVideo {
@@ -72,6 +72,84 @@
 }
 
 .gallery-dot.active { background: white; transform: scale(1.2); }
+
+/* ========== SETAS DE NAVEGAÇÃO LIQUID GLASS ========== */
+.gallery-nav-arrow {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    width: 40px !important;
+    height: 40px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    color: white !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 18px !important;
+    transition: all 0.3s ease !important;
+    z-index: 25 !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2) !important;
+}
+
+.gallery-nav-prev {
+    left: 10px !important;
+}
+
+.gallery-nav-next {
+    right: 10px !important;
+}
+
+.gallery-nav-arrow:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: translateY(-50%) scale(1.1) !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3) !important;
+}
+
+.gallery-nav-arrow:active {
+    transform: translateY(-50%) scale(0.95) !important;
+}
+
+/* ========== CONTADOR DE VISUALIZAÇÕES GLASSMORPHISM ========== */
+.gallery-view-counter {
+    position: absolute !important;
+    bottom: 10px !important;
+    left: 10px !important;
+    background: rgba(255, 255, 255, 0.25) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
+    border-radius: 20px !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    padding: 6px 12px !important;
+    font-size: 0.75rem !important;
+    color: white !important;
+    font-weight: 500 !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    z-index: 20 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    transition: all 0.3s ease !important;
+    cursor: default !important;
+}
+
+.gallery-view-counter:hover {
+    background: rgba(255, 255, 255, 0.35) !important;
+    transform: scale(1.05) !important;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
+}
+
+.gallery-view-counter i {
+    transition: transform 0.3s ease !important;
+}
+
+.gallery-view-counter:hover i {
+    transform: scale(1.2) !important;
+}
 
 /* INDICADOR DE VÍDEO */
 .video-indicator {
