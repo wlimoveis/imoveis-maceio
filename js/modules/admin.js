@@ -519,6 +519,37 @@ window.setupForm = function() {
 };
 
 /* ==========================================================
+   FUNÇÃO DE FALLBACK INLINE PARA AUTOCOMPLETE (SE SUPPORT SYSTEM NÃO DISPONÍVEL)
+   ========================================================== */
+window.setupLocationAutocomplete = function() {
+    // Usar Support System se disponível
+    if (window.LocationAutocomplete && typeof window.LocationAutocomplete.init === 'function') {
+        return window.LocationAutocomplete.init();
+    }
+    
+    // Fallback inline mínimo e seguro - apenas placeholder informativo
+    const locationInput = document.getElementById('propLocation');
+    if (locationInput && !locationInput.hasAttribute('data-autocomplete-fallback')) {
+        locationInput.setAttribute('data-autocomplete-fallback', 'true');
+        locationInput.setAttribute('placeholder', 'Ex: Ponta Verde, Maceió-AL');
+        
+        // Adicionar dica visual sutil
+        const hint = document.createElement('small');
+        hint.style.cssText = 'display: block; color: #666; font-size: 0.7rem; margin-top: 4px;';
+        hint.innerHTML = '<i class="fas fa-info-circle"></i> Dica: Digite o bairro (Pajuçara, Ponta Verde, etc.)';
+        
+        if (locationInput.parentNode && !locationInput.parentNode.querySelector('.location-hint')) {
+            hint.className = 'location-hint';
+            locationInput.parentNode.appendChild(hint);
+        }
+        
+        console.log('📍 Fallback de autocomplete ativado (modo dica apenas)');
+    }
+    
+    return false;
+};
+
+/* ==========================================================
    SETUP ADMIN UI
    ========================================================== */
 window.setupAdminUI = function() {
@@ -587,8 +618,12 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    // Configuração de upload AGORA é feita pelo Support System via carregamento condicional
-    // Não precisa mais de fallback aqui
+    // ✅ ADICIONAR: Configurar autocomplete (com fallback)
+    setTimeout(() => {
+        if (typeof window.setupLocationAutocomplete === 'function') {
+            window.setupLocationAutocomplete();
+        }
+    }, 500);
 }
 
 // Iniciar quando o DOM estiver pronto
