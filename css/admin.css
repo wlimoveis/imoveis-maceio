@@ -841,3 +841,46 @@
     border-color: var(--success) !important;
     background-color: #e8f8ef !important;
 }
+
+/* ========== ESTILOS PARA AUTOCOMPLETE DE BAIRROS ========== */
+/* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - PASSO 5 */
+.location-suggestions {
+    animation: fadeInUp 0.2s ease;
+}
+
+.location-suggestions-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #eee;
+    transition: background 0.2s ease;
+}
+
+.location-suggestions-item:hover {
+    background: #f0f7ff !important;
+}
+
+.location-suggestions-item strong {
+    color: #1a5276;
+    font-weight: 700;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Dica de preenchimento */
+.location-hint {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
