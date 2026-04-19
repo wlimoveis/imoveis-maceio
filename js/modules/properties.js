@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO FINAL CORRIGIDA (COM LIMPEZA DE STORAGE)
-console.log('🏠 properties.js - VERSÃO FINAL - COM LIMPEZA DE ARQUIVOS FÍSICOS NO STORAGE');
+// js/modules/properties.js - VERSÃO CORRIGIDA (GALERIA FUNCIONAL)
+console.log('🏠 properties.js - VERSÃO CORRIGIDA - GALERIA COM SETAS FUNCIONAIS');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,165 +34,256 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COMPLETO (COM PRIORIDADE PARA GALERIA) ==========
-class MinimalTemplateEngine {
+// ========== TEMPLATE ENGINE COM CACHE AVANÇADO ==========
+class PropertyTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+        this._localCache = new Map();
     }
 
     generate(property) {
-        // Extrair imagens
-        const hasImages = property.images && property.images !== 'EMPTY' && property.images.length > 0;
-        const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim()) : [];
-        const hasMultipleImages = imageUrls.length > 1;
-        const firstImageUrl = imageUrls.length > 0 ? imageUrls[0] : this.imageFallback;
+        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
+        if (this._localCache.has(cacheKey)) {
+            return this._localCache.get(cacheKey);
+        }
         
-        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        const html = this._generateTemplate(property);
+        this._localCache.set(cacheKey, html);
+        
+        if (this._localCache.size > 50) {
+            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
+            keysToDelete.forEach(key => this._localCache.delete(key));
+        }
+        
+        return html;
+    }
+    
+    _generateTemplate(property) {
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
         const formatPrice = (price) => {
+            if (window.SharedCore?.PriceFormatter?.formatForCard) {
+                return window.SharedCore.PriceFormatter.formatForCard(price);
+            }
             if (!price) return 'R$ 0,00';
             if (typeof price === 'string' && price.includes('R$')) return price;
             return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         };
-        
-        // ✅ PRIORIDADE MÁXIMA: Usar a galeria completa do gallery.js quando disponível
-        if (hasMultipleImages && typeof window.createPropertyGallery === 'function') {
-            try {
-                console.log(`🎨 Usando galeria completa para imóvel ${property.id} (${imageUrls.length} imagens)`);
-                const galleryHtml = window.createPropertyGallery(property);
-                
-                // Retorna o card completo com a galeria
-                return `
-                    <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                        ${galleryHtml}
-                        <div class="property-content" style="padding: 1.5rem;">
-                            <div class="property-price" data-price-field style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
-                                ${formatPrice(property.price)}
-                            </div>
-                            <h3 class="property-title" data-title-field style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
-                                ${property.title || 'Imóvel'}
-                            </h3>
-                            <div class="property-location" data-location-field style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
-                                <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
-                            </div>
-                            <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
-                                ${(property.description || 'Descrição não disponível.').substring(0, 120)}${(property.description || '').length > 120 ? '...' : ''}
-                            </p>
-                            ${displayFeatures ? `
-                                <div class="property-features" data-features-field style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
-                                    ${displayFeatures.split(',').slice(0, 4).map(f => `
-                                        <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">
-                                            ${f.trim()}
-                                        </span>
-                                    `).join('')}
-                                </div>
-                            ` : ''}
-                            <button class="contact-btn" onclick="contactAgent(${property.id})" style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
-                                <i class="fab fa-whatsapp"></i> Entrar em Contato
-                            </button>
-                        </div>
-                    </div>
-                `;
-            } catch (e) {
-                console.warn(`❌ Erro ao usar galeria para imóvel ${property.id}:`, e);
-                // Fallback para o método manual
-            }
-        }
-        
-        // ========== FALLBACK: HTML MANUAL (SEM SETAS, APENAS PARA 1 IMAGEM) ==========
-        const truncatedDescription = (property.description || 'Descrição não disponível.').substring(0, 120);
-        const finalDescription = truncatedDescription + ((property.description || '').length > 120 ? '...' : '');
-        
-        const featuresArray = displayFeatures ? displayFeatures.split(',') : [];
-        const limitedFeatures = featuresArray.slice(0, 4);
-        
-        return `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
-                <div class="property-image ${property.rural ? 'rural-image' : ''}" style="position: relative; height: 250px; overflow: hidden;">
-                    <div class="property-gallery-container" 
-                         onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
-                         style="cursor:pointer; position:relative; width:100%; height:100%;">
-                        
-                        <img src="${firstImageUrl}" 
-                             style="width:100%; height:100%; object-fit:cover;"
-                             alt="${property.title || 'Imóvel'}"
-                             data-original-src="${firstImageUrl}"
-                             onerror="this.src='${this.imageFallback}'">
-                        
-                        ${property.badge ? `
-                            <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="position: absolute; top: 15px; left: 15px; background: var(--gold); color: white; padding: 0.4rem 1rem; border-radius: 20px; font-size: 0.8rem; font-weight: bold; z-index: 10;">
-                                ${property.badge}
-                            </div>
-                        ` : ''}
-                        
-                        ${hasVideo ? `
-                            <div class="video-indicator" style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 5px 10px; border-radius: 4px; font-size: 12px; display: flex; align-items: center; gap: 5px; z-index: 10; backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.2);">
-                                <i class="fas fa-video" style="color: #FFD700; font-size: 12px;"></i>
-                                <span>Vídeo</span>
-                            </div>
-                        ` : ''}
-                        
-                        ${hasPdfs ? `
-                            <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3);">
-                                <i class="fas fa-file-pdf"></i>
-                            </button>
-                        ` : ''}
-                        
-                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; z-index: 10;">
-                            <i class="fas fa-expand"></i>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="property-content" style="padding: 1.5rem;">
-                    <div class="property-price" data-price-field style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
-                        ${formatPrice(property.price)}
-                    </div>
-                    <h3 class="property-title" data-title-field style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
-                        ${property.title || 'Imóvel'}
-                    </h3>
-                    <div class="property-location" data-location-field style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
+
+        const html = `
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
+                ${this.generateImageSection(property)}
+                <div class="property-content">
+                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
+                    <h3 class="property-title" data-title-field>${property.title || 'Sem título'}</h3>
+                    <div class="property-location" data-location-field>
                         <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
                     </div>
-                    <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
-                        ${finalDescription}
-                    </p>
-                    ${limitedFeatures.length > 0 ? `
-                        <div class="property-features" data-features-field style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
-                            ${limitedFeatures.map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; border-radius: 20px; font-size: 0.85rem;">
-                                    ${f.trim()}
-                                </span>
+                    <p data-description-field>${property.description || 'Descrição não disponível.'}</p>
+                    ${displayFeatures ? `
+                        <div class="property-features" data-features-field>
+                            ${displayFeatures.split(',').map(f => `
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${f.trim()}</span>
                             `).join('')}
                         </div>
                     ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})" style="background: linear-gradient(45deg, var(--primary), var(--secondary)); color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                    <button class="contact-btn" onclick="contactAgent(${property.id})">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
             </div>
         `;
+
+        return html;
+    }
+
+    // 🔧 CORREÇÃO CRÍTICA: Usa createPropertyGallery quando disponível
+    generateImageSection(property) {
+        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
+        const imageCount = imageUrls.length;
+        const hasGallery = imageCount > 1;
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        
+        // ✅ PRIORIDADE: Usa a função completa do gallery.js se disponível
+        if (hasGallery && typeof window.createPropertyGallery === 'function') {
+            try {
+                return window.createPropertyGallery(property);
+            } catch (e) {
+                console.warn('❌ Erro na galeria, usando fallback:', e);
+            }
+        }
+        
+        // FALLBACK: Estrutura simples (apenas para compatibilidade)
+        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
+        
+        return `
+            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+                 style="position: relative; height: 250px;">
+                <div class="property-gallery-container" 
+                     onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
+                     style="cursor:pointer; position:relative; width:100%; height:100%;">
+                    
+                    <img src="${firstImageUrl}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         alt="${property.title}"
+                         onerror="this.src='${this.imageFallback}'">
+                    
+                    ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
+                    
+                    ${hasVideo ? `
+                        <div class="video-indicator" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0, 0, 0, 0.8);
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 6px;
+                            font-size: 12px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            z-index: 9;
+                        ">
+                            <i class="fas fa-video" style="color: #FFD700;"></i>
+                            <span>TEM VÍDEO</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasGallery ? `
+                        <div class="image-count" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0, 0, 0, 0.9);
+                            color: white;
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                            font-size: 13px;
+                            font-weight: bold;
+                            z-index: 10;
+                        ">
+                            <i class="fas fa-images"></i> ${imageCount}
+                        </div>
+                    ` : ''}
+                </div>
+                
+                ${hasPdfs ? `
+                    <button class="pdf-access" onclick="event.stopPropagation(); window.PdfSystem.showModal(${property.id})" style="
+                        position: absolute;
+                        bottom: 2px;
+                        right: 35px;
+                        background: rgba(255, 255, 255, 0.95);
+                        border: none;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.75rem;
+                        color: #1a5276;
+                        z-index: 15;
+                    ">
+                        <i class="fas fa-file-pdf"></i>
+                    </button>
+                ` : ''}
+            </div>
+        `;
     }
     
     updateCardContent(propertyId, propertyData) {
-        console.log(`🔄 [Fallback] Recarregando card ${propertyId}`);
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties(window.currentFilter || 'todos', true);
-            return true;
+        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
+        
+        const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
+        if (!card) {
+            console.warn(`⚠️ Card ${propertyId} não encontrado`);
+            return false;
         }
-        return false;
+        
+        try {
+            if (propertyData.price !== undefined) {
+                const priceElement = card.querySelector('[data-price-field]');
+                if (priceElement) {
+                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
+                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
+                        : (propertyData.price.includes('R$') 
+                            ? propertyData.price 
+                            : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`);
+                    priceElement.textContent = formattedPrice;
+                }
+            }
+            
+            if (propertyData.title !== undefined) {
+                const titleElement = card.querySelector('[data-title-field]');
+                if (titleElement) {
+                    titleElement.textContent = propertyData.title;
+                }
+                card.setAttribute('data-property-title', propertyData.title);
+            }
+            
+            if (propertyData.location !== undefined) {
+                const locationElement = card.querySelector('[data-location-field]');
+                if (locationElement) {
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${propertyData.location}`;
+                }
+            }
+            
+            if (propertyData.description !== undefined) {
+                const descriptionElement = card.querySelector('[data-description-field]');
+                if (descriptionElement) {
+                    descriptionElement.textContent = propertyData.description;
+                }
+            }
+            
+            if (propertyData.features !== undefined) {
+                const featuresElement = card.querySelector('[data-features-field]');
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                
+                if (featuresElement) {
+                    if (displayFeatures) {
+                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
+                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${f.trim()}</span>
+                        `).join('');
+                    } else {
+                        featuresElement.innerHTML = '';
+                    }
+                }
+            }
+            
+            // Atualizar cache
+            const pattern = `prop_${propertyId}_`;
+            for (const key of this._localCache.keys()) {
+                if (key.startsWith(pattern)) {
+                    this._localCache.delete(key);
+                }
+            }
+            
+            card.classList.add('highlighted');
+            setTimeout(() => {
+                card.classList.remove('highlighted');
+            }, 1000);
+            
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao atualizar card:`, error);
+            return false;
+        }
     }
     
     clearCache() {
-        console.log('🧹 [Fallback] Cache limpo');
-        return 0;
+        const count = this._localCache.size;
+        this._localCache.clear();
+        return count;
     }
 }
 
-// Instancia o template engine
-window.propertyTemplates = new MinimalTemplateEngine();
+// Instância global
+window.propertyTemplates = new PropertyTemplateEngine();
 
 // ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO ==========
 window.updatePropertyCard = function(propertyId, updatedData = null) {
@@ -206,6 +297,19 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
     
     const propertyToRender = updatedData ? { ...property, ...updatedData } : property;
     
+    // Tentar atualização parcial
+    if (updatedData && window.propertyTemplates.updateCardContent) {
+        const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
+        if (partialSuccess) {
+            const index = window.properties.findIndex(p => p.id === propertyId);
+            if (index !== -1) {
+                window.properties[index] = { ...window.properties[index], ...updatedData };
+            }
+            return true;
+        }
+    }
+    
+    // Substituição completa
     const allCards = document.querySelectorAll('.property-card');
     let cardToUpdate = null;
     
@@ -224,14 +328,6 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         if (index !== -1) {
             window.properties[index] = propertyToRender;
         }
-        
-        setTimeout(() => {
-            const updatedCard = document.querySelector(`[data-property-id="${propertyId}"]`);
-            if (updatedCard) {
-                updatedCard.classList.add('highlighted');
-                setTimeout(() => updatedCard.classList.remove('highlighted'), 1000);
-            }
-        }, 50);
         
         return true;
     } else {
@@ -289,23 +385,13 @@ window.loadPropertiesData = async function () {
         }));
         
         window.savePropertiesToStorage();
-
         loading?.setVariant?.('success');
         
-        const propertyCount = window.properties.length;
-        let finalMessage = propertyCount === 0 ? 'Pronto para começar! 🏠' :
-                          propertyCount === 1 ? '✨ 1 imóvel disponível!' :
-                          propertyCount <= 5 ? `✨ ${propertyCount} opções incríveis!` :
-                          propertyCount <= 20 ? `🏘️ ${propertyCount} oportunidades em Maceió!` :
-                          `🏆 ${propertyCount} imóveis disponíveis!`;
-        
-        loading?.updateMessage?.(finalMessage);
         window.renderProperties('todos');
         
     } catch (error) {
         console.error('❌ Erro no carregamento:', error);
         loading?.setVariant?.('error');
-        loading?.updateMessage?.('⚠️ Erro ao carregar imóveis');
         window.properties = getInitialProperties();
         window.renderProperties('todos');
         
@@ -322,8 +408,8 @@ function getInitialProperties() {
             title: "Casa 2Qtos - Forene",
             price: "R$ 180.000",
             location: "Residência Conj. Portal do Renascer, Forene",
-            description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;",
-            features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de carro"]),
+            description: "Casa a 100m do CEASA - 125,40m² de área total - 02 Quartos, Sala - Cozinha - 02 Banheiros - Varanda - 02 Vagas de garagem",
+            features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas"]),
             type: "residencial",
             has_video: true,
             badge: "Destaque",
@@ -336,8 +422,8 @@ function getInitialProperties() {
             title: "Apartamento 4Qtos (178m²) - Ponta Verde",
             price: "R$ 1.500.000",
             location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL",
-            description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.",
-            features: JSON.stringify(["4Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]),
+            description: "Apartamento amplo com 178m² de área privativa, 4 Qtos sendo 03 suítes, sala ampla com varanda, 02 vagas de garagem.",
+            features: JSON.stringify(["4Qtos s/3 suítes", "Sala ampla", "Cozinha", "Área de serviço", "02 vagas"]),
             type: "residencial",
             has_video: false,
             badge: "Luxo",
@@ -370,11 +456,13 @@ window.renderProperties = function(filter = 'todos', forceClearCache = false) {
     const filtered = window.filterProperties(window.properties, filter);
     
     if (filtered.length === 0) {
-        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>';
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel para este filtro.</p>';
         return;
     }
 
-    container.innerHTML = filtered.map(prop => window.propertyTemplates.generate(prop)).join('');
+    container.innerHTML = filtered.map(prop => 
+        window.propertyTemplates.generate(prop)
+    ).join('');
 
     console.log(`✅ ${filtered.length} imóveis renderizados`);
     
@@ -400,8 +488,6 @@ window.filterProperties = function(properties, filter) {
 
 // ========== 4. SALVAR NO STORAGE ==========
 window.savePropertiesToStorage = function() {
-    console.log('💾 Salvando propriedades...');
-    
     try {
         if (!window.properties || !Array.isArray(window.properties)) {
             return false;
@@ -409,33 +495,25 @@ window.savePropertiesToStorage = function() {
         
         localStorage.setItem('properties', JSON.stringify(window.properties));
         
-        // Limpar chaves antigas
-        ['weberlessa_properties', 'properties_backup', 'weberlessa_backup'].forEach(key => {
-            if (localStorage.getItem(key)) localStorage.removeItem(key);
+        ['weberlessa_properties', 'properties_backup', 'weberlessa_backup'].forEach(oldKey => {
+            if (localStorage.getItem(oldKey)) localStorage.removeItem(oldKey);
         });
         
-        console.log(`✅ ${window.properties.length} imóveis salvos`);
         return true;
-        
     } catch (error) {
         console.error('❌ Erro ao salvar:', error);
         return false;
     }
 };
 
-window.updateLocalStorage = function() {
-    return window.savePropertiesToStorage();
-};
-
-// ========== 5. FILTROS ==========
+// ========== 5. CONFIGURAR FILTROS ==========
 window.setupFilters = function() {
     console.log('🎛️ Configurando filtros...');
     
-    if (window.FilterManager?.setupWithFallback) {
+    if (window.FilterManager && typeof window.FilterManager.setupWithFallback === 'function') {
         return window.FilterManager.setupWithFallback();
     }
     
-    console.error('❌ Sistema de filtros não disponível!');
     return false;
 };
 
@@ -451,7 +529,7 @@ window.contactAgent = function(id) {
     window.open(`https://wa.me/5582996044513?text=${encodeURIComponent(message)}`, '_blank');
 };
 
-// ========== 7. ADICIONAR NOVO IMÓVEL ==========
+// ========== 7. ADICIONAR IMÓVEL ==========
 window.addNewProperty = async function(propertyData) {
     console.group('➕ ADICIONANDO NOVO IMÓVEL');
 
@@ -462,16 +540,8 @@ window.addNewProperty = async function(propertyData) {
     }
 
     try {
-        if (propertyData.price) {
-            if (window.SharedCore?.PriceFormatter?.formatForInput) {
-                propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
-            } else {
-                let formattedPrice = propertyData.price;
-                if (!formattedPrice.startsWith('R$')) {
-                    formattedPrice = 'R$ ' + formattedPrice.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-                }
-                propertyData.price = formattedPrice;
-            }
+        if (propertyData.price && !propertyData.price.startsWith('R$')) {
+            propertyData.price = 'R$ ' + propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
         }
 
         propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
@@ -487,9 +557,6 @@ window.addNewProperty = async function(propertyData) {
                 mediaResult = await MediaSystem.uploadAll(tempId, propertyData.title);
                 propertyData.images = mediaResult.images || '';
                 propertyData.pdfs = mediaResult.pdfs || '';
-            } else {
-                propertyData.images = '';
-                propertyData.pdfs = '';
             }
         }
 
@@ -514,24 +581,23 @@ window.addNewProperty = async function(propertyData) {
 
                 if (supabaseResponse?.success) {
                     supabaseSuccess = true;
-                    supabaseId = supabaseResponse.data?.id || supabaseResponse.data?.[0]?.id;
+                    supabaseId = supabaseResponse.data?.id;
                 }
             } catch (error) {
-                console.error('❌ Erro ao salvar no Supabase:', error);
+                console.error('❌ Erro Supabase:', error);
             }
         }
 
         const newId = supabaseSuccess && supabaseId 
             ? supabaseId 
-            : (Math.max(...window.properties.map(p => parseInt(p.id) || 0), 0) + 1);
+            : Math.max(...window.properties.map(p => parseInt(p.id) || 0), 0) + 1;
 
         const newProperty = {
             id: newId,
             ...propertyData,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString(),
-            savedToSupabase: supabaseSuccess,
-            syncStatus: supabaseSuccess ? 'synced' : 'local_only'
+            savedToSupabase: supabaseSuccess
         };
 
         window.properties.unshift(newProperty);
@@ -544,7 +610,7 @@ window.addNewProperty = async function(propertyData) {
 
     } catch (error) {
         console.error('❌ ERRO:', error);
-        alert(`❌ Erro ao cadastrar imóvel: ${error.message}`);
+        alert('❌ Erro ao cadastrar imóvel!');
         console.groupEnd();
         return null;
     }
@@ -562,61 +628,77 @@ window.updateProperty = async function(id, propertyData) {
     }
 
     try {
-        if (propertyData.price && !propertyData.price.startsWith('R$')) {
-            propertyData.price = 'R$ ' + propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-        }
-
         const updateData = {
-            ...window.properties[index],
-            ...propertyData,
-            has_video: window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false,
-            updated_at: new Date().toISOString()
+            title: propertyData.title || window.properties[index].title,
+            price: propertyData.price || window.properties[index].price,
+            location: propertyData.location || window.properties[index].location,
+            description: propertyData.description || window.properties[index].description || '',
+            features: propertyData.features || window.properties[index].features || '[]',
+            type: propertyData.type || window.properties[index].type || 'residencial',
+            has_video: propertyData.has_video !== undefined 
+                ? window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) 
+                : window.properties[index].has_video,
+            badge: propertyData.badge || window.properties[index].badge || 'Novo',
+            rural: propertyData.type === 'rural' || window.properties[index].rural || false,
+            images: propertyData.images || window.properties[index].images || '',
+            pdfs: propertyData.pdfs || window.properties[index].pdfs || ''
         };
 
-        window.properties[index] = updateData;
-        window.savePropertiesToStorage();
-        window.updatePropertyCard(id, updateData);
+        window.updateLocalProperty(id, updateData);
 
-        alert(`✅ Imóvel "${updateData.title}" atualizado com sucesso!`);
+        let supabaseSuccess = false;
+        
+        if (window.ensureSupabaseCredentials()) {
+            try {
+                const validId = window.validateIdForSupabase?.(id) || id;
+                const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': window.SUPABASE_KEY,
+                        'Authorization': `Bearer ${window.SUPABASE_KEY}`
+                    },
+                    body: JSON.stringify(updateData)
+                });
+                supabaseSuccess = response.ok;
+            } catch (error) {
+                console.error('Erro Supabase:', error);
+            }
+        }
+
+        alert(supabaseSuccess 
+            ? `✅ Imóvel "${updateData.title}" atualizado com sucesso!` 
+            : `⚠️ Imóvel "${updateData.title}" atualizado apenas localmente.`);
+
         console.groupEnd();
-        return { success: true };
+        return { success: true, localOnly: !supabaseSuccess };
 
     } catch (error) {
         console.error('❌ ERRO:', error);
-        alert(`❌ Erro ao atualizar: ${error.message}`);
+        alert('❌ Erro ao atualizar imóvel!');
         console.groupEnd();
         return { success: false };
     }
 };
 
-// ========== 9. ATUALIZAR LOCALMENTE ==========
+// ========== 9. ATUALIZAR PROPRIEDADE LOCALMENTE ==========
 window.updateLocalProperty = function(propertyId, updatedData) {
     const index = window.properties.findIndex(p => p.id == propertyId);
     if (index === -1) return false;
     
-    window.properties[index] = { ...window.properties[index], ...updatedData, updated_at: new Date().toISOString() };
+    window.properties[index] = {
+        ...window.properties[index],
+        ...updatedData,
+        updated_at: new Date().toISOString()
+    };
+    
     window.savePropertiesToStorage();
     window.updatePropertyCard(propertyId, updatedData);
     
     return true;
 };
 
-// ========== 10. ADICIONAR LOCALMENTE ==========
-window.addToLocalProperties = function(newProperty) {
-    if (!newProperty.id) {
-        newProperty.id = Math.max(...window.properties.map(p => parseInt(p.id) || 0), 0) + 1;
-    }
-    newProperty.created_at = newProperty.created_at || new Date().toISOString();
-    newProperty.updated_at = new Date().toISOString();
-    
-    window.properties.unshift(newProperty);
-    window.savePropertiesToStorage();
-    window.renderProperties('todos', true);
-    
-    return newProperty;
-};
-
-// ========== 11. EXCLUIR IMÓVEL (CORRIGIDO COM LIMPEZA DE STORAGE) ==========
+// ========== 10. EXCLUIR IMÓVEL ==========
 window.deleteProperty = async function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -624,92 +706,52 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    if (!confirm(`⚠️ Excluir "${property.title}" permanentemente?\n\nIsso também removerá TODAS as imagens, vídeos e PDFs associados.`)) {
+    if (!confirm(`⚠️ Tem certeza que deseja excluir "${property.title}"?`)) {
         return false;
     }
 
-    // --- INÍCIO DA CORREÇÃO: LIMPEZA FÍSICA DOS ARQUIVOS NO STORAGE ---
-    let storageCleanupSuccess = true;
-    if (window.MediaSystem && typeof window.MediaSystem.deleteFilesFromStorage === 'function') {
-        const allFileUrls = [];
+    // Excluir arquivos físicos
+    if (typeof MediaSystem?.deleteFilesFromStorage === 'function') {
+        const imageUrls = property.images?.split(',').filter(url => url?.trim()) || [];
+        const pdfUrls = property.pdfs?.split(',').filter(url => url?.trim()) || [];
+        const allFileUrls = [...imageUrls, ...pdfUrls];
         
-        // Coletar URLs de imagens
-        if (property.images && property.images !== 'EMPTY') {
-            const imageUrls = property.images.split(',').filter(url => url && url.trim());
-            imageUrls.forEach(url => {
-                allFileUrls.push({
-                    url: url.trim(),
-                    type: 'image'
-                });
-            });
-        }
-        
-        // Coletar URLs de PDFs
-        if (property.pdfs && property.pdfs !== 'EMPTY') {
-            const pdfUrls = property.pdfs.split(',').filter(url => url && url.trim());
-            pdfUrls.forEach(url => {
-                allFileUrls.push({
-                    url: url.trim(),
-                    type: 'pdf'
-                });
-            });
-        }
-
         if (allFileUrls.length > 0) {
-            console.log(`🗑️ Iniciando limpeza física de ${allFileUrls.length} arquivo(s) do Storage para o imóvel ${id}...`);
-            try {
-                const result = await window.MediaSystem.deleteFilesFromStorage(allFileUrls);
-                if (result && result.success) {
-                    console.log(`✅ ${result.deletedCount || allFileUrls.length} arquivo(s) removido(s) do Storage com sucesso.`);
-                } else {
-                    console.warn(`⚠️ Limpeza do Storage retornou resultado inesperado:`, result);
-                    storageCleanupSuccess = false;
-                }
-            } catch (error) {
-                console.error(`❌ Erro crítico ao tentar excluir arquivos do Storage para o imóvel ${id}:`, error);
-                storageCleanupSuccess = false;
-            }
-        } else {
-            console.log(`ℹ️ Nenhum arquivo de mídia encontrado para exclusão física no imóvel ${id}.`);
-        }
-    } else {
-        console.warn(`⚠️ MediaSystem.deleteFilesFromStorage não disponível. Os arquivos de mídia NÃO serão excluídos fisicamente.`);
-        storageCleanupSuccess = false;
-    }
-
-    if (!storageCleanupSuccess) {
-        const userConfirmed = confirm(`⚠️ Aviso: Não foi possível limpar todos os arquivos de mídia do Storage.\n\nDeseja continuar com a exclusão do registro do imóvel "${property.title}"?`);
-        if (!userConfirmed) {
-            console.log(`❌ Exclusão cancelada pelo usuário devido a falha na limpeza do Storage.`);
-            return false;
+            await MediaSystem.deleteFilesFromStorage(allFileUrls);
         }
     }
-    // --- FIM DA CORREÇÃO: LIMPEZA FÍSICA DOS ARQUIVOS NO STORAGE ---
 
-    // Remover do Supabase (se aplicável)
-    if (window.ensureSupabaseCredentials && typeof window.supabaseDeleteProperty === 'function') {
+    // Excluir do Supabase
+    let supabaseSuccess = false;
+    if (window.ensureSupabaseCredentials()) {
         try {
-            const supabaseResult = await window.supabaseDeleteProperty(id);
-            if (!supabaseResult.success) {
-                console.warn(`⚠️ Falha ao excluir do Supabase: ${supabaseResult.error}`);
-            } else {
-                console.log(`✅ Imóvel ${id} removido do Supabase.`);
-            }
+            const validId = window.validateIdForSupabase?.(id) || id;
+            const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
+                method: 'DELETE',
+                headers: {
+                    'apikey': window.SUPABASE_KEY,
+                    'Authorization': `Bearer ${window.SUPABASE_KEY}`
+                }
+            });
+            supabaseSuccess = response.ok;
         } catch (error) {
-            console.error(`❌ Erro ao excluir do Supabase:`, error);
+            console.error('Erro Supabase:', error);
         }
     }
 
-    // Remover do array local e do storage
+    // Excluir localmente
     window.properties = window.properties.filter(p => p.id !== id);
     window.savePropertiesToStorage();
     window.renderProperties('todos', true);
 
-    alert(`✅ Imóvel "${property.title}" e seus arquivos foram excluídos!`);
-    return true;
+    alert(supabaseSuccess 
+        ? `✅ Imóvel "${property.title}" excluído permanentemente!` 
+        : `⚠️ Imóvel "${property.title}" excluído apenas localmente.`);
+
+    return supabaseSuccess;
 };
 
-// ========== 12. LISTA ADMIN ==========
+// ========== 11. CARREGAR LISTA ADMIN ==========
 window.loadPropertyList = function() {
     const container = document.getElementById('propertyList');
     const countElement = document.getElementById('propertyCount');
@@ -719,7 +761,7 @@ window.loadPropertyList = function() {
     container.innerHTML = '';
     
     if (countElement) {
-        countElement.textContent = window.properties.length;
+        countElement.textContent = window.properties?.length || 0;
     }
     
     if (!window.properties?.length) {
@@ -732,20 +774,19 @@ window.loadPropertyList = function() {
         item.className = 'property-item';
         item.innerHTML = `
             <div style="flex: 1;">
-                <strong style="color: var(--primary);">${property.title}</strong><br>
+                <strong>${property.title}</strong><br>
                 <small>${property.price} - ${property.location}</small>
-                <div style="font-size: 0.8em; color: #666; margin-top: 0.2rem;">
+                <div style="font-size: 0.8em; color: #666;">
                     ID: ${property.id} | 
                     ${property.has_video ? '🎬 Vídeo | ' : ''}
-                    Imagens: ${property.images ? property.images.split(',').filter(i => i.trim()).length : 0}
-                    ${property.pdfs ? ` | PDFs: ${property.pdfs.split(',').filter(p => p.trim()).length}` : ''}
+                    Imagens: ${property.images?.split(',').filter(i => i?.trim()).length || 0}
                 </div>
             </div>
             <div style="display: flex; gap: 0.5rem;">
-                <button onclick="editProperty(${property.id})" style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;">
+                <button onclick="editProperty(${property.id})" class="edit-property-btn">
                     <i class="fas fa-edit"></i> Editar
                 </button>
-                <button onclick="deleteProperty(${property.id})" style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;">
+                <button onclick="deleteProperty(${property.id})" class="delete-property-btn">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
@@ -755,22 +796,23 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO ==========
-console.log('✅ properties.js VERSÃO FINAL CARREGADA');
-
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(() => {
-            window.loadPropertiesData();
-            setTimeout(() => window.setupFilters(), 100);
-        }, 100);
+        window.loadPropertiesData();
+        window.setupFilters();
     });
 } else {
-    setTimeout(() => {
-        window.loadPropertiesData();
-        setTimeout(() => window.setupFilters(), 100);
-    }, 100);
+    window.loadPropertiesData();
+    window.setupFilters();
 }
 
 window.getInitialProperties = getInitialProperties;
+window.updateLocalStorage = window.savePropertiesToStorage;
+window.addToLocalProperties = function(prop) {
+    window.properties.unshift(prop);
+    window.savePropertiesToStorage();
+    window.renderProperties('todos', true);
+    return prop;
+};
 
-console.log('🎯 VERSÃO FINAL - Com limpeza de arquivos físicos no Storage!');
+console.log('✅ properties.js VERSÃO CORRIGIDA CARREGADA - GALERIA FUNCIONAL');
