@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO FINAL CORRIGIDA (COM NAVEGAÇÃO FUNCIONAL)
-console.log('🏠 properties.js - VERSÃO FINAL - COM NAVEGAÇÃO DE FOTO/VIDEO FUNCIONAL');
+// js/modules/properties.js - VERSÃO FINAL CORRIGIDA (COM LIMPEZA DE STORAGE)
+console.log('🏠 properties.js - VERSÃO FINAL - COM LIMPEZA DE ARQUIVOS FÍSICOS NO STORAGE');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -616,7 +616,7 @@ window.addToLocalProperties = function(newProperty) {
     return newProperty;
 };
 
-// ========== 11. EXCLUIR IMÓVEL ==========
+// ========== 11. EXCLUIR IMÓVEL (CORRIGIDO COM LIMPEZA DE STORAGE) ==========
 window.deleteProperty = async function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -624,15 +624,88 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    if (!confirm(`⚠️ Excluir "${property.title}" permanentemente?`)) {
+    if (!confirm(`⚠️ Excluir "${property.title}" permanentemente?\n\nIsso também removerá TODAS as imagens, vídeos e PDFs associados.`)) {
         return false;
     }
 
+    // --- INÍCIO DA CORREÇÃO: LIMPEZA FÍSICA DOS ARQUIVOS NO STORAGE ---
+    let storageCleanupSuccess = true;
+    if (window.MediaSystem && typeof window.MediaSystem.deleteFilesFromStorage === 'function') {
+        const allFileUrls = [];
+        
+        // Coletar URLs de imagens
+        if (property.images && property.images !== 'EMPTY') {
+            const imageUrls = property.images.split(',').filter(url => url && url.trim());
+            imageUrls.forEach(url => {
+                allFileUrls.push({
+                    url: url.trim(),
+                    type: 'image'
+                });
+            });
+        }
+        
+        // Coletar URLs de PDFs
+        if (property.pdfs && property.pdfs !== 'EMPTY') {
+            const pdfUrls = property.pdfs.split(',').filter(url => url && url.trim());
+            pdfUrls.forEach(url => {
+                allFileUrls.push({
+                    url: url.trim(),
+                    type: 'pdf'
+                });
+            });
+        }
+
+        if (allFileUrls.length > 0) {
+            console.log(`🗑️ Iniciando limpeza física de ${allFileUrls.length} arquivo(s) do Storage para o imóvel ${id}...`);
+            try {
+                const result = await window.MediaSystem.deleteFilesFromStorage(allFileUrls);
+                if (result && result.success) {
+                    console.log(`✅ ${result.deletedCount || allFileUrls.length} arquivo(s) removido(s) do Storage com sucesso.`);
+                } else {
+                    console.warn(`⚠️ Limpeza do Storage retornou resultado inesperado:`, result);
+                    storageCleanupSuccess = false;
+                }
+            } catch (error) {
+                console.error(`❌ Erro crítico ao tentar excluir arquivos do Storage para o imóvel ${id}:`, error);
+                storageCleanupSuccess = false;
+            }
+        } else {
+            console.log(`ℹ️ Nenhum arquivo de mídia encontrado para exclusão física no imóvel ${id}.`);
+        }
+    } else {
+        console.warn(`⚠️ MediaSystem.deleteFilesFromStorage não disponível. Os arquivos de mídia NÃO serão excluídos fisicamente.`);
+        storageCleanupSuccess = false;
+    }
+
+    if (!storageCleanupSuccess) {
+        const userConfirmed = confirm(`⚠️ Aviso: Não foi possível limpar todos os arquivos de mídia do Storage.\n\nDeseja continuar com a exclusão do registro do imóvel "${property.title}"?`);
+        if (!userConfirmed) {
+            console.log(`❌ Exclusão cancelada pelo usuário devido a falha na limpeza do Storage.`);
+            return false;
+        }
+    }
+    // --- FIM DA CORREÇÃO: LIMPEZA FÍSICA DOS ARQUIVOS NO STORAGE ---
+
+    // Remover do Supabase (se aplicável)
+    if (window.ensureSupabaseCredentials && typeof window.supabaseDeleteProperty === 'function') {
+        try {
+            const supabaseResult = await window.supabaseDeleteProperty(id);
+            if (!supabaseResult.success) {
+                console.warn(`⚠️ Falha ao excluir do Supabase: ${supabaseResult.error}`);
+            } else {
+                console.log(`✅ Imóvel ${id} removido do Supabase.`);
+            }
+        } catch (error) {
+            console.error(`❌ Erro ao excluir do Supabase:`, error);
+        }
+    }
+
+    // Remover do array local e do storage
     window.properties = window.properties.filter(p => p.id !== id);
     window.savePropertiesToStorage();
     window.renderProperties('todos', true);
 
-    alert(`✅ Imóvel "${property.title}" excluído!`);
+    alert(`✅ Imóvel "${property.title}" e seus arquivos foram excluídos!`);
     return true;
 };
 
@@ -700,4 +773,4 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO FINAL - Com navegação de foto/vídeo funcional via gallery.js!');
+console.log('🎯 VERSÃO FINAL - Com limpeza de arquivos físicos no Storage!');
