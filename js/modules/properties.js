@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO OTIMIZADA COM ENGINE DELEGADA PARA SUPORTE
-console.log('🏠 properties.js - ENGINE DE TEMPLATE DELEGADA PARA SUPORTE');
+// js/modules/properties.js - VERSÃO COMPLETA CORRIGIDA (COM TODOS OS CAMPOS)
+console.log('🏠 properties.js - VERSÃO COMPLETA CORRIGIDA');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,8 +34,7 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE PROXY (DELEGA PARA SUPPORT SYSTEM) ==========
-// Fallback inline MELHORADO - COM SUPORTE COMPLETO A SETAS DE NAVEGAÇÃO
+// ========== TEMPLATE ENGINE COMPLETO (COM TODOS OS CAMPOS DO IMÓVEL) ==========
 class MinimalTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
@@ -54,22 +53,54 @@ class MinimalTemplateEngine {
                 return window.createPropertyGallery(property);
             } catch (e) {
                 console.warn('❌ Erro na galeria, usando fallback:', e);
-                // Fallback para o método manual se falhar
             }
         }
         
-        // FALLBACK: Gerar HTML manual com suporte a setas
+        // ========== FALLBACK COMPLETO - COM TODOS OS CAMPOS DO IMÓVEL ==========
         const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
         const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
-        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
+        // ✅ CORRIGIDO: Processamento completo das features
+        let displayFeatures = '';
+        if (property.features) {
+            try {
+                let featuresArray = [];
+                if (typeof property.features === 'string') {
+                    if (property.features.startsWith('[')) {
+                        featuresArray = JSON.parse(property.features);
+                    } else {
+                        featuresArray = property.features.split(',').map(f => f.trim());
+                    }
+                } else if (Array.isArray(property.features)) {
+                    featuresArray = property.features;
+                }
+                displayFeatures = featuresArray.map(f => `
+                    <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" 
+                          style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; 
+                                 border-radius: 20px; font-size: 0.85rem;">
+                        ${f}
+                    </span>
+                `).join('');
+            } catch (e) {
+                console.warn('Erro ao processar features:', e);
+                displayFeatures = '';
+            }
+        }
+        
+        // ✅ CORRIGIDO: Formatação completa do preço
         const formatPrice = (price) => {
             if (!price) return 'R$ 0,00';
             if (typeof price === 'string' && price.includes('R$')) return price;
-            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
+            const numericPrice = String(price).replace(/\D/g, '');
+            if (!numericPrice) return 'R$ 0,00';
+            const formatted = numericPrice.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+            return `R$ ${formatted}`;
         };
         
-        // Gerar setas de navegação (Liquid Glass) se tiver múltiplas imagens
+        // ✅ CORRIGIDO: Descrição completa (sem truncamento)
+        const description = property.description || 'Descrição não disponível.';
+        
+        // Gerar setas de navegação
         const arrowsHtml = hasMultipleImages ? `
             <button class="gallery-nav-arrow gallery-nav-prev" 
                     onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${property.id}, 'prev')"
@@ -121,7 +152,7 @@ class MinimalTemplateEngine {
             </div>
         ` : '';
         
-        // Contador de visualizações (Glassmorphism)
+        // Contador de visualizações
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const viewCounterHtml = `
             <div class="gallery-view-counter" 
@@ -159,6 +190,7 @@ class MinimalTemplateEngine {
             </div>
         `;
         
+        // ✅ HTML COMPLETO DO CARD COM TODOS OS CAMPOS
         return `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title || ''}">
                 <div class="property-image ${property.rural ? 'rural-image' : ''}" 
@@ -170,7 +202,6 @@ class MinimalTemplateEngine {
                          data-current-index="0"
                          data-property-id="${property.id}">
                         
-                        <!-- Imagem principal -->
                         <img src="${firstImageUrl}" 
                              style="width:100%; height:100%; object-fit:cover;"
                              alt="${property.title || 'Imóvel'}"
@@ -179,10 +210,8 @@ class MinimalTemplateEngine {
                              data-total-images="${imageUrls.length}"
                              onerror="this.src='${this.imageFallback}'">
                         
-                        <!-- Setas de navegação Liquid Glass -->
                         ${arrowsHtml}
                         
-                        <!-- Badge do imóvel -->
                         ${property.badge ? `
                             <div class="property-badge ${property.rural ? 'rural-badge' : ''}" 
                                  style="position: absolute; top: 15px; left: 15px; background: var(--gold); 
@@ -192,7 +221,6 @@ class MinimalTemplateEngine {
                             </div>
                         ` : ''}
                         
-                        <!-- Indicador de VÍDEO -->
                         ${hasVideo ? `
                             <div class="video-indicator" 
                                  style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.8); 
@@ -204,10 +232,8 @@ class MinimalTemplateEngine {
                             </div>
                         ` : ''}
                         
-                        <!-- Contador de imagens -->
                         ${counterHtml}
                         
-                        <!-- Dots (indicadores) -->
                         ${hasMultipleImages ? `
                             <div class="gallery-controls" 
                                  style="position:absolute; bottom:15px; left:0; right:0; 
@@ -216,13 +242,9 @@ class MinimalTemplateEngine {
                             </div>
                         ` : ''}
                         
-                        <!-- Ícone de expandir -->
                         ${expandIconHtml}
-                        
-                        <!-- Contador de visualizações Glassmorphism -->
                         ${viewCounterHtml}
                         
-                        <!-- Botão de acesso a PDFs -->
                         ${hasPdfs ? `
                             <button class="pdf-access" 
                                     onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
@@ -237,34 +259,45 @@ class MinimalTemplateEngine {
                     </div>
                 </div>
                 
+                <!-- ✅ CONTEÚDO COMPLETO DO CARD (COM TODOS OS CAMPOS) -->
                 <div class="property-content" style="padding: 1.5rem;">
                     <div class="property-price" data-price-field 
                          style="font-size: 1.5rem; font-weight: bold; color: var(--primary); margin-bottom: 0.5rem;">
                         ${formatPrice(property.price)}
                     </div>
+                    
                     <h3 class="property-title" data-title-field 
                         style="font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text);">
-                        ${property.title || 'Imóvel'}
+                        ${property.title || 'Imóvel sem título'}
                     </h3>
+                    
                     <div class="property-location" data-location-field 
                          style="color: #666; margin-bottom: 1rem; display: flex; align-items: center; gap: 5px;">
                         <i class="fas fa-map-marker-alt"></i> ${property.location || 'Local não informado'}
                     </div>
-                    <p data-description-field style="margin-bottom: 1rem; color: #555; line-height: 1.5;">
-                        ${(property.description || 'Descrição não disponível.').substring(0, 120)}${(property.description || '').length > 120 ? '...' : ''}
-                    </p>
+                    
+                    <!-- ✅ DESCRIÇÃO COMPLETA DO IMÓVEL (SEM TRUNCAMENTO) -->
+                    <div class="property-description" data-description-field 
+                         style="margin-bottom: 1rem; color: #555; line-height: 1.6; font-size: 0.95rem;">
+                        ${description}
+                    </div>
+                    
+                    <!-- ✅ CARACTERÍSTICAS/FEATURES COMPLETAS -->
                     ${displayFeatures ? `
                         <div class="property-features" data-features-field 
-                             style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem;">
-                            ${displayFeatures.split(',').slice(0, 4).map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}" 
-                                      style="background: var(--accent); color: white; padding: 0.3rem 0.8rem; 
-                                             border-radius: 20px; font-size: 0.85rem;">
-                                    ${f.trim()}
-                                </span>
-                            `).join('')}
+                             style="display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                            ${displayFeatures}
                         </div>
                     ` : ''}
+                    
+                    <!-- ✅ METADADOS DO IMÓVEL (OPCIONAL - MOSTRA QUANTIDADE DE MÍDIAS) -->
+                    <div class="property-media-info" 
+                         style="display: flex; gap: 15px; margin-bottom: 1rem; font-size: 0.8rem; color: #888; border-top: 1px solid #eee; padding-top: 0.8rem;">
+                        ${imageUrls.length > 0 ? `<span><i class="fas fa-images"></i> ${imageUrls.length} foto(s)</span>` : ''}
+                        ${hasVideo ? `<span><i class="fas fa-video"></i> Tem vídeo</span>` : ''}
+                        ${hasPdfs ? `<span><i class="fas fa-file-pdf"></i> ${property.pdfs.split(',').filter(p => p.trim()).length} documento(s)</span>` : ''}
+                    </div>
+                    
                     <button class="contact-btn" onclick="contactAgent(${property.id})" 
                             style="background: linear-gradient(45deg, var(--primary), var(--secondary)); 
                                    color: white; border: none; padding: 0.8rem 1.5rem; border-radius: 8px; 
@@ -292,40 +325,8 @@ class MinimalTemplateEngine {
     }
 }
 
-// Proxy: tenta usar módulo do Support System, fallback para mínimo
-window.propertyTemplates = (() => {
-    if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
-        console.log('✅ [properties.js] Usando PropertyTemplateEngine do Support System');
-        return new window.SupportTemplates.PropertyTemplateEngine();
-    }
-    
-    if (!window._propertyTemplatesProxyAttempted) {
-        window._propertyTemplatesProxyAttempted = true;
-        
-        const checkSupportInterval = setInterval(() => {
-            if (window.SupportTemplates && window.SupportTemplates.PropertyTemplateEngine) {
-                console.log('✅ [properties.js] SupportTemplates carregado tardiamente, substituindo engine');
-                const newEngine = new window.SupportTemplates.PropertyTemplateEngine();
-                window.propertyTemplates = newEngine;
-                clearInterval(checkSupportInterval);
-                
-                if (typeof window.renderProperties === 'function') {
-                    window.renderProperties(window.currentFilter || 'todos', true);
-                }
-            }
-        }, 500);
-        
-        setTimeout(() => {
-            clearInterval(checkSupportInterval);
-            if (!window.SupportTemplates?.PropertyTemplateEngine) {
-                console.log('ℹ️ [properties.js] SupportTemplates não disponível, mantendo fallback mínimo');
-            }
-        }, 10000);
-    }
-    
-    console.warn('⚠️ [properties.js] SupportTemplates não disponível. Usando fallback mínimo.');
-    return new MinimalTemplateEngine();
-})();
+// ========== INSTANCIA O TEMPLATE ENGINE ==========
+window.propertyTemplates = new MinimalTemplateEngine();
 
 // ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO ==========
 window.updatePropertyCard = function(propertyId, updatedData = null) {
@@ -343,12 +344,10 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
         if (partialSuccess) {
             console.log(`✅ Atualização parcial bem-sucedida para ${propertyId}`);
-            
             const index = window.properties.findIndex(p => p.id === propertyId);
             if (index !== -1) {
                 window.properties[index] = { ...window.properties[index], ...updatedData };
             }
-            
             return true;
         }
     }
@@ -369,10 +368,11 @@ window.updatePropertyCard = function(propertyId, updatedData = null) {
         const newCardHTML = window.propertyTemplates.generate(propertyToRender);
         cardToUpdate.outerHTML = newCardHTML;
         
-        console.log('✅ Card completamente substituído com todos os campos atualizados:', {
+        console.log('✅ Card completamente substituído:', {
             título: propertyToRender.title,
             preço: propertyToRender.price,
             localização: propertyToRender.location,
+            descrição: propertyToRender.description?.substring(0, 50),
             vídeo: propertyToRender.has_video
         });
         
@@ -444,7 +444,7 @@ window.loadPropertiesData = async function () {
         window.properties = window.properties.map(prop => ({
             ...prop,
             has_video: window.SharedCore?.ensureBooleanVideo?.(prop.has_video) ?? false,
-            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) ?? '[]'
+            features: window.SharedCore?.parseFeaturesForStorage?.(prop.features) ?? (prop.features || '[]')
         }));
         
         const saved = window.savePropertiesToStorage();
@@ -586,7 +586,7 @@ window.filterProperties = function(properties, filter) {
     return filterFn ? properties.filter(filterFn) : properties;
 };
 
-// ========== 4. SALVAR NO STORAGE - VERSÃO UNIFICADA ==========
+// ========== 4. SALVAR NO STORAGE ==========
 window.savePropertiesToStorage = function() {
     console.log('💾 Salvando propriedades NO LOCALSTORAGE UNIFICADO...');
     
@@ -640,12 +640,11 @@ window.savePropertiesToStorage = function() {
     }
 };
 
-// ========== FUNÇÃO AUXILIAR: Atualizar localStorage sempre ==========
 window.updateLocalStorage = function() {
     return window.savePropertiesToStorage();
 };
 
-// ========== 5. CONFIGURAR FILTROS (VERSÃO COMPATÍVEL) ==========
+// ========== 5. CONFIGURAR FILTROS ==========
 window.setupFilters = function() {
     console.log('🎛️ Configurando filtros (compatibilidade)...');
     
@@ -672,7 +671,7 @@ window.contactAgent = function(id) {
 
 // ========== 7. ADICIONAR NOVO IMÓVEL ==========
 window.addNewProperty = async function(propertyData) {
-    console.group('➕ ADICIONANDO NOVO IMÓVEL - VERSÃO CORRIGIDA');
+    console.group('➕ ADICIONANDO NOVO IMÓVEL');
 
     if (!propertyData.title || !propertyData.price || !propertyData.location) {
         alert('❌ Preencha Título, Preço e Localização!');
@@ -834,6 +833,7 @@ window.addNewProperty = async function(propertyData) {
         let message = `✅ Imóvel "${newProperty.title}" cadastrado com sucesso!\n\n`;
         message += `💰 Preço: ${newProperty.price}\n`;
         message += `📍 Local: ${newProperty.location}\n`;
+        message += `📝 Descrição: ${newProperty.description?.substring(0, 50)}...\n\n`;
         
         if (imageCount > 0) message += `📸 ${imageCount} foto(s)/vídeo(s) anexada(s)\n`;
         if (pdfCount > 0) message += `📄 ${pdfCount} documento(s) PDF anexado(s)\n`;
@@ -876,7 +876,7 @@ window.addNewProperty = async function(propertyData) {
 
 // ========== 8. ATUALIZAR IMÓVEL ==========
 window.updateProperty = async function(id, propertyData) {
-    console.group('📤 updateProperty - VERSÃO CORRIGIDA');
+    console.group('📤 updateProperty');
 
     if (!id || id === 'null' || id === 'undefined') {
         console.error('❌ ID inválido fornecido:', id);
@@ -892,8 +892,8 @@ window.updateProperty = async function(id, propertyData) {
 
     const index = window.properties.findIndex(p => p.id == id || p.id === id);
     if (index === -1) {
-        console.error('❌ Imóvel não encontrado! IDs disponíveis:', window.properties.map(p => p.id));
-        alert(`❌ Imóvel não encontrado!\n\nIDs disponíveis: ${window.properties.map(p => p.id).join(', ')}`);
+        console.error('❌ Imóvel não encontrado!');
+        alert(`❌ Imóvel não encontrado!`);
         console.groupEnd();
         return { success: false, localOnly: true, error: 'Imóvel não encontrado' };
     }
@@ -974,6 +974,7 @@ window.updateProperty = async function(id, propertyData) {
             let msg = `✅ Imóvel "${updateData.title}" atualizado PERMANENTEMENTE!\n`;
             msg += `💰 Preço: ${updateData.price}\n`;
             msg += `📍 Local: ${updateData.location}\n`;
+            msg += `📝 Descrição: ${updateData.description?.substring(0, 50)}...\n`;
             if (imagesCount > 0) msg += `📸 ${imagesCount} imagem(ns)\n`;
             if (updateData.has_video) msg += `🎬 Agora tem vídeo\n`;
             alert(msg);
@@ -981,7 +982,8 @@ window.updateProperty = async function(id, propertyData) {
         } else {
             let msg = `⚠️ Imóvel "${updateData.title}" atualizado apenas LOCALMENTE.\n`;
             msg += `💰 Preço: ${updateData.price}\n`;
-            msg += `📍 Local: ${updateData.location}\n\n`;
+            msg += `📍 Local: ${updateData.location}\n`;
+            msg += `📝 Descrição: ${updateData.description?.substring(0, 50)}...\n\n`;
             msg += `📱 As alterações foram salvas no seu navegador.\n`;
             msg += `🌐 Para salvar no servidor, verifique a conexão com internet.`;
             
@@ -1005,7 +1007,7 @@ window.updateProperty = async function(id, propertyData) {
     }
 };
 
-// ========== 9. FUNÇÃO CRÍTICA: Atualizar propriedade localmente ==========
+// ========== 9. ATUALIZAR PROPRIEDADE LOCALMENTE ==========
 window.updateLocalProperty = function(propertyId, updatedData) {
     console.group(`💾 updateLocalProperty: ${propertyId}`);
     
@@ -1049,6 +1051,7 @@ window.updateLocalProperty = function(propertyId, updatedData) {
         título: updatedData.title || existingProperty.title,
         preço: updatedData.price || existingProperty.price,
         localização: updatedData.location || existingProperty.location,
+        descrição: updatedData.description?.substring(0, 50),
         video: updatedData.has_video
     });
     
@@ -1074,7 +1077,7 @@ window.updateLocalProperty = function(propertyId, updatedData) {
     return true;
 };
 
-// ========== 10. FUNÇÃO CRÍTICA: Adicionar propriedade localmente ==========
+// ========== 10. ADICIONAR PROPRIEDADE LOCALMENTE ==========
 window.addToLocalProperties = function(newProperty) {
     console.group('➕ addToLocalProperties');
     
@@ -1107,11 +1110,7 @@ window.addToLocalProperties = function(newProperty) {
         return null;
     }
     
-    console.log(`✅ Imóvel ${propertyWithId.id} adicionado localmente:`, {
-        titulo: propertyWithId.title,
-        preço: propertyWithId.price,
-        localização: propertyWithId.location
-    });
+    console.log(`✅ Imóvel ${propertyWithId.id} adicionado localmente`);
     
     setTimeout(() => {
         if (typeof window.loadPropertyList === 'function') {
@@ -1156,7 +1155,7 @@ window.deleteProperty = async function(id) {
         const allFileUrls = [...imageUrls, ...pdfUrls];
 
         if (allFileUrls.length > 0) {
-            console.log(`🗑️ Iniciando exclusão física de ${allFileUrls.length} arquivo(s) associados ao imóvel.`);
+            console.log(`🗑️ Iniciando exclusão física de ${allFileUrls.length} arquivo(s)`);
             try {
                 const deletionResult = await MediaSystem.deleteFilesFromStorage(allFileUrls);
                 if (!deletionResult.success) {
@@ -1164,17 +1163,17 @@ window.deleteProperty = async function(id) {
                     mediaDeletionError = `Falha ao excluir ${deletionResult.failedCount} arquivo(s) físicos.`;
                     mediaDeletionSuccess = false;
                 } else {
-                    console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos fisicamente do Storage.`);
+                    console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos fisicamente`);
                 }
             } catch (error) {
                 console.error('❌ Erro crítico ao tentar excluir arquivos físicos:', error);
                 mediaDeletionError = error.message;
                 mediaDeletionSuccess = false;
                 
-                const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS FÍSICOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro do imóvel? Os arquivos órfãos permanecerão no Storage.`);
+                const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS FÍSICOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro do imóvel?`);
                 if (!userConfirmed) {
-                    console.log('❌ Exclusão cancelada pelo usuário devido a erro na exclusão de arquivos.');
-                    alert('❌ Exclusão cancelada para preservar a integridade dos arquivos.');
+                    console.log('❌ Exclusão cancelada');
+                    alert('❌ Exclusão cancelada');
                     console.groupEnd();
                     return false;
                 }
@@ -1182,16 +1181,6 @@ window.deleteProperty = async function(id) {
         } else {
             console.log('📭 Imóvel sem arquivos de mídia para excluir.');
         }
-    } else {
-        console.warn('⚠️ MediaSystem.deleteFilesFromStorage não disponível. Pulando exclusão física de arquivos.');
-        const proceedWithoutMediaDeletion = confirm(`⚠️ O sistema de exclusão de arquivos não está disponível.\n\nOs arquivos de mídia do imóvel "${property.title}" NÃO serão removidos do Storage, permanecendo como arquivos órfãos.\n\nDeseja continuar apenas com a exclusão do registro do imóvel?`);
-        if (!proceedWithoutMediaDeletion) {
-            console.log('❌ Exclusão cancelada pelo usuário.');
-            console.groupEnd();
-            return false;
-        }
-        mediaDeletionSuccess = false;
-        mediaDeletionError = 'Sistema de exclusão de arquivos indisponível.';
     }
 
     let supabaseSuccess = false;
@@ -1248,13 +1237,13 @@ window.deleteProperty = async function(id) {
         if (mediaDeletionSuccess) {
             finalMessage += `✓ Arquivos de mídia excluídos fisicamente do Storage.`;
         } else {
-            finalMessage += `⚠️ ATENÇÃO: Falha na exclusão física dos arquivos de mídia (${mediaDeletionError || 'erro desconhecido'}). Os arquivos podem permanecer no Storage como órfãos.`;
+            finalMessage += `⚠️ ATENÇÃO: Falha na exclusão física dos arquivos de mídia.`;
         }
     } else {
         finalMessage = `⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.\n\n`;
         finalMessage += `✓ Registro removido do seu navegador.\n`;
         if (!supabaseError && !window.ensureSupabaseCredentials()) {
-            finalMessage += `🌐 O servidor não estava acessível. O imóvel ainda existe no servidor e reaparecerá ao sincronizar.\n`;
+            finalMessage += `🌐 O servidor não estava acessível. O imóvel ainda existe no servidor.\n`;
         } else if (supabaseError) {
             finalMessage += `❌ Erro no servidor: ${supabaseError.substring(0, 100)}...\n`;
         }
@@ -1304,6 +1293,7 @@ window.loadPropertyList = function() {
                     Imagens: ${property.images ? property.images.split(',').filter(i => i.trim()).length : 0}
                     ${property.pdfs ? ` | PDFs: ${property.pdfs.split(',').filter(p => p.trim()).length}` : ''}
                 </div>
+                ${property.description ? `<div style="font-size: 0.75em; color: #888; margin-top: 0.2rem;">📝 ${property.description.substring(0, 80)}${property.description.length > 80 ? '...' : ''}</div>` : ''}
             </div>
             <div style="display: flex; gap: 0.5rem;">
                 <button onclick="editProperty(${property.id})" 
@@ -1323,51 +1313,11 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO OTIMIZADA COM ENGINE DELEGADA CARREGADA');
+console.log('✅ properties.js VERSÃO COMPLETA CORRIGIDA CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         console.log('🏠 DOM carregado - inicializando properties...');
-
-        if (typeof window.runLowPriority === 'function') {
-            window.runLowPriority(() => {
-                if (typeof window.loadPropertiesData === 'function') {
-                    window.loadPropertiesData();
-                }
-
-                window.runLowPriority(() => {
-                    if (typeof window.setupFilters === 'function') {
-                        window.setupFilters();
-                    }
-                });
-            });
-        } else {
-            setTimeout(() => {
-                if (typeof window.loadPropertiesData === 'function') {
-                    window.loadPropertiesData();
-                }
-                setTimeout(() => {
-                    if (typeof window.setupFilters === 'function') {
-                        window.setupFilters();
-                    }
-                }, 100);
-            }, 100);
-        }
-    });
-} else {
-    if (typeof window.runLowPriority === 'function') {
-        window.runLowPriority(() => {
-            if (typeof window.loadPropertiesData === 'function') {
-                window.loadPropertiesData();
-            }
-
-            window.runLowPriority(() => {
-                if (typeof window.setupFilters === 'function') {
-                    window.setupFilters();
-                }
-            });
-        });
-    } else {
         setTimeout(() => {
             if (typeof window.loadPropertiesData === 'function') {
                 window.loadPropertiesData();
@@ -1378,10 +1328,20 @@ if (document.readyState === 'loading') {
                 }
             }, 100);
         }, 100);
-    }
+    });
+} else {
+    setTimeout(() => {
+        if (typeof window.loadPropertiesData === 'function') {
+            window.loadPropertiesData();
+        }
+        setTimeout(() => {
+            if (typeof window.setupFilters === 'function') {
+                window.setupFilters();
+            }
+        }, 100);
+    }, 100);
 }
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO OTIMIZADA - Template Engine delegada para Support System.');
-console.log('💡 Adicione ?debug=true na URL para carregar o template completo do Support System.');
+console.log('🎯 VERSÃO COMPLETA CORRIGIDA - Todos os campos do imóvel são exibidos corretamente!');
