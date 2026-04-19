@@ -21,8 +21,9 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/core-diagnostics.js',
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
+        'debug/templates/property-template.js', // <--- NOVO MÓDULO ADICIONADO AQUI
         'debug/utils/admin-diagnostics.js',
-        'debug/utils/core-utilities.js',  // ✅ MÓDULO MIGRADO (features, vídeo, validação ID, estado edição)
+        'debug/utils/core-utilities.js',
         'debug/diagnostics/diagnostics53.js',
         'debug/diagnostics/diagnostics54.js',
         'debug/diagnostics/diagnostics55.js',
