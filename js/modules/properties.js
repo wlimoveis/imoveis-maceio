@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA CORRIGIDA (GALERIA FUNCIONAL)
-console.log('🏠 properties.js - VERSÃO COMPLETA CORRIGIDA - GALERIA COM SETAS FUNCIONAIS');
+// js/modules/properties.js - VERSÃO COMPLETA COM TRUNCAMENTO (120 caracteres + "...")
+console.log('🏠 properties.js - VERSÃO COMPLETA COM TRUNCAMENTO - GALERIA COM SETAS FUNCIONAIS');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -77,6 +77,12 @@ class PropertyTemplateEngine {
             return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         };
 
+        // ✅ TRUNCAMENTO DA DESCRIÇÃO: 120 caracteres + "..."
+        const descriptionText = property.description || 'Descrição não disponível.';
+        const truncatedDesc = descriptionText.length > 120 
+            ? descriptionText.substring(0, 120) + '...' 
+            : descriptionText;
+
         const html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
                 ${this.generateImageSection(property)}
@@ -86,7 +92,7 @@ class PropertyTemplateEngine {
                     <div class="property-location" data-location-field>
                         <i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(property.location) || 'Local não informado'}
                     </div>
-                    <p data-description-field>${this.escapeHtml(property.description) || 'Descrição não disponível.'}</p>
+                    <p data-description-field>${this.escapeHtml(truncatedDesc)}</p>
                     ${displayFeatures ? `
                         <div class="property-features" data-features-field>
                             ${displayFeatures.split(',').map(f => `
@@ -295,11 +301,15 @@ class PropertyTemplateEngine {
                 }
             }
             
-            // Atualizar descrição se fornecido
+            // Atualizar descrição se fornecido (COM TRUNCAMENTO)
             if (propertyData.description !== undefined) {
                 const descriptionElement = card.querySelector('[data-description-field]');
                 if (descriptionElement) {
-                    descriptionElement.textContent = this.escapeHtml(propertyData.description);
+                    const descriptionText = propertyData.description || 'Descrição não disponível.';
+                    const truncatedDesc = descriptionText.length > 120 
+                        ? descriptionText.substring(0, 120) + '...' 
+                        : descriptionText;
+                    descriptionElement.textContent = this.escapeHtml(truncatedDesc);
                 }
             }
             
@@ -1473,7 +1483,7 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO COMPLETA CORRIGIDA CARREGADA');
+console.log('✅ properties.js VERSÃO COMPLETA COM TRUNCAMENTO CARREGADA');
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
@@ -1535,5 +1545,6 @@ if (document.readyState === 'loading') {
 // Exportar funções necessárias
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA CORRIGIDA - GALERIA COM SETAS FUNCIONAIS');
+console.log('🎯 VERSÃO COMPLETA COM TRUNCAMENTO - Galeria com setas funcionais');
+console.log('📝 Descrições truncadas em 120 caracteres + "..."');
 console.log('💡 Adicione ?debug=true na URL para ativar funcionalidades de diagnóstico');
