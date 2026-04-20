@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E CORES CORRIGIDAS
 console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
@@ -476,14 +476,12 @@ window.setupLocationAutocomplete = function() {
         'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta', 'Pescaria'
     ];
 
-    // Encontra o campo de localização
     const locationInput = document.getElementById('propLocation');
     if (!locationInput) {
         console.log('📍 Campo de localização não encontrado');
         return false;
     }
     
-    // Evitar duplicar a inicialização
     if (locationInput.hasAttribute('data-autocomplete-initialized')) {
         console.log('📍 Autocomplete já inicializado');
         return true;
@@ -491,26 +489,24 @@ window.setupLocationAutocomplete = function() {
     
     let suggestionsContainer = null;
 
-    // Função para criar o container de sugestões
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
+        // ESTILOS CORRIGIDOS - CORES DE CONTRASTE
         container.style.cssText = `
             position: absolute;
-            z-index: 1000;
+            z-index: 999999;
             background: white;
-            border: 1px solid #ccc;
+            border: 2px solid #1a5276;
             border-top: none;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
-            width: ${locationInput.offsetWidth}px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
+            border-radius: 0 0 8px 8px;
         `;
         return container;
     }
 
-    // Função para filtrar e mostrar sugestões
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) {
             if (suggestionsContainer) suggestionsContainer.remove();
@@ -532,36 +528,47 @@ window.setupLocationAutocomplete = function() {
             document.body.appendChild(suggestionsContainer);
         }
 
-        // Atualiza a posição do container
         const rect = locationInput.getBoundingClientRect();
         suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
         suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
         suggestionsContainer.style.width = `${rect.width}px`;
 
-        // Preenche as sugestões
         suggestionsContainer.innerHTML = '';
         matches.forEach(bairro => {
             const suggestionItem = document.createElement('div');
-            suggestionItem.textContent = bairro;
-            suggestionItem.style.padding = '8px 12px';
-            suggestionItem.style.cursor = 'pointer';
-            suggestionItem.style.fontSize = '0.9rem';
+            suggestionItem.style.cssText = `
+                padding: 10px 14px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: #2c3e50 !important;
+                background: white !important;
+                border-bottom: 1px solid #ecf0f1;
+                transition: background 0.2s ease;
+            `;
             
             // Destaca o texto pesquisado
             const regex = new RegExp(`(${termLower})`, 'gi');
-            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #1a5276;">$1</strong>`);
+            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #1a5276; background: #d4e6f1; padding: 2px 4px; border-radius: 4px;">$1</strong>`);
 
             suggestionItem.addEventListener('click', () => {
                 locationInput.value = bairro;
                 if (suggestionsContainer) suggestionsContainer.remove();
-                // Dispara um evento 'input' para garantir que outras lógicas (se houver) sejam notificadas
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
             });
+            
+            suggestionItem.addEventListener('mouseenter', () => {
+                suggestionItem.style.background = '#e8f4fd !important';
+            });
+            suggestionItem.addEventListener('mouseleave', () => {
+                suggestionItem.style.background = 'white !important';
+            });
+            
             suggestionsContainer.appendChild(suggestionItem);
         });
+        
+        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
     }
 
-    // Função para esconder as sugestões
     function hideSuggestions() {
         if (suggestionsContainer) {
             suggestionsContainer.remove();
@@ -569,37 +576,68 @@ window.setupLocationAutocomplete = function() {
         }
     }
 
-    // Eventos principais
+    // Eventos
     locationInput.addEventListener('input', (e) => {
         showSuggestions(e.target.value);
     });
 
     locationInput.addEventListener('blur', () => {
-        // Delay para permitir o clique na sugestão
         setTimeout(hideSuggestions, 200);
     });
 
-    // Previne o comportamento padrão de submit ao pressionar Enter nas sugestões
     locationInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && suggestionsContainer) {
             e.preventDefault();
             const firstSuggestion = suggestionsContainer.querySelector('div');
             if (firstSuggestion) {
-                locationInput.value = firstSuggestion.textContent;
+                locationInput.value = firstSuggestion.textContent || firstSuggestion.innerText;
                 hideSuggestions();
             }
         }
     });
     
-    // Marcar como inicializado
     locationInput.setAttribute('data-autocomplete-initialized', 'true');
-    
-    // Remover placeholder antigo se existir e ajustar
     locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
-    // Remover hint antigo se existir
-    const oldHint = locationInput.parentNode?.querySelector('.location-hint');
-    if (oldHint) oldHint.remove();
+    // CSS GLOBAL DE GARANTIA
+    const styleId = 'autocomplete-core-styles';
+    if (!document.getElementById(styleId)) {
+        const style = document.createElement('style');
+        style.id = styleId;
+        style.textContent = `
+            .admin-location-suggestions {
+                position: absolute !important;
+                z-index: 999999 !important;
+                background: white !important;
+                border: 2px solid #1a5276 !important;
+                border-top: none !important;
+                max-height: 250px !important;
+                overflow-y: auto !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.25) !important;
+                border-radius: 0 0 8px 8px !important;
+            }
+            .admin-location-suggestions div {
+                padding: 10px 14px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                color: #2c3e50 !important;
+                background: white !important;
+                border-bottom: 1px solid #ecf0f1 !important;
+            }
+            .admin-location-suggestions div:hover {
+                background: #e8f4fd !important;
+            }
+            .admin-location-suggestions div strong {
+                color: #1a5276 !important;
+                background: #d4e6f1 !important;
+                padding: 2px 4px !important;
+                border-radius: 4px !important;
+                font-weight: bold !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('🎨 Estilos globais do autocomplete injetados');
+    }
     
     console.log('📍 Autocomplete de bairros inicializado no campo Localização.');
     return true;
@@ -747,4 +785,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo carregada');
+console.log('✅ admin.js - Versão core com autocomplete nativo e cores corrigidas carregada');
