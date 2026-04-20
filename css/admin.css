@@ -842,6 +842,95 @@
     background-color: #e8f8ef !important;
 }
 
+/* ========== CSS DE EMERGÊNCIA PARA AUTOCOMPLETE - FORÇA BRUTA ========== */
+/* Garantir que as sugestões sejam VISÍVEIS a qualquer custo */
+
+.location-suggestions,
+div[class*="location-suggestions"] {
+    position: fixed !important;
+    top: auto !important;
+    left: auto !important;
+    background: white !important;
+    border: 3px solid #1a5276 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    z-index: 9999999 !important;
+    width: auto !important;
+    min-width: 250px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.location-suggestions-item,
+div[class*="location-suggestions-item"] {
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    font-size: 0.95rem !important;
+    color: #222222 !important;
+    background: white !important;
+    font-family: inherit !important;
+    transition: all 0.2s ease !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.location-suggestions-item:last-child {
+    border-bottom: none !important;
+}
+
+.location-suggestions-item:hover,
+div[class*="location-suggestions-item"]:hover {
+    background: #e8f0fe !important;
+    color: #1a5276 !important;
+}
+
+.location-suggestions-item strong,
+div[class*="location-suggestions-item"] strong {
+    color: #1a5276 !important;
+    background: #d4e6f1 !important;
+    padding: 2px 4px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+}
+
+/* Garantir que o container pai não esconda as sugestões */
+#adminPanel,
+.admin-panel,
+#propertyForm,
+[style*="overflow"],
+[style*="overflow-y"],
+[style*="overflow-x"] {
+    overflow: visible !important;
+}
+
+/* Forçar que o campo de localização seja o ponto de referência */
+#propLocation {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Estilo para a dica de preenchimento */
+.location-hint {
+    display: block !important;
+    color: #2c3e50 !important;
+    font-size: 0.7rem !important;
+    margin-top: 5px !important;
+    padding: 4px 8px !important;
+    background: #f0f7ff !important;
+    border-radius: 4px !important;
+    border-left: 3px solid #3498db !important;
+}
+
+/* Debug visual - borda vermelha para identificar o container */
+.location-suggestions {
+    outline: 2px solid red !important;
+}
+
 /* ========== ESTILOS PARA AUTOCOMPLETE DE BAIRROS ========== */
 /* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - PASSO 5 */
 .location-suggestions {
