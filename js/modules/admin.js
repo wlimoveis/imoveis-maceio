@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO OTIMIZADA (CORE PURIFICADO)
-console.log('🔧 admin.js - Versão core otimizada (funções não essenciais removidas)');
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO
+console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
    CONFIGURAÇÃO E CONSTANTES
@@ -461,6 +461,151 @@ window.saveProperty = async function() {
 };
 
 /* ==========================================================
+   SISTEMA DE AUTOCOMPLETE PARA O CAMPO "LOCALIZAÇÃO"
+   ========================================================== */
+window.setupLocationAutocomplete = function() {
+    // Lista oficial dos principais bairros de Maceió
+    const bairrosMaceio = [
+        'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
+        'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
+        'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
+        'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
+        'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
+        'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
+        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Rio Novo', 'Riacho Doce',
+        'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta', 'Pescaria'
+    ];
+
+    // Encontra o campo de localização
+    const locationInput = document.getElementById('propLocation');
+    if (!locationInput) {
+        console.log('📍 Campo de localização não encontrado');
+        return false;
+    }
+    
+    // Evitar duplicar a inicialização
+    if (locationInput.hasAttribute('data-autocomplete-initialized')) {
+        console.log('📍 Autocomplete já inicializado');
+        return true;
+    }
+    
+    let suggestionsContainer = null;
+
+    // Função para criar o container de sugestões
+    function createSuggestionsContainer() {
+        const container = document.createElement('div');
+        container.className = 'admin-location-suggestions';
+        container.style.cssText = `
+            position: absolute;
+            z-index: 1000;
+            background: white;
+            border: 1px solid #ccc;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            width: ${locationInput.offsetWidth}px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border-radius: 0 0 4px 4px;
+        `;
+        return container;
+    }
+
+    // Função para filtrar e mostrar sugestões
+    function showSuggestions(searchTerm) {
+        if (!searchTerm || searchTerm.length < 2) {
+            if (suggestionsContainer) suggestionsContainer.remove();
+            return;
+        }
+
+        const termLower = searchTerm.toLowerCase();
+        const matches = bairrosMaceio.filter(bairro => 
+            bairro.toLowerCase().includes(termLower)
+        );
+
+        if (matches.length === 0) {
+            if (suggestionsContainer) suggestionsContainer.remove();
+            return;
+        }
+
+        if (!suggestionsContainer) {
+            suggestionsContainer = createSuggestionsContainer();
+            document.body.appendChild(suggestionsContainer);
+        }
+
+        // Atualiza a posição do container
+        const rect = locationInput.getBoundingClientRect();
+        suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
+        suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
+        suggestionsContainer.style.width = `${rect.width}px`;
+
+        // Preenche as sugestões
+        suggestionsContainer.innerHTML = '';
+        matches.forEach(bairro => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.textContent = bairro;
+            suggestionItem.style.padding = '8px 12px';
+            suggestionItem.style.cursor = 'pointer';
+            suggestionItem.style.fontSize = '0.9rem';
+            
+            // Destaca o texto pesquisado
+            const regex = new RegExp(`(${termLower})`, 'gi');
+            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #1a5276;">$1</strong>`);
+
+            suggestionItem.addEventListener('click', () => {
+                locationInput.value = bairro;
+                if (suggestionsContainer) suggestionsContainer.remove();
+                // Dispara um evento 'input' para garantir que outras lógicas (se houver) sejam notificadas
+                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+            });
+            suggestionsContainer.appendChild(suggestionItem);
+        });
+    }
+
+    // Função para esconder as sugestões
+    function hideSuggestions() {
+        if (suggestionsContainer) {
+            suggestionsContainer.remove();
+            suggestionsContainer = null;
+        }
+    }
+
+    // Eventos principais
+    locationInput.addEventListener('input', (e) => {
+        showSuggestions(e.target.value);
+    });
+
+    locationInput.addEventListener('blur', () => {
+        // Delay para permitir o clique na sugestão
+        setTimeout(hideSuggestions, 200);
+    });
+
+    // Previne o comportamento padrão de submit ao pressionar Enter nas sugestões
+    locationInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && suggestionsContainer) {
+            e.preventDefault();
+            const firstSuggestion = suggestionsContainer.querySelector('div');
+            if (firstSuggestion) {
+                locationInput.value = firstSuggestion.textContent;
+                hideSuggestions();
+            }
+        }
+    });
+    
+    // Marcar como inicializado
+    locationInput.setAttribute('data-autocomplete-initialized', 'true');
+    
+    // Remover placeholder antigo se existir e ajustar
+    locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
+    
+    // Remover hint antigo se existir
+    const oldHint = locationInput.parentNode?.querySelector('.location-hint');
+    if (oldHint) oldHint.remove();
+    
+    console.log('📍 Autocomplete de bairros inicializado no campo Localização.');
+    return true;
+};
+
+/* ==========================================================
    CONFIGURAÇÃO DO FORMULÁRIO
    ========================================================== */
 window.setupForm = function() {
@@ -516,37 +661,6 @@ window.setupForm = function() {
             if (loading) loading.hide();
         }
     });
-};
-
-/* ==========================================================
-   FUNÇÃO DE FALLBACK INLINE PARA AUTOCOMPLETE (SE SUPPORT SYSTEM NÃO DISPONÍVEL)
-   ========================================================== */
-window.setupLocationAutocomplete = function() {
-    // Usar Support System se disponível
-    if (window.LocationAutocomplete && typeof window.LocationAutocomplete.init === 'function') {
-        return window.LocationAutocomplete.init();
-    }
-    
-    // Fallback inline mínimo e seguro - apenas placeholder informativo
-    const locationInput = document.getElementById('propLocation');
-    if (locationInput && !locationInput.hasAttribute('data-autocomplete-fallback')) {
-        locationInput.setAttribute('data-autocomplete-fallback', 'true');
-        locationInput.setAttribute('placeholder', 'Ex: Ponta Verde, Maceió-AL');
-        
-        // Adicionar dica visual sutil
-        const hint = document.createElement('small');
-        hint.style.cssText = 'display: block; color: #666; font-size: 0.7rem; margin-top: 4px;';
-        hint.innerHTML = '<i class="fas fa-info-circle"></i> Dica: Digite o bairro (Pajuçara, Ponta Verde, etc.)';
-        
-        if (locationInput.parentNode && !locationInput.parentNode.querySelector('.location-hint')) {
-            hint.className = 'location-hint';
-            locationInput.parentNode.appendChild(hint);
-        }
-        
-        console.log('📍 Fallback de autocomplete ativado (modo dica apenas)');
-    }
-    
-    return false;
 };
 
 /* ==========================================================
@@ -618,7 +732,7 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    // ✅ ADICIONAR: Configurar autocomplete (com fallback)
+    // Configurar autocomplete (agora com funcionalidade completa)
     setTimeout(() => {
         if (typeof window.setupLocationAutocomplete === 'function') {
             window.setupLocationAutocomplete();
@@ -633,4 +747,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core otimizada carregada (funções não essenciais removidas)');
+console.log('✅ admin.js - Versão core com autocomplete nativo carregada');
