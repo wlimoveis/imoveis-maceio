@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E CORES CORRIGIDAS
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E CSS ULTRA-ESPECÍFICO
 console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
@@ -492,17 +492,21 @@ window.setupLocationAutocomplete = function() {
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
-        // ESTILOS CORRIGIDOS - CORES DE CONTRASTE
+        // ESTILOS COM FORÇA MÁXIMA - CORES DE CONTRASTE GARANTIDAS
         container.style.cssText = `
-            position: absolute;
-            z-index: 999999;
-            background: white;
-            border: 2px solid #1a5276;
-            border-top: none;
-            max-height: 250px;
-            overflow-y: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.25);
-            border-radius: 0 0 8px 8px;
+            position: absolute !important;
+            z-index: 9999999 !important;
+            background: #ffffff !important;
+            background-color: #ffffff !important;
+            border: 2px solid #1a5276 !important;
+            border-top: none !important;
+            max-height: 250px !important;
+            overflow-y: auto !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+            border-radius: 0 0 8px 8px !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         `;
         return container;
     }
@@ -536,37 +540,54 @@ window.setupLocationAutocomplete = function() {
         suggestionsContainer.innerHTML = '';
         matches.forEach(bairro => {
             const suggestionItem = document.createElement('div');
+            // ESTILOS DO ITEM COM !important GARANTIDO
             suggestionItem.style.cssText = `
-                padding: 10px 14px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                color: #2c3e50 !important;
-                background: white !important;
-                border-bottom: 1px solid #ecf0f1;
-                transition: background 0.2s ease;
+                padding: 10px 14px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+                color: #1a5276 !important;
+                background-color: #ffffff !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                transition: all 0.2s ease !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                text-align: left !important;
             `;
             
-            // Destaca o texto pesquisado
+            // Destaca o texto pesquisado com cores fortes
             const regex = new RegExp(`(${termLower})`, 'gi');
-            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #1a5276; background: #d4e6f1; padding: 2px 4px; border-radius: 4px;">$1</strong>`);
+            const highlightedHtml = bairro.replace(regex, `<strong style="color: #c0392b !important; background: #fdebd0 !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: bold !important;">$1</strong>`);
+            suggestionItem.innerHTML = highlightedHtml;
 
             suggestionItem.addEventListener('click', () => {
                 locationInput.value = bairro;
                 if (suggestionsContainer) suggestionsContainer.remove();
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+                hideSuggestions();
             });
             
             suggestionItem.addEventListener('mouseenter', () => {
+                suggestionItem.style.backgroundColor = '#e8f4fd !important';
                 suggestionItem.style.background = '#e8f4fd !important';
             });
             suggestionItem.addEventListener('mouseleave', () => {
-                suggestionItem.style.background = 'white !important';
+                suggestionItem.style.backgroundColor = '#ffffff !important';
+                suggestionItem.style.background = '#ffffff !important';
             });
             
             suggestionsContainer.appendChild(suggestionItem);
         });
         
         console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
+        
+        // Debug: verificar se o container está visível
+        if (suggestionsContainer) {
+            const bgColor = window.getComputedStyle(suggestionsContainer).backgroundColor;
+            console.log(`🎨 Container BG: ${bgColor}, Filhos: ${suggestionsContainer.children.length}`);
+        }
     }
 
     function hideSuggestions() {
@@ -599,47 +620,86 @@ window.setupLocationAutocomplete = function() {
     locationInput.setAttribute('data-autocomplete-initialized', 'true');
     locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
-    // CSS GLOBAL DE GARANTIA
-    const styleId = 'autocomplete-core-styles';
+    // CSS GLOBAL DE GARANTIA COM ALTA ESPECIFICIDADE
+    const styleId = 'autocomplete-core-styles-v2';
     if (!document.getElementById(styleId)) {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
-            .admin-location-suggestions {
+            /* Garantia máxima para o container de sugestões */
+            .admin-location-suggestions,
+            div.admin-location-suggestions {
                 position: absolute !important;
-                z-index: 999999 !important;
-                background: white !important;
+                z-index: 9999999 !important;
+                background: #ffffff !important;
+                background-color: #ffffff !important;
                 border: 2px solid #1a5276 !important;
                 border-top: none !important;
                 max-height: 250px !important;
                 overflow-y: auto !important;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.25) !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
                 border-radius: 0 0 8px 8px !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
             }
-            .admin-location-suggestions div {
+            
+            /* Garantia para os itens de sugestão */
+            .admin-location-suggestions div,
+            div.admin-location-suggestions div {
                 padding: 10px 14px !important;
                 cursor: pointer !important;
                 font-size: 0.9rem !important;
-                color: #2c3e50 !important;
-                background: white !important;
-                border-bottom: 1px solid #ecf0f1 !important;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+                color: #1a5276 !important;
+                background-color: #ffffff !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+                text-align: left !important;
             }
-            .admin-location-suggestions div:hover {
+            
+            /* Hover dos itens */
+            .admin-location-suggestions div:hover,
+            div.admin-location-suggestions div:hover {
+                background-color: #e8f4fd !important;
                 background: #e8f4fd !important;
             }
-            .admin-location-suggestions div strong {
-                color: #1a5276 !important;
-                background: #d4e6f1 !important;
+            
+            /* Destaque do texto pesquisado */
+            .admin-location-suggestions div strong,
+            div.admin-location-suggestions div strong {
+                color: #c0392b !important;
+                background: #fdebd0 !important;
                 padding: 2px 4px !important;
                 border-radius: 4px !important;
                 font-weight: bold !important;
             }
         `;
         document.head.appendChild(style);
-        console.log('🎨 Estilos globais do autocomplete injetados');
+        console.log('🎨 Estilos GLOBAIS de alta especificidade injetados (v2)');
     }
     
-    console.log('📍 Autocomplete de bairros inicializado no campo Localização.');
+    // Forçar remoção de estilos conflitantes de outros arquivos
+    setTimeout(() => {
+        const allStyles = document.querySelectorAll('style');
+        let hasConflict = false;
+        allStyles.forEach((s, i) => {
+            if (s.textContent && s.textContent.includes('admin-location-suggestions')) {
+                console.log(`📄 Estilo encontrado no style[${i}] - pode estar causando conflito`);
+                hasConflict = true;
+            }
+        });
+        if (hasConflict) {
+            console.log('⚠️ Estilos conflitantes detectados! O CSS inline deve sobrescrever.');
+        } else {
+            console.log('✅ Nenhum estilo conflitante detectado nos stylesheets.');
+        }
+    }, 100);
+    
+    console.log('📍 Autocomplete de bairros inicializado com cores de alto contraste!');
     return true;
 };
 
@@ -785,4 +845,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo e cores corrigidas carregada');
+console.log('✅ admin.js - Versão core com autocomplete nativo e CSS ultra-específico carregada');
