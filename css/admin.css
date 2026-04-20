@@ -842,14 +842,28 @@
     background-color: #e8f8ef !important;
 }
 
-/* ========== CSS DE EMERGÊNCIA PARA AUTOCOMPLETE - FORÇA BRUTA ========== */
+/* ========== CSS DE EMERGÊNCIA PARA AUTOCOMPLETE - VERSÃO CORRIGIDA ========== */
 /* Garantir que as sugestões sejam VISÍVEIS a qualquer custo */
 
+/* Container pai do campo de localização DEVE ser relative */
+#propLocation {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+/* Garantir que o formulário não esconda o dropdown */
+#propertyForm,
+.admin-panel {
+    overflow: visible !important;
+}
+
+/* Container de sugestões - posicionamento absoluto relativo ao campo */
 .location-suggestions,
 div[class*="location-suggestions"] {
-    position: fixed !important;
-    top: auto !important;
-    left: auto !important;
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: auto !important;
     background: white !important;
     border: 3px solid #1a5276 !important;
     border-radius: 8px !important;
@@ -857,13 +871,15 @@ div[class*="location-suggestions"] {
     max-height: 300px !important;
     overflow-y: auto !important;
     z-index: 9999999 !important;
-    width: auto !important;
+    width: 100% !important;
     min-width: 250px !important;
     display: block !important;
     visibility: visible !important;
     opacity: 1 !important;
+    margin-top: 4px !important;
 }
 
+/* Itens de sugestão */
 .location-suggestions-item,
 div[class*="location-suggestions-item"] {
     padding: 12px 16px !important;
@@ -889,6 +905,7 @@ div[class*="location-suggestions-item"]:hover {
     color: #1a5276 !important;
 }
 
+/* Destaque para o texto pesquisado */
 .location-suggestions-item strong,
 div[class*="location-suggestions-item"] strong {
     color: #1a5276 !important;
@@ -898,20 +915,12 @@ div[class*="location-suggestions-item"] strong {
     font-weight: 700 !important;
 }
 
-/* Garantir que o container pai não esconda as sugestões */
+/* Garantir que containers pai não escondam as sugestões */
 #adminPanel,
 .admin-panel,
 #propertyForm,
-[style*="overflow"],
-[style*="overflow-y"],
-[style*="overflow-x"] {
+[style*="overflow"] {
     overflow: visible !important;
-}
-
-/* Forçar que o campo de localização seja o ponto de referência */
-#propLocation {
-    position: relative !important;
-    z-index: 100 !important;
 }
 
 /* Estilo para a dica de preenchimento */
