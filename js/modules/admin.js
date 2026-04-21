@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO ABSOLUTO CORRIGIDO
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO RELATIVO DEFINITIVO
 console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
@@ -488,6 +488,7 @@ window.setupLocationAutocomplete = function() {
     }
     
     let suggestionsContainer = null;
+    let parentContainer = null;
 
     function createSuggestionsContainer() {
         const container = document.createElement('div');
@@ -510,6 +511,20 @@ window.setupLocationAutocomplete = function() {
         return container;
     }
 
+    function findRelativeParent() {
+        // Encontrar o container pai que tem position: relative ou absolute
+        let container = locationInput.parentElement;
+        while (container && container !== document.body) {
+            const position = window.getComputedStyle(container).position;
+            if (position === 'relative' || position === 'absolute') {
+                return container;
+            }
+            container = container.parentElement;
+        }
+        // Se não encontrou, retorna o próprio pai do input
+        return locationInput.parentElement;
+    }
+
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) {
             if (suggestionsContainer) suggestionsContainer.remove();
@@ -526,38 +541,42 @@ window.setupLocationAutocomplete = function() {
             return;
         }
 
-        if (!suggestionsContainer) {
-            suggestionsContainer = createSuggestionsContainer();
-            document.body.appendChild(suggestionsContainer);
+        // Encontrar ou atualizar o container pai
+        parentContainer = findRelativeParent();
+        
+        // Garantir que o container pai tenha position: relative
+        const parentPosition = window.getComputedStyle(parentContainer).position;
+        if (parentPosition !== 'relative' && parentPosition !== 'absolute') {
+            parentContainer.style.position = 'relative';
+            console.log('📍 Container pai agora tem position: relative');
         }
 
-        // 🔧 CORREÇÃO CRÍTICA: Calcular posição absoluta usando offsetTop + offsetParent
-        // Este método é mais confiável que getBoundingClientRect quando há containers posicionados
-        let absoluteTop = 0;
-        let absoluteLeft = 0;
-        let element = locationInput;
-        
-        // Acumula as posições dos elementos pais
-        while (element && element !== document.body) {
-            absoluteTop += element.offsetTop;
-            absoluteLeft += element.offsetLeft;
-            element = element.offsetParent;
+        if (!suggestionsContainer) {
+            suggestionsContainer = createSuggestionsContainer();
+            parentContainer.appendChild(suggestionsContainer);
+        } else if (suggestionsContainer.parentElement !== parentContainer) {
+            // Se o container já existe mas está em outro lugar, mover
+            parentContainer.appendChild(suggestionsContainer);
         }
+
+        // Calcular posição relativa ao container pai usando getBoundingClientRect
+        const inputRect = locationInput.getBoundingClientRect();
+        const parentRect = parentContainer.getBoundingClientRect();
         
-        // Adiciona a altura do campo para posicionar abaixo dele
-        const inputHeight = locationInput.offsetHeight;
-        const topPosition = absoluteTop + inputHeight;
-        const leftPosition = absoluteLeft;
+        // Posição relativa = posição do input - posição do pai
+        const relativeTop = inputRect.bottom - parentRect.top;
+        const relativeLeft = inputRect.left - parentRect.left;
         
-        console.log(`📍 Posicionamento ABSOLUTO via offset: top=${topPosition}px, left=${leftPosition}px, inputHeight=${inputHeight}px`);
+        console.log(`📍 Posição RELATIVA ao container pai:`);
+        console.log(`   input.bottom=${inputRect.bottom}, parent.top=${parentRect.top}, relativeTop=${relativeTop}`);
+        console.log(`   input.left=${inputRect.left}, parent.left=${parentRect.left}, relativeLeft=${relativeLeft}`);
         
         suggestionsContainer.style.position = 'absolute';
-        suggestionsContainer.style.top = `${topPosition}px`;
-        suggestionsContainer.style.left = `${leftPosition}px`;
+        suggestionsContainer.style.top = `${relativeTop}px`;
+        suggestionsContainer.style.left = `${relativeLeft}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
-        suggestionsContainer.style.visibility = 'visible';
-        suggestionsContainer.style.opacity = '1';
+        suggestionsContainer.style.zIndex = '9999999';
 
         suggestionsContainer.innerHTML = '';
         matches.forEach(bairro => {
@@ -578,7 +597,6 @@ window.setupLocationAutocomplete = function() {
                 text-align: left !important;
             `;
             
-            // Destaca o texto pesquisado
             const regex = new RegExp(`(${termLower})`, 'gi');
             const highlightedHtml = bairro.replace(regex, `<strong style="color: #c0392b !important; background: #fdebd0 !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: bold !important;">$1</strong>`);
             suggestionItem.innerHTML = highlightedHtml;
@@ -587,7 +605,7 @@ window.setupLocationAutocomplete = function() {
                 locationInput.value = bairro;
                 if (suggestionsContainer) suggestionsContainer.remove();
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
-                hideSuggestions();
+                suggestionsContainer = null;
             });
             
             suggestionItem.addEventListener('mouseenter', () => {
@@ -604,7 +622,7 @@ window.setupLocationAutocomplete = function() {
         
         console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
         
-        // Verificar se o container está na viewport
+        // Verificar visibilidade
         setTimeout(() => {
             if (suggestionsContainer) {
                 const containerRect = suggestionsContainer.getBoundingClientRect();
@@ -706,7 +724,7 @@ window.setupLocationAutocomplete = function() {
         console.log('🎨 Estilos GLOBAIS de alta especificidade injetados');
     }
     
-    console.log('📍 Autocomplete de bairros inicializado com posicionamento absoluto corrigido!');
+    console.log('📍 Autocomplete de bairros inicializado com posicionamento relativo definitivo!');
     return true;
 };
 
@@ -849,4 +867,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento absoluto corrigido carregada');
+console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento relativo definitivo carregada');
