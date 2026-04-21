@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO RELATIVO DEFINITIVO
-console.log('🔧 admin.js - Versão core com autocomplete nativo');
+// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE FUNCIONAL
+console.log('🔧 admin.js - Versão core com autocomplete otimizado');
 
 /* ==========================================================
    CONFIGURAÇÃO E CONSTANTES
@@ -51,7 +51,6 @@ window.toggleAdminPanel = function() {
 window.resetAdminFormCompletely = function(showNotification = true) {
     console.log('🧹 RESET COMPLETO DO FORMULÁRIO');
     
-    // Usar função do Support System se disponível (fallback inline)
     if (window.SupportCoreUtils?.manageEditingState) {
         window.SupportCoreUtils.manageEditingState(null);
     } else {
@@ -91,7 +90,6 @@ window.resetAdminFormCompletely = function(showNotification = true) {
         }
     }
     
-    // Atualizar UI
     const formTitle = document.getElementById('formTitle');
     if (formTitle) formTitle.textContent = 'Adicionar Novo Imóvel';
     
@@ -111,7 +109,6 @@ window.resetAdminFormCompletely = function(showNotification = true) {
         if (form) form.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }, 100);
     
-    // Usar função do Support System se disponível (fallback silencioso)
     if (showNotification && typeof window.showAdminNotification === 'function') {
         window.showAdminNotification('✅ Formulário limpo para novo imóvel', 'info');
     }
@@ -154,7 +151,6 @@ window.editProperty = function(id) {
     
     window.resetAdminFormCompletely(false);
     
-    // Formatar preço usando SharedCore
     const formatPrice = (price) => {
         if (window.SharedCore?.PriceFormatter?.formatForAdmin) {
             return window.SharedCore.PriceFormatter.formatForAdmin(price);
@@ -162,7 +158,6 @@ window.editProperty = function(id) {
         return price || '';
     };
     
-    // ✅ PADRÃO HARMONIZADO: Formatar features usando SharedCore com fallback
     const formatFeatures = (features) => {
         return window.SharedCore?.formatFeaturesForDisplay?.(features) ?? features ?? '';
     };
@@ -175,7 +170,6 @@ window.editProperty = function(id) {
         'propFeatures': formatFeatures(property.features) || '',
         'propType': property.type || 'residencial',
         'propBadge': property.badge || 'Novo',
-        // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback
         'propHasVideo': window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false
     };
     
@@ -204,7 +198,6 @@ window.editProperty = function(id) {
         cancelBtn.style.display = 'inline-block';
     }
     
-    // Usar função do Support System se disponível (fallback inline)
     if (window.SupportCoreUtils?.manageEditingState) {
         window.SupportCoreUtils.manageEditingState(property.id);
     } else {
@@ -234,16 +227,10 @@ window.saveProperty = async function() {
     console.group('💾 SALVANDO IMÓVEL');
     
     try {
-        // Obter dados do formulário
         const propertyData = {};
         
         const videoCheckbox = document.getElementById('propHasVideo');
-        if (videoCheckbox) {
-            // ✅ PADRÃO HARMONIZADO: Usa SharedCore com fallback
-            propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(videoCheckbox.checked) ?? false;
-        } else {
-            propertyData.has_video = false;
-        }
+        propertyData.has_video = window.SharedCore?.ensureBooleanVideo?.(videoCheckbox?.checked) ?? false;
         
         const fields = [
             { id: 'propTitle', key: 'title' },
@@ -268,28 +255,20 @@ window.saveProperty = async function() {
             }
         });
         
-        console.log('📋 Dados coletados:', propertyData);
-        
-        // Validação básica
         if (!propertyData.title || !propertyData.price || !propertyData.location) {
             throw new Error('Preencha Título, Preço e Localização!');
         }
         
-        // Formatar dados usando SharedCore
         if (window.SharedCore?.PriceFormatter?.formatForAdmin) {
             propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
         }
         
-        // ✅ PADRÃO HARMONIZADO: Parse features usando SharedCore
         propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
         
-        // Processar mídias
         let imageUrls = '';
         let pdfUrls = '';
         
         if (window.MediaSystem) {
-            console.log('📤 Processando mídias...');
-            
             const hasSupabase = window.SUPABASE_CONSTANTS && 
                               window.SUPABASE_CONSTANTS.URL && 
                               window.SUPABASE_CONSTANTS.KEY;
@@ -304,9 +283,7 @@ window.saveProperty = async function() {
                     if (uploadResult.success) {
                         imageUrls = uploadResult.images;
                         pdfUrls = uploadResult.pdfs;
-                        console.log(`✅ Upload concluído: ${uploadResult.uploadedCount} arquivo(s)`);
                     } else {
-                        console.warn('⚠️ Upload falhou, salvando localmente');
                         const localResult = MediaSystem.saveAndKeepLocal(
                             window.editingPropertyId || 'temp_' + Date.now(),
                             propertyData.title || 'Imóvel'
@@ -315,7 +292,6 @@ window.saveProperty = async function() {
                         pdfUrls = localResult.pdfs;
                     }
                 } catch (uploadError) {
-                    console.error('❌ Erro no upload:', uploadError);
                     const localResult = MediaSystem.saveAndKeepLocal(
                         window.editingPropertyId || 'temp_' + Date.now(),
                         propertyData.title || 'Imóvel'
@@ -324,7 +300,6 @@ window.saveProperty = async function() {
                     pdfUrls = localResult.pdfs;
                 }
             } else {
-                console.log('⚠️ Supabase não configurado, salvando localmente');
                 const localResult = MediaSystem.saveAndKeepLocal(
                     window.editingPropertyId || 'temp_' + Date.now(),
                     propertyData.title || 'Imóvel'
@@ -333,7 +308,6 @@ window.saveProperty = async function() {
                 pdfUrls = localResult.pdfs;
             }
         } else {
-            console.warn('⚠️ MediaSystem não disponível');
             imageUrls = 'EMPTY';
             pdfUrls = 'EMPTY';
         }
@@ -341,10 +315,7 @@ window.saveProperty = async function() {
         propertyData.images = imageUrls || 'EMPTY';
         propertyData.pdfs = pdfUrls || 'EMPTY';
         
-        // Salvar no sistema
         if (window.editingPropertyId) {
-            console.log(`✏️ Salvando edição do imóvel ${window.editingPropertyId}...`);
-            
             if (typeof window.updateProperty === 'function') {
                 try {
                     const updateResult = await window.updateProperty(window.editingPropertyId, propertyData);
@@ -353,22 +324,18 @@ window.saveProperty = async function() {
                         if (typeof window.showAdminNotification === 'function') {
                             window.showAdminNotification('✅ Imóvel atualizado com sucesso!', 'success', 3000);
                         }
-                        console.log('✅ Imóvel salvo no Supabase');
                     } else {
                         if (typeof window.showAdminNotification === 'function') {
                             window.showAdminNotification('⚠️ Imóvel salvo apenas localmente', 'info', 3000);
                         }
-                        console.log('⚠️ Imóvel salvo apenas localmente (Supabase falhou)');
                     }
                 } catch (supabaseError) {
-                    console.error('❌ Erro ao salvar no Supabase:', supabaseError);
                     if (typeof window.showAdminNotification === 'function') {
                         window.showAdminNotification('✅ Imóvel salvo localmente (Supabase offline)', 'info', 3000);
                     }
                 }
             }
             
-            // Atualizar galeria
             setTimeout(() => {
                 if (typeof window.updatePropertyCard === 'function') {
                     window.updatePropertyCard(window.editingPropertyId);
@@ -382,8 +349,6 @@ window.saveProperty = async function() {
             }, 1500);
             
         } else {
-            console.log('🆕 Criando novo imóvel...');
-            
             const newProperty = {
                 ...propertyData,
                 created_at: new Date().toISOString(),
@@ -391,8 +356,6 @@ window.saveProperty = async function() {
             };
             
             if (typeof window.addNewProperty === 'function') {
-                console.log('✅ Usando addNewProperty()');
-                
                 try {
                     const result = await window.addNewProperty(newProperty);
                     
@@ -400,7 +363,6 @@ window.saveProperty = async function() {
                         if (typeof window.showAdminNotification === 'function') {
                             window.showAdminNotification('✅ Imóvel criado com sucesso!', 'success', 3000);
                         }
-                        console.log(`✅ Novo imóvel criado: ${result.id}`);
                         
                         setTimeout(() => {
                             if (typeof window.renderProperties === 'function') {
@@ -417,9 +379,6 @@ window.saveProperty = async function() {
                     }
                     
                 } catch (error) {
-                    console.error('❌ Erro em addNewProperty:', error);
-                    
-                    // Usar fallback do Support System se disponível
                     if (typeof window.savePropertyLocalFallback === 'function') {
                         const fallbackResult = await window.savePropertyLocalFallback(newProperty);
                         
@@ -440,9 +399,7 @@ window.saveProperty = async function() {
                         throw error;
                     }
                 }
-                
             } else {
-                console.warn('⚠️ addNewProperty não disponível');
                 throw new Error('Função addNewProperty não disponível');
             }
         }
@@ -464,7 +421,6 @@ window.saveProperty = async function() {
    SISTEMA DE AUTOCOMPLETE PARA O CAMPO "LOCALIZAÇÃO"
    ========================================================== */
 window.setupLocationAutocomplete = function() {
-    // Lista oficial dos principais bairros de Maceió
     const bairrosMaceio = [
         'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
         'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -477,18 +433,10 @@ window.setupLocationAutocomplete = function() {
     ];
 
     const locationInput = document.getElementById('propLocation');
-    if (!locationInput) {
-        console.log('📍 Campo de localização não encontrado');
-        return false;
-    }
-    
-    if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        console.log('📍 Autocomplete já inicializado');
-        return true;
-    }
+    if (!locationInput) return false;
+    if (locationInput.hasAttribute('data-autocomplete-initialized')) return true;
     
     let suggestionsContainer = null;
-    let parentContainer = null;
 
     function createSuggestionsContainer() {
         const container = document.createElement('div');
@@ -497,32 +445,14 @@ window.setupLocationAutocomplete = function() {
             position: absolute !important;
             z-index: 9999999 !important;
             background: #ffffff !important;
-            background-color: #ffffff !important;
             border: 2px solid #1a5276 !important;
             border-top: none !important;
             max-height: 250px !important;
             overflow-y: auto !important;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
             border-radius: 0 0 8px 8px !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
         `;
         return container;
-    }
-
-    function findRelativeParent() {
-        // Encontrar o container pai que tem position: relative ou absolute
-        let container = locationInput.parentElement;
-        while (container && container !== document.body) {
-            const position = window.getComputedStyle(container).position;
-            if (position === 'relative' || position === 'absolute') {
-                return container;
-            }
-            container = container.parentElement;
-        }
-        // Se não encontrou, retorna o próprio pai do input
-        return locationInput.parentElement;
     }
 
     function showSuggestions(searchTerm) {
@@ -541,42 +471,38 @@ window.setupLocationAutocomplete = function() {
             return;
         }
 
-        // Encontrar ou atualizar o container pai
-        parentContainer = findRelativeParent();
+        let parentContainer = locationInput.parentElement;
+        while (parentContainer && parentContainer !== document.body) {
+            const position = window.getComputedStyle(parentContainer).position;
+            if (position === 'relative' || position === 'absolute') break;
+            parentContainer = parentContainer.parentElement;
+        }
         
-        // Garantir que o container pai tenha position: relative
-        const parentPosition = window.getComputedStyle(parentContainer).position;
-        if (parentPosition !== 'relative' && parentPosition !== 'absolute') {
+        if (parentContainer === document.body) {
+            parentContainer = locationInput.parentElement;
+        }
+        
+        if (window.getComputedStyle(parentContainer).position !== 'relative') {
             parentContainer.style.position = 'relative';
-            console.log('📍 Container pai agora tem position: relative');
         }
 
         if (!suggestionsContainer) {
             suggestionsContainer = createSuggestionsContainer();
             parentContainer.appendChild(suggestionsContainer);
         } else if (suggestionsContainer.parentElement !== parentContainer) {
-            // Se o container já existe mas está em outro lugar, mover
             parentContainer.appendChild(suggestionsContainer);
         }
 
-        // Calcular posição relativa ao container pai usando getBoundingClientRect
         const inputRect = locationInput.getBoundingClientRect();
         const parentRect = parentContainer.getBoundingClientRect();
         
-        // Posição relativa = posição do input - posição do pai
         const relativeTop = inputRect.bottom - parentRect.top;
         const relativeLeft = inputRect.left - parentRect.left;
         
-        console.log(`📍 Posição RELATIVA ao container pai:`);
-        console.log(`   input.bottom=${inputRect.bottom}, parent.top=${parentRect.top}, relativeTop=${relativeTop}`);
-        console.log(`   input.left=${inputRect.left}, parent.left=${parentRect.left}, relativeLeft=${relativeLeft}`);
-        
-        suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.top = `${relativeTop}px`;
         suggestionsContainer.style.left = `${relativeLeft}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
-        suggestionsContainer.style.zIndex = '9999999';
 
         suggestionsContainer.innerHTML = '';
         matches.forEach(bairro => {
@@ -585,55 +511,30 @@ window.setupLocationAutocomplete = function() {
                 padding: 10px 14px !important;
                 cursor: pointer !important;
                 font-size: 0.9rem !important;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
                 color: #1a5276 !important;
-                background-color: #ffffff !important;
                 background: #ffffff !important;
                 border-bottom: 1px solid #e0e0e0 !important;
-                transition: all 0.2s ease !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                text-align: left !important;
             `;
             
             const regex = new RegExp(`(${termLower})`, 'gi');
-            const highlightedHtml = bairro.replace(regex, `<strong style="color: #c0392b !important; background: #fdebd0 !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: bold !important;">$1</strong>`);
-            suggestionItem.innerHTML = highlightedHtml;
+            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #c0392b; background: #fdebd0; padding: 2px 4px; border-radius: 4px;">$1</strong>`);
 
             suggestionItem.addEventListener('click', () => {
                 locationInput.value = bairro;
                 if (suggestionsContainer) suggestionsContainer.remove();
-                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
                 suggestionsContainer = null;
+                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
             });
             
             suggestionItem.addEventListener('mouseenter', () => {
-                suggestionItem.style.backgroundColor = '#e8f4fd !important';
-                suggestionItem.style.background = '#e8f4fd !important';
+                suggestionItem.style.background = '#e8f4fd';
             });
             suggestionItem.addEventListener('mouseleave', () => {
-                suggestionItem.style.backgroundColor = '#ffffff !important';
-                suggestionItem.style.background = '#ffffff !important';
+                suggestionItem.style.background = '#ffffff';
             });
             
             suggestionsContainer.appendChild(suggestionItem);
         });
-        
-        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
-        
-        // Verificar visibilidade
-        setTimeout(() => {
-            if (suggestionsContainer) {
-                const containerRect = suggestionsContainer.getBoundingClientRect();
-                const isInViewport = containerRect.top >= 0 && containerRect.bottom <= window.innerHeight;
-                console.log(`📦 Container na viewport: ${isInViewport ? '✅ SIM' : '❌ NÃO'} (top=${containerRect.top}, bottom=${containerRect.bottom})`);
-                if (!isInViewport && containerRect.top < 0) {
-                    console.log('⚠️ Container acima da viewport! Rolando suavemente...');
-                    locationInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        }, 50);
     }
 
     function hideSuggestions() {
@@ -643,21 +544,14 @@ window.setupLocationAutocomplete = function() {
         }
     }
 
-    // Eventos
-    locationInput.addEventListener('input', (e) => {
-        showSuggestions(e.target.value);
-    });
-
-    locationInput.addEventListener('blur', () => {
-        setTimeout(hideSuggestions, 200);
-    });
-
+    locationInput.addEventListener('input', (e) => showSuggestions(e.target.value));
+    locationInput.addEventListener('blur', () => setTimeout(hideSuggestions, 200));
     locationInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && suggestionsContainer) {
             e.preventDefault();
             const firstSuggestion = suggestionsContainer.querySelector('div');
             if (firstSuggestion) {
-                locationInput.value = firstSuggestion.textContent || firstSuggestion.innerText;
+                locationInput.value = firstSuggestion.textContent;
                 hideSuggestions();
             }
         }
@@ -666,65 +560,43 @@ window.setupLocationAutocomplete = function() {
     locationInput.setAttribute('data-autocomplete-initialized', 'true');
     locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
-    // CSS GLOBAL DE GARANTIA COM ALTA ESPECIFICIDADE
-    const styleId = 'autocomplete-core-styles-v2';
-    if (!document.getElementById(styleId)) {
+    if (!document.getElementById('autocomplete-core-styles')) {
         const style = document.createElement('style');
-        style.id = styleId;
+        style.id = 'autocomplete-core-styles';
         style.textContent = `
-            .admin-location-suggestions,
-            div.admin-location-suggestions {
+            .admin-location-suggestions {
                 position: absolute !important;
                 z-index: 9999999 !important;
                 background: #ffffff !important;
-                background-color: #ffffff !important;
                 border: 2px solid #1a5276 !important;
                 border-top: none !important;
                 max-height: 250px !important;
                 overflow-y: auto !important;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
                 border-radius: 0 0 8px 8px !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
             }
-            
-            .admin-location-suggestions div,
-            div.admin-location-suggestions div {
+            .admin-location-suggestions div {
                 padding: 10px 14px !important;
                 cursor: pointer !important;
                 font-size: 0.9rem !important;
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
                 color: #1a5276 !important;
-                background-color: #ffffff !important;
                 background: #ffffff !important;
                 border-bottom: 1px solid #e0e0e0 !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
-                text-align: left !important;
             }
-            
-            .admin-location-suggestions div:hover,
-            div.admin-location-suggestions div:hover {
-                background-color: #e8f4fd !important;
+            .admin-location-suggestions div:hover {
                 background: #e8f4fd !important;
             }
-            
-            .admin-location-suggestions div strong,
-            div.admin-location-suggestions div strong {
+            .admin-location-suggestions div strong {
                 color: #c0392b !important;
                 background: #fdebd0 !important;
                 padding: 2px 4px !important;
                 border-radius: 4px !important;
-                font-weight: bold !important;
             }
         `;
         document.head.appendChild(style);
-        console.log('🎨 Estilos GLOBAIS de alta especificidade injetados');
     }
     
-    console.log('📍 Autocomplete de bairros inicializado com posicionamento relativo definitivo!');
+    console.log('✅ Autocomplete de bairros inicializado');
     return true;
 };
 
@@ -799,8 +671,6 @@ window.setupAdminUI = function() {
     
     const adminBtn = document.querySelector('.admin-toggle');
     if (adminBtn) {
-        console.log('✅ Botão admin encontrado, configurando...');
-        
         const newBtn = adminBtn.cloneNode(true);
         adminBtn.parentNode.replaceChild(newBtn, adminBtn);
         
@@ -809,11 +679,8 @@ window.setupAdminUI = function() {
         freshBtn.onclick = function(e) {
             e.preventDefault();
             e.stopPropagation();
-            console.log('🟢 Botão admin clicado');
             window.toggleAdminPanel();
         };
-        
-        console.log('✅ Botão admin configurado');
     }
     
     const cancelBtn = document.getElementById('cancelEditBtn');
@@ -831,12 +698,10 @@ window.setupAdminUI = function() {
     if (typeof window.setupForm === 'function') {
         setTimeout(window.setupForm, 100);
     }
-    
-    console.log('✅ UI do admin configurada');
 };
 
 /* ==========================================================
-   INICIALIZAÇÃO (APENAS ESSENCIAL)
+   INICIALIZAÇÃO
    ========================================================== */
 
 function initializeAdmin() {
@@ -846,7 +711,6 @@ function initializeAdmin() {
         const stored = JSON.parse(localStorage.getItem('properties') || '[]');
         if (!window.properties && stored.length > 0) {
             window.properties = stored;
-            console.log(`✅ Carregado ${stored.length} imóveis do localStorage`);
         }
     } catch (e) {
         console.error('Erro ao carregar do localStorage:', e);
@@ -867,4 +731,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento relativo definitivo carregada');
+console.log('✅ admin.js - Versão final otimizada carregada');
