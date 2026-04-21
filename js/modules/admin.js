@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E CSS ULTRA-ESPECÍFICO
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO CORRIGIDO
 console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
@@ -492,7 +492,6 @@ window.setupLocationAutocomplete = function() {
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
-        // ESTILOS COM FORÇA MÁXIMA - CORES DE CONTRASTE GARANTIDAS
         container.style.cssText = `
             position: absolute !important;
             z-index: 9999999 !important;
@@ -532,15 +531,29 @@ window.setupLocationAutocomplete = function() {
             document.body.appendChild(suggestionsContainer);
         }
 
+        // 🔧 CORREÇÃO CRÍTICA DE POSICIONAMENTO
         const rect = locationInput.getBoundingClientRect();
-        suggestionsContainer.style.top = `${rect.bottom + window.scrollY}px`;
-        suggestionsContainer.style.left = `${rect.left + window.scrollX}px`;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+        
+        // Posicionar logo ABAIXO do campo de input
+        const topPosition = rect.bottom + scrollTop;
+        const leftPosition = rect.left + scrollLeft;
+        
+        console.log(`📍 Posicionando container: top=${topPosition}px, left=${leftPosition}px, scrollY=${scrollTop}, rect.bottom=${rect.bottom}`);
+        
+        suggestionsContainer.style.top = `${topPosition}px`;
+        suggestionsContainer.style.left = `${leftPosition}px`;
         suggestionsContainer.style.width = `${rect.width}px`;
+        
+        // Garantir visibilidade
+        suggestionsContainer.style.display = 'block';
+        suggestionsContainer.style.visibility = 'visible';
+        suggestionsContainer.style.opacity = '1';
 
         suggestionsContainer.innerHTML = '';
         matches.forEach(bairro => {
             const suggestionItem = document.createElement('div');
-            // ESTILOS DO ITEM COM !important GARANTIDO
             suggestionItem.style.cssText = `
                 padding: 10px 14px !important;
                 cursor: pointer !important;
@@ -557,7 +570,7 @@ window.setupLocationAutocomplete = function() {
                 text-align: left !important;
             `;
             
-            // Destaca o texto pesquisado com cores fortes
+            // Destaca o texto pesquisado
             const regex = new RegExp(`(${termLower})`, 'gi');
             const highlightedHtml = bairro.replace(regex, `<strong style="color: #c0392b !important; background: #fdebd0 !important; padding: 2px 4px !important; border-radius: 4px !important; font-weight: bold !important;">$1</strong>`);
             suggestionItem.innerHTML = highlightedHtml;
@@ -581,13 +594,20 @@ window.setupLocationAutocomplete = function() {
             suggestionsContainer.appendChild(suggestionItem);
         });
         
-        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
+        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}" na posição top=${topPosition}px`);
         
-        // Debug: verificar se o container está visível
-        if (suggestionsContainer) {
-            const bgColor = window.getComputedStyle(suggestionsContainer).backgroundColor;
-            console.log(`🎨 Container BG: ${bgColor}, Filhos: ${suggestionsContainer.children.length}`);
-        }
+        // Verificar se o container está na viewport
+        setTimeout(() => {
+            if (suggestionsContainer) {
+                const containerRect = suggestionsContainer.getBoundingClientRect();
+                const isInViewport = containerRect.top >= 0 && containerRect.bottom <= window.innerHeight;
+                console.log(`📦 Container na viewport: ${isInViewport ? '✅ SIM' : '❌ NÃO'} (top=${containerRect.top}, bottom=${containerRect.bottom})`);
+                if (!isInViewport) {
+                    console.log('⚠️ Container fora da viewport! Rolando até o campo...');
+                    locationInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }, 50);
     }
 
     function hideSuggestions() {
@@ -626,7 +646,6 @@ window.setupLocationAutocomplete = function() {
         const style = document.createElement('style');
         style.id = styleId;
         style.textContent = `
-            /* Garantia máxima para o container de sugestões */
             .admin-location-suggestions,
             div.admin-location-suggestions {
                 position: absolute !important;
@@ -644,7 +663,6 @@ window.setupLocationAutocomplete = function() {
                 opacity: 1 !important;
             }
             
-            /* Garantia para os itens de sugestão */
             .admin-location-suggestions div,
             div.admin-location-suggestions div {
                 padding: 10px 14px !important;
@@ -661,14 +679,12 @@ window.setupLocationAutocomplete = function() {
                 text-align: left !important;
             }
             
-            /* Hover dos itens */
             .admin-location-suggestions div:hover,
             div.admin-location-suggestions div:hover {
                 background-color: #e8f4fd !important;
                 background: #e8f4fd !important;
             }
             
-            /* Destaque do texto pesquisado */
             .admin-location-suggestions div strong,
             div.admin-location-suggestions div strong {
                 color: #c0392b !important;
@@ -679,27 +695,10 @@ window.setupLocationAutocomplete = function() {
             }
         `;
         document.head.appendChild(style);
-        console.log('🎨 Estilos GLOBAIS de alta especificidade injetados (v2)');
+        console.log('🎨 Estilos GLOBAIS de alta especificidade injetados');
     }
     
-    // Forçar remoção de estilos conflitantes de outros arquivos
-    setTimeout(() => {
-        const allStyles = document.querySelectorAll('style');
-        let hasConflict = false;
-        allStyles.forEach((s, i) => {
-            if (s.textContent && s.textContent.includes('admin-location-suggestions')) {
-                console.log(`📄 Estilo encontrado no style[${i}] - pode estar causando conflito`);
-                hasConflict = true;
-            }
-        });
-        if (hasConflict) {
-            console.log('⚠️ Estilos conflitantes detectados! O CSS inline deve sobrescrever.');
-        } else {
-            console.log('✅ Nenhum estilo conflitante detectado nos stylesheets.');
-        }
-    }, 100);
-    
-    console.log('📍 Autocomplete de bairros inicializado com cores de alto contraste!');
+    console.log('📍 Autocomplete de bairros inicializado com posicionamento corrigido!');
     return true;
 };
 
@@ -817,7 +816,6 @@ window.setupAdminUI = function() {
 function initializeAdmin() {
     console.log('🚀 Inicializando sistema admin...');
     
-    // Apenas carregar dados do localStorage se necessário (essencial)
     try {
         const stored = JSON.parse(localStorage.getItem('properties') || '[]');
         if (!window.properties && stored.length > 0) {
@@ -830,7 +828,6 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    // Configurar autocomplete (agora com funcionalidade completa)
     setTimeout(() => {
         if (typeof window.setupLocationAutocomplete === 'function') {
             window.setupLocationAutocomplete();
@@ -838,11 +835,10 @@ function initializeAdmin() {
     }, 500);
 }
 
-// Iniciar quando o DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeAdmin);
 } else {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo e CSS ultra-específico carregada');
+console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento corrigido carregada');
