@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO CORRIGIDO
+// js/modules/admin.js - VERSÃO COM AUTOCOMPLETE NATIVO E POSICIONAMENTO ABSOLUTO CORRIGIDO
 console.log('🔧 admin.js - Versão core com autocomplete nativo');
 
 /* ==========================================================
@@ -531,22 +531,30 @@ window.setupLocationAutocomplete = function() {
             document.body.appendChild(suggestionsContainer);
         }
 
-        // 🔧 CORREÇÃO CRÍTICA DE POSICIONAMENTO
-        const rect = locationInput.getBoundingClientRect();
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
-        const scrollLeft = window.scrollX || document.documentElement.scrollLeft;
+        // 🔧 CORREÇÃO CRÍTICA: Calcular posição absoluta usando offsetTop + offsetParent
+        // Este método é mais confiável que getBoundingClientRect quando há containers posicionados
+        let absoluteTop = 0;
+        let absoluteLeft = 0;
+        let element = locationInput;
         
-        // Posicionar logo ABAIXO do campo de input
-        const topPosition = rect.bottom + scrollTop;
-        const leftPosition = rect.left + scrollLeft;
+        // Acumula as posições dos elementos pais
+        while (element && element !== document.body) {
+            absoluteTop += element.offsetTop;
+            absoluteLeft += element.offsetLeft;
+            element = element.offsetParent;
+        }
         
-        console.log(`📍 Posicionando container: top=${topPosition}px, left=${leftPosition}px, scrollY=${scrollTop}, rect.bottom=${rect.bottom}`);
+        // Adiciona a altura do campo para posicionar abaixo dele
+        const inputHeight = locationInput.offsetHeight;
+        const topPosition = absoluteTop + inputHeight;
+        const leftPosition = absoluteLeft;
         
+        console.log(`📍 Posicionamento ABSOLUTO via offset: top=${topPosition}px, left=${leftPosition}px, inputHeight=${inputHeight}px`);
+        
+        suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.top = `${topPosition}px`;
         suggestionsContainer.style.left = `${leftPosition}px`;
-        suggestionsContainer.style.width = `${rect.width}px`;
-        
-        // Garantir visibilidade
+        suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
         suggestionsContainer.style.visibility = 'visible';
         suggestionsContainer.style.opacity = '1';
@@ -594,7 +602,7 @@ window.setupLocationAutocomplete = function() {
             suggestionsContainer.appendChild(suggestionItem);
         });
         
-        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}" na posição top=${topPosition}px`);
+        console.log(`📍 ${matches.length} sugestão(ões) exibida(s) para "${searchTerm}"`);
         
         // Verificar se o container está na viewport
         setTimeout(() => {
@@ -602,8 +610,8 @@ window.setupLocationAutocomplete = function() {
                 const containerRect = suggestionsContainer.getBoundingClientRect();
                 const isInViewport = containerRect.top >= 0 && containerRect.bottom <= window.innerHeight;
                 console.log(`📦 Container na viewport: ${isInViewport ? '✅ SIM' : '❌ NÃO'} (top=${containerRect.top}, bottom=${containerRect.bottom})`);
-                if (!isInViewport) {
-                    console.log('⚠️ Container fora da viewport! Rolando até o campo...');
+                if (!isInViewport && containerRect.top < 0) {
+                    console.log('⚠️ Container acima da viewport! Rolando suavemente...');
                     locationInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             }
@@ -698,7 +706,7 @@ window.setupLocationAutocomplete = function() {
         console.log('🎨 Estilos GLOBAIS de alta especificidade injetados');
     }
     
-    console.log('📍 Autocomplete de bairros inicializado com posicionamento corrigido!');
+    console.log('📍 Autocomplete de bairros inicializado com posicionamento absoluto corrigido!');
     return true;
 };
 
@@ -841,4 +849,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento corrigido carregada');
+console.log('✅ admin.js - Versão core com autocomplete nativo e posicionamento absoluto corrigido carregada');
