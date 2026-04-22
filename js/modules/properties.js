@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO REFATORADA COM DELEGAÇÃO PARA SUPPORT SYSTEM
-console.log('🏠 properties.js - VERSÃO REFATORADA - Delegando templates para Support System');
+// js/modules/properties.js - VERSÃO CORRIGIDA COM MECANISMO DE ESPERA PARA SUPPORT SYSTEM
+console.log('🏠 properties.js - VERSÃO CORRIGIDA - Com espera para Support System');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,64 +34,162 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== CAMADA DE COMPATIBILIDADE PARA TEMPLATES (DELEGA PARA SUPPORT SYSTEM) ==========
-// A responsabilidade pela geração de templates é do módulo 'property-template.js' no Support System.
-// Este código age como um proxy, delegando a função real para o Support System quando disponível.
+// ========== CAMADA DE COMPATIBILIDADE PARA TEMPLATES (COM ESPERA PELO SUPPORT SYSTEM) ==========
 console.log('🔄 [properties.js] Inicializando camada de compatibilidade de templates');
 
+// Flag para controlar se já tentamos carregar o Support System
+let _supportCheckAttempts = 0;
+let _supportCheckInterval = null;
+let _pendingRenderRequest = null;
+
 /**
- * Engine de templates unificada.
- * Tenta usar o módulo do Support System, mas mantém um fallback mínimo e seguro.
+ * Verifica se o SupportTemplates já está disponível
+ * Se não estiver, agenda uma nova verificação
+ */
+function _ensureSupportTemplates(callback) {
+    // Já disponível?
+    if (window.SupportTemplates?.PropertyTemplateEngine) {
+        if (!window._supportTemplateEngineInstance) {
+            try {
+                window._supportTemplateEngineInstance = new window.SupportTemplates.PropertyTemplateEngine();
+                console.log('✅ [properties.js] SupportTemplates inicializado com sucesso');
+            } catch (e) {
+                console.warn('⚠️ [properties.js] Erro ao instanciar SupportTemplates:', e);
+                return false;
+            }
+        }
+        if (callback) callback();
+        return true;
+    }
+    
+    // Support System não está disponível ainda
+    console.log(`⏳ [properties.js] Aguardando SupportTemplates (tentativa ${_supportCheckAttempts + 1})...`);
+    
+    // Se já passou de 10 tentativas (5 segundos), desiste e usa fallback
+    if (_supportCheckAttempts >= 10) {
+        console.warn('⚠️ [properties.js] SupportTemplates não disponível após timeout. Usando fallback mínimo.');
+        if (_supportCheckInterval) clearInterval(_supportCheckInterval);
+        _supportCheckInterval = null;
+        return false;
+    }
+    
+    // Agenda nova verificação em 500ms
+    if (!_supportCheckInterval) {
+        _supportCheckInterval = setInterval(() => {
+            _supportCheckAttempts++;
+            const available = _ensureSupportTemplates(callback);
+            if (available || _supportCheckAttempts >= 10) {
+                clearInterval(_supportCheckInterval);
+                _supportCheckInterval = null;
+                
+                // Se não ficou disponível, executa callback com fallback
+                if (!available && callback) callback();
+            }
+        }, 500);
+    }
+    
+    return false;
+}
+
+/**
+ * Engine de templates unificada com suporte a carregamento assíncrono do Support System
  */
 window.propertyTemplates = {
-    // Gera o HTML do card delegando para o Support System.
+    // Gera o HTML do card
     generate: function(property) {
-        // 1. Tenta usar o módulo avançado do Support System (recomendado)
+        // Tenta usar o Support System se disponível
         if (window.SupportTemplates?.PropertyTemplateEngine) {
             try {
-                // Instancia ou usa uma instância singleton do template engine do suporte
                 if (!window._supportTemplateEngineInstance) {
                     window._supportTemplateEngineInstance = new window.SupportTemplates.PropertyTemplateEngine();
                 }
                 return window._supportTemplateEngineInstance.generate(property);
             } catch (e) {
-                console.warn('⚠️ [properties.js] Erro ao usar SupportTemplates, usando fallback:', e);
+                console.warn('⚠️ [properties.js] Erro ao usar SupportTemplates:', e);
             }
         }
         
-        // 2. Fallback mínimo e seguro (apenas para garantir que o site nunca quebre)
-        console.warn('⚠️ [properties.js] SupportTemplates não disponível. Usando fallback de template mínimo.');
+        // Fallback mínimo (apenas para garantir que o site nunca quebre)
+        console.warn('⚠️ [properties.js] Usando fallback de template mínimo (galeria simplificada)');
         const imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-        const firstImageUrl = (property.images && property.images !== 'EMPTY') ? property.images.split(',')[0] : imageFallback;
+        
+        // Extrair primeira imagem de forma segura
+        let firstImageUrl = imageFallback;
+        if (property.images && property.images !== 'EMPTY') {
+            const urls = property.images.split(',').filter(u => u && u.trim());
+            if (urls.length > 0) firstImageUrl = urls[0];
+        }
+        
         const price = property.price || 'R$ 0,00';
-        const escapeHtml = (str) => { if (!str) return ''; return str.replace(/[&<>]/g, function(m) { if (m === '&') return '&amp;'; if (m === '<') return '&lt;'; if (m === '>') return '&gt;'; return m; }); };
+        const hasImages = property.images && property.images !== 'EMPTY' && property.images.split(',').filter(u => u && u.trim()).length > 1;
+        const imageCount = hasImages ? property.images.split(',').filter(u => u && u.trim()).length : 0;
+        
+        const escapeHtml = (str) => {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        };
+        
+        // Fallback que ainda permite abrir a galeria (se a função existir)
+        const hasGalleryFunction = typeof window.openGalleryAtCurrentIndex === 'function';
         
         return `
-            <div class="property-card" data-property-id="${property.id}">
-                <div class="property-image" style="height: 200px; background-image: url('${firstImageUrl}'); background-size: cover; background-position: center;"></div>
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${escapeHtml(property.title || '')}">
+                <div class="property-image" style="position: relative; height: 250px; overflow: hidden;">
+                    <div onclick="${hasGalleryFunction ? `openGalleryAtCurrentIndex(${property.id})` : ''}" style="cursor: pointer; width: 100%; height: 100%;">
+                        <img src="${firstImageUrl}" 
+                             style="width: 100%; height: 100%; object-fit: cover;"
+                             alt="${escapeHtml(property.title || 'Imóvel')}"
+                             loading="lazy"
+                             onerror="this.src='${imageFallback}'">
+                    </div>
+                    
+                    ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${escapeHtml(property.badge)}</div>` : ''}
+                    
+                    ${imageCount > 1 ? `
+                        <div class="image-counter" style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; z-index: 20;">
+                            <i class="fas fa-images"></i> ${imageCount}
+                        </div>
+                    ` : ''}
+                    
+                    ${hasGalleryFunction ? `
+                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})" 
+                             style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: transform 0.2s;">
+                            <i class="fas fa-expand"></i>
+                        </div>
+                    ` : ''}
+                </div>
                 <div class="property-content">
-                    <div class="property-price">${escapeHtml(price)}</div>
-                    <h3 class="property-title">${escapeHtml(property.title)}</h3>
-                    <div class="property-location"><i class="fas fa-map-marker-alt"></i> ${escapeHtml(property.location)}</div>
-                    <button class="contact-btn" onclick="contactAgent(${property.id})"><i class="fab fa-whatsapp"></i> Contato</button>
+                    <div class="property-price" data-price-field>${escapeHtml(price)}</div>
+                    <h3 class="property-title" data-title-field>${escapeHtml(property.title || 'Imóvel sem título')}</h3>
+                    <div class="property-location" data-location-field>
+                        <i class="fas fa-map-marker-alt"></i> ${escapeHtml(property.location || 'Local não informado')}
+                    </div>
+                    <button class="contact-btn" onclick="contactAgent(${property.id})">
+                        <i class="fab fa-whatsapp"></i> Entrar em Contato
+                    </button>
                 </div>
             </div>
         `;
     },
     
-    // Atualiza o conteúdo de um card específico.
+    // Atualiza o conteúdo de um card específico
     updateCardContent: function(propertyId, propertyData) {
-        // Tenta usar o método específico do Support System para uma atualização eficiente.
+        // Tenta usar o Support System
         if (window._supportTemplateEngineInstance?.updateCardContent) {
             try {
                 return window._supportTemplateEngineInstance.updateCardContent(propertyId, propertyData);
             } catch (e) {
-                console.warn(`⚠️ [properties.js] Erro no updateCardContent do Support para ${propertyId}:`, e);
+                console.warn(`⚠️ [properties.js] Erro no updateCardContent do Support:`, e);
             }
         }
         
-        // Fallback: recarrega completamente a lista de imóveis. É mais pesado, mas 100% seguro.
-        console.log(`🔄 [properties.js] Fallback: recarregando lista de imóveis para atualizar o card ${propertyId}`);
+        // Fallback: recarrega a lista
+        console.log(`🔄 [properties.js] Fallback: recarregando lista para atualizar card ${propertyId}`);
         if (typeof window.renderProperties === 'function') {
             window.renderProperties(window.currentFilter || 'todos', true);
             return true;
@@ -108,11 +206,25 @@ window.propertyTemplates = {
     }
 };
 
-// Mantém a função global para compatibilidade com o código existente.
-// Ela agora simplesmente delega para o novo método updateCardContent.
+// Mantém a função global para compatibilidade
 window.updatePropertyCard = function(propertyId, updatedData = null) {
     return window.propertyTemplates.updateCardContent(propertyId, updatedData);
 };
+
+// Aguarda o Support System carregar e depois re-renderiza se necessário
+function _reRenderWhenSupportAvailable() {
+    _ensureSupportTemplates(() => {
+        if (window.SupportTemplates?.PropertyTemplateEngine && window.properties && window.properties.length > 0) {
+            console.log('🔄 [properties.js] SupportTemplates agora disponível! Re-renderizando imóveis...');
+            if (typeof window.renderProperties === 'function') {
+                window.renderProperties(window.currentFilter || 'todos', true);
+            }
+        }
+    });
+}
+
+// Iniciar a espera pelo Support System
+setTimeout(_reRenderWhenSupportAvailable, 100);
 
 // ========== FUNÇÃO PARA ESPERAR CARREGAMENTO DE IMAGENS ==========
 window.waitForAllPropertyImages = async function() {
@@ -1114,7 +1226,7 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO REFATORADA CARREGADA - Delegando templates para Support System');
+console.log('✅ properties.js VERSÃO CORRIGIDA CARREGADA - Com espera para Support System');
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
@@ -1176,6 +1288,5 @@ if (document.readyState === 'loading') {
 // Exportar funções necessárias
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 properties.js refatorado - Delegação ativa para Support System');
-console.log('📝 SupportTemplates disponível:', !!window.SupportTemplates?.PropertyTemplateEngine);
+console.log('🎯 properties.js corrigido - Mecanismo de espera para Support System ativo');
 console.log('💡 Adicione ?debug=true na URL para ativar funcionalidades de diagnóstico');
