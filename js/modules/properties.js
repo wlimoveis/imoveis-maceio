@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO CORRIGIDA COM MECANISMO DE ESPERA PARA SUPPORT SYSTEM
-console.log('🏠 properties.js - VERSÃO CORRIGIDA - Com espera para Support System');
+// js/modules/properties.js - VERSÃO COMPLETA COM TRUNCAMENTO (120 caracteres + "...")
+console.log('🏠 properties.js - VERSÃO COMPLETA COM TRUNCAMENTO - GALERIA COM SETAS FUNCIONAIS');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.properties = [];
@@ -34,197 +34,454 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== CAMADA DE COMPATIBILIDADE PARA TEMPLATES (COM ESPERA PELO SUPPORT SYSTEM) ==========
-console.log('🔄 [properties.js] Inicializando camada de compatibilidade de templates');
-
-// Flag para controlar se já tentamos carregar o Support System
-let _supportCheckAttempts = 0;
-let _supportCheckInterval = null;
-let _pendingRenderRequest = null;
-
-/**
- * Verifica se o SupportTemplates já está disponível
- * Se não estiver, agenda uma nova verificação
- */
-function _ensureSupportTemplates(callback) {
-    // Já disponível?
-    if (window.SupportTemplates?.PropertyTemplateEngine) {
-        if (!window._supportTemplateEngineInstance) {
-            try {
-                window._supportTemplateEngineInstance = new window.SupportTemplates.PropertyTemplateEngine();
-                console.log('✅ [properties.js] SupportTemplates inicializado com sucesso');
-            } catch (e) {
-                console.warn('⚠️ [properties.js] Erro ao instanciar SupportTemplates:', e);
-                return false;
-            }
-        }
-        if (callback) callback();
-        return true;
+// ========== TEMPLATE ENGINE COM CACHE AVANÇADO ==========
+class PropertyTemplateEngine {
+    constructor() {
+        this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
+        this._localCache = new Map();
     }
-    
-    // Support System não está disponível ainda
-    console.log(`⏳ [properties.js] Aguardando SupportTemplates (tentativa ${_supportCheckAttempts + 1})...`);
-    
-    // Se já passou de 10 tentativas (5 segundos), desiste e usa fallback
-    if (_supportCheckAttempts >= 10) {
-        console.warn('⚠️ [properties.js] SupportTemplates não disponível após timeout. Usando fallback mínimo.');
-        if (_supportCheckInterval) clearInterval(_supportCheckInterval);
-        _supportCheckInterval = null;
-        return false;
-    }
-    
-    // Agenda nova verificação em 500ms
-    if (!_supportCheckInterval) {
-        _supportCheckInterval = setInterval(() => {
-            _supportCheckAttempts++;
-            const available = _ensureSupportTemplates(callback);
-            if (available || _supportCheckAttempts >= 10) {
-                clearInterval(_supportCheckInterval);
-                _supportCheckInterval = null;
-                
-                // Se não ficou disponível, executa callback com fallback
-                if (!available && callback) callback();
-            }
-        }, 500);
-    }
-    
-    return false;
-}
 
-/**
- * Engine de templates unificada com suporte a carregamento assíncrono do Support System
- */
-window.propertyTemplates = {
-    // Gera o HTML do card
-    generate: function(property) {
-        // Tenta usar o Support System se disponível
-        if (window.SupportTemplates?.PropertyTemplateEngine) {
-            try {
-                if (!window._supportTemplateEngineInstance) {
-                    window._supportTemplateEngineInstance = new window.SupportTemplates.PropertyTemplateEngine();
-                }
-                return window._supportTemplateEngineInstance.generate(property);
-            } catch (e) {
-                console.warn('⚠️ [properties.js] Erro ao usar SupportTemplates:', e);
-            }
+    generate(property) {
+        // Tentar usar TemplateCache do Support System primeiro
+        if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
+            return window.TemplateCache.getTemplate(property, (prop) => this._generateTemplate(prop));
         }
         
-        // Fallback mínimo (apenas para garantir que o site nunca quebre)
-        console.warn('⚠️ [properties.js] Usando fallback de template mínimo (galeria simplificada)');
-        const imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
-        
-        // Extrair primeira imagem de forma segura
-        let firstImageUrl = imageFallback;
-        if (property.images && property.images !== 'EMPTY') {
-            const urls = property.images.split(',').filter(u => u && u.trim());
-            if (urls.length > 0) firstImageUrl = urls[0];
+        // Fallback para cache local
+        const cacheKey = `prop_${property.id}_${property.images?.length || 0}_${property.has_video}`;
+        if (this._localCache.has(cacheKey)) {
+            return this._localCache.get(cacheKey);
         }
         
-        const price = property.price || 'R$ 0,00';
-        const hasImages = property.images && property.images !== 'EMPTY' && property.images.split(',').filter(u => u && u.trim()).length > 1;
-        const imageCount = hasImages ? property.images.split(',').filter(u => u && u.trim()).length : 0;
+        const html = this._generateTemplate(property);
+        this._localCache.set(cacheKey, html);
         
-        const escapeHtml = (str) => {
-            if (!str) return '';
-            return str.replace(/[&<>]/g, function(m) {
-                if (m === '&') return '&amp;';
-                if (m === '<') return '&lt;';
-                if (m === '>') return '&gt;';
-                return m;
-            });
+        // Limitar tamanho do cache local
+        if (this._localCache.size > 50) {
+            const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
+            keysToDelete.forEach(key => this._localCache.delete(key));
+        }
+        
+        return html;
+    }
+    
+    _generateTemplate(property) {
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
+        
+        const formatPrice = (price) => {
+            if (window.SharedCore?.PriceFormatter?.formatForCard) {
+                return window.SharedCore.PriceFormatter.formatForCard(price);
+            }
+            if (!price) return 'R$ 0,00';
+            if (typeof price === 'string' && price.includes('R$')) return price;
+            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
         };
-        
-        // Fallback que ainda permite abrir a galeria (se a função existir)
-        const hasGalleryFunction = typeof window.openGalleryAtCurrentIndex === 'function';
-        
-        return `
-            <div class="property-card" data-property-id="${property.id}" data-property-title="${escapeHtml(property.title || '')}">
-                <div class="property-image" style="position: relative; height: 250px; overflow: hidden;">
-                    <div onclick="${hasGalleryFunction ? `openGalleryAtCurrentIndex(${property.id})` : ''}" style="cursor: pointer; width: 100%; height: 100%;">
-                        <img src="${firstImageUrl}" 
-                             style="width: 100%; height: 100%; object-fit: cover;"
-                             alt="${escapeHtml(property.title || 'Imóvel')}"
-                             loading="lazy"
-                             onerror="this.src='${imageFallback}'">
-                    </div>
-                    
-                    ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${escapeHtml(property.badge)}</div>` : ''}
-                    
-                    ${imageCount > 1 ? `
-                        <div class="image-counter" style="position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.6); color: white; padding: 4px 8px; border-radius: 4px; font-size: 0.7rem; z-index: 20;">
-                            <i class="fas fa-images"></i> ${imageCount}
-                        </div>
-                    ` : ''}
-                    
-                    ${hasGalleryFunction ? `
-                        <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})" 
-                             style="position: absolute; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 20; transition: transform 0.2s;">
-                            <i class="fas fa-expand"></i>
-                        </div>
-                    ` : ''}
-                </div>
+
+        // ✅ TRUNCAMENTO DA DESCRIÇÃO: 120 caracteres + "..."
+        const descriptionText = property.description || 'Descrição não disponível.';
+        const truncatedDesc = descriptionText.length > 120 
+            ? descriptionText.substring(0, 120) + '...' 
+            : descriptionText;
+
+        const html = `
+            <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
+                ${this.generateImageSection(property)}
                 <div class="property-content">
-                    <div class="property-price" data-price-field>${escapeHtml(price)}</div>
-                    <h3 class="property-title" data-title-field>${escapeHtml(property.title || 'Imóvel sem título')}</h3>
+                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
+                    <h3 class="property-title" data-title-field>${this.escapeHtml(property.title) || 'Sem título'}</h3>
                     <div class="property-location" data-location-field>
-                        <i class="fas fa-map-marker-alt"></i> ${escapeHtml(property.location || 'Local não informado')}
+                        <i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(property.location) || 'Local não informado'}
                     </div>
+                    <p data-description-field>${this.escapeHtml(truncatedDesc)}</p>
+                    ${displayFeatures ? `
+                        <div class="property-features" data-features-field>
+                            ${displayFeatures.split(',').map(f => `
+                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${this.escapeHtml(f.trim())}</span>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                     <button class="contact-btn" onclick="contactAgent(${property.id})">
                         <i class="fab fa-whatsapp"></i> Entrar em Contato
                     </button>
                 </div>
             </div>
         `;
-    },
-    
-    // Atualiza o conteúdo de um card específico
-    updateCardContent: function(propertyId, propertyData) {
-        // Tenta usar o Support System
-        if (window._supportTemplateEngineInstance?.updateCardContent) {
+
+        return html;
+    }
+
+    generateImageSection(property) {
+        const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
+        const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim() !== '') : [];
+        const imageCount = imageUrls.length;
+        const hasGallery = imageCount > 1;
+        const hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        const hasVideo = window.SharedCore?.ensureBooleanVideo?.(property.has_video) ?? false;
+        
+        // ✅ PRIORIDADE: Usa a função completa do gallery.js se disponível
+        if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
-                return window._supportTemplateEngineInstance.updateCardContent(propertyId, propertyData);
+                return window.createPropertyGallery(property);
             } catch (e) {
-                console.warn(`⚠️ [properties.js] Erro no updateCardContent do Support:`, e);
+                console.warn('❌ Erro na galeria, usando fallback:', e);
             }
         }
         
-        // Fallback: recarrega a lista
-        console.log(`🔄 [properties.js] Fallback: recarregando lista para atualizar card ${propertyId}`);
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties(window.currentFilter || 'todos', true);
-            return true;
-        }
-        return false;
-    },
-    
-    clearCache: function() {
-        if (window._supportTemplateEngineInstance?.clearCache) {
-            return window._supportTemplateEngineInstance.clearCache();
-        }
-        console.log('🧹 [properties.js] Fallback: cache limpo (sem efeito)');
-        return 0;
+        // FALLBACK COMPLETO: Estrutura compatível com gallery.js
+        const firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
+        
+        return `
+            <div class="property-image ${property.rural ? 'rural-image' : ''}" 
+                 style="position: relative; height: 250px; overflow: hidden;">
+                <div class="property-gallery-container" 
+                     onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
+                     style="cursor:pointer; position:relative; width:100%; height:100%;">
+                    
+                    <img src="${firstImageUrl}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         alt="${this.escapeHtml(property.title)}"
+                         data-original-src="${firstImageUrl}"
+                         onerror="this.src='${this.imageFallback}'">
+                    
+                    ${property.badge ? `
+                        <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="
+                            position: absolute; 
+                            top: 15px; 
+                            left: 15px; 
+                            background: var(--gold, #FFD700); 
+                            color: white; 
+                            padding: 0.4rem 1rem; 
+                            border-radius: 20px; 
+                            font-size: 0.8rem; 
+                            font-weight: bold; 
+                            z-index: 10;
+                        ">
+                            ${this.escapeHtml(property.badge)}
+                        </div>
+                    ` : ''}
+                    
+                    ${hasVideo ? `
+                        <div class="video-indicator" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0, 0, 0, 0.8);
+                            color: white;
+                            padding: 6px 12px;
+                            border-radius: 6px;
+                            font-size: 12px;
+                            display: flex;
+                            align-items: center;
+                            gap: 6px;
+                            z-index: 9;
+                            backdrop-filter: blur(4px);
+                            border: 1px solid rgba(255,255,255,0.2);
+                        ">
+                            <i class="fas fa-video" style="color: #FFD700;"></i>
+                            <span>TEM VÍDEO</span>
+                        </div>
+                    ` : ''}
+                    
+                    ${hasGallery ? `
+                        <div class="image-count" style="
+                            position: absolute;
+                            top: 10px;
+                            right: 10px;
+                            background: rgba(0, 0, 0, 0.9);
+                            color: white;
+                            padding: 5px 10px;
+                            border-radius: 4px;
+                            font-size: 13px;
+                            font-weight: bold;
+                            z-index: 10;
+                            box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+                        ">
+                            <i class="fas fa-images"></i> ${imageCount}
+                        </div>
+                    ` : ''}
+                    
+                    <div class="gallery-expand-icon" 
+                         onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
+                         style="
+                            position: absolute; 
+                            bottom: 10px; 
+                            right: 10px; 
+                            background: rgba(0,0,0,0.7); 
+                            color: white; 
+                            width: 28px; 
+                            height: 28px; 
+                            border-radius: 50%; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            font-size: 0.8rem; 
+                            cursor: pointer; 
+                            transition: all 0.3s ease; 
+                            z-index: 10;
+                         ">
+                        <i class="fas fa-expand"></i>
+                    </div>
+                </div>
+                
+                ${hasPdfs ? `
+                    <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="
+                        position: absolute;
+                        bottom: 2px;
+                        right: 35px;
+                        background: rgba(255, 255, 255, 0.95);
+                        border: none;
+                        border-radius: 50%;
+                        width: 28px;
+                        height: 28px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 0.75rem;
+                        color: #1a5276;
+                        transition: all 0.3s ease;
+                        z-index: 15;
+                        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                        border: 1px solid rgba(0,0,0,0.15);
+                    ">
+                        <i class="fas fa-file-pdf"></i>
+                    </button>
+                ` : ''}
+            </div>
+        `;
     }
-};
-
-// Mantém a função global para compatibilidade
-window.updatePropertyCard = function(propertyId, updatedData = null) {
-    return window.propertyTemplates.updateCardContent(propertyId, updatedData);
-};
-
-// Aguarda o Support System carregar e depois re-renderiza se necessário
-function _reRenderWhenSupportAvailable() {
-    _ensureSupportTemplates(() => {
-        if (window.SupportTemplates?.PropertyTemplateEngine && window.properties && window.properties.length > 0) {
-            console.log('🔄 [properties.js] SupportTemplates agora disponível! Re-renderizando imóveis...');
-            if (typeof window.renderProperties === 'function') {
-                window.renderProperties(window.currentFilter || 'todos', true);
-            }
+    
+    escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
+    }
+    
+    updateCardContent(propertyId, propertyData) {
+        console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
+        
+        const card = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
+        if (!card) {
+            console.warn(`⚠️ Card ${propertyId} não encontrado para atualização parcial`);
+            return false;
         }
-    });
+        
+        try {
+            // Atualizar preço se fornecido
+            if (propertyData.price !== undefined) {
+                const priceElement = card.querySelector('[data-price-field]');
+                if (priceElement) {
+                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
+                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
+                        : (propertyData.price.includes('R$') 
+                            ? propertyData.price 
+                            : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`);
+                    priceElement.textContent = formattedPrice;
+                }
+            }
+            
+            // Atualizar título se fornecido
+            if (propertyData.title !== undefined) {
+                const titleElement = card.querySelector('[data-title-field]');
+                if (titleElement) {
+                    titleElement.textContent = this.escapeHtml(propertyData.title);
+                }
+                card.setAttribute('data-property-title', propertyData.title);
+            }
+            
+            // Atualizar localização se fornecido
+            if (propertyData.location !== undefined) {
+                const locationElement = card.querySelector('[data-location-field]');
+                if (locationElement) {
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(propertyData.location)}`;
+                }
+            }
+            
+            // Atualizar descrição se fornecido (COM TRUNCAMENTO)
+            if (propertyData.description !== undefined) {
+                const descriptionElement = card.querySelector('[data-description-field]');
+                if (descriptionElement) {
+                    const descriptionText = propertyData.description || 'Descrição não disponível.';
+                    const truncatedDesc = descriptionText.length > 120 
+                        ? descriptionText.substring(0, 120) + '...' 
+                        : descriptionText;
+                    descriptionElement.textContent = this.escapeHtml(truncatedDesc);
+                }
+            }
+            
+            // Atualizar features se fornecido
+            if (propertyData.features !== undefined) {
+                const featuresElement = card.querySelector('[data-features-field]');
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                
+                if (featuresElement) {
+                    if (displayFeatures) {
+                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
+                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${this.escapeHtml(f.trim())}</span>
+                        `).join('');
+                    } else {
+                        featuresElement.innerHTML = '';
+                    }
+                }
+            }
+            
+            // Atualizar indicador de vídeo
+            if (propertyData.has_video !== undefined) {
+                const videoIndicator = card.querySelector('.video-indicator');
+                const hasVideo = window.SharedCore?.ensureBooleanVideo?.(propertyData.has_video) ?? false;
+                
+                if (hasVideo && !videoIndicator) {
+                    const imageSection = card.querySelector('.property-image');
+                    if (imageSection) {
+                        const imageCount = imageSection.querySelector('.image-count');
+                        const topPosition = imageCount ? '35px' : '10px';
+                        
+                        imageSection.innerHTML += `
+                            <div class="video-indicator" style="
+                                position: absolute;
+                                top: ${topPosition};
+                                right: 10px;
+                                background: rgba(0, 0, 0, 0.8);
+                                color: white;
+                                padding: 6px 12px;
+                                border-radius: 6px;
+                                font-size: 12px;
+                                display: flex;
+                                align-items: center;
+                                gap: 6px;
+                                z-index: 9;
+                                backdrop-filter: blur(4px);
+                                border: 1px solid rgba(255,255,255,0.2);
+                            ">
+                                <i class="fas fa-video" style="color: #FFD700;"></i>
+                                <span>TEM VÍDEO</span>
+                            </div>
+                        `;
+                    }
+                } else if (!hasVideo && videoIndicator) {
+                    videoIndicator.remove();
+                }
+            }
+            
+            // Invalidar cache do template para esta propriedade
+            if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
+                window.TemplateCache.invalidate(propertyId);
+            } else if (this._localCache) {
+                const pattern = `prop_${propertyId}_`;
+                for (const key of this._localCache.keys()) {
+                    if (key.startsWith(pattern)) {
+                        this._localCache.delete(key);
+                    }
+                }
+            }
+            
+            card.classList.add('highlighted');
+            setTimeout(() => {
+                card.classList.remove('highlighted');
+            }, 1000);
+            
+            console.log(`✅ Conteúdo do card ${propertyId} atualizado com sucesso`);
+            return true;
+            
+        } catch (error) {
+            console.error(`❌ Erro ao atualizar card ${propertyId}:`, error);
+            return false;
+        }
+    }
+    
+    clearCache() {
+        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
+            return window.TemplateCache.invalidateAll();
+        }
+        const count = this._localCache.size;
+        this._localCache.clear();
+        console.log(`🧹 Cache local limpo: ${count} entradas removidas`);
+        return count;
+    }
 }
 
-// Iniciar a espera pelo Support System
-setTimeout(_reRenderWhenSupportAvailable, 100);
+// Instância global
+window.propertyTemplates = new PropertyTemplateEngine();
+
+// ========== FUNÇÃO PARA ATUALIZAR CARD ESPECÍFICO APÓS EDIÇÃO ==========
+window.updatePropertyCard = function(propertyId, updatedData = null) {
+    console.log('🔄 Atualizando card do imóvel:', propertyId, updatedData ? 'com dados específicos' : '');
+    
+    const property = window.properties?.find(p => p.id === propertyId);
+    if (!property) {
+        console.error('❌ Imóvel não encontrado para atualizar card:', propertyId);
+        return false;
+    }
+    
+    const propertyToRender = updatedData ? { ...property, ...updatedData } : property;
+    
+    // Tentar atualização parcial primeiro
+    if (updatedData && window.propertyTemplates.updateCardContent) {
+        const partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
+        if (partialSuccess) {
+            console.log(`✅ Atualização parcial bem-sucedida para ${propertyId}`);
+            
+            const index = window.properties.findIndex(p => p.id === propertyId);
+            if (index !== -1) {
+                window.properties[index] = { ...window.properties[index], ...updatedData };
+            }
+            
+            return true;
+        }
+    }
+    
+    // Se falhar a atualização parcial, fazer substituição completa
+    console.log(`🔄 Realizando substituição completa do card ${propertyId}`);
+    
+    const allCards = document.querySelectorAll('.property-card');
+    let cardToUpdate = null;
+    
+    allCards.forEach(card => {
+        const cardId = card.getAttribute('data-property-id');
+        if (cardId && cardId == propertyId) {
+            cardToUpdate = card;
+        }
+    });
+    
+    if (cardToUpdate) {
+        const newCardHTML = window.propertyTemplates.generate(propertyToRender);
+        cardToUpdate.outerHTML = newCardHTML;
+        
+        console.log('✅ Card completamente substituído com todos os campos atualizados:', {
+            título: propertyToRender.title,
+            preço: propertyToRender.price,
+            localização: propertyToRender.location,
+            vídeo: propertyToRender.has_video
+        });
+        
+        const index = window.properties.findIndex(p => p.id === propertyId);
+        if (index !== -1) {
+            window.properties[index] = propertyToRender;
+        }
+        
+        setTimeout(() => {
+            const updatedCard = document.querySelector(`[data-property-id="${propertyId}"]`);
+            if (updatedCard) {
+                updatedCard.classList.add('highlighted');
+                setTimeout(() => {
+                    updatedCard.classList.remove('highlighted');
+                }, 1000);
+            }
+        }, 50);
+        
+        return true;
+    } else {
+        console.warn('⚠️ Card não encontrado na página, renderizando todos os imóveis');
+        if (typeof window.renderProperties === 'function') {
+            window.renderProperties(window.currentFilter || 'todos');
+        }
+        return false;
+    }
+};
 
 // ========== FUNÇÃO PARA ESPERAR CARREGAMENTO DE IMAGENS ==========
 window.waitForAllPropertyImages = async function() {
@@ -1226,7 +1483,7 @@ window.loadPropertyList = function() {
 };
 
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-console.log('✅ properties.js VERSÃO CORRIGIDA CARREGADA - Com espera para Support System');
+console.log('✅ properties.js VERSÃO COMPLETA COM TRUNCAMENTO CARREGADA');
 
 // Inicializar quando DOM estiver pronto
 if (document.readyState === 'loading') {
@@ -1288,5 +1545,6 @@ if (document.readyState === 'loading') {
 // Exportar funções necessárias
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 properties.js corrigido - Mecanismo de espera para Support System ativo');
+console.log('🎯 VERSÃO COMPLETA COM TRUNCAMENTO - Galeria com setas funcionais');
+console.log('📝 Descrições truncadas em 120 caracteres + "..."');
 console.log('💡 Adicione ?debug=true na URL para ativar funcionalidades de diagnóstico');
