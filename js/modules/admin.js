@@ -440,13 +440,16 @@ window.setupLocationAutocomplete = function() {
     }
     
     // Lista compacta de bairros prioritários para produção
-    const bairros = [
-        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL',
-        'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL', 'Mangabeiras, Maceió/AL',
-        'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL',
-        'Farol, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL',
-        'Tabuleiro do Martins, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Ouro Preto, Maceió/AL',
-        'Santa Lúcia, Maceió/AL', 'Feitosa, Maceió/AL', 'Pinheiro, Maceió/AL', 'Serraria, Maceió/AL'
+    const bairrosMaceio = [
+        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
+        'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
+        'Farol, Maceió/AL', 'Jardim Petrópolis, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL', 'Feitosa, Maceió/AL',
+        'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
+        'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
+        'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
+        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho', 'Rio Novo', 'Riacho Doce', 'Pontal da Barra, Maceió/AL', 'Guaxuma',
+        'Ipioca', 'Garça Torta', 'Pescaria', 'Ponta da Terra, Maceió/AL', 'Barra de São Miguel', 'Murilopes, Maceió/AL',
+        'Barra de São Miguel', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres',
     ];
     
     let suggestionsContainer = null;
