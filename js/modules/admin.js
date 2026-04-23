@@ -33,29 +33,47 @@ window.toggleAdminPanel = function() {
             
             panel.style.display = isVisible ? 'none' : 'block';
             
-            // ✅ NOVO: Se o painel foi aberto, tentar inicializar/verificar autocomplete
+            // ✅ NOVO: Se o painel foi aberto, forçar ativação do autocomplete
             if (!isVisible) {
                 setTimeout(() => {
-                    console.log('🔄 [Admin] Painel aberto, verificando autocomplete...');
+                    console.log('🔄 [Admin] Painel aberto, ativando autocomplete...');
                     
                     // Tentar ativar o Support System Autocomplete
                     if (window.LocationAutocomplete) {
-                        if (typeof window.LocationAutocomplete.runFullDiagnostic === 'function') {
-                            // Isso força o sistema a verificar novamente com o painel visível
+                        // Método 1: Forçar criação do container diretamente
+                        if (typeof window.LocationAutocomplete.forceCreateContainer === 'function') {
+                            console.log('🔧 [Admin] Forçando criação do container de sugestões...');
+                            window.LocationAutocomplete.forceCreateContainer();
+                        }
+                        // Método 2: Executar diagnóstico completo (ativa se necessário)
+                        else if (typeof window.LocationAutocomplete.runFullDiagnostic === 'function') {
                             console.log('🔍 [Admin] Executando diagnóstico completo...');
                             window.LocationAutocomplete.runFullDiagnostic();
-                        } else if (typeof window.LocationAutocomplete.init === 'function') {
-                            // Inicializar se disponível
-                            console.log('🚀 [Admin] Inicializando autocomplete...');
-                            window.LocationAutocomplete.init();
-                        } else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
-                            // Verificar e inicializar
+                        }
+                        // Método 3: Verificar e inicializar
+                        else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
                             console.log('🔧 [Admin] Verificando e inicializando...');
                             window.LocationAutocomplete.checkAndInitialize();
-                        } else {
-                            // Fallback: apenas chamar o setup do Core (que delegará)
-                            if (typeof window.setupLocationAutocomplete === 'function') {
-                                window.setupLocationAutocomplete();
+                        }
+                        // Método 4: Inicialização padrão
+                        else if (typeof window.LocationAutocomplete.init === 'function') {
+                            console.log('🚀 [Admin] Inicializando autocomplete...');
+                            window.LocationAutocomplete.init();
+                        }
+                        // Método 5: Método específico para forçar ativação pós-painel
+                        else if (typeof window.LocationAutocomplete.activateForVisiblePanel === 'function') {
+                            console.log('🎯 [Admin] Ativando para painel visível...');
+                            window.LocationAutocomplete.activateForVisiblePanel();
+                        }
+                        // Fallback: Tentar acessar internamente e recriar container
+                        else {
+                            console.log('📝 [Admin] Tentativa manual de ativação...');
+                            const locationInput = document.getElementById('propLocation');
+                            if (locationInput && locationInput.value === '') {
+                                // Disparar evento input para forçar verificação
+                                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                // Disparar focus para ativar
+                                locationInput.dispatchEvent(new Event('focus', { bubbles: true }));
                             }
                         }
                     } else {
@@ -65,7 +83,7 @@ window.toggleAdminPanel = function() {
                             window.setupLocationAutocomplete();
                         }
                     }
-                }, 200);
+                }, 500); // Aumentado para 500ms para garantir que o DOM esteja estável
             }
             
             if (!isVisible) {
