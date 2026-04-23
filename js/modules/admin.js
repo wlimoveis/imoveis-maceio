@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO FINAL COM AUTOCOMPLETE LEVE PARA PRODUÇÃO
-console.log('🔧 admin.js - Versão core com autocomplete leve para produção');
+// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE FUNCIONAL
+console.log('🔧 admin.js - Versão core com autocomplete otimizado');
 
 /* ==========================================================
    CONFIGURAÇÃO E CONSTANTES
@@ -37,10 +37,6 @@ window.toggleAdminPanel = function() {
                 setTimeout(() => {
                     panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     if (typeof window.loadPropertyList === 'function') window.loadPropertyList();
-                    // Garantir que autocomplete está ativo
-                    if (typeof window.setupLocationAutocomplete === 'function') {
-                        window.setupLocationAutocomplete();
-                    }
                 }, 300);
             }
         }
@@ -422,24 +418,9 @@ window.saveProperty = async function() {
 };
 
 /* ==========================================================
-   SISTEMA DE AUTOCOMPLETE LEVE PARA PRODUÇÃO
+   SISTEMA DE AUTOCOMPLETE PARA O CAMPO "LOCALIZAÇÃO"
    ========================================================== */
 window.setupLocationAutocomplete = function() {
-    console.log('📍 [Core] Inicializando autocomplete leve...');
-    
-    const locationInput = document.getElementById('propLocation');
-    if (!locationInput) {
-        console.warn('⚠️ [Core] Campo propLocation não encontrado');
-        return false;
-    }
-    
-    // Evitar duplicidade
-    if (locationInput.hasAttribute('data-autocomplete-core')) {
-        console.log('✅ [Core] Autocomplete leve já inicializado');
-        return true;
-    }
-    
-    // Lista compacta de bairros prioritários para produção
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
         'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
@@ -451,148 +432,172 @@ window.setupLocationAutocomplete = function() {
         'Ipioca', 'Garça Torta', 'Pescaria', 'Ponta da Terra, Maceió/AL', 'Barra de São Miguel', 'Murilopes, Maceió/AL',
         'Barra de São Miguel', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres',
     ];
+
+    const locationInput = document.getElementById('propLocation');
+    if (!locationInput) return false;
+    if (locationInput.hasAttribute('data-autocomplete-initialized')) return true;
     
     let suggestionsContainer = null;
-    
-    function createContainer() {
+
+    function createSuggestionsContainer() {
         const container = document.createElement('div');
-        container.className = 'core-location-suggestions';
+        container.className = 'admin-location-suggestions';
         container.style.cssText = `
-            position: absolute;
-            z-index: 9999999;
-            background: white;
-            border: 2px solid #1a5276;
-            border-top: none;
-            max-height: 200px;
-            overflow-y: auto;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            border-radius: 0 0 8px 8px;
+            position: absolute !important;
+            z-index: 9999999 !important;
+            background: #ffffff !important;
+            border: 2px solid #1a5276 !important;
+            border-top: none !important;
+            max-height: 250px !important;
+            overflow-y: auto !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+            border-radius: 0 0 8px 8px !important;
         `;
         return container;
     }
-    
+
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) {
             if (suggestionsContainer) suggestionsContainer.remove();
             return;
         }
-        
+
         const termLower = searchTerm.toLowerCase();
-        const matches = bairros.filter(b => b.toLowerCase().includes(termLower));
-        
+        const matches = bairrosMaceio.filter(bairro => 
+            bairro.toLowerCase().includes(termLower)
+        );
+
         if (matches.length === 0) {
             if (suggestionsContainer) suggestionsContainer.remove();
             return;
         }
-        
-        // Garantir posicionamento relativo
-        let parent = locationInput.parentElement;
-        while (parent && parent !== document.body) {
-            if (window.getComputedStyle(parent).position === 'relative') break;
-            parent = parent.parentElement;
-        }
-        if (parent === document.body) parent = locationInput.parentElement;
-        if (window.getComputedStyle(parent).position !== 'relative') {
-            parent.style.position = 'relative';
+
+        let parentContainer = locationInput.parentElement;
+        while (parentContainer && parentContainer !== document.body) {
+            const position = window.getComputedStyle(parentContainer).position;
+            if (position === 'relative' || position === 'absolute') break;
+            parentContainer = parentContainer.parentElement;
         }
         
+        if (parentContainer === document.body) {
+            parentContainer = locationInput.parentElement;
+        }
+        
+        if (window.getComputedStyle(parentContainer).position !== 'relative') {
+            parentContainer.style.position = 'relative';
+        }
+
         if (!suggestionsContainer) {
-            suggestionsContainer = createContainer();
-            parent.appendChild(suggestionsContainer);
+            suggestionsContainer = createSuggestionsContainer();
+            parentContainer.appendChild(suggestionsContainer);
+        } else if (suggestionsContainer.parentElement !== parentContainer) {
+            parentContainer.appendChild(suggestionsContainer);
         }
+
+        const inputRect = locationInput.getBoundingClientRect();
+        const parentRect = parentContainer.getBoundingClientRect();
         
-        const rect = locationInput.getBoundingClientRect();
-        const parentRect = parent.getBoundingClientRect();
+        const relativeTop = inputRect.bottom - parentRect.top;
+        const relativeLeft = inputRect.left - parentRect.left;
         
-        suggestionsContainer.style.top = `${rect.bottom - parentRect.top}px`;
-        suggestionsContainer.style.left = `${rect.left - parentRect.left}px`;
+        suggestionsContainer.style.top = `${relativeTop}px`;
+        suggestionsContainer.style.left = `${relativeLeft}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
-        
+
         suggestionsContainer.innerHTML = '';
-        matches.slice(0, 10).forEach(bairro => {
-            const item = document.createElement('div');
-            item.textContent = bairro;
-            item.style.cssText = `
-                padding: 8px 12px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                color: #1a5276;
-                border-bottom: 1px solid #eee;
-                transition: background 0.2s;
+        matches.forEach(bairro => {
+            const suggestionItem = document.createElement('div');
+            suggestionItem.style.cssText = `
+                padding: 10px 14px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                color: #1a5276 !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e0e0e0 !important;
             `;
-            item.onmouseenter = () => item.style.background = '#e8f4fd';
-            item.onmouseleave = () => item.style.background = 'white';
-            item.onclick = () => {
+            
+            const regex = new RegExp(`(${termLower})`, 'gi');
+            suggestionItem.innerHTML = bairro.replace(regex, `<strong style="color: #c0392b; background: #fdebd0; padding: 2px 4px; border-radius: 4px;">$1</strong>`);
+
+            suggestionItem.addEventListener('click', () => {
                 locationInput.value = bairro;
                 if (suggestionsContainer) suggestionsContainer.remove();
                 suggestionsContainer = null;
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
-                // Disparar evento change para garantir atualização
-                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
-            };
-            suggestionsContainer.appendChild(item);
+            });
+            
+            suggestionItem.addEventListener('mouseenter', () => {
+                suggestionItem.style.background = '#e8f4fd';
+            });
+            suggestionItem.addEventListener('mouseleave', () => {
+                suggestionItem.style.background = '#ffffff';
+            });
+            
+            suggestionsContainer.appendChild(suggestionItem);
         });
     }
-    
+
     function hideSuggestions() {
         if (suggestionsContainer) {
             suggestionsContainer.remove();
             suggestionsContainer = null;
         }
     }
-    
-    // Configurar eventos
+
     locationInput.addEventListener('input', (e) => showSuggestions(e.target.value));
     locationInput.addEventListener('blur', () => setTimeout(hideSuggestions, 200));
     locationInput.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && suggestionsContainer) {
             e.preventDefault();
-            const firstItem = suggestionsContainer.querySelector('div');
-            if (firstItem) {
-                locationInput.value = firstItem.textContent;
+            const firstSuggestion = suggestionsContainer.querySelector('div');
+            if (firstSuggestion) {
+                locationInput.value = firstSuggestion.textContent;
                 hideSuggestions();
-                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
             }
         }
     });
     
-    // Adicionar estilos globais se não existirem
-    if (!document.getElementById('core-autocomplete-styles')) {
+    locationInput.setAttribute('data-autocomplete-initialized', 'true');
+    locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
+    
+    if (!document.getElementById('autocomplete-core-styles')) {
         const style = document.createElement('style');
-        style.id = 'core-autocomplete-styles';
+        style.id = 'autocomplete-core-styles';
         style.textContent = `
-            .core-location-suggestions {
+            .admin-location-suggestions {
                 position: absolute !important;
                 z-index: 9999999 !important;
                 background: #ffffff !important;
                 border: 2px solid #1a5276 !important;
                 border-top: none !important;
-                max-height: 200px !important;
+                max-height: 250px !important;
                 overflow-y: auto !important;
                 box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
                 border-radius: 0 0 8px 8px !important;
             }
-            .core-location-suggestions div {
-                padding: 8px 12px !important;
+            .admin-location-suggestions div {
+                padding: 10px 14px !important;
                 cursor: pointer !important;
                 font-size: 0.9rem !important;
                 color: #1a5276 !important;
                 background: #ffffff !important;
                 border-bottom: 1px solid #e0e0e0 !important;
-                transition: background 0.2s ease !important;
             }
-            .core-location-suggestions div:hover {
+            .admin-location-suggestions div:hover {
                 background: #e8f4fd !important;
+            }
+            .admin-location-suggestions div strong {
+                color: #c0392b !important;
+                background: #fdebd0 !important;
+                padding: 2px 4px !important;
+                border-radius: 4px !important;
             }
         `;
         document.head.appendChild(style);
     }
     
-    locationInput.setAttribute('data-autocomplete-core', 'true');
-    locationInput.placeholder = 'Ex: Ponta Verde, Maceió-AL';
-    
-    console.log('✅ [Core] Autocomplete leve inicializado com', bairros.length, 'bairros');
+    console.log('✅ Autocomplete de bairros inicializado');
     return true;
 };
 
@@ -714,7 +719,6 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    // Inicializar autocomplete leve (funciona em produção!)
     setTimeout(() => {
         if (typeof window.setupLocationAutocomplete === 'function') {
             window.setupLocationAutocomplete();
@@ -728,4 +732,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão final com autocomplete leve carregada');
+console.log('✅ admin.js - Versão final otimizada carregada');
