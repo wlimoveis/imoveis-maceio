@@ -16,6 +16,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
     // ========== LISTA ÚNICA DE MÓDULOS DO SUPPORT SYSTEM ==========
     // ✅ ADICIONAR NOVOS MÓDULOS SOMENTE AQUI!
     supportModules: [
+        'debug/ui/loading-manager.js', // <--- NOVO MÓDULO ADICIONADO
         'debug/core/diagnostic-registry.js',
         'performance/performance-system.js',
         'debug/utils/core-diagnostics.js',
