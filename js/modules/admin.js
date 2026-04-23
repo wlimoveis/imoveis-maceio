@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE DELEGADO E INICIALIZAÇÃO SOB DEMANDA
-console.log('🔧 admin.js - Versão core com autocomplete delegado e inicialização sob demanda');
+// js/modules/admin.js - VERSÃO FINAL COM AUTOCOMPLETE LEVE PARA PRODUÇÃO
+console.log('🔧 admin.js - Versão core com autocomplete leve para produção');
 
 /* ==========================================================
    CONFIGURAÇÃO E CONSTANTES
@@ -14,7 +14,7 @@ const ADMIN_CONFIG = {
 window.editingPropertyId = null;
 
 /* ==========================================================
-   FUNÇÃO PRINCIPAL: TOGGLE ADMIN PANEL (COM INICIALIZAÇÃO SOB DEMANDA)
+   FUNÇÃO PRINCIPAL: TOGGLE ADMIN PANEL
    ========================================================== */
 window.toggleAdminPanel = function() {
     console.log('🔧 toggleAdminPanel chamada');
@@ -33,63 +33,14 @@ window.toggleAdminPanel = function() {
             
             panel.style.display = isVisible ? 'none' : 'block';
             
-            // ✅ NOVO: Se o painel foi aberto, forçar ativação do autocomplete
-            if (!isVisible) {
-                setTimeout(() => {
-                    console.log('🔄 [Admin] Painel aberto, ativando autocomplete...');
-                    
-                    // Tentar ativar o Support System Autocomplete
-                    if (window.LocationAutocomplete) {
-                        // Método 1: Forçar criação do container diretamente
-                        if (typeof window.LocationAutocomplete.forceCreateContainer === 'function') {
-                            console.log('🔧 [Admin] Forçando criação do container de sugestões...');
-                            window.LocationAutocomplete.forceCreateContainer();
-                        }
-                        // Método 2: Executar diagnóstico completo (ativa se necessário)
-                        else if (typeof window.LocationAutocomplete.runFullDiagnostic === 'function') {
-                            console.log('🔍 [Admin] Executando diagnóstico completo...');
-                            window.LocationAutocomplete.runFullDiagnostic();
-                        }
-                        // Método 3: Verificar e inicializar
-                        else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
-                            console.log('🔧 [Admin] Verificando e inicializando...');
-                            window.LocationAutocomplete.checkAndInitialize();
-                        }
-                        // Método 4: Inicialização padrão
-                        else if (typeof window.LocationAutocomplete.init === 'function') {
-                            console.log('🚀 [Admin] Inicializando autocomplete...');
-                            window.LocationAutocomplete.init();
-                        }
-                        // Método 5: Método específico para forçar ativação pós-painel
-                        else if (typeof window.LocationAutocomplete.activateForVisiblePanel === 'function') {
-                            console.log('🎯 [Admin] Ativando para painel visível...');
-                            window.LocationAutocomplete.activateForVisiblePanel();
-                        }
-                        // Fallback: Tentar acessar internamente e recriar container
-                        else {
-                            console.log('📝 [Admin] Tentativa manual de ativação...');
-                            const locationInput = document.getElementById('propLocation');
-                            if (locationInput && locationInput.value === '') {
-                                // Disparar evento input para forçar verificação
-                                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
-                                // Disparar focus para ativar
-                                locationInput.dispatchEvent(new Event('focus', { bubbles: true }));
-                            }
-                        }
-                    } else {
-                        // Support System não carregado, usar fallback do Core
-                        if (typeof window.setupLocationAutocomplete === 'function') {
-                            console.log('📝 [Admin] Support System não encontrado, usando fallback do Core');
-                            window.setupLocationAutocomplete();
-                        }
-                    }
-                }, 500); // Aumentado para 500ms para garantir que o DOM esteja estável
-            }
-            
             if (!isVisible) {
                 setTimeout(() => {
                     panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                     if (typeof window.loadPropertyList === 'function') window.loadPropertyList();
+                    // Garantir que autocomplete está ativo
+                    if (typeof window.setupLocationAutocomplete === 'function') {
+                        window.setupLocationAutocomplete();
+                    }
                 }, 300);
             }
         }
@@ -471,42 +422,175 @@ window.saveProperty = async function() {
 };
 
 /* ==========================================================
-   SISTEMA DE AUTOCOMPLETE - DELEGAÇÃO PARA SUPPORT SYSTEM
+   SISTEMA DE AUTOCOMPLETE LEVE PARA PRODUÇÃO
    ========================================================== */
 window.setupLocationAutocomplete = function() {
-    console.log('📍 [Core] setupLocationAutocomplete chamado');
+    console.log('📍 [Core] Inicializando autocomplete leve...');
     
-    // Verificar se Support System já está ativo
-    if (window.LocationAutocomplete && typeof window.LocationAutocomplete.isActive === 'function') {
-        if (window.LocationAutocomplete.isActive()) {
-            console.log('✅ [Core] Autocomplete já gerenciado pelo Support System');
-            return true;
+    const locationInput = document.getElementById('propLocation');
+    if (!locationInput) {
+        console.warn('⚠️ [Core] Campo propLocation não encontrado');
+        return false;
+    }
+    
+    // Evitar duplicidade
+    if (locationInput.hasAttribute('data-autocomplete-core')) {
+        console.log('✅ [Core] Autocomplete leve já inicializado');
+        return true;
+    }
+    
+    // Lista compacta de bairros prioritários para produção
+    const bairros = [
+        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL',
+        'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL', 'Mangabeiras, Maceió/AL',
+        'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL',
+        'Farol, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL',
+        'Tabuleiro do Martins, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Ouro Preto, Maceió/AL',
+        'Santa Lúcia, Maceió/AL', 'Feitosa, Maceió/AL', 'Pinheiro, Maceió/AL', 'Serraria, Maceió/AL'
+    ];
+    
+    let suggestionsContainer = null;
+    
+    function createContainer() {
+        const container = document.createElement('div');
+        container.className = 'core-location-suggestions';
+        container.style.cssText = `
+            position: absolute;
+            z-index: 9999999;
+            background: white;
+            border: 2px solid #1a5276;
+            border-top: none;
+            max-height: 200px;
+            overflow-y: auto;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-radius: 0 0 8px 8px;
+        `;
+        return container;
+    }
+    
+    function showSuggestions(searchTerm) {
+        if (!searchTerm || searchTerm.length < 2) {
+            if (suggestionsContainer) suggestionsContainer.remove();
+            return;
         }
         
-        // Tentar iniciar o Support System se disponível mas não ativo
-        if (typeof window.LocationAutocomplete.init === 'function') {
-            console.log('🔄 [Core] Tentando inicializar Support System...');
-            window.LocationAutocomplete.init();
-            return true;
-        } else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
-            console.log('🔄 [Core] Verificando e inicializando Support System...');
-            window.LocationAutocomplete.checkAndInitialize();
-            return true;
+        const termLower = searchTerm.toLowerCase();
+        const matches = bairros.filter(b => b.toLowerCase().includes(termLower));
+        
+        if (matches.length === 0) {
+            if (suggestionsContainer) suggestionsContainer.remove();
+            return;
+        }
+        
+        // Garantir posicionamento relativo
+        let parent = locationInput.parentElement;
+        while (parent && parent !== document.body) {
+            if (window.getComputedStyle(parent).position === 'relative') break;
+            parent = parent.parentElement;
+        }
+        if (parent === document.body) parent = locationInput.parentElement;
+        if (window.getComputedStyle(parent).position !== 'relative') {
+            parent.style.position = 'relative';
+        }
+        
+        if (!suggestionsContainer) {
+            suggestionsContainer = createContainer();
+            parent.appendChild(suggestionsContainer);
+        }
+        
+        const rect = locationInput.getBoundingClientRect();
+        const parentRect = parent.getBoundingClientRect();
+        
+        suggestionsContainer.style.top = `${rect.bottom - parentRect.top}px`;
+        suggestionsContainer.style.left = `${rect.left - parentRect.left}px`;
+        suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
+        suggestionsContainer.style.display = 'block';
+        
+        suggestionsContainer.innerHTML = '';
+        matches.slice(0, 10).forEach(bairro => {
+            const item = document.createElement('div');
+            item.textContent = bairro;
+            item.style.cssText = `
+                padding: 8px 12px;
+                cursor: pointer;
+                font-size: 0.9rem;
+                color: #1a5276;
+                border-bottom: 1px solid #eee;
+                transition: background 0.2s;
+            `;
+            item.onmouseenter = () => item.style.background = '#e8f4fd';
+            item.onmouseleave = () => item.style.background = 'white';
+            item.onclick = () => {
+                locationInput.value = bairro;
+                if (suggestionsContainer) suggestionsContainer.remove();
+                suggestionsContainer = null;
+                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+                // Disparar evento change para garantir atualização
+                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
+            };
+            suggestionsContainer.appendChild(item);
+        });
+    }
+    
+    function hideSuggestions() {
+        if (suggestionsContainer) {
+            suggestionsContainer.remove();
+            suggestionsContainer = null;
         }
     }
     
-    // Fallback: NÃO marcar o campo com atributo que bloqueia o Support System
-    const locationInput = document.getElementById('propLocation');
-    if (locationInput) {
-        // ✅ REMOVIDO: locationInput.setAttribute('data-core-fallback', 'true');
-        // ✅ Apenas configurar placeholder se estiver vazio
-        if (!locationInput.placeholder || locationInput.placeholder === '') {
-            locationInput.placeholder = 'Digite a localização do imóvel';
+    // Configurar eventos
+    locationInput.addEventListener('input', (e) => showSuggestions(e.target.value));
+    locationInput.addEventListener('blur', () => setTimeout(hideSuggestions, 200));
+    locationInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && suggestionsContainer) {
+            e.preventDefault();
+            const firstItem = suggestionsContainer.querySelector('div');
+            if (firstItem) {
+                locationInput.value = firstItem.textContent;
+                hideSuggestions();
+                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
+            }
         }
-        console.log('📝 [Core] Placeholder configurado, campo pronto para Support System');
+    });
+    
+    // Adicionar estilos globais se não existirem
+    if (!document.getElementById('core-autocomplete-styles')) {
+        const style = document.createElement('style');
+        style.id = 'core-autocomplete-styles';
+        style.textContent = `
+            .core-location-suggestions {
+                position: absolute !important;
+                z-index: 9999999 !important;
+                background: #ffffff !important;
+                border: 2px solid #1a5276 !important;
+                border-top: none !important;
+                max-height: 200px !important;
+                overflow-y: auto !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+                border-radius: 0 0 8px 8px !important;
+            }
+            .core-location-suggestions div {
+                padding: 8px 12px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                color: #1a5276 !important;
+                background: #ffffff !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                transition: background 0.2s ease !important;
+            }
+            .core-location-suggestions div:hover {
+                background: #e8f4fd !important;
+            }
+        `;
+        document.head.appendChild(style);
     }
     
-    return false;
+    locationInput.setAttribute('data-autocomplete-core', 'true');
+    locationInput.placeholder = 'Ex: Ponta Verde, Maceió-AL';
+    
+    console.log('✅ [Core] Autocomplete leve inicializado com', bairros.length, 'bairros');
+    return true;
 };
 
 /* ==========================================================
@@ -627,9 +711,12 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    // Não inicializar autocomplete automaticamente - será iniciado quando o painel for aberto
-    // Isso evita o problema do campo estar invisível (display: none)
-    console.log('📌 [Core] Autocomplete será inicializado quando o painel admin for aberto');
+    // Inicializar autocomplete leve (funciona em produção!)
+    setTimeout(() => {
+        if (typeof window.setupLocationAutocomplete === 'function') {
+            window.setupLocationAutocomplete();
+        }
+    }, 500);
 }
 
 if (document.readyState === 'loading') {
@@ -638,4 +725,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão final otimizada com autocomplete sob demanda carregada');
+console.log('✅ admin.js - Versão final com autocomplete leve carregada');
