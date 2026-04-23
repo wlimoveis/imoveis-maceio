@@ -1,4 +1,4 @@
-// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE DELEGADO
+// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE DELEGADO (CORRIGIDA)
 console.log('🔧 admin.js - Versão core com autocomplete delegado');
 
 /* ==========================================================
@@ -418,25 +418,35 @@ window.saveProperty = async function() {
 };
 
 /* ==========================================================
-   SISTEMA DE AUTOCOMPLETE - DELEGAÇÃO PARA SUPPORT SYSTEM
+   SISTEMA DE AUTOCOMPLETE - DELEGAÇÃO PARA SUPPORT SYSTEM (CORRIGIDO)
    ========================================================== */
 window.setupLocationAutocomplete = function() {
     console.log('📍 [Core] setupLocationAutocomplete chamado');
     
-    // Verificar se Support System já inicializou
+    // Verificar se Support System já está ativo
     if (window.LocationAutocomplete && typeof window.LocationAutocomplete.isActive === 'function') {
         if (window.LocationAutocomplete.isActive()) {
             console.log('✅ [Core] Autocomplete já gerenciado pelo Support System');
             return true;
         }
+        
+        // Tentar iniciar o Support System se disponível mas não ativo
+        if (typeof window.LocationAutocomplete.init === 'function') {
+            console.log('🔄 [Core] Tentando inicializar Support System...');
+            window.LocationAutocomplete.init();
+            return true;
+        }
     }
     
-    // Fallback: apenas configurar placeholder (sem autocomplete real)
+    // Fallback: NÃO marcar o campo com atributo que bloqueia o Support System
     const locationInput = document.getElementById('propLocation');
-    if (locationInput && !locationInput.hasAttribute('data-core-fallback')) {
-        locationInput.setAttribute('data-core-fallback', 'true');
-        locationInput.placeholder = 'Digite a localização do imóvel';
-        console.log('📝 [Core] Placeholder configurado (modo produção)');
+    if (locationInput) {
+        // ✅ REMOVIDO: locationInput.setAttribute('data-core-fallback', 'true');
+        // ✅ Apenas configurar placeholder se estiver vazio
+        if (!locationInput.placeholder || locationInput.placeholder === '') {
+            locationInput.placeholder = 'Digite a localização do imóvel';
+        }
+        console.log('📝 [Core] Placeholder configurado, campo pronto para Support System');
     }
     
     return false;
@@ -573,4 +583,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão final otimizada com autocomplete delegado carregada');
+console.log('✅ admin.js - Versão final otimizada com autocomplete delegado (corrigida) carregada');
