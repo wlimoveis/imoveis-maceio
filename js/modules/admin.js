@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE DELEGADO (CORRIGIDA)
-console.log('🔧 admin.js - Versão core com autocomplete delegado');
+// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE DELEGADO E INICIALIZAÇÃO SOB DEMANDA
+console.log('🔧 admin.js - Versão core com autocomplete delegado e inicialização sob demanda');
 
 /* ==========================================================
    CONFIGURAÇÃO E CONSTANTES
@@ -14,7 +14,7 @@ const ADMIN_CONFIG = {
 window.editingPropertyId = null;
 
 /* ==========================================================
-   FUNÇÃO PRINCIPAL: TOGGLE ADMIN PANEL
+   FUNÇÃO PRINCIPAL: TOGGLE ADMIN PANEL (COM INICIALIZAÇÃO SOB DEMANDA)
    ========================================================== */
 window.toggleAdminPanel = function() {
     console.log('🔧 toggleAdminPanel chamada');
@@ -32,6 +32,41 @@ window.toggleAdminPanel = function() {
             }
             
             panel.style.display = isVisible ? 'none' : 'block';
+            
+            // ✅ NOVO: Se o painel foi aberto, tentar inicializar/verificar autocomplete
+            if (!isVisible) {
+                setTimeout(() => {
+                    console.log('🔄 [Admin] Painel aberto, verificando autocomplete...');
+                    
+                    // Tentar ativar o Support System Autocomplete
+                    if (window.LocationAutocomplete) {
+                        if (typeof window.LocationAutocomplete.runFullDiagnostic === 'function') {
+                            // Isso força o sistema a verificar novamente com o painel visível
+                            console.log('🔍 [Admin] Executando diagnóstico completo...');
+                            window.LocationAutocomplete.runFullDiagnostic();
+                        } else if (typeof window.LocationAutocomplete.init === 'function') {
+                            // Inicializar se disponível
+                            console.log('🚀 [Admin] Inicializando autocomplete...');
+                            window.LocationAutocomplete.init();
+                        } else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
+                            // Verificar e inicializar
+                            console.log('🔧 [Admin] Verificando e inicializando...');
+                            window.LocationAutocomplete.checkAndInitialize();
+                        } else {
+                            // Fallback: apenas chamar o setup do Core (que delegará)
+                            if (typeof window.setupLocationAutocomplete === 'function') {
+                                window.setupLocationAutocomplete();
+                            }
+                        }
+                    } else {
+                        // Support System não carregado, usar fallback do Core
+                        if (typeof window.setupLocationAutocomplete === 'function') {
+                            console.log('📝 [Admin] Support System não encontrado, usando fallback do Core');
+                            window.setupLocationAutocomplete();
+                        }
+                    }
+                }, 200);
+            }
             
             if (!isVisible) {
                 setTimeout(() => {
@@ -418,7 +453,7 @@ window.saveProperty = async function() {
 };
 
 /* ==========================================================
-   SISTEMA DE AUTOCOMPLETE - DELEGAÇÃO PARA SUPPORT SYSTEM (CORRIGIDO)
+   SISTEMA DE AUTOCOMPLETE - DELEGAÇÃO PARA SUPPORT SYSTEM
    ========================================================== */
 window.setupLocationAutocomplete = function() {
     console.log('📍 [Core] setupLocationAutocomplete chamado');
@@ -434,6 +469,10 @@ window.setupLocationAutocomplete = function() {
         if (typeof window.LocationAutocomplete.init === 'function') {
             console.log('🔄 [Core] Tentando inicializar Support System...');
             window.LocationAutocomplete.init();
+            return true;
+        } else if (typeof window.LocationAutocomplete.checkAndInitialize === 'function') {
+            console.log('🔄 [Core] Verificando e inicializando Support System...');
+            window.LocationAutocomplete.checkAndInitialize();
             return true;
         }
     }
@@ -570,11 +609,9 @@ function initializeAdmin() {
     
     window.setupAdminUI();
     
-    setTimeout(() => {
-        if (typeof window.setupLocationAutocomplete === 'function') {
-            window.setupLocationAutocomplete();
-        }
-    }, 500);
+    // Não inicializar autocomplete automaticamente - será iniciado quando o painel for aberto
+    // Isso evita o problema do campo estar invisível (display: none)
+    console.log('📌 [Core] Autocomplete será inicializado quando o painel admin for aberto');
 }
 
 if (document.readyState === 'loading') {
@@ -583,4 +620,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão final otimizada com autocomplete delegado (corrigida) carregada');
+console.log('✅ admin.js - Versão final otimizada com autocomplete sob demanda carregada');
