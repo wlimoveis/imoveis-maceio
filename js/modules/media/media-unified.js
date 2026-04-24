@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.2 - Core com re-renderização forçada para garantir preview
+// Versão: 2.0.3 - Core com debug aprimorado e parsing robusto de dados
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -66,23 +66,39 @@ const MediaSystem = {
         return this;
     },
 
-    // ========== CARREGAR ARQUIVOS EXISTENTES ==========
+    // ========== CARREGAR ARQUIVOS EXISTENTES (VERSÃO COM DEBUG) ==========
     loadExisting: function(property) {
-        if (!property) return this;
+        console.log('🔍 [loadExisting] INÍCIO - property recebido:', property ? `ID: ${property.id}` : 'NULL');
+        
+        if (!property) {
+            console.error('❌ [loadExisting] property é null ou undefined');
+            return this;
+        }
         
         console.log(`📥 Carregando mídia existente para imóvel ${property.id}`);
         this.state.currentPropertyId = property.id;
         
+        // Resetar arrays
         this.state.existing = [];
         this.state.existingPdfs = [];
         
-        // Carregar imagens/vídeos EXISTENTES
-        if (property.images && property.images !== 'EMPTY') {
-            const imageUrls = property.images.split(',')
-                .map(url => url.trim())
-                .filter(url => url && url !== 'EMPTY');
+        // 1. CARREGAR IMAGENS/VIDEOS
+        console.log('🔍 [loadExisting] property.images:', property.images);
+        console.log('🔍 [loadExisting] property.images type:', typeof property.images);
+        
+        if (property.images && property.images !== 'EMPTY' && property.images !== '') {
+            let imageUrls = [];
             
-            console.log(`📸 ${imageUrls.length} URL(s) de imagem encontrada(s)`);
+            // Tratar diferentes formatos de images
+            if (typeof property.images === 'string') {
+                imageUrls = property.images.split(',')
+                    .map(url => url.trim())
+                    .filter(url => url && url !== 'EMPTY' && url !== '');
+            } else if (Array.isArray(property.images)) {
+                imageUrls = property.images.filter(url => url && url !== 'EMPTY');
+            }
+            
+            console.log(`📸 ${imageUrls.length} URL(s) de imagem encontrada(s)`, imageUrls);
             
             this.state.existing = imageUrls.map((url, index) => {
                 let finalUrl = url;
@@ -95,51 +111,59 @@ const MediaSystem = {
                 return {
                     url: finalUrl,
                     preview: finalUrl,
-                    id: `existing_img_${property.id}_${index}`,
-                    name: this.extractFileName(url),
+                    id: `existing_img_${property.id}_${index}_${Date.now()}`,
+                    name: this.extractFileName(url) || `imagem_${index+1}`,
                     type: this.getFileTypeFromUrl(url),
                     isExisting: true,
                     markedForDeletion: false,
                     isNew: false,
-                    isVideo: isVideo
+                    isVideo: isVideo,
+                    originalUrl: url
                 };
             });
+        } else {
+            console.log('📸 Nenhuma imagem encontrada (property.images vazio ou EMPTY)');
         }
         
-        // Carregar PDFs EXISTENTES
-        if (property.pdfs && property.pdfs !== 'EMPTY') {
-            const pdfUrls = property.pdfs.split(',')
-                .map(url => url.trim())
-                .filter(url => url && url !== 'EMPTY');
+        // 2. CARREGAR PDFs
+        console.log('🔍 [loadExisting] property.pdfs:', property.pdfs);
+        console.log('🔍 [loadExisting] property.pdfs type:', typeof property.pdfs);
+        
+        if (property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs !== '') {
+            let pdfUrls = [];
             
-            console.log(`📄 ${pdfUrls.length} URL(s) de PDF encontrada(s)`);
+            if (typeof property.pdfs === 'string') {
+                pdfUrls = property.pdfs.split(',')
+                    .map(url => url.trim())
+                    .filter(url => url && url !== 'EMPTY' && url !== '');
+            } else if (Array.isArray(property.pdfs)) {
+                pdfUrls = property.pdfs.filter(url => url && url !== 'EMPTY');
+            }
+            
+            console.log(`📄 ${pdfUrls.length} URL(s) de PDF encontrada(s)`, pdfUrls);
             
             this.state.existingPdfs = pdfUrls.map((url, index) => ({
                 url: url,
-                id: `existing_pdf_${property.id}_${index}`,
-                name: this.extractFileName(url),
+                id: `existing_pdf_${property.id}_${index}_${Date.now()}`,
+                name: this.extractFileName(url) || `documento_${index+1}`,
                 isExisting: true,
                 markedForDeletion: false,
                 type: 'application/pdf'
             }));
+        } else {
+            console.log('📄 Nenhum PDF encontrado (property.pdfs vazio ou EMPTY)');
         }
         
-        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
+        console.log(`📊 [loadExisting] FINAL - ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
         
-        // CRÍTICO: Forçar múltiplas atualizações para garantir renderização
+        // FORÇAR ATUALIZAÇÃO DA UI
         this.updateUI();
         
-        // Garantir que o DOM tenha tempo de processar a primeira atualização
+        // Forçar re-render após pequeno delay (para garantir DOM)
         setTimeout(() => {
+            console.log('🔄 [loadExisting] Re-renderização forçada após 100ms');
             this.updateUI();
-            console.log('🔄 Re-renderização forçada após loadExisting');
         }, 100);
-        
-        // Segunda garantia para PDFs
-        setTimeout(() => {
-            this.updateUI();
-            console.log('🔄 Segunda re-renderização forçada');
-        }, 300);
         
         return this;
     },
