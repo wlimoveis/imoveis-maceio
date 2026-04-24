@@ -1,5 +1,8 @@
-// js/modules/media/media-unified.js - VERSÃO COMPLETA E FUNCIONAL COM SUPORTE A VÍDEOS
-console.log('🔄 media-unified.js - VERSÃO COMPLETA COM SUPORTE A VÍDEOS');
+// js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
+// ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
+// ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
+// Versão: 2.0.0 - Core enxuto com proxy para Support UI
+console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -50,8 +53,14 @@ const MediaSystem = {
         this.resetState();
         this.setupEventListeners();
         
+        // Tentar usar Support System para UI avançada
         setTimeout(() => {
-            this.setupDragAndDrop();
+            if (window.SupportMediaUI?.setupDragAndDrop) {
+                window.SupportMediaUI.setupDragAndDrop();
+                console.log('🎨 UI avançada carregada via SupportMediaUI');
+            } else if (window.location.search.includes('debug=true')) {
+                console.log('ℹ️ SupportMediaUI não disponível - UI básica apenas');
+            }
         }, 500);
         
         return this;
@@ -64,26 +73,21 @@ const MediaSystem = {
         console.log(`📥 Carregando mídia existente para imóvel ${property.id}`);
         this.state.currentPropertyId = property.id;
         
-        // Limpar arrays
         this.state.existing = [];
         this.state.existingPdfs = [];
         
-        // 1. Carregar imagens/vídeos EXISTENTES
+        // Carregar imagens/vídeos EXISTENTES
         if (property.images && property.images !== 'EMPTY') {
             const imageUrls = property.images.split(',')
                 .map(url => url.trim())
                 .filter(url => url && url !== 'EMPTY');
             
-            console.log(`📸 ${imageUrls.length} URL(s) de imagem encontrada(s)`);
-            
             this.state.existing = imageUrls.map((url, index) => {
-                // Garantir que seja URL completa
                 let finalUrl = url;
                 if (!url.startsWith('http') && !url.startsWith('blob:')) {
                     finalUrl = this.reconstructSupabaseUrl(url) || url;
                 }
                 
-                // Detectar se é vídeo
                 const isVideo = this.isVideoUrl(finalUrl);
                 
                 return {
@@ -94,19 +98,17 @@ const MediaSystem = {
                     type: this.getFileTypeFromUrl(url),
                     isExisting: true,
                     markedForDeletion: false,
-                    isNew: false,  // Importante: arquivos existentes NÃO são novos
-                    isVideo: isVideo  // NOVO: flag para identificar vídeos
+                    isNew: false,
+                    isVideo: isVideo
                 };
             });
         }
         
-        // 2. Carregar PDFs EXISTENTES
+        // Carregar PDFs EXISTENTES
         if (property.pdfs && property.pdfs !== 'EMPTY') {
             const pdfUrls = property.pdfs.split(',')
                 .map(url => url.trim())
                 .filter(url => url && url !== 'EMPTY');
-            
-            console.log(`📄 ${pdfUrls.length} URL(s) de PDF encontrada(s)`);
             
             this.state.existingPdfs = pdfUrls.map((url, index) => ({
                 url: url,
@@ -118,12 +120,11 @@ const MediaSystem = {
             }));
         }
         
-        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
         this.updateUI();
         return this;
     },
 
-    // ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO POR URL ==========
+    // ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO ==========
     isVideoUrl: function(url) {
         if (!url) return false;
         const urlLower = url.toLowerCase();
@@ -141,8 +142,6 @@ const MediaSystem = {
         const filesArray = Array.from(fileList);
         let addedCount = 0;
         
-        console.log(`📁 Tentando adicionar ${filesArray.length} arquivo(s)`);
-        
         filesArray.forEach(file => {
             const isImage = this.config.allowedTypes.images.includes(file.type);
             const isVideo = this.config.allowedTypes.videos.includes(file.type);
@@ -157,125 +156,31 @@ const MediaSystem = {
                 return;
             }
             
-            // Criar BLOB URL temporária para preview
             const blobUrl = URL.createObjectURL(file);
             
             const newItem = {
-                file: file,                    // Objeto File original
+                file: file,
                 id: `new_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
                 name: file.name,
                 type: file.type,
                 preview: blobUrl,
                 isImage: isImage,
                 isVideo: isVideo,
-                isNew: true,                   // CRÍTICO: Marcar como NOVO
-                uploaded: false,               // Ainda não foi enviado
-                uploadedUrl: null,             // URL após upload bem-sucedido
+                isNew: true,
+                uploaded: false,
+                uploadedUrl: null,
                 blobUrl: blobUrl
             };
-            
-            console.log(`✅ Adicionado NOVO arquivo: "${file.name}"`, {
-                isNew: true,
-                hasFile: true,
-                isVideo: isVideo,
-                size: Math.round(file.size/1024) + 'KB'
-            });
             
             this.state.files.push(newItem);
             addedCount++;
         });
         
-        console.log(`📊 Total de arquivos novos: ${this.state.files.length}`);
         this.updateUI();
         return addedCount;
     },
 
-    // ========== FUNÇÃO DE PREVIEW ATUALIZADA COM SUPORTE A VÍDEOS ==========
-    getMediaPreviewHTML: function(item) {
-        const displayName = item.name || 'Arquivo';
-        const shortName = displayName.length > 20 ? displayName.substring(0, 17) + '...' : displayName;
-        
-        // NOVO: Verificar se é VÍDEO (prioridade máxima)
-        const isVideoFile = item.isVideo === true || 
-                            (item.type && item.type.startsWith('video/')) || 
-                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/)) ||
-                            (item.url && this.isVideoUrl(item.url));
-        
-        // Obter URL do vídeo (prioridade: uploadedUrl > url > preview)
-        const videoUrl = item.uploadedUrl || item.url || item.preview;
-        
-        // Se for vídeo e tiver URL válida, renderizar player de vídeo
-        if (isVideoFile && videoUrl && !videoUrl.startsWith('blob:')) {
-            console.log(`🎬 Renderizando vídeo preview: ${displayName}`);
-            return `
-                <div style="width:100%;height:70px;position:relative;background:#000;">
-                    <video style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted>
-                        <source src="${videoUrl}" type="video/mp4">
-                        <source src="${videoUrl}" type="video/quicktime">
-                        Seu navegador não suporta vídeo.
-                    </video>
-                    <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.7);color:white;padding:2px 5px;border-radius:3px;font-size:0.6rem;">
-                        <i class="fas fa-video"></i> Vídeo
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 1. Se for arquivo NOVO não enviado (tem BLOB URL)
-        if (item.isNew && !item.uploaded && item.preview && item.preview.startsWith('blob:')) {
-            return `
-                <div style="width:100%;height:70px;position:relative;background:#2c3e50;">
-                    <img src="${item.preview}" 
-                         alt="${displayName}"
-                         style="width:100%;height:100%;object-fit:cover;"
-                         onload="console.log('✅ Preview carregado: ${displayName.replace(/'/g, "\\'")}')"
-                         onerror="
-                            console.log('❌ Falha no preview: ${displayName.replace(/'/g, "\\'")}');
-                            this.style.display='none';
-                            this.nextElementSibling.style.display='flex';
-                         ">
-                    <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;color:#ecf0f1;">
-                        <i class="fas fa-image" style="font-size:1.5rem;margin-bottom:5px;"></i>
-                        <div style="font-size:0.65rem;text-align:center;">${shortName}</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 2. Se for arquivo com URL permanente
-        if ((item.url || item.uploadedUrl) && !(item.url || '').startsWith('blob:')) {
-            const imageUrl = item.uploadedUrl || item.url;
-            
-            return `
-                <div style="width:100%;height:70px;position:relative;background:#2c3e50;">
-                    <img src="${imageUrl}" 
-                         alt="${displayName}"
-                         style="width:100%;height:100%;object-fit:cover;"
-                         onload="console.log('✅ Imagem carregada: ${displayName.replace(/'/g, "\\'")}')"
-                         onerror="
-                            console.log('❌ Falha no carregamento: ${displayName.replace(/'/g, "\\'")}');
-                            this.style.display='none';
-                            this.nextElementSibling.style.display='flex';
-                         "
-                         loading="lazy">
-                    <div style="position:absolute;top:0;left:0;width:100%;height:100%;display:none;flex-direction:column;align-items:center;justify-content:center;color:#ecf0f1;">
-                        <i class="fas fa-image" style="font-size:1.5rem;margin-bottom:5px;"></i>
-                        <div style="font-size:0.65rem;text-align:center;">${shortName}</div>
-                    </div>
-                </div>
-            `;
-        }
-        
-        // 3. Fallback
-        return `
-            <div style="width:100%;height:70px;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#2c3e50;color:#ecf0f1;">
-                <i class="fas fa-image" style="font-size:1.5rem;margin-bottom:5px;"></i>
-                <div style="font-size:0.65rem;text-align:center;">${shortName}</div>
-            </div>
-        `;
-    },
-
-    // ========== FUNÇÃO CRÍTICA: UPLOAD COMPLETO ==========
+    // ========== UPLOAD COMPLETO ==========
     async uploadAll(propertyId, propertyTitle) {
         if (this.state.isUploading) {
             console.warn('⚠️ Upload já em andamento');
@@ -290,76 +195,51 @@ const MediaSystem = {
         
         this.state.isUploading = true;
         console.group('🚀 EXECUTANDO UPLOAD COMPLETO');
-        console.log(`📌 Property: ${propertyId} - ${propertyTitle}`);
         
         try {
-            // 1. VERIFICAR ARQUIVOS NOVOS
             const newFiles = this.state.files.filter(item => {
-                const isNew = item.isNew === true;
-                const hasFile = item.file instanceof File;
-                const notUploaded = !item.uploaded;
-                return isNew && hasFile && notUploaded;
+                return item.isNew === true && item.file instanceof File && !item.uploaded;
             });
             
-            console.log(`📊 ${newFiles.length} arquivo(s) novo(s) identificado(s) para upload`);
-            
-            // 2. Processar exclusões
             await this.processDeletions();
             
-            // 3. Upload de NOVOS arquivos de mídia
             const uploadedImageUrls = [];
             
             if (newFiles.length > 0) {
-                console.log(`📤 Enviando ${newFiles.length} arquivo(s) para Supabase...`);
-                
                 for (let i = 0; i < newFiles.length; i++) {
                     const fileItem = newFiles[i];
                     const file = fileItem.file;
                     
                     try {
-                        console.log(`⬆️ [${i+1}/${newFiles.length}] Enviando: "${file.name}"`);
-                        
-                        // Upload para Supabase
                         const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'media');
                         
                         if (uploadedUrl) {
-                            // Atualizar item
                             fileItem.uploadedUrl = uploadedUrl;
                             fileItem.uploaded = true;
                             fileItem.isNew = false;
                             
-                            // Liberar BLOB URL
                             if (fileItem.preview && fileItem.preview.startsWith('blob:')) {
                                 URL.revokeObjectURL(fileItem.preview);
                                 fileItem.preview = uploadedUrl;
                             }
                             
                             uploadedImageUrls.push(uploadedUrl);
-                            console.log(`✅ "${file.name}" enviado!`);
                         }
-                        
                     } catch (error) {
-                        console.error(`❌ Erro ao enviar "${file.name}":`, error);
+                        console.error(`❌ Erro ao enviar "${fileItem.name}":`, error);
                     }
                 }
-            } else {
-                console.log('📭 Nenhum arquivo novo para enviar');
             }
             
-            // 4. Upload de NOVOS PDFs
             const newPdfs = this.state.pdfs.filter(pdf => pdf.isNew && pdf.file && !pdf.uploaded);
             const uploadedPdfUrls = [];
             
             if (newPdfs.length > 0) {
-                console.log(`📤 Enviando ${newPdfs.length} PDF(s)...`);
-                
                 for (let i = 0; i < newPdfs.length; i++) {
                     const pdfItem = newPdfs[i];
                     const file = pdfItem.file;
                     
                     try {
-                        console.log(`⬆️ [${i+1}/${newPdfs.length}] Enviando PDF: "${file.name}"`);
-                        
                         const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'pdf');
                         
                         if (uploadedUrl) {
@@ -367,16 +247,13 @@ const MediaSystem = {
                             pdfItem.uploaded = true;
                             pdfItem.isNew = false;
                             uploadedPdfUrls.push(uploadedUrl);
-                            console.log(`✅ PDF "${file.name}" enviado!`);
                         }
-                        
                     } catch (error) {
-                        console.error(`❌ Erro ao enviar PDF "${file.name}":`, error);
+                        console.error(`❌ Erro ao enviar PDF "${pdfItem.name}":`, error);
                     }
                 }
             }
             
-            // 5. Coletar URLs existentes
             const existingImageUrls = this.state.existing
                 .filter(item => !item.markedForDeletion && item.url)
                 .map(item => item.url);
@@ -385,11 +262,9 @@ const MediaSystem = {
                 .filter(item => !item.markedForDeletion && item.url)
                 .map(item => item.url);
             
-            // 6. Combinar URLs
             const allImageUrls = [...uploadedImageUrls, ...existingImageUrls];
             const allPdfUrls = [...uploadedPdfUrls, ...existingPdfUrls];
             
-            // 7. Preparar resultado
             const result = {
                 success: true,
                 images: allImageUrls.join(','),
@@ -398,12 +273,6 @@ const MediaSystem = {
             };
             
             this.state.lastUploadResult = result;
-            
-            console.log(`✅ UPLOAD CONCLUÍDO!`);
-            console.log(`📊 ${allImageUrls.length} imagem(ns), ${allPdfUrls.length} PDF(s)`);
-            console.log(`📤 ${result.uploadedCount} novo(s) arquivo(s) enviado(s)`);
-            
-            // 8. Atualizar UI
             this.updateUI();
             
             return result;
@@ -417,7 +286,6 @@ const MediaSystem = {
                 uploadedCount: 0,
                 error: error.message 
             };
-            
         } finally {
             this.state.isUploading = false;
             console.groupEnd();
@@ -432,7 +300,6 @@ const MediaSystem = {
                 const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
                 const bucket = this.config.buckets[this.config.currentSystem];
                 
-                // Gerar nome único
                 const timestamp = Date.now();
                 const random = Math.random().toString(36).substring(2, 10);
                 const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 50);
@@ -442,9 +309,6 @@ const MediaSystem = {
                 
                 const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${filePath}`;
                 
-                console.log(`📁 Upload para: ${filePath}`);
-                
-                // Fazer upload
                 const response = await fetch(uploadUrl, {
                     method: 'POST',
                     headers: {
@@ -457,59 +321,42 @@ const MediaSystem = {
                 
                 if (response.ok) {
                     const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${filePath}`;
-                    console.log(`✅ Upload bem-sucedido!`);
                     resolve(publicUrl);
                 } else {
                     const errorText = await response.text();
-                    console.error(`❌ Upload falhou: ${response.status}`, errorText);
                     reject(new Error(`Upload falhou: ${response.status}`));
                 }
                 
             } catch (error) {
-                console.error(`❌ Erro no upload:`, error);
                 reject(error);
             }
         });
     },
 
-    // ========== EXCLUSÃO FÍSICA DE ARQUIVO ÚNICO NO STORAGE ==========
-    /**
-     * Exclui um único arquivo do Supabase Storage
-     * @param {string} fileUrl - URL pública do arquivo a ser excluído
-     * @returns {Promise<Object>} Resultado da operação
-     */
+    // ========== EXCLUSÃO FÍSICA DE ARQUIVO ÚNICO ==========
     async deleteFileFromStorage(fileUrl) {
         if (!fileUrl) {
-            console.warn('📭 Nenhuma URL fornecida para exclusão.');
             return { success: false, error: 'No URL provided' };
         }
 
-        console.log(`🗑️ Iniciando exclusão física de arquivo único: ${fileUrl.substring(0, 80)}...`);
-        
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
             const bucket = this.config.buckets[this.config.currentSystem];
             
-            // Extrair o caminho do arquivo dentro do bucket a partir da URL pública
-            // Formato da URL pública: {SUPABASE_URL}/storage/v1/object/public/{bucket}/{filePath}
             const publicPathPattern = `/storage/v1/object/public/${bucket}/`;
             const pathIndex = fileUrl.indexOf(publicPathPattern);
             let filePath = null;
 
             if (pathIndex !== -1) {
                 filePath = fileUrl.substring(pathIndex + publicPathPattern.length);
-                // Remover query string se existir
                 filePath = filePath.split('?')[0];
             } else {
-                // Tentar extrair nome do arquivo como fallback
                 const urlParts = fileUrl.split('/');
                 const fileName = urlParts[urlParts.length - 1].split('?')[0];
                 if (fileName && fileName.includes('_')) {
                     filePath = fileName;
-                    console.warn(`⚠️ Usando nome de arquivo como fallback: ${filePath}`);
                 } else {
-                    console.warn(`⚠️ Não foi possível determinar o caminho do arquivo para: ${fileUrl.substring(0, 100)}`);
                     return { success: false, error: 'Could not extract file path from URL' };
                 }
             }
@@ -518,15 +365,11 @@ const MediaSystem = {
                 return { success: false, error: 'Empty file path' };
             }
 
-            // Decodificar o nome do arquivo se necessário
             try {
                 filePath = decodeURIComponent(filePath);
-            } catch (e) {
-                // Manter o original se não conseguir decodificar
-            }
+            } catch (e) {}
 
             const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
-            console.log(`🗑️ Executando DELETE: ${deleteUrl.substring(0, 100)}...`);
 
             const response = await fetch(deleteUrl, {
                 method: 'DELETE',
@@ -537,64 +380,41 @@ const MediaSystem = {
             });
 
             if (response.ok) {
-                console.log(`✅ Arquivo excluído com sucesso: ${filePath}`);
                 return { success: true, deletedUrl: fileUrl, filePath: filePath };
             } else {
                 let errorText = '';
-                try {
-                    errorText = await response.text();
-                } catch(e) {}
-                console.error(`❌ Falha ao excluir ${filePath}: ${response.status} - ${errorText}`);
-                return { success: false, error: `HTTP ${response.status}: ${errorText}`, status: response.status };
+                try { errorText = await response.text(); } catch(e) {}
+                return { success: false, error: `HTTP ${response.status}` };
             }
             
         } catch (error) {
-            console.error(`❌ Erro ao excluir arquivo:`, error);
             return { success: false, error: error.message };
         }
     },
 
-    // ========== EXCLUSÃO FÍSICA DE MÚLTIPLOS ARQUIVOS NO STORAGE ==========
+    // ========== EXCLUSÃO FÍSICA DE MÚLTIPLOS ARQUIVOS ==========
     async deleteFilesFromStorage(urls) {
         if (!urls || urls.length === 0) {
-            console.log('📭 Nenhuma URL fornecida para exclusão.');
             return { success: true, deletedCount: 0, failedCount: 0 };
         }
 
-        console.log(`🗑️ Iniciando exclusão física de ${urls.length} arquivo(s) do Storage...`);
         let deletedCount = 0;
         let failedCount = 0;
         const errors = [];
 
         for (let i = 0; i < urls.length; i++) {
-            const fileUrl = urls[i];
-            console.log(`[${i+1}/${urls.length}] Processando: ${fileUrl.substring(0, 80)}...`);
+            const result = await this.deleteFileFromStorage(urls[i]);
             
-            try {
-                // Usar o método deleteFileFromStorage para cada arquivo
-                const result = await this.deleteFileFromStorage(fileUrl);
-                
-                if (result.success) {
-                    deletedCount++;
-                    console.log(`✅ [${i+1}/${urls.length}] Excluído com sucesso`);
-                } else {
-                    failedCount++;
-                    errors.push({ url: fileUrl, error: result.error });
-                    console.warn(`⚠️ [${i+1}/${urls.length}] Falha: ${result.error}`);
-                }
-                
-                // Pequeno delay para não sobrecarregar a API do Supabase
-                await new Promise(resolve => setTimeout(resolve, 100));
-                
-            } catch (error) {
+            if (result.success) {
+                deletedCount++;
+            } else {
                 failedCount++;
-                errors.push({ url: fileUrl, error: error.message });
-                console.error(`❌ [${i+1}/${urls.length}] Erro: ${error.message}`);
+                errors.push({ url: urls[i], error: result.error });
             }
+            
+            await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        console.log(`🗑️ Exclusão concluída: ${deletedCount} excluídos, ${failedCount} falhas.`);
-        
         return { 
             success: failedCount === 0, 
             deletedCount, 
@@ -605,9 +425,6 @@ const MediaSystem = {
 
     // ========== FUNÇÃO SIMPLIFICADA PARA ADMIN.JS ==========
     getOrderedMediaUrls: function() {
-        console.log('📋 Obtendo URLs ordenadas...');
-        
-        // Combinar todos os arquivos
         const allMedia = [
             ...this.state.existing.filter(item => !item.markedForDeletion),
             ...this.state.files
@@ -618,7 +435,6 @@ const MediaSystem = {
             ...this.state.pdfs
         ];
         
-        // Extrair URLs
         const imageUrls = allMedia.map(item => {
             if (item.uploadedUrl) return item.uploadedUrl;
             if (item.url) return item.url;
@@ -631,34 +447,26 @@ const MediaSystem = {
             return null;
         }).filter(url => url !== null);
         
-        console.log(`📊 ${imageUrls.length} imagem(ns), ${pdfUrls.length} PDF(s)`);
-        
         return {
             images: imageUrls.join(','),
             pdfs: pdfUrls.join(',')
         };
     },
 
-    // ========== FUNÇÃO PARA SALVAR LOCALMENTE (SEM SUPABASE) ==========
+    // ========== FUNÇÃO PARA SALVAR LOCALMENTE (FALLBACK) ==========
     saveAndKeepLocal: function(propertyId, propertyTitle) {
         console.log(`💾 Salvando localmente para ${propertyId}`);
         
-        // 1. Coletar URLs
         const urls = this.getOrderedMediaUrls();
         
-        // 2. Atualizar arquivos novos para "salvos localmente"
         this.state.files.forEach(item => {
             if (item.isNew && !item.uploaded) {
-                // Marcar como "salvo localmente"
                 item.uploaded = true;
                 item.isNew = false;
-                item.uploadedUrl = item.preview; // Manter BLOB URL como "URL enviada"
-                
-                console.log(`🔗 Mantendo BLOB URL local para: ${item.name}`);
+                item.uploadedUrl = item.preview;
             }
         });
         
-        // 3. Atualizar PDFs também
         this.state.pdfs.forEach(pdf => {
             if (pdf.isNew && !pdf.uploaded) {
                 pdf.uploaded = true;
@@ -666,9 +474,7 @@ const MediaSystem = {
             }
         });
         
-        // 4. Atualizar UI
         this.updateUI();
-        
         return urls;
     },
 
@@ -701,40 +507,34 @@ const MediaSystem = {
             addedCount++;
         });
         
-        console.log(`📄 ${addedCount} NOVO(S) PDF(s) adicionado(s)`);
         this.updateUI();
         return addedCount;
     },
 
     // ========== REMOVER ARQUIVO ==========
     removeFile: function(fileId) {
-        console.log(`🗑️ Removendo arquivo: ${fileId}`);
-        
-        const searchInArray = (array, name) => {
+        const searchInArray = (array) => {
             const index = array.findIndex(item => item.id === fileId);
             if (index !== -1) {
                 const removed = array[index];
                 
                 if (removed.isExisting) {
                     removed.markedForDeletion = true;
-                    console.log(`🗑️ Arquivo EXISTENTE marcado para exclusão: "${removed.name}"`);
                 } else {
                     if (removed.preview && removed.preview.startsWith('blob:')) {
                         URL.revokeObjectURL(removed.preview);
                     }
                     array.splice(index, 1);
-                    console.log(`🗑️ Arquivo NOVO removido: "${removed.name}"`);
                 }
-                
                 return true;
             }
             return false;
         };
         
-        if (searchInArray(this.state.files, 'files')) return true;
-        if (searchInArray(this.state.existing, 'existing')) return true;
-        if (searchInArray(this.state.pdfs, 'pdfs')) return true;
-        if (searchInArray(this.state.existingPdfs, 'existingPdfs')) return true;
+        if (searchInArray(this.state.files)) return true;
+        if (searchInArray(this.state.existing)) return true;
+        if (searchInArray(this.state.pdfs)) return true;
+        if (searchInArray(this.state.existingPdfs)) return true;
         
         return false;
     },
@@ -745,8 +545,6 @@ const MediaSystem = {
         const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
         
         if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
-            console.log(`🗑️ Processando exclusões: ${imagesToDelete.length} imagem(ns), ${pdfsToDelete.length} PDF(s)`);
-            
             this.state.existing = this.state.existing.filter(item => !item.markedForDeletion);
             this.state.existingPdfs = this.state.existingPdfs.filter(item => !item.markedForDeletion);
         }
@@ -754,302 +552,21 @@ const MediaSystem = {
         return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
     },
 
-    // ========== UI ==========
+    // ========== UI PROXY (delega para Support quando disponível) ==========
     updateUI: function() {
-        if (this._updateTimeout) clearTimeout(this._updateTimeout);
-        
-        this._updateTimeout = setTimeout(() => {
-            this.renderMediaPreview();
-            this.renderPdfPreview();
-        }, 50);
-    },
-
-    // ========== RENDER MEDIA PREVIEW ATUALIZADO COM SUPORTE A VÍDEOS ==========
-    renderMediaPreview: function() {
-        const container = document.getElementById('uploadPreview');
-        if (!container) {
-            console.warn('⚠️ Container #uploadPreview não encontrado');
+        // Usa Support System se disponível
+        if (window.SupportMediaUI?.updateUI) {
+            window.SupportMediaUI.updateUI.call(this);
             return;
         }
-        
-        // Combinar todos os arquivos
-        const allFiles = [
-            ...this.state.existing.filter(item => !item.markedForDeletion),
-            ...this.state.files
-        ];
-        
-        console.log(`🎨 Renderizando ${allFiles.length} arquivo(s)`);
-        
-        if (allFiles.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; color: #95a5a6; padding: 2rem;">
-                    <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <p style="margin: 0;">Nenhuma foto ou vídeo adicionada</p>
-                    <small style="font-size: 0.8rem;">Arraste ou clique para adicionar</small>
-                </div>
-            `;
-            return;
+        // Fallback mínimo - apenas log em modo debug
+        if (window.location.search.includes('debug=true')) {
+            console.log('ℹ️ updateUI: SupportMediaUI não disponível (modo produção)');
         }
-        
-        let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
-        
-        allFiles.forEach((item, index) => {
-            const isMarked = item.markedForDeletion;
-            const isExisting = item.isExisting;
-            const isNew = item.isNew;
-            const isUploaded = item.uploaded;
-            
-            // NOVO: Determinar se é vídeo para aplicar estilo diferente
-            const isVideo = item.isVideo === true || 
-                            (item.type && item.type.startsWith('video/')) || 
-                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/)) ||
-                            (item.url && this.isVideoUrl(item.url));
-            
-            // Determinar status
-            let borderColor = isVideo ? '#9b59b6' : '#3498db';  // Roxo para vídeos, Azul para imagens
-            let bgColor = isVideo ? '#f4ecf7' : '#e8f4fc';
-            let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : (isUploaded ? 'Salvo' : ''));
-            let statusIcon = isVideo ? '<i class="fas fa-video"></i> ' : '<i class="fas fa-image"></i> ';
-            
-            if (isMarked) {
-                borderColor = '#e74c3c';
-                bgColor = '#ffebee';
-                statusText = 'Excluir';
-            }
-            
-            const displayName = item.name || 'Arquivo';
-            const shortName = displayName.length > 15 ? displayName.substring(0, 12) + '...' : displayName;
-            
-            html += `
-            <div class="media-preview-item draggable-item" 
-                 draggable="true"
-                 data-id="${item.id}"
-                 title="${displayName}"
-                 style="position:relative;width:110px;height:110px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:${bgColor};cursor:grab;">
-                
-                <div style="width:100%;height:70px;overflow:hidden;">
-                    ${this.getMediaPreviewHTML(item)}
-                </div>
-                
-                <div style="padding:5px;font-size:0.7rem;text-align:center;height:40px;overflow:hidden;display:flex;align-items:center;justify-content:center;">
-                    <span style="display:block;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                        ${statusIcon}${shortName}
-                    </span>
-                </div>
-                
-                <div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.7);color:white;width:22px;height:22px;border-radius:0 0 8px 0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;z-index:10;">
-                    <i class="fas fa-arrows-alt"></i>
-                </div>
-                
-                <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.8);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:bold;z-index:5;">
-                    ${index + 1}
-                </div>
-                
-                <button onclick="MediaSystem.removeFile('${item.id}')" 
-                        style="position:absolute;top:0;right:0;background:${isMarked ? '#c0392b' : '#e74c3c'};color:white;border:none;width:24px;height:24px;cursor:pointer;font-size:14px;font-weight:bold;z-index:10;border-radius:0 0 0 8px;display:flex;align-items:center;justify-content:center;">
-                    ${isMarked ? '↺' : '×'}
-                </button>
-                
-                <div style="position:absolute;bottom:2px;left:2px;background:${borderColor};color:white;font-size:0.5rem;padding:1px 3px;border-radius:2px;z-index:10;">
-                    ${statusText}
-                </div>
-            </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-        
-        // Reconfigurar eventos de drag & drop
-        setTimeout(() => {
-            this.setupContainerDragEvents('uploadPreview');
-        }, 100);
-    },
-
-    renderPdfPreview: function() {
-        const container = document.getElementById('pdfUploadPreview');
-        if (!container) return;
-        
-        const allPdfs = [
-            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
-            ...this.state.pdfs
-        ];
-        
-        if (allPdfs.length === 0) {
-            container.innerHTML = `
-                <div style="text-align: center; color: #95a5a6; padding: 1rem; font-size: 0.9rem;">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                    <p style="margin: 0;">Arraste ou clique para adicionar PDFs</p>
-                </div>
-            `;
-            return;
-        }
-        
-        let html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
-        
-        allPdfs.forEach((pdf, index) => {
-            const isMarked = pdf.markedForDeletion;
-            const isExisting = pdf.isExisting;
-            const isNew = pdf.isNew;
-            const isUploaded = pdf.uploaded;
-            
-            let borderColor = '#3498db';
-            let bgColor = '#e8f4fc';
-            let statusText = 'Novo';
-            
-            if (isMarked) {
-                borderColor = '#e74c3c';
-                bgColor = '#ffebee';
-                statusText = 'Excluir';
-            } else if (isExisting) {
-                borderColor = '#27ae60';
-                bgColor = '#e8f8ef';
-                statusText = 'Existente';
-            } else if (isUploaded) {
-                borderColor = '#9b59b6';
-                bgColor = '#f4ecf7';
-                statusText = 'Salvo';
-            }
-            
-            const shortName = pdf.name.length > 15 ? pdf.name.substring(0, 12) + '...' : pdf.name;
-            
-            html += `
-                <div class="pdf-preview-container draggable-item"
-                     draggable="true"
-                     data-id="${pdf.id}"
-                     style="position:relative;cursor:grab;">
-                    <div style="background:${bgColor};border:1px solid ${borderColor};border-radius:6px;padding:0.5rem;width:90px;height:90px;text-align:center;display:flex;flex-direction:column;justify-content:center;align-items:center;overflow:hidden;position:relative;">
-                        <div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.6);color:white;width:20px;height:20px;border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:0.7rem;z-index:5;">
-                            <i class="fas fa-arrows-alt"></i>
-                        </div>
-                        
-                        <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.8);color:white;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;z-index:5;">
-                            ${index + 1}
-                        </div>
-                        
-                        <i class="fas fa-file-pdf" style="font-size:1.2rem;color:${borderColor};margin-bottom:0.3rem;"></i>
-                        <p style="font-size:0.7rem;margin:0;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;">${shortName}</p>
-                        <small style="color:#7f8c8d;font-size:0.6rem;">${statusText}</small>
-                    </div>
-                    <button onclick="MediaSystem.removeFile('${pdf.id}')" 
-                            style="position:absolute;top:0;right:0;background:${borderColor};color:white;border:none;width:22px;height:22px;font-size:14px;font-weight:bold;cursor:pointer;border-radius:0 0 0 6px;">
-                        ×
-                    </button>
-                </div>
-            `;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-        
-        // Reconfigurar eventos de drag & drop
-        setTimeout(() => {
-            this.setupContainerDragEvents('pdfUploadPreview');
-        }, 100);
-    },
-
-    // ========== DRAG & DROP ==========
-    setupDragAndDrop: function() {
-        console.log('🎯 Configurando drag & drop...');
-        
-        setTimeout(() => {
-            this.setupContainerDragEvents('uploadPreview');
-            this.setupContainerDragEvents('pdfUploadPreview');
-        }, 500);
-    },
-
-    setupContainerDragEvents: function(containerId) {
-        const container = document.getElementById(containerId);
-        if (!container) return;
-        
-        container.addEventListener('dragstart', (e) => {
-            const draggable = e.target.closest('.draggable-item');
-            if (!draggable) return;
-            
-            e.dataTransfer.setData('text/plain', draggable.dataset.id);
-            e.dataTransfer.effectAllowed = 'move';
-            draggable.classList.add('dragging');
-        });
-        
-        container.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            e.dataTransfer.dropEffect = 'move';
-        });
-        
-        container.addEventListener('drop', (e) => {
-            e.preventDefault();
-            
-            const draggedId = e.dataTransfer.getData('text/plain');
-            const draggable = document.querySelector(`[data-id="${draggedId}"]`);
-            const dropTarget = e.target.closest('.draggable-item');
-            
-            if (!draggedId || !dropTarget) return;
-            
-            const targetId = dropTarget.dataset.id;
-            if (draggedId === targetId) return;
-            
-            this.reorderItems(draggedId, targetId);
-            
-            document.querySelectorAll('.dragging').forEach(el => {
-                el.classList.remove('dragging');
-            });
-        });
-        
-        container.addEventListener('dragend', () => {
-            document.querySelectorAll('.dragging').forEach(el => {
-                el.classList.remove('dragging');
-            });
-        });
-    },
-
-    reorderItems: function(draggedId, targetId) {
-        console.log(`🔀 Reordenando: ${draggedId} → ${targetId}`);
-        
-        let sourceArray = null;
-        let arrayName = '';
-        
-        const allArrays = [
-            { name: 'files', array: this.state.files },
-            { name: 'existing', array: this.state.existing },
-            { name: 'pdfs', array: this.state.pdfs },
-            { name: 'existingPdfs', array: this.state.existingPdfs }
-        ];
-        
-        for (const arr of allArrays) {
-            const draggedIndex = arr.array.findIndex(item => item.id === draggedId);
-            if (draggedIndex !== -1) {
-                sourceArray = arr.array;
-                arrayName = arr.name;
-                break;
-            }
-        }
-        
-        if (!sourceArray) return;
-        
-        const draggedIndex = sourceArray.findIndex(item => item.id === draggedId);
-        const targetIndex = sourceArray.findIndex(item => item.id === targetId);
-        
-        if (draggedIndex !== -1 && targetIndex !== -1) {
-            const newArray = [...sourceArray];
-            const [draggedItem] = newArray.splice(draggedIndex, 1);
-            newArray.splice(targetIndex, 0, draggedItem);
-            
-            if (arrayName === 'files') this.state.files = newArray;
-            else if (arrayName === 'existing') this.state.existing = newArray;
-            else if (arrayName === 'pdfs') this.state.pdfs = newArray;
-            else if (arrayName === 'existingPdfs') this.state.existingPdfs = newArray;
-            
-            console.log(`🔄 Reordenação aplicada no array: ${arrayName}`);
-        }
-        
-        this.updateUI();
     },
 
     // ========== SETUP EVENT LISTENERS ==========
     setupEventListeners: function() {
-        console.log('🔧 Configurando event listeners...');
-        
-        // Upload de mídia (fotos/vídeos)
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         
@@ -1080,12 +597,11 @@ const MediaSystem = {
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     this.addFiles(e.target.files);
-                    e.target.value = ''; // Resetar input
+                    e.target.value = '';
                 }
             });
         }
         
-        // Upload de PDFs
         const pdfUploadArea = document.getElementById('pdfUploadArea');
         const pdfFileInput = document.getElementById('pdfFileInput');
         
@@ -1095,7 +611,7 @@ const MediaSystem = {
             pdfFileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     this.addPdfs(e.target.files);
-                    e.target.value = ''; // Resetar input
+                    e.target.value = '';
                 }
             });
         }
@@ -1103,27 +619,21 @@ const MediaSystem = {
 
     // ========== FUNÇÕES DE COMPATIBILIDADE ==========
     processAndSavePdfs: async function(propertyId, propertyTitle) {
-        console.group(`📄 Processando e salvando PDFs para ${propertyId}`);
         const result = await this.uploadAll(propertyId, propertyTitle);
-        console.groupEnd();
         return result.pdfs;
     },
 
     getMediaUrlsForProperty: async function(propertyId, propertyTitle) {
-        console.group(`🖼️ Obtendo URLs de mídia para ${propertyId}`);
         const result = await this.uploadAll(propertyId, propertyTitle);
-        console.groupEnd();
         return result.images;
     },
 
     getPdfsToSave: async function(propertyId) {
-        console.log(`💾 Obtendo PDFs para salvar para ${propertyId}`);
         const result = await this.uploadAll(propertyId, 'Imóvel');
         return result.pdfs;
     },
 
     loadExistingPdfsForEdit: function(property) {
-        console.log('📄 Carregando PDFs existentes para edição');
         if (!property) return this;
         
         this.state.existingPdfs = [];
@@ -1147,8 +657,6 @@ const MediaSystem = {
     },
 
     clearAllPdfs: function() {
-        console.log('🧹 Limpando apenas PDFs');
-        
         this.state.pdfs.forEach(pdf => {
             if (pdf.preview && pdf.preview.startsWith('blob:')) {
                 URL.revokeObjectURL(pdf.preview);
@@ -1162,13 +670,10 @@ const MediaSystem = {
     },
 
     clearAllMedia: function() {
-        console.log('🧹 LIMPEZA COMPLETA DE MÍDIA E PDFs');
         return this.resetState();
     },
 
     ensurePermanentUrls: function() {
-        console.log('🔍 Garantindo URLs permanentes...');
-        
         this.state.files.forEach(item => {
             if (item.uploaded && item.uploadedUrl && item.preview && item.preview.startsWith('blob:')) {
                 URL.revokeObjectURL(item.preview);
@@ -1205,9 +710,7 @@ const MediaSystem = {
 
     reconstructSupabaseUrl: function(filename) {
         if (!filename || typeof filename !== 'string') return null;
-        
         if (filename.startsWith('http')) return filename;
-        
         if (!filename.includes('.')) return null;
         
         try {
@@ -1215,34 +718,27 @@ const MediaSystem = {
             const bucket = this.config.buckets[this.config.currentSystem];
             return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`;
         } catch (error) {
-            console.error('❌ Erro ao reconstruir URL:', error);
             return null;
         }
     },
 
-    // ========== FUNÇÃO GETFILETYPEFROMURL MELHORADA ==========
     getFileTypeFromUrl: function(url) {
         if (!url) return 'image/jpeg';
         
         const urlLower = url.toLowerCase();
         
-        // Verificar VÍDEOS primeiro (prioridade máxima)
-        if (urlLower.includes('.mp4') || 
-            urlLower.includes('.mov') || 
-            urlLower.includes('.webm') || 
-            urlLower.includes('.avi') ||
+        if (urlLower.includes('.mp4') || urlLower.includes('.mov') || 
+            urlLower.includes('.webm') || urlLower.includes('.avi') ||
             urlLower.includes('video/')) {
             return 'video/mp4';
         }
         
-        // Depois imagens
         if (urlLower.includes('.jpg') || urlLower.includes('.jpeg') || 
             urlLower.includes('.png') || urlLower.includes('.gif') || 
             urlLower.includes('.webp') || urlLower.includes('image/')) {
             return 'image/jpeg';
         }
         
-        // PDFs
         if (urlLower.includes('.pdf') || urlLower.includes('application/pdf')) {
             return 'application/pdf';
         }
@@ -1251,9 +747,6 @@ const MediaSystem = {
     },
 
     resetState: function() {
-        console.log('🧹 Resetando estado do sistema de mídia');
-        
-        // Liberar BLOB URLs
         const cleanupBlobUrls = (items) => {
             items.forEach(item => {
                 if (item.preview && item.preview.startsWith('blob:')) {
@@ -1268,13 +761,10 @@ const MediaSystem = {
         cleanupBlobUrls(this.state.files);
         cleanupBlobUrls(this.state.pdfs);
         
-        // Resetar arrays
         this.state.files = [];
         this.state.existing = [];
         this.state.pdfs = [];
         this.state.existingPdfs = [];
-        
-        // Resetar flags
         this.state.isUploading = false;
         this.state.currentPropertyId = null;
         this.state.lastUploadResult = null;
@@ -1289,7 +779,7 @@ window.MediaSystem = MediaSystem;
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
-    console.log('✅ Sistema de mídia COMPLETO COM SUPORTE A VÍDEOS pronto');
+    console.log('✅ Sistema de mídia CORE pronto (UI delegada para Support quando disponível)');
 }, 1000);
 
-console.log('✅ media-unified.js COMPLETO COM SUPORTE A VÍDEOS carregado');
+console.log('✅ media-unified.js CORE carregado - ' + Object.keys(MediaSystem).length + ' métodos disponíveis');
