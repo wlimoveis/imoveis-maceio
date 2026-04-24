@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.0 - Core enxuto com proxy para Support UI
+// Versão: 2.0.1 - Core enxuto com proxy aprimorado para Support UI
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -554,15 +554,72 @@ const MediaSystem = {
 
     // ========== UI PROXY (delega para Support quando disponível) ==========
     updateUI: function() {
-        // Usa Support System se disponível
-        if (window.SupportMediaUI?.updateUI) {
+        // Prioridade máxima para SupportMediaUI (sempre que disponível)
+        if (window.SupportMediaUI && typeof window.SupportMediaUI.updateUI === 'function') {
             window.SupportMediaUI.updateUI.call(this);
             return;
         }
-        // Fallback mínimo - apenas log em modo debug
-        if (window.location.search.includes('debug=true')) {
-            console.log('ℹ️ updateUI: SupportMediaUI não disponível (modo produção)');
+        
+        // Fallback de emergência (caso Support não esteja disponível)
+        if (this.renderMediaPreview && this.renderPdfPreview) {
+            if (this._updateTimeout) clearTimeout(this._updateTimeout);
+            this._updateTimeout = setTimeout(() => {
+                this.renderMediaPreview();
+                this.renderPdfPreview();
+            }, 50);
+        } else if (window.location.search.includes('debug=true')) {
+            console.warn('⚠️ updateUI: Nenhum renderizador disponível');
         }
+    },
+
+    // Métodos de fallback (minimalistas, apenas para garantir funcionamento)
+    renderMediaPreview: function() {
+        const container = document.getElementById('uploadPreview');
+        if (!container) return;
+        
+        const totalFiles = (this.state.existing?.length || 0) + (this.state.files?.length || 0);
+        
+        if (totalFiles === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p>Nenhuma foto ou vídeo</p></div>';
+            return;
+        }
+        
+        // Fallback simples: lista textual
+        let html = '<div style="background:#f8f9fa;padding:1rem;border-radius:8px;">';
+        html += `<strong>📸 Total: ${totalFiles} arquivo(s)</strong><br>`;
+        
+        [...(this.state.existing || []), ...(this.state.files || [])].forEach((item, idx) => {
+            const name = item.name || 'Arquivo';
+            const isExisting = item.isExisting ? '(existente)' : '(novo)';
+            html += `<div style="font-size:0.8rem;margin:5px 0;">${idx+1}. ${name} ${isExisting}</div>`;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    renderPdfPreview: function() {
+        const container = document.getElementById('pdfUploadPreview');
+        if (!container) return;
+        
+        const totalPdfs = (this.state.existingPdfs?.length || 0) + (this.state.pdfs?.length || 0);
+        
+        if (totalPdfs === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;"><i class="fas fa-file-pdf" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p>Nenhum PDF</p></div>';
+            return;
+        }
+        
+        let html = '<div style="background:#f8f9fa;padding:1rem;border-radius:8px;">';
+        html += `<strong>📄 Total: ${totalPdfs} PDF(s)</strong><br>`;
+        
+        [...(this.state.existingPdfs || []), ...(this.state.pdfs || [])].forEach((pdf, idx) => {
+            const name = pdf.name || 'PDF';
+            const isExisting = pdf.isExisting ? '(existente)' : '(novo)';
+            html += `<div style="font-size:0.8rem;margin:5px 0;">${idx+1}. ${name} ${isExisting}</div>`;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
     },
 
     // ========== SETUP EVENT LISTENERS ==========
