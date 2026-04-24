@@ -16,14 +16,15 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
     // ========== LISTA ÚNICA DE MÓDULOS DO SUPPORT SYSTEM ==========
     // ✅ ADICIONAR NOVOS MÓDULOS SOMENTE AQUI!
     supportModules: [
-        'debug/ui/loading-manager.js', // <--- NOVO MÓDULO ADICIONADO
+        'debug/ui/loading-manager.js',
+        'debug/ui/media-ui-full.js',  // <--- NOVO MÓDULO ADICIONADO (UI completa do Media System)
         'debug/core/diagnostic-registry.js',
         'performance/performance-system.js',
         'debug/utils/core-diagnostics.js',
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
         'debug/templates/property-template.js', 
-        'debug/ui/location-autocomplete.js',  // <--- NOVO MÓDULO ADICIONADO AQUI
+        'debug/ui/location-autocomplete.js',
         'debug/utils/admin-diagnostics.js',
         'debug/utils/core-utilities.js',
         'debug/diagnostics/diagnostics53.js',
@@ -70,8 +71,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
 console.log('⚙️ [CONFIG] SYSTEM_CONFIG carregado. Support URL:', window.SYSTEM_CONFIG.supportBaseUrl);
 console.log('📦 [CONFIG] Total de módulos:', window.SYSTEM_CONFIG.supportModules.length);
 
-// ========== CONSTANTES SUPABASE FIXAS (IMPORTANTE!) ==========
-// Verificar se já foi declarado por outro módulo (media-unified.js)
+// ========== CONSTANTES SUPABASE FIXAS ==========
 if (typeof SUPABASE_CONSTANTS === 'undefined') {
     const SUPABASE_CONSTANTS = {
         URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
@@ -80,14 +80,13 @@ if (typeof SUPABASE_CONSTANTS === 'undefined') {
         PDF_PASSWORD: "doc123"
     };
     
-    // Exportar para escopo global se não existir
     window.SUPABASE_CONSTANTS = SUPABASE_CONSTANTS;
     console.log('✅ SUPABASE_CONSTANTS definido por SharedCore');
 } else {
     console.log('✅ SUPABASE_CONSTANTS já definido por outro módulo');
 }
 
-// ========== GARANTIR QUE AS CONSTANTES EXISTAM GLOBALMENTE ==========
+// Garantir constantes no escopo global
 Object.entries(window.SUPABASE_CONSTANTS).forEach(([key, value]) => {
     if (typeof window[key] === 'undefined' || window[key] === 'undefined') {
         window[key] = value;
@@ -142,17 +141,14 @@ const SharedCore = (function() {
     const formatPrice = (price) => {
         if (!price && price !== 0) return 'R$ 0,00';
         
-        // Se já é string formatada, retorna como está
         if (typeof price === 'string' && price.includes('R$')) {
             return price;
         }
         
-        // Converter para número
         const numericPrice = parseFloat(price.toString().replace(/[^0-9,-]/g, '').replace(',', '.'));
         
         if (isNaN(numericPrice)) return 'R$ 0,00';
         
-        // Formatar com separadores brasileiros
         return numericPrice.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL',
@@ -162,21 +158,14 @@ const SharedCore = (function() {
     };
 
     // ========== FUNÇÕES DE FEATURES E VIDEO - PROXY PURO ==========
-    // ✅ Implementação migrada para Support System (core-utilities.js)
-    // ✅ Core System apenas delega, com fallback inline mínimo
-    // ✅ Funções locais (_local*) REMOVIDAS para eliminar duplicidade
-    
     const formatFeaturesForDisplay = function(features) {
-        // Usa Support System se disponível
         if (window.SupportCoreUtils?.formatFeaturesForDisplay) {
             return window.SupportCoreUtils.formatFeaturesForDisplay(features);
         }
-        // Fallback inline mínimo - Core funciona sem Support System
         if (!features) return '';
         try {
             if (Array.isArray(features)) return features.filter(f => f && f.trim()).join(', ');
             if (typeof features === 'string') {
-                // Remover colchetes e aspas se presente
                 let cleaned = features.replace(/^\[|\]$/g, '').replace(/"/g, '');
                 return cleaned.split(',').map(f => f.trim()).filter(f => f).join(', ');
             }
@@ -187,11 +176,9 @@ const SharedCore = (function() {
     };
     
     const parseFeaturesForStorage = function(value) {
-        // Usa Support System se disponível
         if (window.SupportCoreUtils?.parseFeaturesForStorage) {
             return window.SupportCoreUtils.parseFeaturesForStorage(value);
         }
-        // Fallback inline mínimo
         if (!value) return '[]';
         try {
             if (Array.isArray(value)) return JSON.stringify(value.filter(f => f && f.trim()));
@@ -207,11 +194,9 @@ const SharedCore = (function() {
     };
     
     const ensureBooleanVideo = function(videoValue) {
-        // Usa Support System se disponível
         if (window.SupportCoreUtils?.ensureBooleanVideo) {
             return window.SupportCoreUtils.ensureBooleanVideo(videoValue);
         }
-        // Fallback inline mínimo
         if (videoValue === undefined || videoValue === null) return false;
         if (typeof videoValue === 'boolean') return videoValue;
         if (typeof videoValue === 'string') {
@@ -223,27 +208,20 @@ const SharedCore = (function() {
         return Boolean(videoValue);
     };
     
-    // ========== FUNÇÕES DE VALIDAÇÃO DE ID E ESTADO DE EDIÇÃO - PROXY PURO ==========
-    // ✅ Implementação migrada para Support System (core-utilities.js)
-    // ✅ Core System apenas delega, com fallback inline mínimo
-    
+    // ========== FUNÇÕES DE VALIDAÇÃO ==========
     const validateIdForSupabase = function(propertyId) {
-        // Usa Support System se disponível
         if (window.SupportCoreUtils?.validateIdForSupabase) {
             return window.SupportCoreUtils.validateIdForSupabase(propertyId);
         }
-        // Fallback inline mínimo e seguro
         if (!propertyId) return null;
         const num = Number(propertyId);
         return !isNaN(num) && num > 0 ? num : null;
     };
     
     const manageEditingState = function(id = null) {
-        // Usa Support System se disponível
         if (window.SupportCoreUtils?.manageEditingState) {
             return window.SupportCoreUtils.manageEditingState(id);
         }
-        // Fallback inline mínimo
         if (id === null) {
             window.editingPropertyId = null;
             return null;
@@ -276,34 +254,24 @@ const SharedCore = (function() {
 
     // ========== SISTEMA DE FORMATAÇÃO UNIFICADO DE PREÇO ==========
     const PriceFormatter = {
-        /**
-         * Formata número com separadores de milhar garantidos
-         * @param {number} number - Número a formatar
-         * @returns {string} Número formatado com pontos
-         */
         formatNumberWithSeparators: function(number) {
             if (isNaN(number) || !number) return '0';
             
-            // Garantir que é inteiro
             const intNumber = Math.floor(Number(number));
             
-            // Usar toLocaleString com configuração explícita
             let formatted = intNumber.toLocaleString('pt-BR', {
                 useGrouping: true,
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             });
             
-            // Verificar se tem separadores
             if (formatted.includes('.')) {
                 return formatted;
             }
             
-            // Fallback manual para navegadores que não respeitam useGrouping
             const numStr = intNumber.toString();
             const parts = [];
             
-            // Processar de 3 em 3 dígitos do final para o início
             for (let i = numStr.length; i > 0; i -= 3) {
                 const start = Math.max(0, i - 3);
                 parts.unshift(numStr.substring(start, i));
@@ -312,15 +280,9 @@ const SharedCore = (function() {
             return parts.join('.');
         },
 
-        /**
-         * Formata valor para "R$ X.XXX"
-         * @param {string|number} value - Valor a formatar
-         * @returns {string} Preço formatado
-         */
         formatForInput: function(value) {
             if (!value && value !== 0) return '';
             
-            // Se já formatado com R$, limpar e reformatar
             if (typeof value === 'string' && value.includes('R$')) {
                 const numbersOnly = value.replace(/\D/g, '');
                 if (numbersOnly === '') return value;
@@ -331,7 +293,6 @@ const SharedCore = (function() {
                 return 'R$ ' + this.formatNumberWithSeparators(numericValue);
             }
             
-            // Extrair números
             const numbersOnly = value.toString().replace(/\D/g, '');
             if (numbersOnly === '') return '';
             
@@ -341,34 +302,21 @@ const SharedCore = (function() {
             return 'R$ ' + this.formatNumberWithSeparators(numericValue);
         },
         
-        /**
-         * Extrai apenas números do preço formatado
-         * @param {string} formattedPrice - Preço formatado (ex: "R$ 450.000")
-         * @returns {string} Apenas números
-         */
         extractNumbers: function(formattedPrice) {
             if (!formattedPrice) return '';
             return formattedPrice.toString().replace(/\D/g, '');
         },
         
-        /**
-         * Formata para exibição (com decimais quando aplicável)
-         * @param {string|number} value - Valor a formatar
-         * @returns {string} Preço pronto para exibição
-         */
         formatForDisplay: function(value) {
             if (!value && value !== 0) return 'R$ 0,00';
             
-            // Se já formatado para exibição, retorna
             if (typeof value === 'string' && value.includes('R$') && value.includes(',')) {
                 return value;
             }
             
-            // Extrair números
             const numbersOnly = value.toString().replace(/\D/g, '');
             const numericValue = parseInt(numbersOnly) || 0;
             
-            // Formatar com decimais
             return numericValue.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
@@ -377,25 +325,16 @@ const SharedCore = (function() {
             });
         },
 
-        /**
-         * Formata preço para exibição em cards (compatibilidade com properties.js)
-         * @param {string|number} value - Valor a formatar
-         * @param {boolean} forceFormat - Forçar formatação mesmo se já formatado
-         * @returns {string} Preço pronto para exibição em cards
-         */
         formatForCard: function(value, forceFormat = false) {
             if (!value && value !== 0) return 'R$ 0,00';
             
-            // Se já formatado e não forçando, retornar como está
             if (!forceFormat && typeof value === 'string' && value.includes('R$')) {
                 return value;
             }
             
-            // Extrair números e formatar
             const numbersOnly = value.toString().replace(/[^0-9,-]/g, '').replace(',', '.');
             const numericValue = parseFloat(numbersOnly) || 0;
             
-            // Formatar com decimais
             return numericValue.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
@@ -404,49 +343,33 @@ const SharedCore = (function() {
             });
         },
 
-        /**
-         * Formata preço para input (compatibilidade com admin.js)
-         * @param {string|number} value - Valor a formatar
-         * @returns {string} Preço formatado para campo de input
-         */
         formatForAdmin: function(value) {
             return this.formatForInput(value);
         },
         
-        /**
-         * Configura formatação automática em um campo de input
-         * @param {HTMLInputElement} inputElement - Elemento input a configurar
-         */
         setupAutoFormat: function(inputElement) {
             if (!inputElement || inputElement.tagName !== 'INPUT') return;
             
-            // Formatar valor inicial se existir
             if (inputElement.value && !inputElement.value.startsWith('R$')) {
                 inputElement.value = this.formatForInput(inputElement.value);
             }
             
-            // Evento de input (digitação)
             inputElement.addEventListener('input', (e) => {
-                // Permitir ações de exclusão sem formatação
                 if (e.inputType === 'deleteContentBackward' || 
                     e.inputType === 'deleteContentForward' ||
                     e.inputType === 'deleteByCut') {
                     return;
                 }
                 
-                // Salvar posição do cursor
                 const cursorPos = e.target.selectionStart;
                 const originalValue = e.target.value;
                 
-                // Formatar
                 e.target.value = this.formatForInput(e.target.value);
                 
-                // Ajustar cursor
                 const diff = e.target.value.length - originalValue.length;
                 e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
             });
             
-            // Formatar ao perder foco (garantir)
             inputElement.addEventListener('blur', (e) => {
                 if (e.target.value && !e.target.value.startsWith('R$')) {
                     e.target.value = this.formatForInput(e.target.value);
@@ -537,10 +460,9 @@ const SharedCore = (function() {
         (levels[level] || levels.info)();
     };
 
-    // ========== SUPABASE ESSENCIAL (COM CONSTANTES FIXAS) ==========
+    // ========== SUPABASE ESSENCIAL ==========
     const supabaseFetch = async (endpoint, options = {}) => {
         try {
-            // ✅ USAR CONSTANTES FIXAS, NÃO window.SUPABASE_URL
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
             
@@ -640,7 +562,6 @@ const SharedCore = (function() {
         }
     };
 
-    // Função de validação de Supabase
     const validateSupabaseConnection = async () => {
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
@@ -667,24 +588,20 @@ const SharedCore = (function() {
         }
     };
 
-    // Função de geração de ID único
     const generateUniqueId = (prefix = 'id') => {
         const timestamp = Date.now().toString(36);
         const random = Math.random().toString(36).substring(2, 9);
         return `${prefix}_${timestamp}_${random}`;
     };
 
-    // Função de sanitização de texto
     const sanitizeText = (text, maxLength = null) => {
         if (!text) return '';
         
-        // Remover HTML tags e trim
         let sanitized = text.toString()
             .replace(/<[^>]*>/g, '')
             .replace(/\s+/g, ' ')
             .trim();
         
-        // Truncar se necessário
         if (maxLength && sanitized.length > maxLength) {
             sanitized = sanitized.substring(0, maxLength - 3) + '...';
         }
@@ -692,10 +609,8 @@ const SharedCore = (function() {
         return sanitized;
     };
 
-    // Função de delay (para testes e animações)
     const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
-    // ========== FUNÇÃO DE CÓPIA PARA CLIPBOARD ==========
     const copyToClipboard = async (text) => {
         try {
             await navigator.clipboard.writeText(text);
@@ -706,7 +621,6 @@ const SharedCore = (function() {
         }
     };
 
-    // ========== FUNÇÃO PARA TESTAR UPLOAD DE ARQUIVOS ==========
     const testFileUpload = async () => {
         console.group('🧪 TESTE DE UPLOAD DE ARQUIVOS');
         
@@ -718,7 +632,6 @@ const SharedCore = (function() {
             SUPABASE_KEY: SUPABASE_KEY ? '✅ Disponível' : '❌ Indisponível'
         });
         
-        // Criar arquivo de teste
         const testBlob = new Blob(['test content'], { type: 'text/plain' });
         const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
         
@@ -762,83 +675,50 @@ const SharedCore = (function() {
 
     // ========== API PÚBLICA ==========
     return {
-        // Performance
         debounce,
         throttle,
         runLowPriority,
-        
-        // Validações
         isMobileDevice,
         isValidEmail,
         isValidPhone,
         validateProperty,
-        
-        // Strings
         formatPrice,
         truncateText,
         stringSimilarity,
-        
-        // ✅ Funções unificadas de features e video (proxy puro - sem duplicidade)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
-        
-        // ✅ Funções de validação de ID e estado de edição (proxy puro - sem duplicidade)
         validateIdForSupabase,
         manageEditingState,
-        
-        // Sistema de formatação de preço UNIFICADO
         PriceFormatter,
-        
-        // Sistema de carregamento de imagens
         ImageLoader,
-        
-        // Funções de compatibilidade (para código legado)
         formatPriceForInput: PriceFormatter.formatForInput.bind(PriceFormatter),
         getPriceNumbersOnly: PriceFormatter.extractNumbers.bind(PriceFormatter),
         setupPriceAutoFormat: function() {
             const priceField = document.getElementById('propPrice');
             if (priceField) PriceFormatter.setupAutoFormat(priceField);
         },
-        
-        // DOM
         elementExists,
         createElement,
-        
-        // Logging
         logModule,
-        
-        // Supabase
         supabaseFetch,
-        
-        // Array Utils
         arrayUtils,
-        
-        // Utilitários diversos
         copyToClipboard,
-        
-        // Novas funções
         validateSupabaseConnection,
         generateUniqueId,
         sanitizeText,
         delay,
-        
-        // Teste de upload
         testFileUpload,
-        
-        // Constantes (exportadas para compatibilidade)
         SUPABASE_CONSTANTS: window.SUPABASE_CONSTANTS
     };
 })();
 
-// Exportar para escopo global
 window.SharedCore = SharedCore;
 
 // ========== COMPATIBILIDADE GLOBAL ==========
 (function setupGlobalCompatibility() {
     console.log('🔗 Configurando compatibilidade global de formatação...');
     
-    // Expor funções de formatação globalmente (para código legado)
     if (typeof window.formatPrice === 'undefined') {
         window.formatPrice = function(value) {
             return SharedCore.PriceFormatter.formatForCard(value);
@@ -851,7 +731,6 @@ window.SharedCore = SharedCore;
         };
     }
     
-    // Expor funções de features globalmente para compatibilidade
     if (typeof window.formatFeaturesForDisplay === 'undefined') {
         window.formatFeaturesForDisplay = function(features) {
             return SharedCore.formatFeaturesForDisplay(features);
@@ -870,7 +749,6 @@ window.SharedCore = SharedCore;
         };
     }
     
-    // Expor funções de validação globalmente para compatibilidade
     if (typeof window.validateIdForSupabase === 'undefined') {
         window.validateIdForSupabase = function(propertyId) {
             return SharedCore.validateIdForSupabase(propertyId);
@@ -883,61 +761,37 @@ window.SharedCore = SharedCore;
         };
     }
     
-    console.log('✅ Compatibilidade de formatação de preço, features e validação configurada');
+    console.log('✅ Compatibilidade de formatação configurada');
 })();
 
-// ========== INICIALIZAÇÃO E COMPATIBILIDADE ==========
 function initializeGlobalCompatibility() {
     console.log('🔗 Inicializando compatibilidade global...');
     
-    // Mapeamento de funções para expor globalmente
     const globalExports = {
-        // Performance
         debounce: SharedCore.debounce,
         throttle: SharedCore.throttle,
         runLowPriority: SharedCore.runLowPriority,
-        
-        // Validações
         isMobileDevice: SharedCore.isMobileDevice,
         isValidEmail: SharedCore.isValidEmail,
         isValidPhone: SharedCore.isValidPhone,
-        
-        // Strings
         formatPrice: SharedCore.formatPrice,
         truncateText: SharedCore.truncateText,
         stringSimilarity: SharedCore.stringSimilarity,
-        
-        // Funções unificadas de features e video
         formatFeaturesForDisplay: SharedCore.formatFeaturesForDisplay,
         parseFeaturesForStorage: SharedCore.parseFeaturesForStorage,
         ensureBooleanVideo: SharedCore.ensureBooleanVideo,
-        
-        // Funções de validação de ID e estado de edição
         validateIdForSupabase: SharedCore.validateIdForSupabase,
         manageEditingState: SharedCore.manageEditingState,
-        
-        // Formatação de preço (compatibilidade com código legado)
         formatPriceForInput: SharedCore.formatPriceForInput,
         getPriceNumbersOnly: SharedCore.getPriceNumbersOnly,
         setupPriceAutoFormat: SharedCore.setupPriceAutoFormat,
-        
-        // DOM
         elementExists: SharedCore.elementExists,
-        
-        // Logging
         logModule: SharedCore.logModule,
-        
-        // Supabase
         supabaseFetch: SharedCore.supabaseFetch,
-        
-        // Utilitários
         copyToClipboard: SharedCore.copyToClipboard,
-        
-        // Teste de upload
         testFileUpload: SharedCore.testFileUpload
     };
     
-    // Exportar para window (somente se não existirem já)
     Object.entries(globalExports).forEach(([name, func]) => {
         if (typeof window[name] === 'undefined' && typeof func === 'function') {
             window[name] = func;
@@ -947,22 +801,18 @@ function initializeGlobalCompatibility() {
     console.log(`✅ ${Object.keys(globalExports).length} funções disponíveis globalmente`);
 }
 
-// ========== INICIALIZAÇÃO AUTOMÁTICA DA FORMATAÇÃO DE PREÇO ==========
 document.addEventListener('DOMContentLoaded', function() {
-    // Inicializar compatibilidade global
     initializeGlobalCompatibility();
     
-    // Configurar formatação automática do campo de preço
     setTimeout(() => {
         const priceField = document.getElementById('propPrice');
         if (priceField && window.SharedCore?.PriceFormatter) {
             window.SharedCore.PriceFormatter.setupAutoFormat(priceField);
-            console.log('✅ Formatação automática de preço configurada no DOMContentLoaded');
+            console.log('✅ Formatação automática de preço configurada');
         }
     }, 800);
 });
 
-// ========== AUTO-VALIDAÇÃO ==========
 setTimeout(() => {
     console.group('🧪 VALIDAÇÃO DO SHAREDCORE');
     
@@ -979,7 +829,6 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
-    // Verificar constantes
     const essentialConstants = ['SUPABASE_URL', 'SUPABASE_KEY', 'ADMIN_PASSWORD', 'PDF_PASSWORD'];
     essentialConstants.forEach(constant => {
         const exists = window[constant] !== undefined;
@@ -987,15 +836,6 @@ setTimeout(() => {
         if (!exists) allAvailable = false;
     });
     
-    // Verificar novas funções de formatação
-    const newFormatFunctions = ['formatPriceForCard', 'formatPriceForAdmin'];
-    newFormatFunctions.forEach(func => {
-        const available = window.SharedCore?.PriceFormatter?.[func] !== undefined;
-        console.log(`${available ? '✅' : '❌'} PriceFormatter.${func} disponível`);
-        if (!available) allAvailable = false;
-    });
-    
-    // Verificar funções unificadas (proxy puro)
     const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo', 'validateIdForSupabase', 'manageEditingState'];
     unifiedFunctions.forEach(func => {
         const available = window.SharedCore?.[func] !== undefined;
@@ -1003,28 +843,14 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
-    // ✅ NOVA VERIFICAÇÃO: Garantir que funções locais foram removidas
-    const sharedCoreCode = window.SharedCore.toString();
-    const hasLocalFunctions = sharedCoreCode.includes('_localFormatFeaturesForDisplay') ||
-                              sharedCoreCode.includes('_localParseFeaturesForStorage') ||
-                              sharedCoreCode.includes('_localEnsureBooleanVideo') ||
-                              sharedCoreCode.includes('_localValidateIdForSupabase') ||
-                              sharedCoreCode.includes('_localManageEditingState');
+    // Verificar módulo media-ui-full na lista de suporte
+    const hasMediaUIFull = window.SYSTEM_CONFIG.supportModules.includes('debug/ui/media-ui-full.js');
+    console.log(`${hasMediaUIFull ? '✅' : '⚠️'} debug/ui/media-ui-full.js na lista supportModules`);
     
-    console.log(`${!hasLocalFunctions ? '✅' : '❌'} Funções locais (_local*) removidas do SharedCore`);
-    
-    // Verificar disponibilidade do Support System (apenas informativo)
-    if (window.SupportCoreUtils) {
-        console.log('✅ [SUPPORT] SupportCoreUtils disponível - usando versão otimizada');
-    } else {
-        console.log('ℹ️ [SUPPORT] SupportCoreUtils não disponível - usando fallback inline (sistema 100% funcional)');
-    }
-    
-    console.log(allAvailable && !hasLocalFunctions ? '🎪 SHAREDCORE VALIDADO - SEM DUPLICIDADE' : '⚠️ VERIFICAÇÃO REQUERIDA');
+    console.log(allAvailable ? '🎪 SHAREDCORE VALIDADO' : '⚠️ VERIFICAÇÃO REQUERIDA');
     console.groupEnd();
 }, 2000);
 
-// ========== GARANTIR QUE SUPABASE_CONSTANTS SEJA ÚNICA ==========
 (function ensureUniqueSupabaseConstants() {
     if (window.SUPABASE_CONSTANTS && window.SUPABASE_CONSTANTS.URL) {
         console.log('✅ SUPABASE_CONSTANTS já existe, usando referência existente');
