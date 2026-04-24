@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.1 - Core enxuto com proxy aprimorado para Support UI
+// Versão: 2.0.2 - Core com re-renderização forçada para garantir preview
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -82,6 +82,8 @@ const MediaSystem = {
                 .map(url => url.trim())
                 .filter(url => url && url !== 'EMPTY');
             
+            console.log(`📸 ${imageUrls.length} URL(s) de imagem encontrada(s)`);
+            
             this.state.existing = imageUrls.map((url, index) => {
                 let finalUrl = url;
                 if (!url.startsWith('http') && !url.startsWith('blob:')) {
@@ -110,6 +112,8 @@ const MediaSystem = {
                 .map(url => url.trim())
                 .filter(url => url && url !== 'EMPTY');
             
+            console.log(`📄 ${pdfUrls.length} URL(s) de PDF encontrada(s)`);
+            
             this.state.existingPdfs = pdfUrls.map((url, index) => ({
                 url: url,
                 id: `existing_pdf_${property.id}_${index}`,
@@ -120,7 +124,23 @@ const MediaSystem = {
             }));
         }
         
+        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
+        
+        // CRÍTICO: Forçar múltiplas atualizações para garantir renderização
         this.updateUI();
+        
+        // Garantir que o DOM tenha tempo de processar a primeira atualização
+        setTimeout(() => {
+            this.updateUI();
+            console.log('🔄 Re-renderização forçada após loadExisting');
+        }, 100);
+        
+        // Segunda garantia para PDFs
+        setTimeout(() => {
+            this.updateUI();
+            console.log('🔄 Segunda re-renderização forçada');
+        }, 300);
+        
         return this;
     },
 
