@@ -733,7 +733,7 @@ if (document.readyState === 'loading') {
 }
 
 // ==========================================================
-// PATCH FORÇADO DO SISTEMA DE MÍDIA - CORREÇÃO DEFINITIVA
+// PATCH FORÇADO DO SISTEMA DE MÍDIA - CORREÇÃO DEFINITIVA COM FORCE UPDATES
 // ==========================================================
 (function fixMediaSystemLoad() {
     console.log('🔧 [FIX] Aplicando patch definitivo no MediaSystem.loadExisting...');
@@ -811,25 +811,36 @@ if (document.readyState === 'loading') {
         // Chamar função original com dados corrigidos
         const result = originalLoadExisting.call(this, fixedProperty);
         
-        // Forçar diagnóstico após carregamento
+        // FORÇAR RENDERIZAÇÃO IMEDIATA APÓS O CARREGAMENTO
         setTimeout(() => {
-            console.log('🔍 [FIX] Estado após loadExisting:');
-            console.log('  existing:', this.state.existing?.length);
-            console.log('  existingPdfs:', this.state.existingPdfs?.length);
-            
-            // Forçar renderização visual
+            console.log('🔧 [FIX] Forçando renderização visual imediata...');
             if (window.SupportMediaUI?.renderMediaPreview) {
-                window.SupportMediaUI.renderMediaPreview.call(this);
+                window.SupportMediaUI.renderMediaPreview();
+                window.SupportMediaUI.renderPdfPreview();
             }
-            if (window.SupportMediaUI?.renderPdfPreview) {
-                window.SupportMediaUI.renderPdfPreview.call(this);
+            if (window.MediaSystem?.renderMediaPreviewVisual) {
+                window.MediaSystem.renderMediaPreviewVisual();
+                window.MediaSystem.renderPdfPreviewVisual();
+            }
+        }, 50);
+        
+        // Segundo force após 200ms (garantia)
+        setTimeout(() => {
+            console.log('🔧 [FIX] Segunda força de renderização...');
+            if (window.SupportMediaUI?.renderMediaPreview) {
+                window.SupportMediaUI.renderMediaPreview();
+                window.SupportMediaUI.renderPdfPreview();
+            }
+            if (window.MediaSystem?.renderMediaPreviewVisual) {
+                window.MediaSystem.renderMediaPreviewVisual();
+                window.MediaSystem.renderPdfPreviewVisual();
             }
         }, 200);
         
         return result;
     };
     
-    console.log('✅ [FIX] Patch definitivo aplicado com sucesso!');
+    console.log('✅ [FIX] Patch definitivo com force updates aplicado com sucesso!');
 })();
 
 // Também garantir que o editProperty chame o loadExisting corrigido
