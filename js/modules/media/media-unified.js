@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.4 - updateUI CORRIGIDO para renderização visual direta
+// Versão: 2.0.5 - PREVENÇÃO DE REINICIALIZAÇÃO
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -14,7 +14,13 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     };
 }
 
+// ========== VERIFICAR SE JÁ EXISTE UMA INSTÂNCIA ==========
+if (!window.MediaSystem || !window.MediaSystem._initialized) {
+    
 const MediaSystem = {
+    // Flag para evitar reinicialização
+    _initialized: false,
+    
     // ========== CONFIGURAÇÃO ==========
     config: {
         currentSystem: 'vendas',
@@ -47,11 +53,18 @@ const MediaSystem = {
     },
 
     // ========== INICIALIZAÇÃO ==========
-    init(systemName = 'vendas') {
+    init: function(systemName = 'vendas') {
+        // PREVENIR REINICIALIZAÇÃO
+        if (this._initialized) {
+            console.log('⚠️ [MediaSystem] Já inicializado! Ignorando segunda inicialização.');
+            return this;
+        }
+        
         console.log(`🔧 Inicializando sistema de mídia para: ${systemName}`);
         this.config.currentSystem = systemName;
         this.resetState();
         this.setupEventListeners();
+        this._initialized = true;
         
         // Tentar usar Support System para UI avançada
         setTimeout(() => {
@@ -916,17 +929,17 @@ const MediaSystem = {
             }
             // Forçar renderização visual
             if (window.SupportMediaUI?.renderMediaPreview) {
-                window.SupportMediaUI.renderMediaPreview.call(MediaSystem);
+                window.SupportMediaUI.renderMediaPreview();
             }
             if (window.SupportMediaUI?.renderPdfPreview) {
-                window.SupportMediaUI.renderPdfPreview.call(MediaSystem);
+                window.SupportMediaUI.renderPdfPreview();
             }
         }, 200);
         
         return result;
     };
     
-    // O updateUI já foi substituído acima
+    // O updateUI já foi atualizado acima
     console.log('✅ [PATCH] Patch forçado aplicado com sucesso!');
     console.log('💡 Agora qualquer chamada ao loadExisting será logada e corrigida');
 })();
@@ -934,10 +947,20 @@ const MediaSystem = {
 // ========== EXPORTAR PARA WINDOW ==========
 window.MediaSystem = MediaSystem;
 
-// ========== INICIALIZAÇÃO AUTOMÁTICA ==========
-setTimeout(() => {
-    window.MediaSystem.init('vendas');
-    console.log('✅ Sistema de mídia CORE pronto (UI delegada para Support quando disponível)');
-}, 1000);
+// ========== INICIALIZAÇÃO ÚNICA (COM PROTEÇÃO) ==========
+if (!window.MediaSystem._initialized) {
+    setTimeout(() => {
+        if (!window.MediaSystem._initialized) {
+            window.MediaSystem.init('vendas');
+            console.log('✅ Sistema de mídia CORE inicializado');
+        }
+    }, 100);
+} else {
+    console.log('✅ MediaSystem já inicializado anteriormente');
+}
 
 console.log('✅ media-unified.js CORE carregado - ' + Object.keys(MediaSystem).length + ' métodos disponíveis');
+
+} else {
+    console.log('⚠️ media-unified.js - MediaSystem já existe e está inicializado! Pulando recarregamento.');
+}
