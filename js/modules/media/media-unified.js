@@ -1,9 +1,9 @@
-// js/modules/media/media-unified.js - VERSÃO CORE OTIMIZADA (SEM UI)
+// js/modules/media/media-unified.js - VERSÃO CORE OTIMIZADA (COM FALLBACK COMPLETO)
 // ✅ Mantém apenas lógica ESSENCIAL (upload, delete, estado)
 // ✅ UI completa (previews, drag & drop) migrada para Support System
-// ✅ Fallback mínimo garante operação mesmo sem Support
+// ✅ Fallback COMPLETO garante previews visuais mesmo sem Support System
 
-console.log('🔄 media-unified.js - Core System (lógica essencial apenas)');
+console.log('🔄 media-unified.js - Core System (lógica essencial + fallback completo)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -147,8 +147,10 @@ const MediaSystem = {
             }));
         }
         
-        // Atualizar UI se disponível
+        // ✅ FORÇAR UPDATE UI APÓS CARREGAR DADOS
         this.updateUI();
+        
+        console.log(`📊 Estado carregado: ${this.state.existing.length} imagem(ns)/vídeo(s), ${this.state.existingPdfs.length} PDF(s)`);
         return this;
     },
 
@@ -653,13 +655,140 @@ const MediaSystem = {
             window.SupportUI.renderMediaPreview(this);
             window.SupportUI.renderPdfPreview(this);
         } else {
-            console.log('⚠️ [MediaSystem] SupportUI não disponível, usando fallback');
-            // Fallback mínimo
-            const previewContainer = document.getElementById('uploadPreview');
-            if (previewContainer && this.state.existing.length === 0 && this.state.files.length === 0) {
-                previewContainer.innerHTML = '<div style="text-align:center;padding:2rem;">Nenhum arquivo</div>';
-            }
+            console.log('⚠️ [MediaSystem] SupportUI não disponível, usando fallback completo');
+            // ✅ FALLBACK COMPLETO - Renderiza previews sem Support System
+            this.renderMediaPreviewFallback();
+            this.renderPdfPreviewFallback();
         }
+    },
+
+    // ========== FALLBACK PARA PREVIEW DE MÍDIA (SEM SUPPORT) ==========
+    renderMediaPreviewFallback: function() {
+        const container = document.getElementById('uploadPreview');
+        if (!container) {
+            console.warn('⚠️ [Fallback] Container #uploadPreview não encontrado');
+            return;
+        }
+        
+        const allFiles = [
+            ...(this.state.existing || []).filter(item => !item.markedForDeletion),
+            ...(this.state.files || [])
+        ];
+        
+        console.log(`📸 [Fallback] Renderizando ${allFiles.length} arquivo(s) (${this.state.existing.length} existentes, ${this.state.files.length} novos)`);
+        
+        if (allFiles.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #95a5a6; padding: 2rem;">
+                    <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p style="margin: 0;">Nenhuma foto ou vídeo adicionada</p>
+                    <small style="font-size: 0.8rem;">Arraste ou clique para adicionar</small>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+        
+        allFiles.forEach((item, index) => {
+            const isMarked = item.markedForDeletion;
+            const isExisting = item.isExisting;
+            const isNew = item.isNew;
+            const isVideo = item.isVideo === true || 
+                            (item.type && item.type.startsWith('video/'));
+            
+            let borderColor = isVideo ? '#9b59b6' : '#3498db';
+            let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
+            
+            if (isMarked) {
+                borderColor = '#e74c3c';
+                statusText = 'Excluir';
+            }
+            
+            // Obter URL da imagem
+            let imageUrl = item.uploadedUrl || item.url || item.preview;
+            const displayName = item.name || 'Arquivo';
+            const shortName = displayName.length > 15 ? displayName.substring(0, 12) + '...' : displayName;
+            const statusIcon = isVideo ? '<i class="fas fa-video"></i> ' : '<i class="fas fa-image"></i> ';
+            
+            html += `
+                <div style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:#f0f0f0;">
+                    <div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">
+                        ${imageUrl ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+                        <div style="display:${imageUrl ? 'none' : 'flex'};flex-direction:column;align-items:center;color:white;">
+                            ${statusIcon}
+                            <span style="font-size:0.6rem;">${shortName}</span>
+                        </div>
+                    </div>
+                    <div style="padding:5px;font-size:0.65rem;text-align:center;background:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                        ${statusText}
+                    </div>
+                    <button onclick="window.MediaSystem?.removeFile && window.MediaSystem.removeFile('${item.id}')" 
+                            style="position:absolute;top:-5px;right:-5px;background:${isMarked ? '#c0392b' : '#e74c3c'};color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;z-index:10;">
+                        ${isMarked ? '↺' : '×'}
+                    </button>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        console.log('✅ [Fallback] renderMediaPreviewFallback concluído');
+    },
+
+    // ========== FALLBACK PARA PREVIEW DE PDFs (SEM SUPPORT) ==========
+    renderPdfPreviewFallback: function() {
+        const container = document.getElementById('pdfUploadPreview');
+        if (!container) {
+            console.warn('⚠️ [Fallback] Container #pdfUploadPreview não encontrado');
+            return;
+        }
+        
+        const allPdfs = [
+            ...(this.state.existingPdfs || []).filter(item => !item.markedForDeletion),
+            ...(this.state.pdfs || [])
+        ];
+        
+        console.log(`📄 [Fallback] Renderizando ${allPdfs.length} PDF(s) (${this.state.existingPdfs.length} existentes, ${this.state.pdfs.length} novos)`);
+        
+        if (allPdfs.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #95a5a6; padding: 1rem; font-size: 0.9rem;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                    <p style="margin: 0;">Arraste ou clique para adicionar PDFs</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+        
+        allPdfs.forEach((pdf, index) => {
+            const isMarked = pdf.markedForDeletion;
+            const isExisting = pdf.isExisting;
+            
+            let borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
+            let statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            const shortName = pdf.name.length > 15 ? pdf.name.substring(0, 12) + '...' : pdf.name;
+            
+            html += `
+                <div style="position:relative;">
+                    <div style="background:#f8f9fa;border:1px solid ${borderColor};border-radius:6px;padding:0.5rem;width:80px;text-align:center;">
+                        <i class="fas fa-file-pdf" style="font-size:1.2rem;color:${borderColor};"></i>
+                        <p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${shortName}</p>
+                        <small style="color:#666;font-size:0.6rem;">${statusText}</small>
+                    </div>
+                    <button onclick="window.MediaSystem?.removeFile && window.MediaSystem.removeFile('${pdf.id}')" 
+                            style="position:absolute;top:-5px;right:-5px;background:${borderColor};color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;z-index:10;">
+                        ×
+                    </button>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+        console.log('✅ [Fallback] renderPdfPreviewFallback concluído');
     },
 
     // ========== RESETAR ESTADO ==========
@@ -696,11 +825,13 @@ window.MediaSystem = MediaSystem;
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
-    console.log('✅ MediaSystem Core carregado - Lógica essencial apenas');
-    console.log('📦 Tamanho reduzido: UI completa migrada para Support System');
+    console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo');
+    console.log('📦 Modo: ' + (window.location.search.includes('debug=true') ? 
+                'DEBUG (UI via Support System)' : 
+                'PRODUÇÃO (UI via Fallback completo)'));
 }, 1000);
 
 console.log('✅ media-unified.js CORE carregado - ' + 
             (window.location.search.includes('debug=true') ? 
              'Modo DEBUG (UI via Support System)' : 
-             'Modo PRODUÇÃO (UI básica via fallback)'));
+             'Modo PRODUÇÃO (UI via Fallback completo)'));
