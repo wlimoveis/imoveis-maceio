@@ -646,13 +646,18 @@ const MediaSystem = {
 
     // ========== UI DELEGATION (USA SUPPORT SYSTEM SE DISPONÍVEL) ==========
     updateUI: function() {
-        if (window.SupportUI?.renderMediaPreview && window.SupportUI?.renderPdfPreview) {
+        console.log('🔄 [MediaSystem] updateUI chamado');
+        
+        if (window.SupportUI && typeof window.SupportUI.renderMediaPreview === 'function') {
+            console.log('🎨 [MediaSystem] Usando SupportUI para renderizar previews');
             window.SupportUI.renderMediaPreview(this);
             window.SupportUI.renderPdfPreview(this);
         } else {
-            // Fallback mínimo: apenas logs em debug
-            if (window.location.search.includes('debug=true')) {
-                console.log('⚠️ UI completa não disponível (Support System não carregado)');
+            console.log('⚠️ [MediaSystem] SupportUI não disponível, usando fallback');
+            // Fallback mínimo
+            const previewContainer = document.getElementById('uploadPreview');
+            if (previewContainer && this.state.existing.length === 0 && this.state.files.length === 0) {
+                previewContainer.innerHTML = '<div style="text-align:center;padding:2rem;">Nenhum arquivo</div>';
             }
         }
     },
