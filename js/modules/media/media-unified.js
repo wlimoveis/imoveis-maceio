@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.6 - POLLING para aguardar SupportMediaUI
+// Versão: 2.0.7 - UI EXCLUSIVA SupportMediaUI, sem fallback problemático
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -90,8 +90,8 @@ const MediaSystem = {
                 if (callback) callback(false); // false = não usar fallback
             } else if (attempts >= maxAttempts) {
                 clearInterval(checkInterval);
-                console.warn('⚠️ [MediaSystem] Timeout aguardando SupportMediaUI, usando fallback');
-                if (callback) callback(true); // true = usar fallback
+                console.warn('⚠️ [MediaSystem] Timeout aguardando SupportMediaUI');
+                if (callback) callback(true); // true = usar fallback (apenas emergência)
             }
         }, 100);
     },
@@ -628,47 +628,37 @@ const MediaSystem = {
         }
     },
 
-    // ========== UI CORRIGIDA - COM POLLING ==========
+    // ========== UI CORRIGIDA - SEM FALLBACK PROBLEMÁTICO ==========
     updateUI: function() {
         console.log('🔄 [MediaSystem] updateUI chamado - existing:', this.state.existing?.length, 'files:', this.state.files?.length);
         
-        // Verificar se SupportMediaUI já está disponível
+        // USAR EXCLUSIVAMENTE SupportMediaUI quando disponível
         if (window.SupportMediaUI && typeof window.SupportMediaUI.renderMediaPreview === 'function') {
-            // Já disponível, usar imediatamente
             if (typeof window.SupportMediaUI.renderMediaPreview === 'function') {
                 window.SupportMediaUI.renderMediaPreview();
             }
             if (typeof window.SupportMediaUI.renderPdfPreview === 'function') {
                 window.SupportMediaUI.renderPdfPreview();
             }
-        } else {
-            // SupportMediaUI ainda não carregado, aguardar com polling
-            console.log('⏳ [MediaSystem] Aguardando SupportMediaUI carregar...');
-            this._waitForSupportUI((useFallback) => {
-                if (useFallback) {
-                    // Fallback de emergência
-                    if (this.renderMediaPreview && this.renderPdfPreview) {
-                        if (this._updateTimeout) clearTimeout(this._updateTimeout);
-                        this._updateTimeout = setTimeout(() => {
-                            this.renderMediaPreview();
-                            this.renderPdfPreview();
-                        }, 50);
-                    }
-                } else {
-                    // SupportMediaUI agora disponível, renderizar
-                    if (window.SupportMediaUI.renderMediaPreview) {
-                        window.SupportMediaUI.renderMediaPreview();
-                    }
-                    if (window.SupportMediaUI.renderPdfPreview) {
-                        window.SupportMediaUI.renderPdfPreview();
-                    }
-                }
-            });
+            return; // SAI IMEDIATAMENTE - NÃO USA FALLBACK
+        }
+        
+        // Fallback APENAS se SupportMediaUI NÃO existir (emergência)
+        console.warn('⚠️ [MediaSystem] SupportMediaUI não disponível, usando fallback emergencial');
+        if (this.renderMediaPreview && this.renderPdfPreview) {
+            if (this._updateTimeout) clearTimeout(this._updateTimeout);
+            this._updateTimeout = setTimeout(() => {
+                this.renderMediaPreview();
+                this.renderPdfPreview();
+            }, 50);
         }
     },
 
-    // Métodos de fallback (minimalistas, apenas para garantir funcionamento)
+    // Métodos de fallback (mantidos apenas para emergência, mas não serão usados)
     renderMediaPreview: function() {
+        // NÃO FAZ NADA SE SupportMediaUI EXISTIR
+        if (window.SupportMediaUI) return;
+        
         const container = document.getElementById('uploadPreview');
         if (!container) return;
         
@@ -694,6 +684,9 @@ const MediaSystem = {
     },
 
     renderPdfPreview: function() {
+        // NÃO FAZ NADA SE SupportMediaUI EXISTIR
+        if (window.SupportMediaUI) return;
+        
         const container = document.getElementById('pdfUploadPreview');
         if (!container) return;
         
