@@ -1,63 +1,7 @@
-// ========== MONITOR DE CARREGAMENTO DE IMÓVEL ==========
-(function() {
-    console.log('🔍 [MONITOR] Iniciando monitor de edição de imóvel...');
-    
-    // Função para verificar se o MediaSystem tem dados
-    function checkAndFixMediaData() {
-        if (!window.MediaSystem) return false;
-        
-        const state = window.MediaSystem.state;
-        const hasExisting = (state.existing?.length > 0) || (state.existingPdfs?.length > 0);
-        
-        if (hasExisting) {
-            console.log('✅ [MONITOR] MediaSystem já tem dados! Forçando renderização visual...');
-            if (window.SupportMediaUI?.renderMediaPreview) {
-                window.SupportMediaUI.renderMediaPreview.call(window.MediaSystem);
-            }
-            if (window.SupportMediaUI?.renderPdfPreview) {
-                window.SupportMediaUI.renderPdfPreview.call(window.MediaSystem);
-            }
-            return true;
-        }
-        
-        // Tentar encontrar o imóvel sendo editado
-        const urlParams = new URLSearchParams(window.location.search);
-        const editingId = urlParams.get('edit');
-        
-        if (editingId && window.properties) {
-            const property = window.properties.find(p => p.id == editingId);
-            if (property) {
-                console.log('🔍 [MONITOR] Imóvel encontrado para edição:', property.id);
-                console.log('🔍 [MONITOR] property.images:', property.images);
-                console.log('🔍 [MONITOR] property.pdfs:', property.pdfs);
-                
-                // Forçar carregamento
-                window.MediaSystem.loadExisting(property);
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
-    // Verificar a cada 500ms se um imóvel foi carregado
-    let checkInterval = setInterval(() => {
-        if (checkAndFixMediaData()) {
-            clearInterval(checkInterval);
-            console.log('✅ [MONITOR] Problema corrigido automaticamente!');
-        }
-    }, 500);
-    
-    // Parar após 10 segundos
-    setTimeout(() => {
-        clearInterval(checkInterval);
-    }, 10000);
-})();
-
 // js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
 // ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
 // ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.3 - Core com debug aprimorado e parsing robusto de dados
+// Versão: 2.0.4 - updateUI CORRIGIDO para renderização visual direta
 console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
 
 // ========== SUPABASE CONSTANTS ==========
@@ -652,23 +596,41 @@ const MediaSystem = {
         return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
     },
 
-    // ========== UI PROXY (delega para Support quando disponível) ==========
-    updateUI: function() {
-        // Prioridade máxima para SupportMediaUI (sempre que disponível)
-        if (window.SupportMediaUI && typeof window.SupportMediaUI.updateUI === 'function') {
-            window.SupportMediaUI.updateUI.call(this);
-            return;
+    // ========== MÉTODOS VISUAIS DIRETOS ==========
+    renderMediaPreviewVisual: function() {
+        if (window.SupportMediaUI && typeof window.SupportMediaUI.renderMediaPreview === 'function') {
+            window.SupportMediaUI.renderMediaPreview();
         }
+    },
+    
+    renderPdfPreviewVisual: function() {
+        if (window.SupportMediaUI && typeof window.SupportMediaUI.renderPdfPreview === 'function') {
+            window.SupportMediaUI.renderPdfPreview();
+        }
+    },
+
+    // ========== UI CORRIGIDA (NOVO MÉTODO - CHAMADA DIRETA) ==========
+    updateUI: function() {
+        console.log('🔄 [MediaSystem] updateUI chamado - existing:', this.state.existing?.length, 'files:', this.state.files?.length);
         
-        // Fallback de emergência (caso Support não esteja disponível)
-        if (this.renderMediaPreview && this.renderPdfPreview) {
-            if (this._updateTimeout) clearTimeout(this._updateTimeout);
-            this._updateTimeout = setTimeout(() => {
-                this.renderMediaPreview();
-                this.renderPdfPreview();
-            }, 50);
-        } else if (window.location.search.includes('debug=true')) {
-            console.warn('⚠️ updateUI: Nenhum renderizador disponível');
+        // FORÇAR USO DIRETO - SEM delegar via substituição, chama diretamente
+        if (window.SupportMediaUI) {
+            // Chamar diretamente as funções de renderização
+            if (typeof window.SupportMediaUI.renderMediaPreview === 'function') {
+                window.SupportMediaUI.renderMediaPreview();
+            }
+            if (typeof window.SupportMediaUI.renderPdfPreview === 'function') {
+                window.SupportMediaUI.renderPdfPreview();
+            }
+        } else {
+            // Fallback de emergência usando os métodos internos
+            if (this.renderMediaPreview && this.renderPdfPreview) {
+                if (this._updateTimeout) clearTimeout(this._updateTimeout);
+                this._updateTimeout = setTimeout(() => {
+                    this.renderMediaPreview();
+                    this.renderPdfPreview();
+                }, 50);
+            }
         }
     },
 
@@ -964,13 +926,7 @@ const MediaSystem = {
         return result;
     };
     
-    // Também interceptar qualquer outro método que possa estar populando os arrays
-    const originalUpdateUI = MediaSystem.updateUI;
-    MediaSystem.updateUI = function() {
-        console.log('🚨 [PATCH] updateUI CHAMADO - existing:', this.state.existing?.length, 'files:', this.state.files?.length);
-        return originalUpdateUI.call(this);
-    };
-    
+    // O updateUI já foi substituído acima
     console.log('✅ [PATCH] Patch forçado aplicado com sucesso!');
     console.log('💡 Agora qualquer chamada ao loadExisting será logada e corrigida');
 })();
