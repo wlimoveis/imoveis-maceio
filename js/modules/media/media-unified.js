@@ -1,9 +1,9 @@
-// js/modules/media/media-unified.js - VERSÃO CORE OTIMIZADA (COM FALLBACK COMPLETO)
+// js/modules/media/media-unified.js - VERSÃO CORE OTIMIZADA (COM FALLBACK COMPLETO + DRAG & DROP)
 // ✅ Mantém apenas lógica ESSENCIAL (upload, delete, estado)
 // ✅ UI completa (previews, drag & drop) migrada para Support System
-// ✅ Fallback COMPLETO garante previews visuais mesmo sem Support System
+// ✅ Fallback COMPLETO garante previews visuais E DRAG & DROP mesmo sem Support System
 
-console.log('🔄 media-unified.js - Core System (lógica essencial + fallback completo)');
+console.log('🔄 media-unified.js - Core System (lógica essencial + fallback completo com drag & drop)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -655,14 +655,14 @@ const MediaSystem = {
             window.SupportUI.renderMediaPreview(this);
             window.SupportUI.renderPdfPreview(this);
         } else {
-            console.log('⚠️ [MediaSystem] SupportUI não disponível, usando fallback completo');
+            console.log('⚠️ [MediaSystem] SupportUI não disponível, usando fallback completo com drag & drop');
             // ✅ FALLBACK COMPLETO - Renderiza previews sem Support System
             this.renderMediaPreviewFallback();
             this.renderPdfPreviewFallback();
         }
     },
 
-    // ========== FALLBACK PARA PREVIEW DE MÍDIA (SEM SUPPORT) ==========
+    // ========== FALLBACK PARA PREVIEW DE MÍDIA (COM DRAG & DROP) ==========
     renderMediaPreviewFallback: function() {
         const container = document.getElementById('uploadPreview');
         if (!container) {
@@ -688,14 +688,15 @@ const MediaSystem = {
             return;
         }
         
-        let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+        let html = '<div class="media-sortable-container" style="display: flex; flex-wrap: wrap; gap: 10px;">';
         
         allFiles.forEach((item, index) => {
             const isMarked = item.markedForDeletion;
             const isExisting = item.isExisting;
             const isNew = item.isNew;
             const isVideo = item.isVideo === true || 
-                            (item.type && item.type.startsWith('video/'));
+                            (item.type && item.type.startsWith('video/')) ||
+                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             
             let borderColor = isVideo ? '#9b59b6' : '#3498db';
             let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
@@ -705,24 +706,35 @@ const MediaSystem = {
                 statusText = 'Excluir';
             }
             
-            // Obter URL da imagem
             let imageUrl = item.uploadedUrl || item.url || item.preview;
             const displayName = item.name || 'Arquivo';
             const shortName = displayName.length > 15 ? displayName.substring(0, 12) + '...' : displayName;
-            const statusIcon = isVideo ? '<i class="fas fa-video"></i> ' : '<i class="fas fa-image"></i> ';
             
+            // ✅ ADICIONAR ATRIBUTOS PARA DRAG & DROP
             html += `
-                <div style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:#f0f0f0;">
+                <div class="media-preview-item-fallback draggable-item" 
+                     draggable="true"
+                     data-id="${item.id}"
+                     data-type="media"
+                     title="${this.escapeHtml(displayName)}"
+                     style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:#f0f0f0;cursor:grab;">
+                    
                     <div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">
                         ${imageUrl ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
                         <div style="display:${imageUrl ? 'none' : 'flex'};flex-direction:column;align-items:center;color:white;">
-                            ${statusIcon}
-                            <span style="font-size:0.6rem;">${shortName}</span>
+                            <i class="fas fa-image" style="font-size:1.5rem;"></i>
+                            <span style="font-size:0.6rem;">${this.escapeHtml(shortName)}</span>
                         </div>
                     </div>
-                    <div style="padding:5px;font-size:0.65rem;text-align:center;background:white;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                    
+                    <div style="padding:5px;font-size:0.65rem;text-align:center;background:white;">
                         ${statusText}
                     </div>
+                    
+                    <div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.6);color:white;width:20px;height:20px;border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;">
+                        <i class="fas fa-arrows-alt"></i>
+                    </div>
+                    
                     <button onclick="window.MediaSystem?.removeFile && window.MediaSystem.removeFile('${item.id}')" 
                             style="position:absolute;top:-5px;right:-5px;background:${isMarked ? '#c0392b' : '#e74c3c'};color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;z-index:10;">
                         ${isMarked ? '↺' : '×'}
@@ -733,10 +745,13 @@ const MediaSystem = {
         
         html += '</div>';
         container.innerHTML = html;
-        console.log('✅ [Fallback] renderMediaPreviewFallback concluído');
+        
+        // ✅ CONFIGURAR DRAG & DROP DO FALLBACK
+        this.setupFallbackDragAndDrop('uploadPreview');
+        console.log('✅ [Fallback] renderMediaPreviewFallback concluído com drag & drop');
     },
 
-    // ========== FALLBACK PARA PREVIEW DE PDFs (SEM SUPPORT) ==========
+    // ========== FALLBACK PARA PREVIEW DE PDFs (COM DRAG & DROP) ==========
     renderPdfPreviewFallback: function() {
         const container = document.getElementById('pdfUploadPreview');
         if (!container) {
@@ -761,7 +776,7 @@ const MediaSystem = {
             return;
         }
         
-        let html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+        let html = '<div class="pdf-sortable-container" style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
         
         allPdfs.forEach((pdf, index) => {
             const isMarked = pdf.markedForDeletion;
@@ -771,15 +786,23 @@ const MediaSystem = {
             let statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
             const shortName = pdf.name.length > 15 ? pdf.name.substring(0, 12) + '...' : pdf.name;
             
+            // ✅ ADICIONAR ATRIBUTOS PARA DRAG & DROP
             html += `
-                <div style="position:relative;">
+                <div class="pdf-preview-item-fallback draggable-item"
+                     draggable="true"
+                     data-id="${pdf.id}"
+                     data-type="pdf"
+                     style="position:relative;cursor:grab;">
                     <div style="background:#f8f9fa;border:1px solid ${borderColor};border-radius:6px;padding:0.5rem;width:80px;text-align:center;">
+                        <div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;">
+                            <i class="fas fa-arrows-alt"></i>
+                        </div>
                         <i class="fas fa-file-pdf" style="font-size:1.2rem;color:${borderColor};"></i>
-                        <p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${shortName}</p>
+                        <p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${this.escapeHtml(shortName)}</p>
                         <small style="color:#666;font-size:0.6rem;">${statusText}</small>
                     </div>
                     <button onclick="window.MediaSystem?.removeFile && window.MediaSystem.removeFile('${pdf.id}')" 
-                            style="position:absolute;top:-5px;right:-5px;background:${borderColor};color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;z-index:10;">
+                            style="position:absolute;top:-8px;right:-8px;background:${borderColor};color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">
                         ×
                     </button>
                 </div>
@@ -788,7 +811,187 @@ const MediaSystem = {
         
         html += '</div>';
         container.innerHTML = html;
-        console.log('✅ [Fallback] renderPdfPreviewFallback concluído');
+        
+        // ✅ CONFIGURAR DRAG & DROP DO FALLBACK
+        this.setupFallbackDragAndDrop('pdfUploadPreview');
+        console.log('✅ [Fallback] renderPdfPreviewFallback concluído com drag & drop');
+    },
+
+    // ========== SETUP DRAG & DROP PARA FALLBACK ==========
+    setupFallbackDragAndDrop: function(containerId) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        
+        // Remover listeners antigos para evitar duplicação
+        if (container._dragListenersSetup) return;
+        container._dragListenersSetup = true;
+        
+        console.log(`🎯 [Fallback] Configurando drag & drop para: ${containerId}`);
+        
+        container.addEventListener('dragstart', (e) => {
+            const draggable = e.target.closest('.draggable-item');
+            if (!draggable) return;
+            
+            e.dataTransfer.setData('text/plain', JSON.stringify({
+                id: draggable.dataset.id,
+                type: draggable.dataset.type || 'media'
+            }));
+            e.dataTransfer.effectAllowed = 'move';
+            draggable.classList.add('dragging');
+            draggable.style.opacity = '0.5';
+        });
+        
+        container.addEventListener('dragend', (e) => {
+            document.querySelectorAll('.dragging').forEach(el => {
+                el.classList.remove('dragging');
+                el.style.opacity = '';
+            });
+        });
+        
+        container.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+            
+            const dropTarget = e.target.closest('.draggable-item');
+            if (dropTarget && !dropTarget.classList.contains('drag-over')) {
+                document.querySelectorAll('.drag-over').forEach(el => {
+                    el.classList.remove('drag-over');
+                    el.style.borderColor = '';
+                });
+                dropTarget.classList.add('drag-over');
+                dropTarget.style.borderColor = '#f39c12';
+                dropTarget.style.borderWidth = '2px';
+                dropTarget.style.borderStyle = 'dashed';
+            }
+        });
+        
+        container.addEventListener('dragleave', (e) => {
+            const dropTarget = e.target.closest('.draggable-item');
+            if (dropTarget) {
+                dropTarget.classList.remove('drag-over');
+                dropTarget.style.borderColor = '';
+            }
+        });
+        
+        container.addEventListener('drop', (e) => {
+            e.preventDefault();
+            
+            // Limpar estilos
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+                el.style.borderColor = '';
+            });
+            
+            let dragData;
+            try {
+                dragData = JSON.parse(e.dataTransfer.getData('text/plain'));
+            } catch (err) {
+                console.warn('Erro ao parsear drag data:', err);
+                return;
+            }
+            
+            const dropTarget = e.target.closest('.draggable-item');
+            if (!dropTarget) return;
+            
+            const targetId = dropTarget.dataset.id;
+            const targetType = dropTarget.dataset.type || 'media';
+            
+            if (dragData.id === targetId) return;
+            if (dragData.type !== targetType) return; // Não misturar media com pdf
+            
+            console.log(`🔄 [Fallback] Reordenando: ${dragData.id} → ${targetId} (tipo: ${dragData.type})`);
+            
+            // Reordenar baseado no tipo
+            if (dragData.type === 'media') {
+                this.reorderMediaItems(dragData.id, targetId);
+            } else if (dragData.type === 'pdf') {
+                this.reorderPdfItems(dragData.id, targetId);
+            }
+            
+            // Re-renderizar
+            setTimeout(() => {
+                this.renderMediaPreviewFallback();
+                this.renderPdfPreviewFallback();
+            }, 50);
+        });
+    },
+
+    // ========== REORDENAR ITENS DE MÍDIA ==========
+    reorderMediaItems: function(draggedId, targetId) {
+        // Combinar arrays existentes e novos
+        const allMedia = [
+            ...this.state.existing.filter(item => !item.markedForDeletion),
+            ...this.state.files
+        ];
+        
+        const draggedIndex = allMedia.findIndex(item => item.id === draggedId);
+        const targetIndex = allMedia.findIndex(item => item.id === targetId);
+        
+        if (draggedIndex === -1 || targetIndex === -1) return;
+        
+        // Mover o item
+        const [draggedItem] = allMedia.splice(draggedIndex, 1);
+        allMedia.splice(targetIndex, 0, draggedItem);
+        
+        // Reconstruir arrays separados
+        const newExisting = [];
+        const newFiles = [];
+        
+        allMedia.forEach(item => {
+            if (item.isExisting) {
+                newExisting.push(item);
+            } else {
+                newFiles.push(item);
+            }
+        });
+        
+        this.state.existing = newExisting;
+        this.state.files = newFiles;
+        
+        console.log(`✅ [Fallback] Mídia reordenada: ${draggedId} → ${targetId}`);
+    },
+
+    // ========== REORDENAR ITENS DE PDF ==========
+    reorderPdfItems: function(draggedId, targetId) {
+        const allPdfs = [
+            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
+            ...this.state.pdfs
+        ];
+        
+        const draggedIndex = allPdfs.findIndex(item => item.id === draggedId);
+        const targetIndex = allPdfs.findIndex(item => item.id === targetId);
+        
+        if (draggedIndex === -1 || targetIndex === -1) return;
+        
+        const [draggedItem] = allPdfs.splice(draggedIndex, 1);
+        allPdfs.splice(targetIndex, 0, draggedItem);
+        
+        const newExistingPdfs = [];
+        const newPdfs = [];
+        
+        allPdfs.forEach(item => {
+            if (item.isExisting) {
+                newExistingPdfs.push(item);
+            } else {
+                newPdfs.push(item);
+            }
+        });
+        
+        this.state.existingPdfs = newExistingPdfs;
+        this.state.pdfs = newPdfs;
+        
+        console.log(`✅ [Fallback] PDF reordenado: ${draggedId} → ${targetId}`);
+    },
+
+    // ========== FUNÇÃO AUXILIAR ESCAPE HTML ==========
+    escapeHtml: function(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     },
 
     // ========== RESETAR ESTADO ==========
@@ -825,13 +1028,13 @@ window.MediaSystem = MediaSystem;
 // ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
-    console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo');
+    console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop');
     console.log('📦 Modo: ' + (window.location.search.includes('debug=true') ? 
                 'DEBUG (UI via Support System)' : 
-                'PRODUÇÃO (UI via Fallback completo)'));
+                'PRODUÇÃO (UI via Fallback completo com drag & drop)'));
 }, 1000);
 
 console.log('✅ media-unified.js CORE carregado - ' + 
             (window.location.search.includes('debug=true') ? 
              'Modo DEBUG (UI via Support System)' : 
-             'Modo PRODUÇÃO (UI via Fallback completo)'));
+             'Modo PRODUÇÃO (UI via Fallback completo com drag & drop)'));
