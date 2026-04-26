@@ -1,8 +1,9 @@
-// js/modules/media/media-unified.js - VERSÃO REFATORADA (CORE ESSENCIAL)
-// ✅ REMOVIDAS funções de UI não essenciais (migradas para Support System)
-// ✅ MANTIDAS apenas funções CRÍTICAS: upload, delete, save, state management
-// Versão: 2.0.7 - UI EXCLUSIVA SupportMediaUI, sem fallback problemático
-console.log('🔄 media-unified.js - VERSÃO CORE (UI migrada para Support System)');
+// js/modules/media/media-unified.js - VERSÃO CORE OTIMIZADA (SEM UI)
+// ✅ Mantém apenas lógica ESSENCIAL (upload, delete, estado)
+// ✅ UI completa (previews, drag & drop) migrada para Support System
+// ✅ Fallback mínimo garante operação mesmo sem Support
+
+console.log('🔄 media-unified.js - Core System (lógica essencial apenas)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -14,13 +15,7 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     };
 }
 
-// ========== VERIFICAR SE JÁ EXISTE UMA INSTÂNCIA ==========
-if (!window.MediaSystem || !window.MediaSystem._initialized) {
-    
 const MediaSystem = {
-    // Flag para evitar reinicialização
-    _initialized: false,
-    
     // ========== CONFIGURAÇÃO ==========
     config: {
         currentSystem: 'vendas',
@@ -41,7 +36,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== ESTADO ==========
+    // ========== ESTADO BÁSICO ==========
     state: {
         files: [],           // Arquivos NOVOS (não enviados)
         existing: [],        // Arquivos EXISTENTES (já no banco)
@@ -53,78 +48,66 @@ const MediaSystem = {
     },
 
     // ========== INICIALIZAÇÃO ==========
-    init: function(systemName = 'vendas') {
-        // PREVENIR REINICIALIZAÇÃO
-        if (this._initialized) {
-            console.log('⚠️ [MediaSystem] Já inicializado! Ignorando segunda inicialização.');
-            return this;
-        }
-        
+    init(systemName = 'vendas') {
         console.log(`🔧 Inicializando sistema de mídia para: ${systemName}`);
         this.config.currentSystem = systemName;
         this.resetState();
-        this.setupEventListeners();
-        this._initialized = true;
         
-        // Tentar usar Support System para UI avançada
+        // Tentar configurar UI via Support System (se disponível em debug)
         setTimeout(() => {
-            if (window.SupportMediaUI?.setupDragAndDrop) {
-                window.SupportMediaUI.setupDragAndDrop();
-                console.log('🎨 UI avançada carregada via SupportMediaUI');
-            } else if (window.location.search.includes('debug=true')) {
-                console.log('ℹ️ SupportMediaUI não disponível - UI básica apenas');
+            if (window.SupportUI?.setupEventListeners) {
+                window.SupportUI.setupEventListeners(this);
+            } else {
+                // Fallback: configurar apenas eventos básicos
+                this.setupBasicEventListeners();
             }
         }, 500);
         
         return this;
     },
 
-    // ========== MÉTODO PARA AGUARDAR SupportMediaUI ==========
-    _waitForSupportUI: function(callback, maxAttempts = 30) {
-        let attempts = 0;
-        const checkInterval = setInterval(() => {
-            attempts++;
-            if (window.SupportMediaUI && typeof window.SupportMediaUI.renderMediaPreview === 'function') {
-                clearInterval(checkInterval);
-                console.log('✅ [MediaSystem] SupportMediaUI detectado após', attempts, 'tentativas');
-                if (callback) callback(false); // false = não usar fallback
-            } else if (attempts >= maxAttempts) {
-                clearInterval(checkInterval);
-                console.warn('⚠️ [MediaSystem] Timeout aguardando SupportMediaUI');
-                if (callback) callback(true); // true = usar fallback (apenas emergência)
-            }
-        }, 100);
+    // ========== EVENT LISTENERS BÁSICOS (FALLBACK) ==========
+    setupBasicEventListeners() {
+        // Apenas o essencial para upload funcionar
+        const fileInput = document.getElementById('fileInput');
+        if (fileInput && !fileInput.hasAttribute('data-listener')) {
+            fileInput.setAttribute('data-listener', 'true');
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    this.addFiles(e.target.files);
+                    e.target.value = '';
+                }
+            });
+        }
+        
+        const pdfFileInput = document.getElementById('pdfFileInput');
+        if (pdfFileInput && !pdfFileInput.hasAttribute('data-listener')) {
+            pdfFileInput.setAttribute('data-listener', 'true');
+            pdfFileInput.addEventListener('change', (e) => {
+                if (e.target.files.length > 0) {
+                    this.addPdfs(e.target.files);
+                    e.target.value = '';
+                }
+            });
+        }
     },
 
     // ========== CARREGAR ARQUIVOS EXISTENTES ==========
     loadExisting: function(property) {
-        console.log('🔍 [loadExisting] INÍCIO - property recebido:', property ? `ID: ${property.id}` : 'NULL');
-        
-        if (!property) {
-            console.error('❌ [loadExisting] property é null ou undefined');
-            return this;
-        }
+        if (!property) return this;
         
         console.log(`📥 Carregando mídia existente para imóvel ${property.id}`);
         this.state.currentPropertyId = property.id;
         
-        // Resetar arrays
+        // Limpar arrays
         this.state.existing = [];
         this.state.existingPdfs = [];
         
-        // 1. CARREGAR IMAGENS/VIDEOS
-        if (property.images && property.images !== 'EMPTY' && property.images !== '') {
-            let imageUrls = [];
-            
-            if (typeof property.images === 'string') {
-                imageUrls = property.images.split(',')
-                    .map(url => url.trim())
-                    .filter(url => url && url !== 'EMPTY' && url !== '');
-            } else if (Array.isArray(property.images)) {
-                imageUrls = property.images.filter(url => url && url !== 'EMPTY');
-            }
-            
-            console.log(`📸 ${imageUrls.length} URL(s) de imagem encontrada(s)`);
+        // 1. Carregar imagens/vídeos EXISTENTES
+        if (property.images && property.images !== 'EMPTY') {
+            const imageUrls = property.images.split(',')
+                .map(url => url.trim())
+                .filter(url => url && url !== 'EMPTY');
             
             this.state.existing = imageUrls.map((url, index) => {
                 let finalUrl = url;
@@ -137,65 +120,36 @@ const MediaSystem = {
                 return {
                     url: finalUrl,
                     preview: finalUrl,
-                    id: `existing_img_${property.id}_${index}_${Date.now()}`,
-                    name: this.extractFileName(url) || `imagem_${index+1}`,
+                    id: `existing_img_${property.id}_${index}`,
+                    name: this.extractFileName(url),
                     type: this.getFileTypeFromUrl(url),
                     isExisting: true,
                     markedForDeletion: false,
                     isNew: false,
-                    isVideo: isVideo,
-                    originalUrl: url
+                    isVideo: isVideo
                 };
             });
         }
         
-        // 2. CARREGAR PDFs
-        if (property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs !== '') {
-            let pdfUrls = [];
-            
-            if (typeof property.pdfs === 'string') {
-                pdfUrls = property.pdfs.split(',')
-                    .map(url => url.trim())
-                    .filter(url => url && url !== 'EMPTY' && url !== '');
-            } else if (Array.isArray(property.pdfs)) {
-                pdfUrls = property.pdfs.filter(url => url && url !== 'EMPTY');
-            }
-            
-            console.log(`📄 ${pdfUrls.length} URL(s) de PDF encontrada(s)`);
+        // 2. Carregar PDFs EXISTENTES
+        if (property.pdfs && property.pdfs !== 'EMPTY') {
+            const pdfUrls = property.pdfs.split(',')
+                .map(url => url.trim())
+                .filter(url => url && url !== 'EMPTY');
             
             this.state.existingPdfs = pdfUrls.map((url, index) => ({
                 url: url,
-                id: `existing_pdf_${property.id}_${index}_${Date.now()}`,
-                name: this.extractFileName(url) || `documento_${index+1}`,
+                id: `existing_pdf_${property.id}_${index}`,
+                name: this.extractFileName(url),
                 isExisting: true,
                 markedForDeletion: false,
                 type: 'application/pdf'
             }));
         }
         
-        console.log(`📊 [loadExisting] FINAL - ${this.state.existing.length} arquivo(s), ${this.state.existingPdfs.length} PDF(s)`);
-        
-        // FORÇAR ATUALIZAÇÃO DA UI
+        // Atualizar UI se disponível
         this.updateUI();
-        
-        // Forçar re-render após pequeno delay
-        setTimeout(() => {
-            console.log('🔄 [loadExisting] Re-renderização forçada após 100ms');
-            this.updateUI();
-        }, 100);
-        
         return this;
-    },
-
-    // ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO ==========
-    isVideoUrl: function(url) {
-        if (!url) return false;
-        const urlLower = url.toLowerCase();
-        return urlLower.includes('.mp4') || 
-               urlLower.includes('.mov') || 
-               urlLower.includes('.webm') || 
-               urlLower.includes('.avi') ||
-               urlLower.includes('video/');
     },
 
     // ========== ADICIONAR NOVOS ARQUIVOS ==========
@@ -243,116 +197,37 @@ const MediaSystem = {
         return addedCount;
     },
 
-    // ========== UPLOAD COMPLETO ==========
-    async uploadAll(propertyId, propertyTitle) {
-        if (this.state.isUploading) {
-            console.warn('⚠️ Upload já em andamento');
-            return { 
-                success: false, 
-                images: '', 
-                pdfs: '', 
-                uploadedCount: 0,
-                error: 'Upload em andamento' 
-            };
-        }
+    // ========== ADICIONAR PDFs ==========
+    addPdfs: function(fileList) {
+        if (!fileList || fileList.length === 0) return 0;
         
-        this.state.isUploading = true;
-        console.group('🚀 EXECUTANDO UPLOAD COMPLETO');
+        const filesArray = Array.from(fileList);
+        let addedCount = 0;
         
-        try {
-            const newFiles = this.state.files.filter(item => {
-                return item.isNew === true && item.file instanceof File && !item.uploaded;
+        filesArray.forEach(file => {
+            if (!this.config.allowedTypes.pdfs.includes(file.type)) {
+                alert(`❌ "${file.name}" - Não é um PDF válido!`);
+                return;
+            }
+            
+            if (file.size > this.config.limits.maxPdfSize) {
+                alert(`❌ "${file.name}" - PDF muito grande! Máximo: 10MB`);
+                return;
+            }
+            
+            this.state.pdfs.push({
+                file: file,
+                id: `pdf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                name: file.name,
+                isNew: true,
+                uploaded: false,
+                uploadedUrl: null
             });
-            
-            await this.processDeletions();
-            
-            const uploadedImageUrls = [];
-            
-            if (newFiles.length > 0) {
-                for (let i = 0; i < newFiles.length; i++) {
-                    const fileItem = newFiles[i];
-                    const file = fileItem.file;
-                    
-                    try {
-                        const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'media');
-                        
-                        if (uploadedUrl) {
-                            fileItem.uploadedUrl = uploadedUrl;
-                            fileItem.uploaded = true;
-                            fileItem.isNew = false;
-                            
-                            if (fileItem.preview && fileItem.preview.startsWith('blob:')) {
-                                URL.revokeObjectURL(fileItem.preview);
-                                fileItem.preview = uploadedUrl;
-                            }
-                            
-                            uploadedImageUrls.push(uploadedUrl);
-                        }
-                    } catch (error) {
-                        console.error(`❌ Erro ao enviar "${fileItem.name}":`, error);
-                    }
-                }
-            }
-            
-            const newPdfs = this.state.pdfs.filter(pdf => pdf.isNew && pdf.file && !pdf.uploaded);
-            const uploadedPdfUrls = [];
-            
-            if (newPdfs.length > 0) {
-                for (let i = 0; i < newPdfs.length; i++) {
-                    const pdfItem = newPdfs[i];
-                    const file = pdfItem.file;
-                    
-                    try {
-                        const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'pdf');
-                        
-                        if (uploadedUrl) {
-                            pdfItem.uploadedUrl = uploadedUrl;
-                            pdfItem.uploaded = true;
-                            pdfItem.isNew = false;
-                            uploadedPdfUrls.push(uploadedUrl);
-                        }
-                    } catch (error) {
-                        console.error(`❌ Erro ao enviar PDF "${pdfItem.name}":`, error);
-                    }
-                }
-            }
-            
-            const existingImageUrls = this.state.existing
-                .filter(item => !item.markedForDeletion && item.url)
-                .map(item => item.url);
-            
-            const existingPdfUrls = this.state.existingPdfs
-                .filter(item => !item.markedForDeletion && item.url)
-                .map(item => item.url);
-            
-            const allImageUrls = [...uploadedImageUrls, ...existingImageUrls];
-            const allPdfUrls = [...uploadedPdfUrls, ...existingPdfUrls];
-            
-            const result = {
-                success: true,
-                images: allImageUrls.join(','),
-                pdfs: allPdfUrls.join(','),
-                uploadedCount: uploadedImageUrls.length + uploadedPdfUrls.length
-            };
-            
-            this.state.lastUploadResult = result;
-            this.updateUI();
-            
-            return result;
-            
-        } catch (error) {
-            console.error('❌ ERRO NO UPLOAD:', error);
-            return { 
-                success: false, 
-                images: '', 
-                pdfs: '', 
-                uploadedCount: 0,
-                error: error.message 
-            };
-        } finally {
-            this.state.isUploading = false;
-            console.groupEnd();
-        }
+            addedCount++;
+        });
+        
+        this.updateUI();
+        return addedCount;
     },
 
     // ========== UPLOAD DE ARQUIVO ÚNICO ==========
@@ -396,12 +271,124 @@ const MediaSystem = {
         });
     },
 
+    // ========== UPLOAD COMPLETO ==========
+    async uploadAll(propertyId, propertyTitle) {
+        if (this.state.isUploading) {
+            return { 
+                success: false, 
+                images: '', 
+                pdfs: '', 
+                uploadedCount: 0,
+                error: 'Upload em andamento' 
+            };
+        }
+        
+        this.state.isUploading = true;
+        
+        try {
+            // Verificar arquivos novos
+            const newFiles = this.state.files.filter(item => {
+                return item.isNew === true && item.file instanceof File && !item.uploaded;
+            });
+            
+            // Processar exclusões
+            await this.processDeletions();
+            
+            // Upload de novos arquivos
+            const uploadedImageUrls = [];
+            
+            for (let i = 0; i < newFiles.length; i++) {
+                const fileItem = newFiles[i];
+                const file = fileItem.file;
+                
+                try {
+                    const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'media');
+                    
+                    if (uploadedUrl) {
+                        fileItem.uploadedUrl = uploadedUrl;
+                        fileItem.uploaded = true;
+                        fileItem.isNew = false;
+                        
+                        if (fileItem.preview && fileItem.preview.startsWith('blob:')) {
+                            URL.revokeObjectURL(fileItem.preview);
+                            fileItem.preview = uploadedUrl;
+                        }
+                        
+                        uploadedImageUrls.push(uploadedUrl);
+                    }
+                } catch (error) {
+                    console.error(`❌ Erro ao enviar "${fileItem.name}":`, error);
+                }
+            }
+            
+            // Upload de novos PDFs
+            const newPdfs = this.state.pdfs.filter(pdf => pdf.isNew && pdf.file && !pdf.uploaded);
+            const uploadedPdfUrls = [];
+            
+            for (let i = 0; i < newPdfs.length; i++) {
+                const pdfItem = newPdfs[i];
+                const file = pdfItem.file;
+                
+                try {
+                    const uploadedUrl = await this.uploadSingleFile(file, propertyId, 'pdf');
+                    
+                    if (uploadedUrl) {
+                        pdfItem.uploadedUrl = uploadedUrl;
+                        pdfItem.uploaded = true;
+                        pdfItem.isNew = false;
+                        uploadedPdfUrls.push(uploadedUrl);
+                    }
+                } catch (error) {
+                    console.error(`❌ Erro ao enviar PDF "${pdfItem.name}":`, error);
+                }
+            }
+            
+            // Coletar URLs existentes
+            const existingImageUrls = this.state.existing
+                .filter(item => !item.markedForDeletion && item.url)
+                .map(item => item.url);
+            
+            const existingPdfUrls = this.state.existingPdfs
+                .filter(item => !item.markedForDeletion && item.url)
+                .map(item => item.url);
+            
+            // Combinar URLs
+            const allImageUrls = [...uploadedImageUrls, ...existingImageUrls];
+            const allPdfUrls = [...uploadedPdfUrls, ...existingPdfUrls];
+            
+            const result = {
+                success: true,
+                images: allImageUrls.join(','),
+                pdfs: allPdfUrls.join(','),
+                uploadedCount: uploadedImageUrls.length + uploadedPdfUrls.length
+            };
+            
+            this.state.lastUploadResult = result;
+            this.updateUI();
+            
+            return result;
+            
+        } catch (error) {
+            console.error('❌ ERRO NO UPLOAD:', error);
+            return { 
+                success: false, 
+                images: '', 
+                pdfs: '', 
+                uploadedCount: 0,
+                error: error.message 
+            };
+            
+        } finally {
+            this.state.isUploading = false;
+        }
+    },
+
     // ========== EXCLUSÃO FÍSICA DE ARQUIVO ÚNICO ==========
     async deleteFileFromStorage(fileUrl) {
         if (!fileUrl) {
             return { success: false, error: 'No URL provided' };
         }
-
+        
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
@@ -420,7 +407,7 @@ const MediaSystem = {
                 if (fileName && fileName.includes('_')) {
                     filePath = fileName;
                 } else {
-                    return { success: false, error: 'Could not extract file path from URL' };
+                    return { success: false, error: 'Could not extract file path' };
                 }
             }
 
@@ -446,7 +433,9 @@ const MediaSystem = {
                 return { success: true, deletedUrl: fileUrl, filePath: filePath };
             } else {
                 let errorText = '';
-                try { errorText = await response.text(); } catch(e) {}
+                try {
+                    errorText = await response.text();
+                } catch(e) {}
                 return { success: false, error: `HTTP ${response.status}` };
             }
             
@@ -463,7 +452,6 @@ const MediaSystem = {
 
         let deletedCount = 0;
         let failedCount = 0;
-        const errors = [];
 
         for (let i = 0; i < urls.length; i++) {
             const result = await this.deleteFileFromStorage(urls[i]);
@@ -472,106 +460,25 @@ const MediaSystem = {
                 deletedCount++;
             } else {
                 failedCount++;
-                errors.push({ url: urls[i], error: result.error });
             }
             
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
-        return { 
-            success: failedCount === 0, 
-            deletedCount, 
-            failedCount,
-            errors: errors.length > 0 ? errors : undefined
-        };
+        return { success: failedCount === 0, deletedCount, failedCount };
     },
 
-    // ========== FUNÇÃO SIMPLIFICADA PARA ADMIN.JS ==========
-    getOrderedMediaUrls: function() {
-        const allMedia = [
-            ...this.state.existing.filter(item => !item.markedForDeletion),
-            ...this.state.files
-        ];
+    // ========== PROCESSAR EXCLUSÕES ==========
+    async processDeletions() {
+        const imagesToDelete = this.state.existing.filter(item => item.markedForDeletion);
+        const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
         
-        const allPdfs = [
-            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
-            ...this.state.pdfs
-        ];
+        if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
+            this.state.existing = this.state.existing.filter(item => !item.markedForDeletion);
+            this.state.existingPdfs = this.state.existingPdfs.filter(item => !item.markedForDeletion);
+        }
         
-        const imageUrls = allMedia.map(item => {
-            if (item.uploadedUrl) return item.uploadedUrl;
-            if (item.url) return item.url;
-            return null;
-        }).filter(url => url !== null);
-        
-        const pdfUrls = allPdfs.map(item => {
-            if (item.uploadedUrl) return item.uploadedUrl;
-            if (item.url) return item.url;
-            return null;
-        }).filter(url => url !== null);
-        
-        return {
-            images: imageUrls.join(','),
-            pdfs: pdfUrls.join(',')
-        };
-    },
-
-    // ========== FUNÇÃO PARA SALVAR LOCALMENTE (FALLBACK) ==========
-    saveAndKeepLocal: function(propertyId, propertyTitle) {
-        console.log(`💾 Salvando localmente para ${propertyId}`);
-        
-        const urls = this.getOrderedMediaUrls();
-        
-        this.state.files.forEach(item => {
-            if (item.isNew && !item.uploaded) {
-                item.uploaded = true;
-                item.isNew = false;
-                item.uploadedUrl = item.preview;
-            }
-        });
-        
-        this.state.pdfs.forEach(pdf => {
-            if (pdf.isNew && !pdf.uploaded) {
-                pdf.uploaded = true;
-                pdf.isNew = false;
-            }
-        });
-        
-        this.updateUI();
-        return urls;
-    },
-
-    // ========== ADICIONAR PDFs ==========
-    addPdfs: function(fileList) {
-        if (!fileList || fileList.length === 0) return 0;
-        
-        const filesArray = Array.from(fileList);
-        let addedCount = 0;
-        
-        filesArray.forEach(file => {
-            if (!this.config.allowedTypes.pdfs.includes(file.type)) {
-                alert(`❌ "${file.name}" - Não é um PDF válido!`);
-                return;
-            }
-            
-            if (file.size > this.config.limits.maxPdfSize) {
-                alert(`❌ "${file.name}" - PDF muito grande! Máximo: 10MB`);
-                return;
-            }
-            
-            this.state.pdfs.push({
-                file: file,
-                id: `pdf_${Date.now()}_${Math.random()}`,
-                name: file.name,
-                isNew: true,
-                uploaded: false,
-                uploadedUrl: null
-            });
-            addedCount++;
-        });
-        
-        this.updateUI();
-        return addedCount;
+        return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
     },
 
     // ========== REMOVER ARQUIVO ==========
@@ -602,232 +509,70 @@ const MediaSystem = {
         return false;
     },
 
-    // ========== PROCESSAR EXCLUSÕES ==========
-    async processDeletions() {
-        const imagesToDelete = this.state.existing.filter(item => item.markedForDeletion);
-        const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
+    // ========== FUNÇÃO PARA SALVAR LOCALMENTE (FALLBACK) ==========
+    saveAndKeepLocal: function(propertyId, propertyTitle) {
+        const allMedia = [
+            ...this.state.existing.filter(item => !item.markedForDeletion),
+            ...this.state.files
+        ];
         
-        if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
-            this.state.existing = this.state.existing.filter(item => !item.markedForDeletion);
-            this.state.existingPdfs = this.state.existingPdfs.filter(item => !item.markedForDeletion);
-        }
+        const allPdfs = [
+            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
+            ...this.state.pdfs
+        ];
         
-        return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
-    },
-
-    // ========== MÉTODOS VISUAIS DIRETOS ==========
-    renderMediaPreviewVisual: function() {
-        if (window.SupportMediaUI && typeof window.SupportMediaUI.renderMediaPreview === 'function') {
-            window.SupportMediaUI.renderMediaPreview();
-        }
-    },
-    
-    renderPdfPreviewVisual: function() {
-        if (window.SupportMediaUI && typeof window.SupportMediaUI.renderPdfPreview === 'function') {
-            window.SupportMediaUI.renderPdfPreview();
-        }
-    },
-
-    // ========== UI CORRIGIDA - SEM FALLBACK PROBLEMÁTICO ==========
-    updateUI: function() {
-        console.log('🔄 [MediaSystem] updateUI chamado - existing:', this.state.existing?.length, 'files:', this.state.files?.length);
+        const imageUrls = allMedia.map(item => item.uploadedUrl || item.url || item.preview)
+            .filter(url => url !== null);
         
-        // USAR EXCLUSIVAMENTE SupportMediaUI quando disponível
-        if (window.SupportMediaUI && typeof window.SupportMediaUI.renderMediaPreview === 'function') {
-            if (typeof window.SupportMediaUI.renderMediaPreview === 'function') {
-                window.SupportMediaUI.renderMediaPreview();
-            }
-            if (typeof window.SupportMediaUI.renderPdfPreview === 'function') {
-                window.SupportMediaUI.renderPdfPreview();
-            }
-            return; // SAI IMEDIATAMENTE - NÃO USA FALLBACK
-        }
+        const pdfUrls = allPdfs.map(item => item.uploadedUrl || item.url)
+            .filter(url => url !== null);
         
-        // Fallback APENAS se SupportMediaUI NÃO existir (emergência)
-        console.warn('⚠️ [MediaSystem] SupportMediaUI não disponível, usando fallback emergencial');
-        if (this.renderMediaPreview && this.renderPdfPreview) {
-            if (this._updateTimeout) clearTimeout(this._updateTimeout);
-            this._updateTimeout = setTimeout(() => {
-                this.renderMediaPreview();
-                this.renderPdfPreview();
-            }, 50);
-        }
-    },
-
-    // Métodos de fallback (mantidos apenas para emergência, mas não serão usados)
-    renderMediaPreview: function() {
-        // NÃO FAZ NADA SE SupportMediaUI EXISTIR
-        if (window.SupportMediaUI) return;
-        
-        const container = document.getElementById('uploadPreview');
-        if (!container) return;
-        
-        const totalFiles = (this.state.existing?.length || 0) + (this.state.files?.length || 0);
-        
-        if (totalFiles === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p>Nenhuma foto ou vídeo</p></div>';
-            return;
-        }
-        
-        // Fallback simples: lista textual
-        let html = '<div style="background:#f8f9fa;padding:1rem;border-radius:8px;">';
-        html += `<strong>📸 Total: ${totalFiles} arquivo(s)</strong><br>`;
-        
-        [...(this.state.existing || []), ...(this.state.files || [])].forEach((item, idx) => {
-            const name = item.name || 'Arquivo';
-            const isExisting = item.isExisting ? '(existente)' : '(novo)';
-            html += `<div style="font-size:0.8rem;margin:5px 0;">${idx+1}. ${name} ${isExisting}</div>`;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-    },
-
-    renderPdfPreview: function() {
-        // NÃO FAZ NADA SE SupportMediaUI EXISTIR
-        if (window.SupportMediaUI) return;
-        
-        const container = document.getElementById('pdfUploadPreview');
-        if (!container) return;
-        
-        const totalPdfs = (this.state.existingPdfs?.length || 0) + (this.state.pdfs?.length || 0);
-        
-        if (totalPdfs === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;"><i class="fas fa-file-pdf" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p>Nenhum PDF</p></div>';
-            return;
-        }
-        
-        let html = '<div style="background:#f8f9fa;padding:1rem;border-radius:8px;">';
-        html += `<strong>📄 Total: ${totalPdfs} PDF(s)</strong><br>`;
-        
-        [...(this.state.existingPdfs || []), ...(this.state.pdfs || [])].forEach((pdf, idx) => {
-            const name = pdf.name || 'PDF';
-            const isExisting = pdf.isExisting ? '(existente)' : '(novo)';
-            html += `<div style="font-size:0.8rem;margin:5px 0;">${idx+1}. ${name} ${isExisting}</div>`;
-        });
-        
-        html += '</div>';
-        container.innerHTML = html;
-    },
-
-    // ========== SETUP EVENT LISTENERS ==========
-    setupEventListeners: function() {
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
-        
-        if (uploadArea && fileInput) {
-            uploadArea.addEventListener('click', () => fileInput.click());
-            
-            uploadArea.addEventListener('dragover', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#3498db';
-                uploadArea.style.background = '#e8f4fc';
-            });
-            
-            uploadArea.addEventListener('dragleave', () => {
-                uploadArea.style.borderColor = '#ddd';
-                uploadArea.style.background = '#fafafa';
-            });
-            
-            uploadArea.addEventListener('drop', (e) => {
-                e.preventDefault();
-                uploadArea.style.borderColor = '#ddd';
-                uploadArea.style.background = '#fafafa';
-                
-                if (e.dataTransfer.files.length > 0) {
-                    this.addFiles(e.dataTransfer.files);
-                }
-            });
-            
-            fileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    this.addFiles(e.target.files);
-                    e.target.value = '';
-                }
-            });
-        }
-        
-        const pdfUploadArea = document.getElementById('pdfUploadArea');
-        const pdfFileInput = document.getElementById('pdfFileInput');
-        
-        if (pdfUploadArea && pdfFileInput) {
-            pdfUploadArea.addEventListener('click', () => pdfFileInput.click());
-            
-            pdfFileInput.addEventListener('change', (e) => {
-                if (e.target.files.length > 0) {
-                    this.addPdfs(e.target.files);
-                    e.target.value = '';
-                }
-            });
-        }
-    },
-
-    // ========== FUNÇÕES DE COMPATIBILIDADE ==========
-    processAndSavePdfs: async function(propertyId, propertyTitle) {
-        const result = await this.uploadAll(propertyId, propertyTitle);
-        return result.pdfs;
-    },
-
-    getMediaUrlsForProperty: async function(propertyId, propertyTitle) {
-        const result = await this.uploadAll(propertyId, propertyTitle);
-        return result.images;
-    },
-
-    getPdfsToSave: async function(propertyId) {
-        const result = await this.uploadAll(propertyId, 'Imóvel');
-        return result.pdfs;
-    },
-
-    loadExistingPdfsForEdit: function(property) {
-        if (!property) return this;
-        
-        this.state.existingPdfs = [];
-        if (property.pdfs && property.pdfs !== 'EMPTY') {
-            const pdfUrls = property.pdfs.split(',')
-                .map(url => url.trim())
-                .filter(url => url && url !== 'EMPTY');
-            
-            this.state.existingPdfs = pdfUrls.map((url, index) => ({
-                url: url,
-                id: `existing_pdf_${property.id}_${index}`,
-                name: this.extractFileName(url),
-                isExisting: true,
-                markedForDeletion: false,
-                type: 'application/pdf'
-            }));
-        }
-        
-        this.updateUI();
-        return this;
-    },
-
-    clearAllPdfs: function() {
-        this.state.pdfs.forEach(pdf => {
-            if (pdf.preview && pdf.preview.startsWith('blob:')) {
-                URL.revokeObjectURL(pdf.preview);
-            }
-        });
-        
-        this.state.pdfs = [];
-        this.state.existingPdfs = [];
-        this.updateUI();
-        return this;
-    },
-
-    clearAllMedia: function() {
-        return this.resetState();
-    },
-
-    ensurePermanentUrls: function() {
+        // Marcar arquivos novos como "salvos localmente"
         this.state.files.forEach(item => {
-            if (item.uploaded && item.uploadedUrl && item.preview && item.preview.startsWith('blob:')) {
-                URL.revokeObjectURL(item.preview);
-                item.preview = item.uploadedUrl;
+            if (item.isNew && !item.uploaded) {
+                item.uploaded = true;
+                item.isNew = false;
+                item.uploadedUrl = item.preview;
+            }
+        });
+        
+        this.state.pdfs.forEach(pdf => {
+            if (pdf.isNew && !pdf.uploaded) {
+                pdf.uploaded = true;
+                pdf.isNew = false;
             }
         });
         
         this.updateUI();
-        return this;
+        
+        return {
+            images: imageUrls.join(','),
+            pdfs: pdfUrls.join(',')
+        };
+    },
+
+    // ========== FUNÇÃO PARA OBTER URLs ORDENADAS ==========
+    getOrderedMediaUrls: function() {
+        const allMedia = [
+            ...this.state.existing.filter(item => !item.markedForDeletion),
+            ...this.state.files
+        ];
+        
+        const allPdfs = [
+            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
+            ...this.state.pdfs
+        ];
+        
+        const imageUrls = allMedia.map(item => item.uploadedUrl || item.url)
+            .filter(url => url !== null && url !== undefined);
+        
+        const pdfUrls = allPdfs.map(item => item.uploadedUrl || item.url)
+            .filter(url => url !== null && url !== undefined);
+        
+        return {
+            images: imageUrls.join(','),
+            pdfs: pdfUrls.join(',')
+        };
     },
 
     // ========== UTILIDADES ==========
@@ -891,6 +636,28 @@ const MediaSystem = {
         return 'image/jpeg';
     },
 
+    isVideoUrl: function(url) {
+        if (!url) return false;
+        const urlLower = url.toLowerCase();
+        return urlLower.includes('.mp4') || urlLower.includes('.mov') || 
+               urlLower.includes('.webm') || urlLower.includes('.avi') ||
+               urlLower.includes('video/');
+    },
+
+    // ========== UI DELEGATION (USA SUPPORT SYSTEM SE DISPONÍVEL) ==========
+    updateUI: function() {
+        if (window.SupportUI?.renderMediaPreview && window.SupportUI?.renderPdfPreview) {
+            window.SupportUI.renderMediaPreview(this);
+            window.SupportUI.renderPdfPreview(this);
+        } else {
+            // Fallback mínimo: apenas logs em debug
+            if (window.location.search.includes('debug=true')) {
+                console.log('⚠️ UI completa não disponível (Support System não carregado)');
+            }
+        }
+    },
+
+    // ========== RESETAR ESTADO ==========
     resetState: function() {
         const cleanupBlobUrls = (items) => {
             items.forEach(item => {
@@ -918,53 +685,17 @@ const MediaSystem = {
     }
 };
 
-// ========== PATCH FORÇADO ==========
-(function() {
-    console.log('🔧 [PATCH] Aplicando patch forçado no MediaSystem...');
-    
-    const correctedLoadExisting = MediaSystem.loadExisting;
-    
-    MediaSystem.loadExisting = function(property) {
-        console.log('🚨 [PATCH] loadExisting CHAMADO!');
-        console.log('🔍 property recebido:', property ? `ID: ${property.id}` : 'NULL');
-        
-        const result = correctedLoadExisting.call(this, property);
-        
-        setTimeout(() => {
-            if (window.SupportMediaUI?.autoDiagnose) {
-                window.SupportMediaUI.autoDiagnose();
-            }
-            if (window.SupportMediaUI?.renderMediaPreview) {
-                window.SupportMediaUI.renderMediaPreview();
-            }
-            if (window.SupportMediaUI?.renderPdfPreview) {
-                window.SupportMediaUI.renderPdfPreview();
-            }
-        }, 200);
-        
-        return result;
-    };
-    
-    console.log('✅ [PATCH] Patch forçado aplicado com sucesso!');
-})();
-
 // ========== EXPORTAR PARA WINDOW ==========
 window.MediaSystem = MediaSystem;
 
-// ========== INICIALIZAÇÃO ÚNICA ==========
-if (!window.MediaSystem._initialized) {
-    setTimeout(() => {
-        if (!window.MediaSystem._initialized) {
-            window.MediaSystem.init('vendas');
-            console.log('✅ Sistema de mídia CORE inicializado');
-        }
-    }, 100);
-} else {
-    console.log('✅ MediaSystem já inicializado anteriormente');
-}
+// ========== INICIALIZAÇÃO AUTOMÁTICA ==========
+setTimeout(() => {
+    window.MediaSystem.init('vendas');
+    console.log('✅ MediaSystem Core carregado - Lógica essencial apenas');
+    console.log('📦 Tamanho reduzido: UI completa migrada para Support System');
+}, 1000);
 
-console.log('✅ media-unified.js CORE carregado - ' + Object.keys(MediaSystem).length + ' métodos disponíveis');
-
-} else {
-    console.log('⚠️ media-unified.js - MediaSystem já existe e está inicializado! Pulando recarregamento.');
-}
+console.log('✅ media-unified.js CORE carregado - ' + 
+            (window.location.search.includes('debug=true') ? 
+             'Modo DEBUG (UI via Support System)' : 
+             'Modo PRODUÇÃO (UI básica via fallback)'));
