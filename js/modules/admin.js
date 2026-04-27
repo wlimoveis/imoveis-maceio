@@ -406,9 +406,9 @@ window.setupLocationAutocomplete = function() {
         'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
         'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
         'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
-        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho', 'Forene, Maceió/AL', 'Rio Novo', 'Riacho Doce', 'Pontal da Barra, Maceió/AL', 'Guaxuma',
-        'Ipioca', 'Garça Torta', 'Pescaria', 'Ponta da Terra, Maceió/AL', 'Barra de São Miguel', 'Murilopes, Maceió/AL',
-        'Barra de São Miguel', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres',
+        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL', 'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma',
+        'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL', 'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 'São Miguel dos Campos, AL', 'Murilopes, Maceió/AL',
+        'Barra de São Miguel, AL', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres, AL',
     ];
 
     const locationInput = document.getElementById('propLocation');
