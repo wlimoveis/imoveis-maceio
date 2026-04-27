@@ -1,4 +1,5 @@
 // js/modules/reader/pdf-unified.js - VERSÃO DEFINITIVA COM RESPONSIVIDADE PARA MOBILE
+// ✅ Função escapeHtml centralizada no SharedCore
 console.log('📄 pdf-unified.js - VERSÃO DEFINITIVA COM RESPONSIVIDADE');
 
 const PdfSystem = (function() {
@@ -44,6 +45,9 @@ const PdfSystem = (function() {
             padding: ${isMobile ? '10px' : '20px'};
             overflow-y: auto;
         `;
+        
+        // OBTER FUNÇÃO ESCAPE HTML CENTRALIZADA
+        const escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
         
         // Gerar HTML da lista - DESIGN RESPONSIVO
         const pdfListHtml = pdfUrls.map((url, index) => {
@@ -93,8 +97,8 @@ const PdfSystem = (function() {
                                     overflow: hidden;
                                     text-overflow: ellipsis;
                                     max-width: ${isMobile ? '200px' : '300px'};
-                                " title="${fileName}">
-                                    ${displayName}
+                                " title="${escapeHtmlFn(fileName)}">
+                                    ${escapeHtmlFn(displayName)}
                                 </strong>
                                 <small style="color: #7f8c8d; font-size: ${isMobile ? '0.7rem' : '0.8rem'};">
                                     PDF • ${index + 1}/${pdfUrls.length}
@@ -185,7 +189,7 @@ const PdfSystem = (function() {
                     font-size: ${isMobile ? '0.9rem' : '1rem'};
                     line-height: 1.4;
                 ">
-                    <strong>${propertyTitle}</strong><br>
+                    <strong>${escapeHtmlFn(propertyTitle)}</strong><br>
                     Selecione o documento que deseja visualizar:
                 </p>
                 
@@ -733,6 +737,7 @@ document.addEventListener('DOMContentLoaded', function() {
             window.PdfSystem.init();
             console.log('✅ Sistema PDF inicializado!');
             console.log('🎯 Botões "Visualizar" estarão 100% funcionais!');
+            console.log('🔧 Função escapeHtml centralizada no SharedCore');
         }
     }, 1000);
 });
