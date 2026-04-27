@@ -254,30 +254,12 @@ window.createPropertyGallery = function(property) {
     
     // CONTADOR DE VISUALIZAÇÕES COM GLASSMORPHISM (substitui o media-count)
     const viewCounterHtml = `
-        <div class="gallery-view-counter" 
-             onclick="event.stopPropagation();"
-             style="position:absolute; bottom:10px; left:10px; 
-                    background: rgba(255, 255, 255, 0.25);
-                    backdrop-filter: blur(10px);
-                    -webkit-backdrop-filter: blur(10px);
-                    border-radius: 20px;
-                    border: 1px solid rgba(255, 255, 255, 0.3);
-                    padding: 6px 12px;
-                    font-size: 0.75rem;
-                    color: white;
-                    font-weight: 500;
-                    display: flex;
-                    align-items: center;
-                    gap: 6px;
-                    z-index: 20;
-                    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-                    transition: all 0.3s ease;
-                    cursor: default;">
-            <i class="fas fa-eye" style="font-size: 0.7rem;"></i>
-            <span>${viewCount}</span>
-        </div>
-    `;
-    
+    <div class="gallery-view-counter">
+        <i class="fas fa-eye"></i>
+        <span>${viewCount}</span>
+    </div>
+`;
+
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
