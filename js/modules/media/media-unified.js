@@ -3,6 +3,7 @@
 // ✅ FALLBACK COMPLETO com DRAG & DROP para produção
 // ✅ UI completa delegada para Support System (em debug)
 // ✅ Funções escapeHtml e isVideoUrl centralizadas no SharedCore
+// ✅ Debounce aplicado em addFiles e addPdfs para otimização de performance
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -15,6 +16,25 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
         PDF_PASSWORD: "doc123"
     };
 }
+
+// Função debounce centralizada (fallback caso SharedCore não esteja disponível)
+const getDebounceFunction = function() {
+    if (window.SharedCore && typeof window.SharedCore.debounce === 'function') {
+        return window.SharedCore.debounce;
+    }
+    // Fallback inline
+    return function(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    };
+};
 
 const MediaSystem = {
     // ========== CONFIGURAÇÃO ==========
@@ -32,7 +52,8 @@ const MediaSystem = {
     // ========== ESTADO ==========
     state: {
         files: [], existing: [], pdfs: [], existingPdfs: [],
-        isUploading: false, currentPropertyId: null, lastUploadResult: null
+        isUploading: false, currentPropertyId: null, lastUploadResult: null,
+        _debouncedUpdateUI: null  // Cache da função debounced
     },
 
     // ========== INICIALIZAÇÃO ==========
@@ -42,6 +63,11 @@ const MediaSystem = {
         this.config.currentSystem = system;
         this.resetState();
         this.setupEventListeners();
+        
+        // Inicializar função debounced para updateUI
+        const debounce = getDebounceFunction();
+        this.state._debouncedUpdateUI = debounce(() => this.updateUI(), 100);
+        
         return this;
     },
 
@@ -128,7 +154,6 @@ const MediaSystem = {
             this.state.existing = imageUrls.map(function(url, index) {
                 var finalUrl = url;
                 if (!url.startsWith('http') && !url.startsWith('blob:')) finalUrl = self.reconstructSupabaseUrl(url) || url;
-                // USAR FUNÇÃO CENTRALIZADA
                 var isVideo = window.SharedCore ? window.SharedCore.isVideoUrl(finalUrl) : (function(u){ var l=u.toLowerCase(); return l.includes('.mp4')||l.includes('.mov')||l.includes('.webm')||l.includes('.avi')||l.includes('video/'); })(finalUrl);
                 return { 
                     url: finalUrl, 
@@ -192,7 +217,12 @@ const MediaSystem = {
             });
             addedCount++;
         }
-        this.updateUI();
+        // ✅ APLICADO DEBOUNCE para evitar múltiplas atualizações de UI rápidas
+        if (this.state._debouncedUpdateUI) {
+            this.state._debouncedUpdateUI();
+        } else {
+            this.updateUI();
+        }
         return addedCount;
     },
 
@@ -215,7 +245,12 @@ const MediaSystem = {
             });
             addedCount++;
         }
-        this.updateUI();
+        // ✅ APLICADO DEBOUNCE para evitar múltiplas atualizações de UI rápidas
+        if (this.state._debouncedUpdateUI) {
+            this.state._debouncedUpdateUI();
+        } else {
+            this.updateUI();
+        }
         return addedCount;
     },
 
@@ -461,7 +496,6 @@ const MediaSystem = {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
         var self = this;
-        // OBTER FUNÇÃO ESCAPE HTML CENTRALIZADA
         var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
         
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
@@ -716,6 +750,7 @@ setTimeout(function() {
     console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop');
     console.log('📦 Modo: ' + (isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'));
     console.log('🔧 Funções escapeHtml e isVideoUrl centralizadas no SharedCore');
+    console.log('⚡ Debounce aplicado em addFiles e addPdfs para otimização de performance');
 }, 1000);
 
 console.log('✅ media-unified.js CORE - ' + (window.location.search.indexOf('debug=true') !== -1 ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
