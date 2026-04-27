@@ -1,5 +1,25 @@
-// js/modules/utils/FilterManager.js - Sistema unificado de filtros
+// js/modules/utils/FilterManager.js - Sistema unificado de filtros com throttle
 console.log('🎛️ FilterManager.js carregado - Sistema unificado de filtros');
+
+// Função throttle centralizada (fallback caso SharedCore não esteja disponível)
+const getThrottleFunction = function() {
+    if (window.SharedCore && typeof window.SharedCore.throttle === 'function') {
+        return window.SharedCore.throttle;
+    }
+    // Fallback inline
+    return function(func, limit) {
+        let inThrottle;
+        return function() {
+            const args = arguments;
+            const context = this;
+            if (!inThrottle) {
+                func.apply(context, args);
+                inThrottle = true;
+                setTimeout(() => inThrottle = false, limit);
+            }
+        };
+    };
+};
 
 const FilterManager = (function() {
     // Configuração centralizada
@@ -8,7 +28,8 @@ const FilterManager = (function() {
         buttonClass: 'filter-btn',
         activeClass: 'active',
         defaultFilter: 'todos',
-        animationDuration: 200
+        animationDuration: 200,
+        throttleDelay: 200  // Delay para throttle dos cliques
     };
 
     // Estado global dos filtros
@@ -16,7 +37,8 @@ const FilterManager = (function() {
         currentFilter: CONFIG.defaultFilter,
         containers: new Map(),
         callbacks: new Map(),
-        initialized: false
+        initialized: false,
+        throttleFn: null
     };
 
     // API pública
@@ -28,6 +50,9 @@ const FilterManager = (function() {
             }
             
             console.log('🔧 Inicializando FilterManager...');
+            
+            // Inicializar função throttle
+            state.throttleFn = getThrottleFunction();
             
             const containers = document.querySelectorAll(`.${CONFIG.containerClass}`);
             if (containers.length === 0) {
@@ -58,12 +83,14 @@ const FilterManager = (function() {
         setupContainer(container, containerId, onFilterChange) {
             const buttons = container.querySelectorAll(`.${CONFIG.buttonClass}`);
             const containerState = state.containers.get(containerId);
+            const throttleFn = state.throttleFn;
 
             buttons.forEach((button, btnIndex) => {
                 const newBtn = button.cloneNode(true);
                 button.parentNode.replaceChild(newBtn, button);
 
-                newBtn.addEventListener('click', (e) => {
+                // ✅ APLICADO THROTTLE para evitar múltiplos cliques rápidos
+                const throttledHandler = throttleFn((e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
@@ -81,12 +108,15 @@ const FilterManager = (function() {
                             callback(filterValue);
                         }
                     });
-                });
+                }, CONFIG.throttleDelay);
+
+                newBtn.addEventListener('click', throttledHandler);
 
                 containerState.buttons.push({
                     element: newBtn,
                     originalText: newBtn.textContent.trim(),
-                    value: newBtn.textContent.trim() === 'Todos' ? 'todos' : newBtn.textContent.trim()
+                    value: newBtn.textContent.trim() === 'Todos' ? 'todos' : newBtn.textContent.trim(),
+                    throttledHandler: throttledHandler  // Guardar referência para cleanup
                 });
             });
 
@@ -162,6 +192,10 @@ const FilterManager = (function() {
         destroy() {
             state.containers.forEach(containerState => {
                 containerState.buttons.forEach(button => {
+                    // Remover listener com throttle
+                    if (button.throttledHandler && button.element) {
+                        button.element.removeEventListener('click', button.throttledHandler);
+                    }
                     const newBtn = button.element.cloneNode(true);
                     button.element.parentNode.replaceChild(newBtn, button.element);
                 });
@@ -170,6 +204,7 @@ const FilterManager = (function() {
             state.containers.clear();
             state.callbacks.clear();
             state.initialized = false;
+            state.throttleFn = null;
             console.log('🧹 FilterManager destruído');
         },
         
@@ -193,4 +228,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado');
+console.log('✅ FilterManager carregado - Com throttle aplicado nos cliques');
