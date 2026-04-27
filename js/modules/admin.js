@@ -1,21 +1,14 @@
-// js/modules/admin.js - VERSÃO FINAL OTIMIZADA COM AUTOCOMPLETE FUNCIONAL
-console.log('🔧 admin.js - Versão core com autocomplete otimizado');
+// js/modules/admin.js - VERSÃO OTIMIZADA
+console.log('🔧 admin.js - Versão core com autocomplete funcional');
 
-/* ==========================================================
-   CONFIGURAÇÃO E CONSTANTES
-   ========================================================== */
 const ADMIN_CONFIG = {
     password: "wl654",
     panelId: "adminPanel",
     buttonClass: "admin-toggle"
 };
 
-// Estado global
 window.editingPropertyId = null;
 
-/* ==========================================================
-   FUNÇÃO PRINCIPAL: TOGGLE ADMIN PANEL
-   ========================================================== */
 window.toggleAdminPanel = function() {
     console.log('🔧 toggleAdminPanel chamada');
     const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
@@ -45,9 +38,6 @@ window.toggleAdminPanel = function() {
     }
 };
 
-/* ==========================================================
-   FUNÇÃO PARA LIMPAR FORMULÁRIO
-   ========================================================== */
 window.resetAdminFormCompletely = function(showNotification = true) {
     console.log('🧹 RESET COMPLETO DO FORMULÁRIO');
     
@@ -116,9 +106,6 @@ window.resetAdminFormCompletely = function(showNotification = true) {
     return true;
 };
 
-/* ==========================================================
-   FUNÇÃO DE CANCELAMENTO
-   ========================================================== */
 window.cancelEdit = function() {
     if (window.editingPropertyId) {
         if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
@@ -127,15 +114,12 @@ window.cancelEdit = function() {
             return true;
         }
     } else {
-        console.log('ℹ️ Nenhuma edição em andamento para cancelar');
+        console.log('ℹ️ Nenhuma edição em andamento');
         window.resetAdminFormCompletely(false);
     }
     return false;
 };
 
-/* ==========================================================
-   FUNÇÃO EDIT PROPERTY
-   ========================================================== */
 window.editProperty = function(id) {
     console.log('✏️ Iniciando edição do imóvel ID:', id);
     
@@ -216,13 +200,10 @@ window.editProperty = function(id) {
         }
     }, 150);
     
-    console.log('✅ Modo edição ativado para imóvel ID:', property.id);
+    console.log('✅ Modo edição ativado para ID:', property.id);
     return true;
 };
 
-/* ==========================================================
-   FUNÇÃO PRINCIPAL DE SALVAMENTO
-   ========================================================== */
 window.saveProperty = async function() {
     console.group('💾 SALVANDO IMÓVEL');
     
@@ -417,9 +398,6 @@ window.saveProperty = async function() {
     }
 };
 
-/* ==========================================================
-   SISTEMA DE AUTOCOMPLETE PARA O CAMPO "LOCALIZAÇÃO"
-   ========================================================== */
 window.setupLocationAutocomplete = function() {
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
@@ -601,9 +579,6 @@ window.setupLocationAutocomplete = function() {
     return true;
 };
 
-/* ==========================================================
-   CONFIGURAÇÃO DO FORMULÁRIO
-   ========================================================== */
 window.setupForm = function() {
     const form = document.getElementById('propertyForm');
     if (!form) {
@@ -659,9 +634,6 @@ window.setupForm = function() {
     });
 };
 
-/* ==========================================================
-   SETUP ADMIN UI
-   ========================================================== */
 window.setupAdminUI = function() {
     console.log('🔧 Configurando UI do admin...');
     
@@ -701,10 +673,6 @@ window.setupAdminUI = function() {
     }
 };
 
-/* ==========================================================
-   INICIALIZAÇÃO
-   ========================================================== */
-
 function initializeAdmin() {
     console.log('🚀 Inicializando sistema admin...');
     
@@ -732,4 +700,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão final otimizada carregada');
+console.log('✅ admin.js - Versão otimizada carregada');
