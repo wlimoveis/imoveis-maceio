@@ -3,7 +3,7 @@
 // ✅ Fallback mínimo inline garante operação mesmo sem Support System
 console.log('🔧 SharedCore.js carregado - PROXY PURO PARA SUPPORT SYSTEM (sem duplicidade)');
 
-// ==================== CONFIGURAÇÃO CENTRAL DO SISTEMA ====================
+// ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 // ÚNICO LOCAL para configurar URLs, versões e módulos de suporte
 // ✅ QUALQUER NOVO MÓDULO DO SUPPORT SYSTEM DEVE SER ADICIONADO APENAS AQUI!
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -17,7 +17,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
     // ✅ ADICIONAR NOVOS MÓDULOS SOMENTE AQUI!
     supportModules: [
         'debug/ui/loading-manager.js',
-        'debug/ui/media-ui-full.js',  // <--- NOVO MÓDULO ADICIONADO (UI completa do Media System)
+        'debug/ui/media-ui-full.js',
         'debug/core/diagnostic-registry.js',
         'performance/performance-system.js',
         'debug/utils/core-diagnostics.js',
@@ -209,7 +209,13 @@ const SharedCore = (function() {
     };
     
     // ========== UTILITÁRIOS GLOBAIS CENTRALIZADOS ==========
-    // ADICIONADO: Escape HTML para prevenção de XSS
+    // ========== FUNÇÕES UTILITÁRIAS CENTRALIZADAS (Core System) ==========
+    // ⚠️ ATENÇÃO DESENVOLVEDORES: 
+    // - Coloque AQUI todas as funções utilitárias genéricas (escapeHtml, validação de URL, etc.)
+    // - Estas funções são a ÚNICA fonte da verdade para todo o sistema
+    // - Evite duplicação: sempre use window.SharedCore.nomeFuncao() em outros módulos
+    // - Exemplos: escapeHtml, isVideoUrl, formatadores, validadores genéricos
+    
     const escapeHtml = function(str) {
         if (!str) return '';
         return str.replace(/&/g, '&amp;')
@@ -219,7 +225,6 @@ const SharedCore = (function() {
                   .replace(/'/g, '&#39;');
     };
 
-    // ADICIONADO: Detecção de URL de vídeo
     const isVideoUrl = function(url) {
         if (!url) return false;
         const urlLower = url.toLowerCase();
@@ -697,43 +702,66 @@ const SharedCore = (function() {
 
     // ========== API PÚBLICA ==========
     return {
+        // Performance
         debounce,
         throttle,
         runLowPriority,
+        
+        // Validações
         isMobileDevice,
         isValidEmail,
         isValidPhone,
         validateProperty,
+        
+        // Formatação
         formatPrice,
         truncateText,
         stringSimilarity,
+        
+        // Features e Video (Proxy)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
+        
+        // Validação de ID e Estado
         validateIdForSupabase,
         manageEditingState,
-        // NOVAS FUNÇÕES CENTRALIZADAS
+        
+        // ========== UTILITÁRIOS CENTRALIZADOS (Core System) ==========
+        // ⚠️ NOVAS FUNÇÕES UTILITÁRIAS DEVEM SER ADICIONADAS AQUI
         escapeHtml,
         isVideoUrl,
+        
+        // Formatação de Preço
         PriceFormatter,
-        ImageLoader,
         formatPriceForInput: PriceFormatter.formatForInput.bind(PriceFormatter),
         getPriceNumbersOnly: PriceFormatter.extractNumbers.bind(PriceFormatter),
         setupPriceAutoFormat: function() {
             const priceField = document.getElementById('propPrice');
             if (priceField) PriceFormatter.setupAutoFormat(priceField);
         },
+        
+        // Utilitários de Mídia
+        ImageLoader,
+        
+        // DOM
         elementExists,
         createElement,
+        
+        // Logging e Dados
         logModule,
         supabaseFetch,
         arrayUtils,
+        
+        // Utilitários Gerais
         copyToClipboard,
         validateSupabaseConnection,
         generateUniqueId,
         sanitizeText,
         delay,
         testFileUpload,
+        
+        // Constantes
         SUPABASE_CONSTANTS: window.SUPABASE_CONSTANTS
     };
 })();
@@ -786,7 +814,6 @@ window.SharedCore = SharedCore;
         };
     }
     
-    // NOVAS FUNÇÕES GLOBAIS
     if (typeof window.escapeHtml === 'undefined') {
         window.escapeHtml = function(str) {
             return SharedCore.escapeHtml(str);
@@ -828,7 +855,6 @@ function initializeGlobalCompatibility() {
         supabaseFetch: SharedCore.supabaseFetch,
         copyToClipboard: SharedCore.copyToClipboard,
         testFileUpload: SharedCore.testFileUpload,
-        // NOVAS FUNÇÕES
         escapeHtml: SharedCore.escapeHtml,
         isVideoUrl: SharedCore.isVideoUrl
     };
@@ -861,7 +887,7 @@ setTimeout(() => {
         'debounce', 'throttle', 'formatPrice', 'supabaseFetch',
         'elementExists', 'isMobileDevice', 'copyToClipboard',
         'logModule', 'runLowPriority', 'validateProperty',
-        'escapeHtml', 'isVideoUrl'  // NOVAS FUNÇÕES VALIDADAS
+        'escapeHtml', 'isVideoUrl'
     ];
     
     let allAvailable = true;
@@ -885,7 +911,6 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
-    // Verificar módulo media-ui-full na lista de suporte
     const hasMediaUIFull = window.SYSTEM_CONFIG.supportModules.includes('debug/ui/media-ui-full.js');
     console.log(`${hasMediaUIFull ? '✅' : '⚠️'} debug/ui/media-ui-full.js na lista supportModules`);
     
