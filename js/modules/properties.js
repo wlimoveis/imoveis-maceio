@@ -1323,6 +1323,7 @@ window.deleteProperty = async function(id) {
 };
 
 // ========== 12. CARREGAR LISTA PARA ADMIN (COM CONTADOR DE VISUALIZAÇÕES) ==========
+// ========== 12. CARREGAR LISTA PARA ADMIN (COM PREVIEW DE IMAGEM E CONTADOR) ==========
 window.loadPropertyList = function() {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1361,38 +1362,94 @@ window.loadPropertyList = function() {
     `;
     container.appendChild(statsHeader);
     
+    // Imagem padrão (fallback)
+    const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
+    
     window.properties.forEach(property => {
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
+        // Extrair a primeira imagem do imóvel
+        let firstImage = defaultImage;
+        let isVideo = false;
+        
+        if (property.images && property.images !== 'EMPTY') {
+            const imageUrls = property.images.split(',').filter(url => url && url.trim() !== '');
+            if (imageUrls.length > 0) {
+                firstImage = imageUrls[0];
+                // Verificar se é vídeo
+                isVideo = window.isVideoUrl ? window.isVideoUrl(firstImage) : 
+                          (firstImage.toLowerCase().includes('.mp4') || firstImage.toLowerCase().includes('.mov') || firstImage.toLowerCase().includes('video/'));
+            }
+        }
+        
         const item = document.createElement('div');
         item.className = 'property-item';
-        item.style.cssText = 'background: #f5f5f5; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary);';
+        item.style.cssText = 'background: #f5f5f5; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
         
         item.innerHTML = `
-            <div style="flex: 2; min-width: 200px;">
-                <strong style="color: var(--primary); font-size: 1rem;">${window.SharedCore?.escapeHtml(property.title) || property.title}</strong><br>
-                <small>${property.price} - ${property.location}</small>
-                <div style="font-size: 0.75em; color: #666; margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+            <!-- COLUNA DA IMAGEM PREVIEW -->
+            <div style="flex-shrink: 0; width: 70px; height: 70px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease;" 
+                 onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
+                 onmouseenter="this.style.transform='scale(1.05)'"
+                 onmouseleave="this.style.transform='scale(1)'"
+                 title="Clique para abrir galeria">
+                ${isVideo ? `
+                    <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-video" style="font-size: 1.8rem; color: rgba(255,255,255,0.8);"></i>
+                        <div style="position: absolute; bottom: 2px; right: 4px; background: rgba(0,0,0,0.6); border-radius: 3px; padding: 1px 4px; font-size: 0.6rem; color: white;">
+                            <i class="fas fa-play"></i>
+                        </div>
+                    </div>
+                ` : `
+                    <img src="${firstImage}" 
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.src='${defaultImage}'; this.onerror=null;"
+                         alt="${window.SharedCore?.escapeHtml(property.title) || property.title}">
+                `}
+            </div>
+            
+            <!-- COLUNA DAS INFORMAÇÕES -->
+            <div style="flex: 3; min-width: 200px;">
+                <strong style="color: var(--primary); font-size: 1rem; display: block; margin-bottom: 0.3rem;">
+                    ${window.SharedCore?.escapeHtml(property.title) || property.title}
+                </strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem;">
+                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-tag"></i> ${property.price}
+                    </small>
+                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 40)}${property.location.length > 40 ? '...' : ''}
+                    </small>
+                </div>
+                <div style="font-size: 0.7rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.8rem; margin-top: 0.2rem;">
                     <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
-                    ${property.has_video ? '<span><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
-                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i.trim()).length : 0}</span>
-                    ${property.pdfs ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p.trim()).length}</span>` : ''}
+                    ${property.has_video ? '<span style="color: #9b59b6;"><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
+                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
+                    ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
                     <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
-                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')} ${new Date(lastView).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>` : ''}
+                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
                 </div>
             </div>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+            
+            <!-- COLUNA DOS BOTÕES -->
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
-                        style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                        style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
+                        onmouseenter="this.style.transform='translateY(-2px)'"
+                        onmouseleave="this.style.transform='translateY(0)'">
                     <i class="fas fa-edit"></i> Editar
                 </button>
-                <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'")}')" 
-                        style="background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
+                        style="background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
+                        onmouseenter="this.style.transform='translateY(-2px)'"
+                        onmouseleave="this.style.transform='translateY(0)'">
                     <i class="fas fa-eye-slash"></i> Zerar views
                 </button>
                 <button onclick="deleteProperty(${property.id})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                        style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
+                        onmouseenter="this.style.transform='translateY(-2px)'"
+                        onmouseleave="this.style.transform='translateY(0)'">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
@@ -1400,7 +1457,12 @@ window.loadPropertyList = function() {
         container.appendChild(item);
     });
     
-    console.log(`✅ ${window.properties.length} imóveis listados no admin com contador de visualizações`);
+    // Adicionar estilo para scroll suave na lista
+    container.style.maxHeight = '500px';
+    container.style.overflowY = 'auto';
+    container.style.paddingRight = '5px';
+    
+    console.log(`✅ ${window.properties.length} imóveis listados no admin com preview de imagem`);
 };
 
 console.log('✅ properties.js - VERSÃO COMPLETA CARREGADA');
