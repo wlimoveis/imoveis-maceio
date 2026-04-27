@@ -1,4 +1,5 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS E CONTADOR DE VISITAS GLASSMORPHISM
+// ✅ Função isVideoUrl centralizada no SharedCore
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador de Visitas Glassmorphism');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -8,15 +9,21 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO PARA DETECTAR VÍDEO ==========
-window.isVideoUrl = function(url) {
-    if (!url) return false;
-    const urlLower = url.toLowerCase();
-    return urlLower.includes('.mp4') || 
-           urlLower.includes('.mov') || 
-           urlLower.includes('.webm') || 
-           urlLower.includes('.avi');
-};
+// ========== FUNÇÃO PARA DETECTAR VÍDEO - USANDO SHAREDCORE ==========
+// isVideoUrl REMOVIDA - usar window.SharedCore.isVideoUrl ou window.isVideoUrl
+// Garantir que window.isVideoUrl existe (fallback)
+if (typeof window.isVideoUrl === 'undefined') {
+    window.isVideoUrl = function(url) {
+        if (!url) return false;
+        const urlLower = url.toLowerCase();
+        return urlLower.includes('.mp4') || 
+               urlLower.includes('.mov') || 
+               urlLower.includes('.webm') || 
+               urlLower.includes('.avi') ||
+               urlLower.includes('video/');
+    };
+    console.log('⚠️ isVideoUrl definido como fallback (deveria vir do SharedCore)');
+}
 
 // ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
 window.createVideoThumbnail = function(videoUrl, index, propertyId) {
@@ -131,6 +138,7 @@ function updateCardMedia(propertyId, newIndex) {
     if (newIndex < 0 || newIndex >= allMedia.length) return;
     
     const mediaUrl = allMedia[newIndex];
+    // USAR FUNÇÃO CENTRALIZADA
     const isVideo = window.isVideoUrl(mediaUrl);
     
     const propertyCard = document.querySelector(`[data-property-id="${propertyId}"]`);
@@ -215,6 +223,7 @@ window.createPropertyGallery = function(property) {
     
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
     const totalMediaCount = allMediaUrls.length;
+    // USAR FUNÇÃO CENTRALIZADA
     const hasVideos = allMediaUrls.some(url => window.isVideoUrl(url));
     const currentIndex = 0;
     
@@ -407,6 +416,7 @@ function updateGalleryModalMedia() {
     if (!container || !window.currentGalleryImages.length) return;
     
     const currentUrl = window.currentGalleryImages[window.currentGalleryIndex];
+    // USAR FUNÇÃO CENTRALIZADA
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
