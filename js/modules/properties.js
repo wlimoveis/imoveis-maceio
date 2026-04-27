@@ -1322,9 +1322,10 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
+// ========== 12. CARREGAR LISTA PARA ADMIN (COM CONTADOR DE VISUALIZAÇÕES) ==========
 window.loadPropertyList = function() {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
-        console.error('❌ properties não é um array válido');
+        console.error('❌ window.properties não é um array válido');
         return;
     }
     
@@ -1335,34 +1336,63 @@ window.loadPropertyList = function() {
     
     container.innerHTML = '';
     
-    if (countElement) countElement.textContent = window.properties.length;
+    if (countElement) {
+        countElement.textContent = window.properties.length;
+    }
     
     if (window.properties.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666;">Nenhum imóvel</p>';
+        container.innerHTML = '<p style="text-align: center; color: #666;">Nenhum imóvel cadastrado</p>';
         return;
     }
     
+    // Calcular total de visualizações
+    const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
+    
+    // Adicionar cabeçalho com estatísticas
+    const statsHeader = document.createElement('div');
+    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;';
+    statsHeader.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+            <span><i class="fas fa-eye"></i> <strong>Total de visualizações:</strong> ${totalViews}</span>
+            <button onclick="if(window.resetAllGalleryViews) window.resetAllGalleryViews()" style="background: #e67e22; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                <i class="fas fa-trash-alt"></i> Zerar TODAS
+            </button>
+        </div>
+    `;
+    container.appendChild(statsHeader);
+    
     window.properties.forEach(property => {
+        const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
+        const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
+        
         const item = document.createElement('div');
         item.className = 'property-item';
+        item.style.cssText = 'background: #f5f5f5; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary);';
+        
         item.innerHTML = `
-            <div style="flex: 1;">
-                <strong style="color: var(--primary);">${property.title}</strong><br>
+            <div style="flex: 2; min-width: 200px;">
+                <strong style="color: var(--primary); font-size: 1rem;">${window.SharedCore?.escapeHtml(property.title) || property.title}</strong><br>
                 <small>${property.price} - ${property.location}</small>
-                <div style="font-size: 0.8em; color: #666; margin-top: 0.2rem;">
-                    ID: ${property.id} | 
-                    ${property.has_video ? '🎬 Tem vídeo | ' : ''}
-                    Imagens: ${property.images ? property.images.split(',').filter(i => i.trim()).length : 0}
-                    ${property.pdfs ? ` | PDFs: ${property.pdfs.split(',').filter(p => p.trim()).length}` : ''}
+                <div style="font-size: 0.75em; color: #666; margin-top: 0.3rem; display: flex; flex-wrap: wrap; gap: 0.8rem;">
+                    <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
+                    ${property.has_video ? '<span><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
+                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i.trim()).length : 0}</span>
+                    ${property.pdfs ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p.trim()).length}</span>` : ''}
+                    <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
+                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')} ${new Date(lastView).toLocaleTimeString('pt-BR', {hour:'2-digit', minute:'2-digit'})}</span>` : ''}
                 </div>
             </div>
-            <div style="display: flex; gap: 0.5rem;">
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
                 <button onclick="editProperty(${property.id})" 
-                        style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;">
+                        style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
                     <i class="fas fa-edit"></i> Editar
                 </button>
+                <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'")}')" 
+                        style="background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
+                    <i class="fas fa-eye-slash"></i> Zerar views
+                </button>
                 <button onclick="deleteProperty(${property.id})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 3px; cursor: pointer;">
+                        style="background: #e74c3c; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.85rem;">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
@@ -1370,7 +1400,7 @@ window.loadPropertyList = function() {
         container.appendChild(item);
     });
     
-    console.log(`✅ ${window.properties.length} imóveis listados`);
+    console.log(`✅ ${window.properties.length} imóveis listados no admin com contador de visualizações`);
 };
 
 console.log('✅ properties.js - VERSÃO COMPLETA CARREGADA');
