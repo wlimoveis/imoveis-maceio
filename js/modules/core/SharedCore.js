@@ -208,6 +208,28 @@ const SharedCore = (function() {
         return Boolean(videoValue);
     };
     
+    // ========== UTILITÁRIOS GLOBAIS CENTRALIZADOS ==========
+    // ADICIONADO: Escape HTML para prevenção de XSS
+    const escapeHtml = function(str) {
+        if (!str) return '';
+        return str.replace(/&/g, '&amp;')
+                  .replace(/</g, '&lt;')
+                  .replace(/>/g, '&gt;')
+                  .replace(/"/g, '&quot;')
+                  .replace(/'/g, '&#39;');
+    };
+
+    // ADICIONADO: Detecção de URL de vídeo
+    const isVideoUrl = function(url) {
+        if (!url) return false;
+        const urlLower = url.toLowerCase();
+        return urlLower.includes('.mp4') || 
+               urlLower.includes('.mov') || 
+               urlLower.includes('.webm') || 
+               urlLower.includes('.avi') ||
+               urlLower.includes('video/');
+    };
+    
     // ========== FUNÇÕES DE VALIDAÇÃO ==========
     const validateIdForSupabase = function(propertyId) {
         if (window.SupportCoreUtils?.validateIdForSupabase) {
@@ -690,6 +712,9 @@ const SharedCore = (function() {
         ensureBooleanVideo,
         validateIdForSupabase,
         manageEditingState,
+        // NOVAS FUNÇÕES CENTRALIZADAS
+        escapeHtml,
+        isVideoUrl,
         PriceFormatter,
         ImageLoader,
         formatPriceForInput: PriceFormatter.formatForInput.bind(PriceFormatter),
@@ -761,6 +786,19 @@ window.SharedCore = SharedCore;
         };
     }
     
+    // NOVAS FUNÇÕES GLOBAIS
+    if (typeof window.escapeHtml === 'undefined') {
+        window.escapeHtml = function(str) {
+            return SharedCore.escapeHtml(str);
+        };
+    }
+    
+    if (typeof window.isVideoUrl === 'undefined') {
+        window.isVideoUrl = function(url) {
+            return SharedCore.isVideoUrl(url);
+        };
+    }
+    
     console.log('✅ Compatibilidade de formatação configurada');
 })();
 
@@ -789,7 +827,10 @@ function initializeGlobalCompatibility() {
         logModule: SharedCore.logModule,
         supabaseFetch: SharedCore.supabaseFetch,
         copyToClipboard: SharedCore.copyToClipboard,
-        testFileUpload: SharedCore.testFileUpload
+        testFileUpload: SharedCore.testFileUpload,
+        // NOVAS FUNÇÕES
+        escapeHtml: SharedCore.escapeHtml,
+        isVideoUrl: SharedCore.isVideoUrl
     };
     
     Object.entries(globalExports).forEach(([name, func]) => {
@@ -819,7 +860,8 @@ setTimeout(() => {
     const essentialFunctions = [
         'debounce', 'throttle', 'formatPrice', 'supabaseFetch',
         'elementExists', 'isMobileDevice', 'copyToClipboard',
-        'logModule', 'runLowPriority', 'validateProperty'
+        'logModule', 'runLowPriority', 'validateProperty',
+        'escapeHtml', 'isVideoUrl'  // NOVAS FUNÇÕES VALIDADAS
     ];
     
     let allAvailable = true;
