@@ -114,41 +114,56 @@
     transform: translateY(-50%) scale(0.95) !important;
 }
 
-/* ========== CONTADOR DE VISUALIZAÇÕES GLASSMORPHISM ========== */
+/* ========== CONTADOR DE VISUALIZAÇÕES (ÍCONE APENAS - SEM FUNDO) ========== */
 .gallery-view-counter {
     position: absolute !important;
     bottom: 10px !important;
     left: 10px !important;
-    background: rgba(255, 255, 255, 0.25) !important;
-    backdrop-filter: blur(10px) !important;
-    -webkit-backdrop-filter: blur(10px) !important;
-    border-radius: 20px !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    padding: 6px 12px !important;
-    font-size: 0.75rem !important;
+    background: transparent !important;           /* Fundo totalmente transparente */
+    backdrop-filter: none !important;             /* Remove o efeito glassmorphism */
+    -webkit-backdrop-filter: none !important;     /* Remove para WebKit */
+    border-radius: 0 !important;                 /* Remove borda arredondada */
+    border: none !important;                      /* Remove completamente a borda */
+    padding: 0 !important;                        /* Remove padding - container menor */
+    margin: 0 !important;                         /* Remove margens */
+    font-size: 0.75rem !important;                /* Mantém tamanho original */
     color: white !important;
-    font-weight: 500 !important;
-    display: flex !important;
+    display: inline-flex !important;              /* Container se ajusta ao conteúdo */
     align-items: center !important;
-    gap: 6px !important;
+    justify-content: center !important;
+    gap: 0 !important;                            /* Remove gap entre ícone e número */
     z-index: 20 !important;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+    box-shadow: none !important;                  /* Remove sombra */
     transition: all 0.3s ease !important;
     cursor: default !important;
+    width: auto !important;                       /* Largura automática */
+    height: auto !important;                      /* Altura automática */
+    min-width: 0 !important;                      /* Remove largura mínima */
+    min-height: 0 !important;                     /* Remove altura mínima */
 }
 
-.gallery-view-counter:hover {
-    background: rgba(255, 255, 255, 0.35) !important;
-    transform: scale(1.05) !important;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-}
-
+/* Estilo específico para o ícone (olho) em negrito */
 .gallery-view-counter i {
-    transition: transform 0.3s ease !important;
+    font-weight: 900 !important;                  /* Negrito máximo no ícone */
+    font-size: 1rem !important;                   /* Mantém tamanho original (ou ajuste) */
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important; /* Sombra leve para destacar */
+}
+
+/* Estilo para o número de visualizações (opcional - também em negrito) */
+.gallery-view-counter span {
+    font-weight: 700 !important;                  /* Negrito no número */
+    margin-left: 2px !important;                  /* Pequeno espaçamento */
+}
+
+/* Remove hover effects que não são mais necessários */
+.gallery-view-counter:hover {
+    background: transparent !important;
+    transform: none !important;
+    box-shadow: none !important;
 }
 
 .gallery-view-counter:hover i {
-    transform: scale(1.2) !important;
+    transform: none !important;
 }
 
 /* INDICADOR DE VÍDEO */
