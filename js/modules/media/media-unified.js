@@ -2,6 +2,7 @@
 // ✅ Contém lógica ESSENCIAL de upload/delete/estado
 // ✅ FALLBACK COMPLETO com DRAG & DROP para produção
 // ✅ UI completa delegada para Support System (em debug)
+// ✅ Funções escapeHtml e isVideoUrl centralizadas no SharedCore
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -127,7 +128,8 @@ const MediaSystem = {
             this.state.existing = imageUrls.map(function(url, index) {
                 var finalUrl = url;
                 if (!url.startsWith('http') && !url.startsWith('blob:')) finalUrl = self.reconstructSupabaseUrl(url) || url;
-                var isVideo = self.isVideoUrl(finalUrl);
+                // USAR FUNÇÃO CENTRALIZADA
+                var isVideo = window.SharedCore ? window.SharedCore.isVideoUrl(finalUrl) : (function(u){ var l=u.toLowerCase(); return l.includes('.mp4')||l.includes('.mov')||l.includes('.webm')||l.includes('.avi')||l.includes('video/'); })(finalUrl);
                 return { 
                     url: finalUrl, 
                     preview: finalUrl, 
@@ -158,17 +160,9 @@ const MediaSystem = {
         return this;
     },
 
-    // ========== FUNÇÕES AUXILIARES ==========
-    isVideoUrl: function(url) { 
-        if (!url) return false; 
-        var u = url.toLowerCase(); 
-        return u.indexOf('.mp4') !== -1 || u.indexOf('.mov') !== -1 || u.indexOf('.webm') !== -1 || u.indexOf('.avi') !== -1 || u.indexOf('video/') !== -1; 
-    },
-    
-    escapeHtml: function(str) { 
-        if (!str) return ''; 
-        return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;'); 
-    },
+    // ========== FUNÇÕES AUXILIARES (USAM SHAREDCORE) ==========
+    // isVideoUrl REMOVIDA - usar window.SharedCore.isVideoUrl ou window.isVideoUrl
+    // escapeHtml REMOVIDA - usar window.SharedCore.escapeHtml ou window.escapeHtml
 
     // ========== ADICIONAR ARQUIVOS ==========
     addFiles: function(fileList) {
@@ -467,6 +461,8 @@ const MediaSystem = {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
         var self = this;
+        // OBTER FUNÇÃO ESCAPE HTML CENTRALIZADA
+        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
         
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
@@ -491,12 +487,12 @@ const MediaSystem = {
             var displayName = item.name || 'Arquivo';
             var shortName = displayName.length > 15 ? displayName.substring(0,12)+'...' : displayName;
             
-            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + this.escapeHtml(displayName) + '" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
+            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
             html += '<div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
             if (imageUrl) {
                 html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
             }
-            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1.5rem;"></i><span style="font-size:0.6rem;">' + this.escapeHtml(shortName) + '</span></div>';
+            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1.5rem;"></i><span style="font-size:0.6rem;">' + escapeHtmlFn(shortName) + '</span></div>';
             html += '</div>';
             html += '<div style="padding:5px;font-size:0.65rem;text-align:center;background:white;">' + statusText + '</div>';
             html += '<div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.6);color:white;width:20px;height:20px;border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;"><i class="fas fa-arrows-alt"></i></div>';
@@ -513,6 +509,7 @@ const MediaSystem = {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
         var self = this;
+        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
         
         var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
         
@@ -536,7 +533,7 @@ const MediaSystem = {
             html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:6px;padding:0.5rem;width:80px;text-align:center;">';
             html += '<div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-arrows-alt"></i></div>';
             html += '<i class="fas fa-file-pdf" style="font-size:1.2rem;color:' + borderColor + ';"></i>';
-            html += '<p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + this.escapeHtml(shortName) + '</p>';
+            html += '<p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</p>';
             html += '<small style="color:#666;font-size:0.6rem;">' + statusText + '</small>';
             html += '</div>';
             html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-8px;right:-8px;background:' + borderColor + ';color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">×</button>';
@@ -718,6 +715,7 @@ setTimeout(function() {
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
     console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop');
     console.log('📦 Modo: ' + (isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'));
+    console.log('🔧 Funções escapeHtml e isVideoUrl centralizadas no SharedCore');
 }, 1000);
 
 console.log('✅ media-unified.js CORE - ' + (window.location.search.indexOf('debug=true') !== -1 ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
