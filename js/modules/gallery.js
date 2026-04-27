@@ -1,6 +1,6 @@
-// js/modules/gallery.js - COM SETAS LIQUID GLASS E CONTADOR DE VISITAS GLASSMORPHISM
+// js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
 // ✅ Função isVideoUrl centralizada no SharedCore
-console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador de Visitas Glassmorphism');
+console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -10,8 +10,6 @@ window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
 // ========== FUNÇÃO PARA DETECTAR VÍDEO - USANDO SHAREDCORE ==========
-// isVideoUrl REMOVIDA - usar window.SharedCore.isVideoUrl ou window.isVideoUrl
-// Garantir que window.isVideoUrl existe (fallback)
 if (typeof window.isVideoUrl === 'undefined') {
     window.isVideoUrl = function(url) {
         if (!url) return false;
@@ -22,7 +20,175 @@ if (typeof window.isVideoUrl === 'undefined') {
                urlLower.includes('.avi') ||
                urlLower.includes('video/');
     };
-    console.log('⚠️ isVideoUrl definido como fallback (deveria vir do SharedCore)');
+    console.log('⚠️ isVideoUrl definido como fallback');
+}
+
+// ========== FUNÇÃO PARA REGISTRAR VISUALIZAÇÃO (PERSISTENTE) ==========
+window.registerGalleryView = function(propertyId) {
+    try {
+        // Recuperar visualizações existentes do localStorage
+        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        
+        // Incrementar contagem para este imóvel
+        views[propertyId] = (views[propertyId] || 0) + 1;
+        
+        // Salvar de volta no localStorage
+        localStorage.setItem('galleryViews', JSON.stringify(views));
+        
+        // Registrar timestamp da última visualização
+        let lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+        lastViews[propertyId] = new Date().toISOString();
+        localStorage.setItem('galleryViewsLast', JSON.stringify(lastViews));
+        
+        // Atualizar contador na UI
+        updateViewCounter(propertyId, views[propertyId]);
+        
+        // Se o admin panel estiver visível, atualizar a lista
+        const adminPanel = document.getElementById('adminPanel');
+        if (adminPanel && adminPanel.style.display === 'block') {
+            if (typeof window.loadPropertyList === 'function') {
+                setTimeout(() => window.loadPropertyList(), 100);
+            }
+        }
+        
+        console.log(`👁️ Visualização registrada para imóvel ${propertyId}: ${views[propertyId]} total`);
+        return views[propertyId];
+    } catch (error) {
+        console.error('Erro ao registrar visualização:', error);
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA ZERAR VISUALIZAÇÕES DE UM IMÓVEL ==========
+window.resetGalleryViews = function(propertyId, propertyTitle) {
+    if (!confirm(`⚠️ TEM CERTEZA que deseja ZERAR as visualizações do imóvel?\n\n"${propertyTitle}"\n\nEsta ação NÃO pode ser desfeita.`)) {
+        return false;
+    }
+    
+    try {
+        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        let lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+        
+        // Zerar contagem
+        views[propertyId] = 0;
+        lastViews[propertyId] = new Date().toISOString();
+        
+        // Salvar
+        localStorage.setItem('galleryViews', JSON.stringify(views));
+        localStorage.setItem('galleryViewsLast', JSON.stringify(lastViews));
+        
+        // Atualizar UI do card se existir
+        updateViewCounter(propertyId, 0);
+        
+        // Atualizar lista do admin
+        if (typeof window.loadPropertyList === 'function') {
+            setTimeout(() => window.loadPropertyList(), 100);
+        }
+        
+        // Notificar sucesso
+        if (typeof window.showAdminNotification === 'function') {
+            window.showAdminNotification(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`, 'success', 3000);
+        } else {
+            alert(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`);
+        }
+        
+        console.log(`🔄 Visualizações zeradas para imóvel ${propertyId}`);
+        return true;
+    } catch (error) {
+        console.error('Erro ao zerar visualizações:', error);
+        alert('❌ Erro ao zerar visualizações!');
+        return false;
+    }
+};
+
+// ========== FUNÇÃO PARA OBTER VISUALIZAÇÕES ==========
+window.getGalleryViews = function(propertyId) {
+    try {
+        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        return views[propertyId] || 0;
+    } catch (error) {
+        console.error('Erro ao obter visualizações:', error);
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA OBTER ÚLTIMA VISUALIZAÇÃO ==========
+window.getLastGalleryView = function(propertyId) {
+    try {
+        const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+        return lastViews[propertyId] || null;
+    } catch (error) {
+        return null;
+    }
+};
+
+// ========== FUNÇÃO PARA OBTER TOTAL DE VISUALIZAÇÕES DO SITE ==========
+window.getTotalGalleryViews = function() {
+    try {
+        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        let total = 0;
+        for (let key in views) {
+            total += views[key];
+        }
+        return total;
+    } catch (error) {
+        return 0;
+    }
+};
+
+// ========== FUNÇÃO PARA BOTÃO ZERAR TODAS (COM DUPLA CONFIRMAÇÃO) ==========
+window.resetAllGalleryViews = function() {
+    if (!confirm('⚠️ ATENÇÃO! Isso irá ZERAR TODAS as visualizações de TODOS os imóveis.\n\nEsta ação NÃO pode ser desfeita.\n\nClique em OK para continuar:')) {
+        return false;
+    }
+    
+    const confirmation = prompt('Digite "CONFIRMAR" para zerar TODAS as visualizações:');
+    if (confirmation !== 'CONFIRMAR') {
+        alert('❌ Operação cancelada. Digite "CONFIRMAR" exatamente como solicitado.');
+        return false;
+    }
+    
+    try {
+        // Zerar todas as visualizações
+        localStorage.setItem('galleryViews', JSON.stringify({}));
+        localStorage.setItem('galleryViewsLast', JSON.stringify({}));
+        
+        // Atualizar todos os cards na página
+        if (window.properties) {
+            window.properties.forEach(property => {
+                updateViewCounter(property.id, 0);
+            });
+        }
+        
+        // Atualizar lista do admin
+        if (typeof window.loadPropertyList === 'function') {
+            setTimeout(() => window.loadPropertyList(), 100);
+        }
+        
+        if (typeof window.showAdminNotification === 'function') {
+            window.showAdminNotification('✅ TODAS as visualizações foram zeradas!', 'success', 3000);
+        } else {
+            alert('✅ TODAS as visualizações foram zeradas!');
+        }
+        
+        console.log('🔄 Todas as visualizações zeradas');
+        return true;
+    } catch (error) {
+        console.error('Erro ao zerar todas visualizações:', error);
+        alert('❌ Erro ao zerar visualizações!');
+        return false;
+    }
+};
+
+// ========== FUNÇÃO PARA ATUALIZAR CONTADOR VISUAL ==========
+function updateViewCounter(propertyId, count) {
+    const propertyCard = document.querySelector(`.property-card[data-property-id="${propertyId}"]`);
+    if (!propertyCard) return;
+    
+    const viewCounter = propertyCard.querySelector('.gallery-view-counter span');
+    if (viewCounter) {
+        viewCounter.textContent = count;
+    }
 }
 
 // ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
@@ -104,7 +270,7 @@ function getCurrentCardIndex(propertyId) {
     return 0;
 }
 
-// ========== FUNÇÃO PARA NAVEGAR NA GALERIA DO PROPRIEDADE (SEM ABRIR MODAL) ==========
+// ========== FUNÇÃO PARA NAVEGAR NA GALERIA ==========
 window.navigatePropertyGallery = function(propertyId, direction) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -115,21 +281,18 @@ window.navigatePropertyGallery = function(propertyId, direction) {
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     if (allMedia.length <= 1) return;
     
-    // Obter índice atual do card
     let currentIndex = getCurrentCardIndex(propertyId);
     
-    // Calcular novo índice
     if (direction === 'next') {
         currentIndex = (currentIndex + 1) % allMedia.length;
     } else {
         currentIndex = (currentIndex - 1 + allMedia.length) % allMedia.length;
     }
     
-    // Atualizar o card com a nova mídia
     updateCardMedia(propertyId, currentIndex);
 };
 
-// ========== FUNÇÃO PARA ATUALIZAR O CARD COM NOVA MÍDIA ==========
+// ========== FUNÇÃO PARA ATUALIZAR O CARD ==========
 function updateCardMedia(propertyId, newIndex) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -138,7 +301,6 @@ function updateCardMedia(propertyId, newIndex) {
     if (newIndex < 0 || newIndex >= allMedia.length) return;
     
     const mediaUrl = allMedia[newIndex];
-    // USAR FUNÇÃO CENTRALIZADA
     const isVideo = window.isVideoUrl(mediaUrl);
     
     const propertyCard = document.querySelector(`[data-property-id="${propertyId}"]`);
@@ -155,79 +317,30 @@ function updateCardMedia(propertyId, newIndex) {
         }
     }
     
-    // Atualizar dots
     const dots = galleryContainer.querySelectorAll('.gallery-dot');
     dots.forEach((dot, idx) => {
         dot.classList.toggle('active', idx === newIndex);
     });
     
-    // Atualizar contador mobile
     const mobileIndicator = galleryContainer.querySelector('.gallery-indicator-mobile span');
     if (mobileIndicator) {
         mobileIndicator.textContent = `${newIndex + 1}/${allMedia.length}`;
     }
     
-    // Atualizar o dataset com o novo índice
     if (galleryContainer) {
         galleryContainer.dataset.currentIndex = newIndex;
     }
 }
 
-// ========== FUNÇÃO PARA REGISTRAR VISUALIZAÇÃO ==========
-window.registerGalleryView = function(propertyId) {
-    try {
-        // Recuperar visualizações existentes do localStorage
-        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        
-        // Incrementar contagem para este imóvel
-        views[propertyId] = (views[propertyId] || 0) + 1;
-        
-        // Salvar de volta no localStorage
-        localStorage.setItem('galleryViews', JSON.stringify(views));
-        
-        // Atualizar contador na UI
-        updateViewCounter(propertyId, views[propertyId]);
-        
-        return views[propertyId];
-    } catch (error) {
-        console.error('Erro ao registrar visualização:', error);
-        return 0;
-    }
-};
-
-// ========== FUNÇÃO PARA OBTER VISUALIZAÇÕES ==========
-window.getGalleryViews = function(propertyId) {
-    try {
-        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        return views[propertyId] || 0;
-    } catch (error) {
-        console.error('Erro ao obter visualizações:', error);
-        return 0;
-    }
-};
-
-// ========== FUNÇÃO PARA ATUALIZAR CONTADOR VISUAL ==========
-function updateViewCounter(propertyId, count) {
-    const propertyCard = document.querySelector(`[data-property-id="${propertyId}"]`);
-    if (!propertyCard) return;
-    
-    const viewCounter = propertyCard.querySelector('.gallery-view-counter');
-    if (viewCounter) {
-        viewCounter.innerHTML = `<i class="fas fa-eye"></i> ${count}`;
-    }
-}
-
-// ========== FUNÇÃO PRINCIPAL: Criar galeria COM SETAS E CONTADOR GLASSMORPHISM ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
     const totalMediaCount = allMediaUrls.length;
-    // USAR FUNÇÃO CENTRALIZADA
     const hasVideos = allMediaUrls.some(url => window.isVideoUrl(url));
     const currentIndex = 0;
     
-    // Obter contagem de visualizações
     const viewCount = window.getGalleryViews(property.id);
     
     const firstMediaUrl = allMediaUrls.length > 0 ? allMediaUrls[0] : 
@@ -235,7 +348,6 @@ window.createPropertyGallery = function(property) {
     
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     
-    // Gerar dots
     const dotsHtml = allMediaUrls.map((url, idx) => {
         const isVideo = window.isVideoUrl(url);
         const icon = isVideo ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
@@ -249,10 +361,8 @@ window.createPropertyGallery = function(property) {
         `;
     }).join('');
     
-    // Gerar setas de navegação (Liquid Glass)
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
-    // CONTADOR DE VISUALIZAÇÕES COM GLASSMORPHISM (substitui o media-count)
     const viewCounterHtml = `
     <div class="gallery-view-counter">
         <i class="fas fa-eye"></i>
@@ -274,28 +384,23 @@ window.createPropertyGallery = function(property) {
                     window.createImageThumbnail(firstMediaUrl, 0)
                 }
                 
-                <!-- SETAS LIQUID GLASS -->
                 ${arrowsHtml}
                 
-                <!-- INDICADOR MOBILE -->
                 <div class="gallery-indicator-mobile">
                     <i class="fas fa-images"></i>
                     <span>1/${totalMediaCount}</span>
                 </div>
                 
-                <!-- DOTS (indicadores) -->
                 ${totalMediaCount > 1 ? `
                     <div class="gallery-controls" style="display:flex; justify-content:center; gap:6px; margin-top:5px;">
                         ${dotsHtml}
                     </div>
                 ` : ''}
                 
-                <!-- ÍCONE EXPANDIR -->
                 <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
                     <i class="fas fa-expand"></i>
                 </div>
                 
-                <!-- CONTADOR DE VISUALIZAÇÕES GLASSMORPHISM (substitui o media-count) -->
                 ${viewCounterHtml}
             </div>
             
@@ -317,7 +422,7 @@ window.createPropertyGallery = function(property) {
     return containerHtml;
 };
 
-// ========== NOVA FUNÇÃO: Abrir galeria na imagem atual COM REGISTRO DE VISUALIZAÇÃO ==========
+// ========== ABRIR GALERIA COM REGISTRO DE VISUALIZAÇÃO ==========
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -330,12 +435,10 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     // REGISTRAR VISUALIZAÇÃO quando abrir a galeria
     window.registerGalleryView(propertyId);
     
-    // Obter o índice atual do card
     const currentIndex = getCurrentCardIndex(propertyId);
     
-    // Configurar a galeria para abrir no índice atual
     window.currentGalleryImages = allMedia;
-    window.currentGalleryIndex = currentIndex;  // ÍNDICE CORRETO!
+    window.currentGalleryIndex = currentIndex;
     
     let galleryModal = document.getElementById('propertyGalleryModal');
     
@@ -378,7 +481,6 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
         `;
         document.body.appendChild(galleryModal);
     } else {
-        // Atualizar contador se o modal já existir
         const counterElement = document.getElementById('galleryCounter');
         if (counterElement) {
             counterElement.textContent = `${currentIndex + 1} / ${window.currentGalleryImages.length}`;
@@ -390,7 +492,7 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     document.body.style.overflow = 'hidden';
 };
 
-// ========== ATUALIZAR MODAL (APROVEITAMENTO TOTAL DO ESPAÇO) ==========
+// ========== ATUALIZAR MODAL ==========
 function updateGalleryModalMedia() {
     const container = document.getElementById('galleryCurrentMedia');
     const counterElement = document.getElementById('galleryCounter');
@@ -398,7 +500,6 @@ function updateGalleryModalMedia() {
     if (!container || !window.currentGalleryImages.length) return;
     
     const currentUrl = window.currentGalleryImages[window.currentGalleryIndex];
-    // USAR FUNÇÃO CENTRALIZADA
     const isVideo = window.isVideoUrl(currentUrl);
     
     if (isVideo) {
@@ -466,7 +567,6 @@ window.closeGallery = function() {
     if (galleryModal) {
         galleryModal.style.display = 'none';
         document.body.style.overflow = 'auto';
-        // Não resetar os arrays para manter referência
     }
 };
 
@@ -503,7 +603,6 @@ window.setupGalleryEvents = function() {
         }
     });
     
-    // Adicionar CSS hover para as setas e efeito no contador
     const style = document.createElement('style');
     style.textContent = `
         .gallery-nav-arrow:hover {
@@ -515,14 +614,12 @@ window.setupGalleryEvents = function() {
             transform: translateY(-50%) scale(0.95) !important;
         }
         
-        /* Efeito hover para o contador Glassmorphism */
         .gallery-view-counter:hover {
             background: rgba(255, 255, 255, 0.35) !important;
             transform: scale(1.05);
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
         }
         
-        /* Animação suave para o contador */
         @keyframes pulse {
             0% { transform: scale(1); }
             50% { transform: scale(1.1); }
@@ -540,14 +637,12 @@ window.setupGalleryEvents = function() {
     document.head.appendChild(style);
 };
 
-// Inicializar eventos quando o DOM estiver pronto
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', window.setupGalleryEvents);
 } else {
     window.setupGalleryEvents();
 }
 
-// Manter compatibilidade com a função antiga (se necessário)
 window.openGallery = window.openGalleryAtCurrentIndex;
 
-console.log('✅ gallery.js carregado - Contador Glassmorphism implementado!');
+console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
