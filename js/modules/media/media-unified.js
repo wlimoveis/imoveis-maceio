@@ -1,10 +1,9 @@
-// js/modules/media/media-unified.js - CORE SYSTEM OTIMIZADO (VERSÃO FINAL)
-// ✅ Contém apenas lógica ESSENCIAL de upload/delete/estado
-// ✅ UI completa delegada para Support System (media-ui-full.js)
-// ✅ Fallback mínimo informativo para produção (sem UI visual)
-// ✅ Drag & drop disponível APENAS em modo debug
+// js/modules/media/media-unified.js - CORE SYSTEM COM FALLBACK COMPLETO
+// ✅ Contém lógica ESSENCIAL de upload/delete/estado
+// ✅ UI completa delegada para Support System (em debug)
+// ✅ Fallback COMPLETO para produção (previews + drag & drop)
 
-console.log('🔄 media-unified.js - Core System (lógica essencial + fallback informativo)');
+console.log('🔄 media-unified.js - Core System (lógica essencial + fallback completo)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -53,15 +52,39 @@ const MediaSystem = {
         console.log(`🔧 Inicializando sistema de mídia para: ${systemName}`);
         this.config.currentSystem = systemName;
         this.resetState();
-        this.setupBasicEventListeners();
+        this.setupEventListeners();
         return this;
     },
 
-    // ========== EVENT LISTENERS BÁSICOS (FALLBACK) ==========
-    setupBasicEventListeners() {
+    // ========== EVENT LISTENERS ==========
+    setupEventListeners: function() {
+        const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
-        if (fileInput && !fileInput.hasAttribute('data-listener')) {
-            fileInput.setAttribute('data-listener', 'true');
+        
+        if (uploadArea && fileInput && !uploadArea.hasAttribute('data-listener')) {
+            uploadArea.setAttribute('data-listener', 'true');
+            uploadArea.addEventListener('click', () => fileInput.click());
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#3498db';
+                uploadArea.style.background = '#e8f4fc';
+            });
+            
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.background = '#fafafa';
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#ddd';
+                uploadArea.style.background = '#fafafa';
+                if (e.dataTransfer.files.length > 0) {
+                    this.addFiles(e.dataTransfer.files);
+                }
+            });
+            
             fileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     this.addFiles(e.target.files);
@@ -70,9 +93,13 @@ const MediaSystem = {
             });
         }
         
+        const pdfUploadArea = document.getElementById('pdfUploadArea');
         const pdfFileInput = document.getElementById('pdfFileInput');
-        if (pdfFileInput && !pdfFileInput.hasAttribute('data-listener')) {
-            pdfFileInput.setAttribute('data-listener', 'true');
+        
+        if (pdfUploadArea && pdfFileInput && !pdfUploadArea.hasAttribute('data-listener')) {
+            pdfUploadArea.setAttribute('data-listener', 'true');
+            pdfUploadArea.addEventListener('click', () => pdfFileInput.click());
+            
             pdfFileInput.addEventListener('change', (e) => {
                 if (e.target.files.length > 0) {
                     this.addPdfs(e.target.files);
@@ -138,13 +165,23 @@ const MediaSystem = {
         return this;
     },
 
-    // ========== FUNÇÃO AUXILIAR PARA DETECTAR VÍDEO ==========
+    // ========== FUNÇÃO AUXILIAR ==========
     isVideoUrl: function(url) {
         if (!url) return false;
         const urlLower = url.toLowerCase();
         return urlLower.includes('.mp4') || urlLower.includes('.mov') || 
                urlLower.includes('.webm') || urlLower.includes('.avi') ||
                urlLower.includes('video/');
+    },
+
+    escapeHtml: function(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;');
     },
 
     // ========== ADICIONAR NOVOS ARQUIVOS ==========
@@ -371,11 +408,9 @@ const MediaSystem = {
         }
     },
 
-    // ========== EXCLUSÃO FÍSICA DE ARQUIVO ÚNICO ==========
+    // ========== EXCLUSÃO FÍSICA ==========
     async deleteFileFromStorage(fileUrl) {
-        if (!fileUrl) {
-            return { success: false, error: 'No URL provided' };
-        }
+        if (!fileUrl) return { success: false, error: 'No URL provided' };
         
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
@@ -399,13 +434,9 @@ const MediaSystem = {
                 }
             }
 
-            if (!filePath) {
-                return { success: false, error: 'Empty file path' };
-            }
+            if (!filePath) return { success: false, error: 'Empty file path' };
 
-            try {
-                filePath = decodeURIComponent(filePath);
-            } catch (e) {}
+            try { filePath = decodeURIComponent(filePath); } catch (e) {}
 
             const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
 
@@ -428,7 +459,6 @@ const MediaSystem = {
         }
     },
 
-    // ========== EXCLUSÃO FÍSICA DE MÚLTIPLOS ARQUIVOS ==========
     async deleteFilesFromStorage(urls) {
         if (!urls || urls.length === 0) {
             return { success: true, deletedCount: 0, failedCount: 0 };
@@ -439,20 +469,13 @@ const MediaSystem = {
 
         for (let i = 0; i < urls.length; i++) {
             const result = await this.deleteFileFromStorage(urls[i]);
-            
-            if (result.success) {
-                deletedCount++;
-            } else {
-                failedCount++;
-            }
-            
+            if (result.success) { deletedCount++; } else { failedCount++; }
             await new Promise(resolve => setTimeout(resolve, 100));
         }
 
         return { success: failedCount === 0, deletedCount, failedCount };
     },
 
-    // ========== PROCESSAR EXCLUSÕES ==========
     async processDeletions() {
         const imagesToDelete = this.state.existing.filter(item => item.markedForDeletion);
         const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
@@ -493,7 +516,7 @@ const MediaSystem = {
         return false;
     },
 
-    // ========== FUNÇÃO PARA SALVAR LOCALMENTE (FALLBACK) ==========
+    // ========== FUNÇÃO PARA SALVAR LOCALMENTE ==========
     saveAndKeepLocal: function(propertyId, propertyTitle) {
         const allMedia = [
             ...this.state.existing.filter(item => !item.markedForDeletion),
@@ -528,13 +551,141 @@ const MediaSystem = {
         
         this.updateUI();
         
-        return {
-            images: imageUrls.join(','),
-            pdfs: pdfUrls.join(',')
-        };
+        return { images: imageUrls.join(','), pdfs: pdfUrls.join(',') };
     },
 
-    // ========== FUNÇÃO PARA OBTER URLs ORDENADAS ==========
+    // ========== UI DELEGATION ==========
+    updateUI: function() {
+        if (this._updateTimeout) clearTimeout(this._updateTimeout);
+        
+        this._updateTimeout = setTimeout(() => {
+            if (window.SupportUI && typeof window.SupportUI.renderMediaPreview === 'function') {
+                window.SupportUI.renderMediaPreview(this);
+                window.SupportUI.renderPdfPreview(this);
+            } else {
+                this.renderMediaPreviewFallback();
+                this.renderPdfPreviewFallback();
+            }
+        }, 50);
+    },
+
+    // ========== FALLBACK COMPLETO PARA PREVIEW DE MÍDIA ==========
+    renderMediaPreviewFallback: function() {
+        const container = document.getElementById('uploadPreview');
+        if (!container) return;
+        
+        const allFiles = [
+            ...this.state.existing.filter(item => !item.markedForDeletion),
+            ...this.state.files
+        ];
+        
+        if (allFiles.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #95a5a6; padding: 2rem;">
+                    <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                    <p style="margin: 0;">Nenhuma foto ou vídeo adicionada</p>
+                    <small style="font-size: 0.8rem;">Arraste ou clique para adicionar</small>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-wrap: wrap; gap: 10px;">';
+        
+        allFiles.forEach((item, index) => {
+            const isMarked = item.markedForDeletion;
+            const isExisting = item.isExisting;
+            const isNew = item.isNew;
+            const isVideo = item.isVideo === true || 
+                            (item.type && item.type.startsWith('video/')) ||
+                            (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
+            
+            let borderColor = isVideo ? '#9b59b6' : '#3498db';
+            let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
+            
+            if (isMarked) {
+                borderColor = '#e74c3c';
+                statusText = 'Excluir';
+            }
+            
+            let imageUrl = item.uploadedUrl || item.url || item.preview;
+            const displayName = item.name || 'Arquivo';
+            const shortName = displayName.length > 15 ? displayName.substring(0, 12) + '...' : displayName;
+            
+            html += `
+                <div class="media-preview-item-fallback" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:#f0f0f0;">
+                    <div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">
+                        ${imageUrl ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
+                        <div style="display:${imageUrl ? 'none' : 'flex'};flex-direction:column;align-items:center;color:white;">
+                            <i class="fas fa-image" style="font-size:1.5rem;"></i>
+                            <span style="font-size:0.6rem;">${this.escapeHtml(shortName)}</span>
+                        </div>
+                    </div>
+                    <div style="padding:5px;font-size:0.65rem;text-align:center;background:white;">
+                        ${statusText}
+                    </div>
+                    <button onclick="MediaSystem.removeFile('${item.id}')" 
+                            style="position:absolute;top:-5px;right:-5px;background:${isMarked ? '#c0392b' : '#e74c3c'};color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;">
+                        ${isMarked ? '↺' : '×'}
+                    </button>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    // ========== FALLBACK COMPLETO PARA PREVIEW DE PDFs ==========
+    renderPdfPreviewFallback: function() {
+        const container = document.getElementById('pdfUploadPreview');
+        if (!container) return;
+        
+        const allPdfs = [
+            ...this.state.existingPdfs.filter(item => !item.markedForDeletion),
+            ...this.state.pdfs
+        ];
+        
+        if (allPdfs.length === 0) {
+            container.innerHTML = `
+                <div style="text-align: center; color: #95a5a6; padding: 1rem; font-size: 0.9rem;">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
+                    <p style="margin: 0;">Arraste ou clique para adicionar PDFs</p>
+                </div>
+            `;
+            return;
+        }
+        
+        let html = '<div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">';
+        
+        allPdfs.forEach((pdf, index) => {
+            const isMarked = pdf.markedForDeletion;
+            const isExisting = pdf.isExisting;
+            
+            let borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
+            let statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            const shortName = pdf.name.length > 15 ? pdf.name.substring(0, 12) + '...' : pdf.name;
+            
+            html += `
+                <div style="position:relative;">
+                    <div style="background:#f8f9fa;border:1px solid ${borderColor};border-radius:6px;padding:0.5rem;width:80px;text-align:center;">
+                        <i class="fas fa-file-pdf" style="font-size:1.2rem;color:${borderColor};"></i>
+                        <p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${this.escapeHtml(shortName)}</p>
+                        <small style="color:#666;font-size:0.6rem;">${statusText}</small>
+                    </div>
+                    <button onclick="MediaSystem.removeFile('${pdf.id}')" 
+                            style="position:absolute;top:-8px;right:-8px;background:${borderColor};color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">
+                        ×
+                    </button>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        container.innerHTML = html;
+    },
+
+    // ========== UTILIDADES ==========
     getOrderedMediaUrls: function() {
         const allMedia = [
             ...this.state.existing.filter(item => !item.markedForDeletion),
@@ -552,146 +703,46 @@ const MediaSystem = {
         const pdfUrls = allPdfs.map(item => item.uploadedUrl || item.url)
             .filter(url => url !== null && url !== undefined);
         
-        return {
-            images: imageUrls.join(','),
-            pdfs: pdfUrls.join(',')
-        };
+        return { images: imageUrls.join(','), pdfs: pdfUrls.join(',') };
     },
 
-    // ========== UI DELEGATION OTIMIZADA ==========
-    updateUI: function() {
-        console.log('🔄 [MediaSystem] updateUI chamado');
-        
-        // Tenta usar Support UI primeiro (modo debug)
-        if (window.SupportUI && typeof window.SupportUI.renderMediaPreview === 'function') {
-            window.SupportUI.renderMediaPreview(this);
-            window.SupportUI.renderPdfPreview(this);
-            return;
-        }
-        
-        // FALLBACK MÍNIMO INFORMATIVO (apenas ~25 linhas)
-        this.renderMinimalInformativeFallback();
-    },
-
-    // ========== FALLBACK MÍNIMO INFORMATIVO ==========
-    renderMinimalInformativeFallback: function() {
-        const mediaContainer = document.getElementById('uploadPreview');
-        const pdfContainer = document.getElementById('pdfUploadPreview');
-        
-        const hasMedia = this.state.existing.length > 0 || this.state.files.length > 0;
-        const hasPdfs = this.state.existingPdfs.length > 0 || this.state.pdfs.length > 0;
-        
-        if (mediaContainer && hasMedia) {
-            const total = this.state.existing.length + this.state.files.length;
-            mediaContainer.innerHTML = `
-                <div style="background:#e8f4fc; border-radius:8px; padding:1rem; text-align:center; border:1px solid #3498db;">
-                    <i class="fas fa-images" style="color:#3498db; font-size:1.5rem;"></i>
-                    <p style="margin:0.5rem 0;"><strong>${total} arquivo(s) carregado(s)</strong></p>
-                    <small style="color:#666;">📱 Adicione ?debug=true à URL para visualizar e organizar</small>
-                </div>
-            `;
-        } else if (mediaContainer && !hasMedia) {
-            mediaContainer.innerHTML = `
-                <div style="text-align: center; color: #95a5a6; padding: 2rem;">
-                    <i class="fas fa-images" style="font-size: 2rem; margin-bottom: 1rem; opacity: 0.5;"></i>
-                    <p style="margin: 0;">Nenhuma foto ou vídeo adicionada</p>
-                    <small style="font-size: 0.8rem;">Arraste ou clique para adicionar</small>
-                </div>
-            `;
-        }
-        
-        if (pdfContainer && hasPdfs) {
-            const total = this.state.existingPdfs.length + this.state.pdfs.length;
-            pdfContainer.innerHTML = `
-                <div style="background:#f8f9fa; border-radius:8px; padding:1rem; text-align:center; border:1px solid #27ae60;">
-                    <i class="fas fa-file-pdf" style="color:#27ae60; font-size:1.5rem;"></i>
-                    <p style="margin:0.5rem 0;"><strong>${total} PDF(s) carregado(s)</strong></p>
-                    <small style="color:#666;">📱 Adicione ?debug=true à URL para visualizar PDFs</small>
-                </div>
-            `;
-        } else if (pdfContainer && !hasPdfs) {
-            pdfContainer.innerHTML = `
-                <div style="text-align: center; color: #95a5a6; padding: 1rem; font-size: 0.9rem;">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 1.5rem; margin-bottom: 0.5rem; opacity: 0.5;"></i>
-                    <p style="margin: 0;">Arraste ou clique para adicionar PDFs</p>
-                </div>
-            `;
-        }
-        
-        console.log(`📦 [MediaSystem] Fallback informativo exibido (${hasMedia || hasPdfs ? "com dados" : "vazio"})`);
-    },
-
-    // ========== UTILIDADES ==========
     extractFileName: function(url) {
         if (!url) return 'arquivo';
-        
         try {
             const urlWithoutQuery = url.split('?')[0];
             const parts = urlWithoutQuery.split('/');
             let fileName = parts[parts.length - 1] || 'arquivo';
-            
-            try {
-                fileName = decodeURIComponent(fileName);
-            } catch (e) {}
-            
-            if (fileName.length > 50) {
-                fileName = fileName.substring(0, 47) + '...';
-            }
-            
+            try { fileName = decodeURIComponent(fileName); } catch (e) {}
+            if (fileName.length > 50) fileName = fileName.substring(0, 47) + '...';
             return fileName;
-        } catch {
-            return 'arquivo';
-        }
+        } catch { return 'arquivo'; }
     },
 
     reconstructSupabaseUrl: function(filename) {
         if (!filename || typeof filename !== 'string') return null;
         if (filename.startsWith('http')) return filename;
         if (!filename.includes('.')) return null;
-        
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             const bucket = this.config.buckets[this.config.currentSystem];
             return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`;
-        } catch (error) {
-            return null;
-        }
+        } catch { return null; }
     },
 
     getFileTypeFromUrl: function(url) {
         if (!url) return 'image/jpeg';
-        
         const urlLower = url.toLowerCase();
-        
-        if (urlLower.includes('.mp4') || urlLower.includes('.mov') || 
-            urlLower.includes('.webm') || urlLower.includes('.avi') ||
-            urlLower.includes('video/')) {
-            return 'video/mp4';
-        }
-        
-        if (urlLower.includes('.jpg') || urlLower.includes('.jpeg') || 
-            urlLower.includes('.png') || urlLower.includes('.gif') || 
-            urlLower.includes('.webp') || urlLower.includes('image/')) {
-            return 'image/jpeg';
-        }
-        
-        if (urlLower.includes('.pdf') || urlLower.includes('application/pdf')) {
-            return 'application/pdf';
-        }
-        
+        if (urlLower.includes('.mp4') || urlLower.includes('.mov')) return 'video/mp4';
+        if (urlLower.includes('.jpg') || urlLower.includes('.jpeg')) return 'image/jpeg';
+        if (urlLower.includes('.pdf')) return 'application/pdf';
         return 'image/jpeg';
     },
 
-    // ========== RESETAR ESTADO ==========
     resetState: function() {
         const cleanupBlobUrls = (items) => {
             items.forEach(item => {
-                if (item.preview && item.preview.startsWith('blob:')) {
-                    URL.revokeObjectURL(item.preview);
-                }
-                if (item.blobUrl) {
-                    URL.revokeObjectURL(item.blobUrl);
-                }
+                if (item.preview && item.preview.startsWith('blob:')) URL.revokeObjectURL(item.preview);
+                if (item.blobUrl) URL.revokeObjectURL(item.blobUrl);
             });
         };
         
@@ -710,18 +761,16 @@ const MediaSystem = {
     }
 };
 
-// ========== EXPORTAR PARA WINDOW ==========
 window.MediaSystem = MediaSystem;
 
-// ========== INICIALIZAÇÃO AUTOMÁTICA ==========
 setTimeout(() => {
     window.MediaSystem.init('vendas');
     const isDebug = window.location.search.includes('debug=true');
-    console.log(`✅ MediaSystem Core carregado - Lógica essencial + Fallback informativo`);
-    console.log(`📦 Modo: ${isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback informativo)'}`);
+    console.log(`✅ MediaSystem Core carregado - Lógica essencial + Fallback completo`);
+    console.log(`📦 Modo: ${isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com previews)'}`);
 }, 1000);
 
-console.log('✅ media-unified.js CORE otimizado - ' + 
+console.log('✅ media-unified.js CORE - ' + 
             (window.location.search.includes('debug=true') ? 
              'Modo DEBUG (UI via Support System)' : 
-             'Modo PRODUÇÃO (fallback informativo)'));
+             'Modo PRODUÇÃO (fallback completo com previews)'));
