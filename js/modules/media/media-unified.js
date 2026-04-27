@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
 // ✅ Contém lógica ESSENCIAL de upload/delete/estado
-// ✅ FALLBACK COMPLETO com DRAG & DROP para produção (experiência completa)
-// ✅ UI avançada delegada para Support System (em debug)
+// ✅ FALLBACK COMPLETO com DRAG & DROP para produção
+// ✅ UI completa delegada para Support System (em debug)
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -35,9 +35,10 @@ const MediaSystem = {
     },
 
     // ========== INICIALIZAÇÃO ==========
-    init(systemName = 'vendas') {
-        console.log(`🔧 Inicializando sistema de mídia para: ${systemName}`);
-        this.config.currentSystem = systemName;
+    init(systemName) {
+        var system = systemName || 'vendas';
+        console.log('🔧 Inicializando sistema de mídia para: ' + system);
+        this.config.currentSystem = system;
         this.resetState();
         this.setupEventListeners();
         return this;
@@ -45,62 +46,67 @@ const MediaSystem = {
 
     // ========== EVENT LISTENERS ==========
     setupEventListeners: function() {
-        const uploadArea = document.getElementById('uploadArea');
-        const fileInput = document.getElementById('fileInput');
+        var uploadArea = document.getElementById('uploadArea');
+        var fileInput = document.getElementById('fileInput');
+        var self = this;
         
         if (uploadArea && fileInput && !uploadArea.hasAttribute('data-listener')) {
             uploadArea.setAttribute('data-listener', 'true');
-            uploadArea.addEventListener('click', () => fileInput.click());
-            uploadArea.addEventListener('dragover', (e) => { 
+            uploadArea.addEventListener('click', function() { fileInput.click(); });
+            uploadArea.addEventListener('dragover', function(e) { 
                 e.preventDefault(); 
                 uploadArea.style.borderColor = '#3498db'; 
                 uploadArea.style.background = '#e8f4fc'; 
             });
-            uploadArea.addEventListener('dragleave', () => { 
+            uploadArea.addEventListener('dragleave', function() { 
                 uploadArea.style.borderColor = '#ddd'; 
                 uploadArea.style.background = '#fafafa'; 
             });
-            uploadArea.addEventListener('drop', (e) => {
+            uploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 uploadArea.style.borderColor = '#ddd';
                 uploadArea.style.background = '#fafafa';
-                if (e.dataTransfer.files.length > 0) this.addFiles(e.dataTransfer.files);
+                if (e.dataTransfer.files.length > 0) self.addFiles(e.dataTransfer.files);
             });
-            fileInput.addEventListener('change', (e) => { 
+            fileInput.addEventListener('change', function(e) { 
                 if (e.target.files.length > 0) { 
-                    this.addFiles(e.target.files); 
+                    self.addFiles(e.target.files); 
                     e.target.value = ''; 
                 } 
             });
         }
         
-        const pdfUploadArea = document.getElementById('pdfUploadArea');
-        const pdfFileInput = document.getElementById('pdfFileInput');
+        var pdfUploadArea = document.getElementById('pdfUploadArea');
+        var pdfFileInput = document.getElementById('pdfFileInput');
         
         if (pdfUploadArea && pdfFileInput && !pdfUploadArea.hasAttribute('data-listener')) {
             pdfUploadArea.setAttribute('data-listener', 'true');
-            pdfUploadArea.addEventListener('click', () => pdfFileInput.click());
-            pdfUploadArea.addEventListener('dragover', (e) => { 
+            pdfUploadArea.addEventListener('click', function() { pdfFileInput.click(); });
+            pdfUploadArea.addEventListener('dragover', function(e) { 
                 e.preventDefault(); 
                 pdfUploadArea.style.borderColor = '#27ae60'; 
                 pdfUploadArea.style.background = '#e8f8ef'; 
             });
-            pdfUploadArea.addEventListener('dragleave', () => { 
+            pdfUploadArea.addEventListener('dragleave', function() { 
                 pdfUploadArea.style.borderColor = '#ddd'; 
                 pdfUploadArea.style.background = '#fafafa'; 
             });
-            pdfUploadArea.addEventListener('drop', (e) => {
+            pdfUploadArea.addEventListener('drop', function(e) {
                 e.preventDefault();
                 pdfUploadArea.style.borderColor = '#ddd';
                 pdfUploadArea.style.background = '#fafafa';
                 if (e.dataTransfer.files.length > 0) {
-                    const pdfFiles = Array.from(e.dataTransfer.files).filter(f => f.type === 'application/pdf');
-                    if (pdfFiles.length > 0) this.addPdfs(pdfFiles);
+                    var pdfFiles = [];
+                    var files = Array.from(e.dataTransfer.files);
+                    for (var i = 0; i < files.length; i++) {
+                        if (files[i].type === 'application/pdf') pdfFiles.push(files[i]);
+                    }
+                    if (pdfFiles.length > 0) self.addPdfs(pdfFiles);
                 }
             });
-            pdfFileInput.addEventListener('change', (e) => { 
+            pdfFileInput.addEventListener('change', function(e) { 
                 if (e.target.files.length > 0) { 
-                    this.addPdfs(e.target.files); 
+                    self.addPdfs(e.target.files); 
                     e.target.value = ''; 
                 } 
             });
@@ -110,23 +116,24 @@ const MediaSystem = {
     // ========== CARREGAR ARQUIVOS EXISTENTES ==========
     loadExisting: function(property) {
         if (!property) return this;
-        console.log(`📥 Carregando mídia existente para imóvel ${property.id}`);
+        console.log('📥 Carregando mídia existente para imóvel ' + property.id);
         this.state.currentPropertyId = property.id;
         this.state.existing = [];
         this.state.existingPdfs = [];
+        var self = this;
         
         if (property.images && property.images !== 'EMPTY') {
-            const imageUrls = property.images.split(',').map(url => url.trim()).filter(url => url && url !== 'EMPTY');
-            this.state.existing = imageUrls.map((url, index) => {
-                let finalUrl = url;
-                if (!url.startsWith('http') && !url.startsWith('blob:')) finalUrl = this.reconstructSupabaseUrl(url) || url;
-                const isVideo = this.isVideoUrl(finalUrl);
+            var imageUrls = property.images.split(',').map(function(url) { return url.trim(); }).filter(function(url) { return url && url !== 'EMPTY'; });
+            this.state.existing = imageUrls.map(function(url, index) {
+                var finalUrl = url;
+                if (!url.startsWith('http') && !url.startsWith('blob:')) finalUrl = self.reconstructSupabaseUrl(url) || url;
+                var isVideo = self.isVideoUrl(finalUrl);
                 return { 
                     url: finalUrl, 
                     preview: finalUrl, 
-                    id: `existing_img_${property.id}_${index}`, 
-                    name: this.extractFileName(url), 
-                    type: this.getFileTypeFromUrl(url), 
+                    id: 'existing_img_' + property.id + '_' + index, 
+                    name: self.extractFileName(url), 
+                    type: self.getFileTypeFromUrl(url), 
                     isExisting: true, 
                     markedForDeletion: false, 
                     isNew: false, 
@@ -136,15 +143,15 @@ const MediaSystem = {
         }
         
         if (property.pdfs && property.pdfs !== 'EMPTY') {
-            const pdfUrls = property.pdfs.split(',').map(url => url.trim()).filter(url => url && url !== 'EMPTY');
-            this.state.existingPdfs = pdfUrls.map((url, index) => ({ 
+            var pdfUrls = property.pdfs.split(',').map(function(url) { return url.trim(); }).filter(function(url) { return url && url !== 'EMPTY'; });
+            this.state.existingPdfs = pdfUrls.map(function(url, index) { return { 
                 url: url, 
-                id: `existing_pdf_${property.id}_${index}`, 
-                name: this.extractFileName(url), 
+                id: 'existing_pdf_' + property.id + '_' + index, 
+                name: self.extractFileName(url), 
                 isExisting: true, 
                 markedForDeletion: false, 
                 type: 'application/pdf' 
-            }));
+            }; });
         }
         
         this.updateUI();
@@ -154,8 +161,8 @@ const MediaSystem = {
     // ========== FUNÇÕES AUXILIARES ==========
     isVideoUrl: function(url) { 
         if (!url) return false; 
-        const u = url.toLowerCase(); 
-        return u.includes('.mp4') || u.includes('.mov') || u.includes('.webm') || u.includes('.avi') || u.includes('video/'); 
+        var u = url.toLowerCase(); 
+        return u.indexOf('.mp4') !== -1 || u.indexOf('.mov') !== -1 || u.indexOf('.webm') !== -1 || u.indexOf('.avi') !== -1 || u.indexOf('video/') !== -1; 
     },
     
     escapeHtml: function(str) { 
@@ -166,16 +173,19 @@ const MediaSystem = {
     // ========== ADICIONAR ARQUIVOS ==========
     addFiles: function(fileList) {
         if (!fileList || fileList.length === 0) return 0;
-        let addedCount = 0;
-        Array.from(fileList).forEach(file => {
-            const isImage = this.config.allowedTypes.images.includes(file.type);
-            const isVideo = this.config.allowedTypes.videos.includes(file.type);
-            if (!isImage && !isVideo) { alert(`❌ "${file.name}" - Tipo não suportado! Apenas imagens e vídeos.`); return; }
-            if (file.size > this.config.limits.maxSize) { alert(`❌ "${file.name}" - Arquivo muito grande! Máximo: 5MB`); return; }
-            const blobUrl = URL.createObjectURL(file);
-            this.state.files.push({ 
+        var addedCount = 0;
+        var self = this;
+        var filesArray = Array.from(fileList);
+        for (var f = 0; f < filesArray.length; f++) {
+            var file = filesArray[f];
+            var isImage = self.config.allowedTypes.images.indexOf(file.type) !== -1;
+            var isVideo = self.config.allowedTypes.videos.indexOf(file.type) !== -1;
+            if (!isImage && !isVideo) { alert('❌ "' + file.name + '" - Tipo não suportado!'); continue; }
+            if (file.size > self.config.limits.maxSize) { alert('❌ "' + file.name + '" - Máximo: 5MB'); continue; }
+            var blobUrl = URL.createObjectURL(file);
+            self.state.files.push({ 
                 file: file, 
-                id: `new_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, 
+                id: 'new_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), 
                 name: file.name, 
                 type: file.type, 
                 preview: blobUrl, 
@@ -187,195 +197,225 @@ const MediaSystem = {
                 blobUrl: blobUrl 
             });
             addedCount++;
-        });
+        }
         this.updateUI();
         return addedCount;
     },
 
     addPdfs: function(fileList) {
         if (!fileList || fileList.length === 0) return 0;
-        let addedCount = 0;
-        Array.from(fileList).forEach(file => {
-            if (!this.config.allowedTypes.pdfs.includes(file.type)) { alert(`❌ "${file.name}" - Não é um PDF válido!`); return; }
-            if (file.size > this.config.limits.maxPdfSize) { alert(`❌ "${file.name}" - PDF muito grande! Máximo: 10MB`); return; }
-            this.state.pdfs.push({ 
+        var addedCount = 0;
+        var self = this;
+        var filesArray = Array.from(fileList);
+        for (var f = 0; f < filesArray.length; f++) {
+            var file = filesArray[f];
+            if (self.config.allowedTypes.pdfs.indexOf(file.type) === -1) { alert('❌ "' + file.name + '" - Não é PDF!'); continue; }
+            if (file.size > self.config.limits.maxPdfSize) { alert('❌ "' + file.name + '" - Máximo: 10MB'); continue; }
+            self.state.pdfs.push({ 
                 file: file, 
-                id: `pdf_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, 
+                id: 'pdf_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9), 
                 name: file.name, 
                 isNew: true, 
                 uploaded: false, 
                 uploadedUrl: null 
             });
             addedCount++;
-        });
+        }
         this.updateUI();
         return addedCount;
     },
 
     // ========== UPLOAD ==========
-    async uploadSingleFile(file, propertyId, type = 'media') {
-        return new Promise(async (resolve, reject) => {
-            try {
-                const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-                const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-                const bucket = this.config.buckets[this.config.currentSystem];
-                const timestamp = Date.now();
-                const random = Math.random().toString(36).substring(2, 10);
-                const safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 50);
-                const prefix = type === 'pdf' ? 'pdf' : 'media';
-                const fileName = `${prefix}_${propertyId}_${timestamp}_${random}_${safeName}`;
-                const filePath = `${bucket}/${fileName}`;
-                const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${filePath}`;
-                const response = await fetch(uploadUrl, { 
-                    method: 'POST', 
-                    headers: { 
-                        'Authorization': `Bearer ${SUPABASE_KEY}`, 
-                        'apikey': SUPABASE_KEY, 
-                        'Content-Type': file.type || 'application/octet-stream' 
-                    }, 
-                    body: file 
-                });
+    uploadSingleFile: function(file, propertyId, type) {
+        var self = this;
+        var t = type || 'media';
+        return new Promise(function(resolve, reject) {
+            var SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+            var SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+            var bucket = self.config.buckets[self.config.currentSystem];
+            var timestamp = Date.now();
+            var random = Math.random().toString(36).substring(2, 10);
+            var safeName = file.name.replace(/[^a-zA-Z0-9.-]/g, '_').substring(0, 50);
+            var prefix = t === 'pdf' ? 'pdf' : 'media';
+            var fileName = prefix + '_' + propertyId + '_' + timestamp + '_' + random + '_' + safeName;
+            var filePath = bucket + '/' + fileName;
+            var uploadUrl = SUPABASE_URL + '/storage/v1/object/' + filePath;
+            
+            fetch(uploadUrl, { 
+                method: 'POST', 
+                headers: { 
+                    'Authorization': 'Bearer ' + SUPABASE_KEY, 
+                    'apikey': SUPABASE_KEY, 
+                    'Content-Type': file.type || 'application/octet-stream' 
+                }, 
+                body: file 
+            }).then(function(response) {
                 if (response.ok) { 
-                    const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${filePath}`; 
+                    var publicUrl = SUPABASE_URL + '/storage/v1/object/public/' + filePath; 
                     resolve(publicUrl); 
                 } else { 
-                    reject(new Error(`Upload falhou: ${response.status}`)); 
+                    reject(new Error('Upload falhou: ' + response.status)); 
                 }
-            } catch (error) { 
+            }).catch(function(error) { 
                 reject(error); 
-            }
+            });
         });
     },
 
-    async uploadAll(propertyId, propertyTitle) {
-        if (this.state.isUploading) return { success: false, images: '', pdfs: '', uploadedCount: 0, error: 'Upload em andamento' };
+    uploadAll: function(propertyId, propertyTitle) {
+        var self = this;
+        if (this.state.isUploading) return Promise.resolve({ success: false, images: '', pdfs: '', uploadedCount: 0, error: 'Upload em andamento' });
         this.state.isUploading = true;
-        try {
-            const newFiles = this.state.files.filter(item => item.isNew === true && item.file instanceof File && !item.uploaded);
-            await this.processDeletions();
-            const uploadedImageUrls = [];
-            for (let i = 0; i < newFiles.length; i++) {
-                const fileItem = newFiles[i];
-                try {
-                    const uploadedUrl = await this.uploadSingleFile(fileItem.file, propertyId, 'media');
-                    if (uploadedUrl) {
-                        fileItem.uploadedUrl = uploadedUrl; 
-                        fileItem.uploaded = true; 
-                        fileItem.isNew = false;
-                        if (fileItem.preview && fileItem.preview.startsWith('blob:')) { 
-                            URL.revokeObjectURL(fileItem.preview); 
-                            fileItem.preview = uploadedUrl; 
+        
+        return (async function() {
+            try {
+                var newFiles = self.state.files.filter(function(item) { return item.isNew === true && item.file instanceof File && !item.uploaded; });
+                await self.processDeletions();
+                var uploadedImageUrls = [];
+                
+                for (var i = 0; i < newFiles.length; i++) {
+                    var fileItem = newFiles[i];
+                    try {
+                        var uploadedUrl = await self.uploadSingleFile(fileItem.file, propertyId, 'media');
+                        if (uploadedUrl) {
+                            fileItem.uploadedUrl = uploadedUrl; 
+                            fileItem.uploaded = true; 
+                            fileItem.isNew = false;
+                            if (fileItem.preview && fileItem.preview.startsWith('blob:')) { 
+                                URL.revokeObjectURL(fileItem.preview); 
+                                fileItem.preview = uploadedUrl; 
+                            }
+                            uploadedImageUrls.push(uploadedUrl);
                         }
-                        uploadedImageUrls.push(uploadedUrl);
+                    } catch (error) { 
+                        console.error('❌ Erro ao enviar "' + fileItem.name + '":', error); 
                     }
-                } catch (error) { 
-                    console.error(`❌ Erro ao enviar "${fileItem.name}":`, error); 
                 }
-            }
-            const newPdfs = this.state.pdfs.filter(pdf => pdf.isNew && pdf.file && !pdf.uploaded);
-            const uploadedPdfUrls = [];
-            for (let i = 0; i < newPdfs.length; i++) {
-                const pdfItem = newPdfs[i];
-                try {
-                    const uploadedUrl = await this.uploadSingleFile(pdfItem.file, propertyId, 'pdf');
-                    if (uploadedUrl) { 
-                        pdfItem.uploadedUrl = uploadedUrl; 
-                        pdfItem.uploaded = true; 
-                        pdfItem.isNew = false; 
-                        uploadedPdfUrls.push(uploadedUrl); 
+                
+                var newPdfs = self.state.pdfs.filter(function(pdf) { return pdf.isNew && pdf.file && !pdf.uploaded; });
+                var uploadedPdfUrls = [];
+                
+                for (var j = 0; j < newPdfs.length; j++) {
+                    var pdfItem = newPdfs[j];
+                    try {
+                        var uploadedUrl2 = await self.uploadSingleFile(pdfItem.file, propertyId, 'pdf');
+                        if (uploadedUrl2) { 
+                            pdfItem.uploadedUrl = uploadedUrl2; 
+                            pdfItem.uploaded = true; 
+                            pdfItem.isNew = false; 
+                            uploadedPdfUrls.push(uploadedUrl2); 
+                        }
+                    } catch (error) { 
+                        console.error('❌ Erro ao enviar PDF "' + pdfItem.name + '":', error); 
                     }
-                } catch (error) { 
-                    console.error(`❌ Erro ao enviar PDF "${pdfItem.name}":`, error); 
                 }
+                
+                var existingImageUrls = self.state.existing.filter(function(item) { return !item.markedForDeletion && item.url; }).map(function(item) { return item.url; });
+                var existingPdfUrls = self.state.existingPdfs.filter(function(item) { return !item.markedForDeletion && item.url; }).map(function(item) { return item.url; });
+                var allImageUrls = uploadedImageUrls.concat(existingImageUrls);
+                var allPdfUrls = uploadedPdfUrls.concat(existingPdfUrls);
+                var result = { 
+                    success: true, 
+                    images: allImageUrls.join(','), 
+                    pdfs: allPdfUrls.join(','), 
+                    uploadedCount: uploadedImageUrls.length + uploadedPdfUrls.length 
+                };
+                self.state.lastUploadResult = result;
+                self.updateUI();
+                return result;
+            } catch (error) { 
+                console.error('❌ ERRO NO UPLOAD:', error); 
+                return { success: false, images: '', pdfs: '', uploadedCount: 0, error: error.message }; 
+            } finally { 
+                self.state.isUploading = false; 
             }
-            const existingImageUrls = this.state.existing.filter(item => !item.markedForDeletion && item.url).map(item => item.url);
-            const existingPdfUrls = this.state.existingPdfs.filter(item => !item.markedForDeletion && item.url).map(item => item.url);
-            const allImageUrls = [...uploadedImageUrls, ...existingImageUrls];
-            const allPdfUrls = [...uploadedPdfUrls, ...existingPdfUrls];
-            const result = { 
-                success: true, 
-                images: allImageUrls.join(','), 
-                pdfs: allPdfUrls.join(','), 
-                uploadedCount: uploadedImageUrls.length + uploadedPdfUrls.length 
-            };
-            this.state.lastUploadResult = result;
-            this.updateUI();
-            return result;
-        } catch (error) { 
-            console.error('❌ ERRO NO UPLOAD:', error); 
-            return { success: false, images: '', pdfs: '', uploadedCount: 0, error: error.message }; 
-        } finally { 
-            this.state.isUploading = false; 
-        }
+        })();
     },
 
     // ========== EXCLUSÃO ==========
-    async deleteFileFromStorage(fileUrl) {
-        if (!fileUrl) return { success: false, error: 'No URL provided' };
-        try {
-            const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-            const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-            const bucket = this.config.buckets[this.config.currentSystem];
-            const publicPathPattern = `/storage/v1/object/public/${bucket}/`;
-            const pathIndex = fileUrl.indexOf(publicPathPattern);
-            let filePath = null;
-            if (pathIndex !== -1) { 
-                filePath = fileUrl.substring(pathIndex + publicPathPattern.length).split('?')[0]; 
-            } else { 
-                const fileName = fileUrl.split('/').pop().split('?')[0]; 
-                if (fileName && fileName.includes('_')) filePath = fileName; 
-                else return { success: false, error: 'Could not extract file path' }; 
+    deleteFileFromStorage: function(fileUrl) {
+        var self = this;
+        if (!fileUrl) return Promise.resolve({ success: false, error: 'No URL provided' });
+        
+        return (async function() {
+            try {
+                var SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+                var SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+                var bucket = self.config.buckets[self.config.currentSystem];
+                var publicPathPattern = '/storage/v1/object/public/' + bucket + '/';
+                var pathIndex = fileUrl.indexOf(publicPathPattern);
+                var filePath = null;
+                
+                if (pathIndex !== -1) { 
+                    filePath = fileUrl.substring(pathIndex + publicPathPattern.length).split('?')[0]; 
+                } else { 
+                    var fileName = fileUrl.split('/').pop().split('?')[0]; 
+                    if (fileName && fileName.indexOf('_') !== -1) filePath = fileName; 
+                    else return { success: false, error: 'Could not extract file path' }; 
+                }
+                
+                if (!filePath) return { success: false, error: 'Empty file path' };
+                try { filePath = decodeURIComponent(filePath); } catch(e) {}
+                
+                var deleteUrl = SUPABASE_URL + '/storage/v1/object/' + bucket + '/' + filePath;
+                var response = await fetch(deleteUrl, { 
+                    method: 'DELETE', 
+                    headers: { 
+                        'Authorization': 'Bearer ' + SUPABASE_KEY, 
+                        'apikey': SUPABASE_KEY 
+                    } 
+                });
+                
+                if (response.ok) return { success: true, deletedUrl: fileUrl, filePath: filePath };
+                else return { success: false, error: 'HTTP ' + response.status };
+            } catch (error) { 
+                return { success: false, error: error.message }; 
             }
-            if (!filePath) return { success: false, error: 'Empty file path' };
-            try { filePath = decodeURIComponent(filePath); } catch (e) {}
-            const deleteUrl = `${SUPABASE_URL}/storage/v1/object/${bucket}/${filePath}`;
-            const response = await fetch(deleteUrl, { 
-                method: 'DELETE', 
-                headers: { 
-                    'Authorization': `Bearer ${SUPABASE_KEY}`, 
-                    'apikey': SUPABASE_KEY 
-                } 
-            });
-            if (response.ok) return { success: true, deletedUrl: fileUrl, filePath: filePath };
-            else return { success: false, error: `HTTP ${response.status}` };
-        } catch (error) { 
-            return { success: false, error: error.message }; 
-        }
+        })();
     },
 
-    async deleteFilesFromStorage(urls) {
-        if (!urls || urls.length === 0) return { success: true, deletedCount: 0, failedCount: 0 };
-        let deletedCount = 0, failedCount = 0;
-        for (let i = 0; i < urls.length; i++) {
-            const result = await this.deleteFileFromStorage(urls[i]);
-            if (result.success) deletedCount++; else failedCount++;
-            await new Promise(resolve => setTimeout(resolve, 100));
-        }
-        return { success: failedCount === 0, deletedCount, failedCount };
+    deleteFilesFromStorage: function(urls) {
+        var self = this;
+        if (!urls || urls.length === 0) return Promise.resolve({ success: true, deletedCount: 0, failedCount: 0 });
+        
+        return (async function() {
+            var deletedCount = 0, failedCount = 0;
+            for (var i = 0; i < urls.length; i++) {
+                var result = await self.deleteFileFromStorage(urls[i]);
+                if (result.success) deletedCount++; else failedCount++;
+                await new Promise(function(resolve) { setTimeout(resolve, 100); });
+            }
+            return { success: failedCount === 0, deletedCount: deletedCount, failedCount: failedCount };
+        })();
     },
 
-    async processDeletions() {
-        const imagesToDelete = this.state.existing.filter(item => item.markedForDeletion);
-        const pdfsToDelete = this.state.existingPdfs.filter(item => item.markedForDeletion);
-        if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
-            this.state.existing = this.state.existing.filter(item => !item.markedForDeletion);
-            this.state.existingPdfs = this.state.existingPdfs.filter(item => !item.markedForDeletion);
-        }
-        return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
+    processDeletions: function() {
+        var self = this;
+        return (async function() {
+            var imagesToDelete = self.state.existing.filter(function(item) { return item.markedForDeletion; });
+            var pdfsToDelete = self.state.existingPdfs.filter(function(item) { return item.markedForDeletion; });
+            if (imagesToDelete.length > 0 || pdfsToDelete.length > 0) {
+                self.state.existing = self.state.existing.filter(function(item) { return !item.markedForDeletion; });
+                self.state.existingPdfs = self.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; });
+            }
+            return { imagesToDelete: imagesToDelete.length, pdfsToDelete: pdfsToDelete.length };
+        })();
     },
 
     removeFile: function(fileId) {
-        const searchInArray = (array) => {
-            const index = array.findIndex(item => item.id === fileId);
-            if (index !== -1) {
-                const removed = array[index];
-                if (removed.isExisting) { 
-                    removed.markedForDeletion = true; 
-                } else { 
-                    if (removed.preview && removed.preview.startsWith('blob:')) URL.revokeObjectURL(removed.preview); 
-                    array.splice(index, 1); 
+        var self = this;
+        var searchInArray = function(array) {
+            for (var i = 0; i < array.length; i++) {
+                if (array[i].id === fileId) {
+                    var removed = array[i];
+                    if (removed.isExisting) { 
+                        removed.markedForDeletion = true; 
+                    } else { 
+                        if (removed.preview && removed.preview.startsWith('blob:')) URL.revokeObjectURL(removed.preview); 
+                        array.splice(i, 1); 
+                    }
+                    return true;
                 }
-                return true;
             }
             return false;
         };
@@ -387,122 +427,139 @@ const MediaSystem = {
     },
 
     saveAndKeepLocal: function(propertyId, propertyTitle) {
-        const allMedia = [...this.state.existing.filter(item => !item.markedForDeletion), ...this.state.files];
-        const allPdfs = [...this.state.existingPdfs.filter(item => !item.markedForDeletion), ...this.state.pdfs];
-        const imageUrls = allMedia.map(item => item.uploadedUrl || item.url || item.preview).filter(url => url !== null);
-        const pdfUrls = allPdfs.map(item => item.uploadedUrl || item.url).filter(url => url !== null);
-        this.state.files.forEach(item => { if (item.isNew && !item.uploaded) { item.uploaded = true; item.isNew = false; item.uploadedUrl = item.preview; } });
-        this.state.pdfs.forEach(pdf => { if (pdf.isNew && !pdf.uploaded) { pdf.uploaded = true; pdf.isNew = false; } });
+        var allMedia = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
+        var imageUrls = allMedia.map(function(item) { return item.uploadedUrl || item.url || item.preview; }).filter(function(url) { return url !== null; });
+        var pdfUrls = allPdfs.map(function(item) { return item.uploadedUrl || item.url; }).filter(function(url) { return url !== null; });
+        
+        this.state.files.forEach(function(item) { if (item.isNew && !item.uploaded) { item.uploaded = true; item.isNew = false; item.uploadedUrl = item.preview; } });
+        this.state.pdfs.forEach(function(pdf) { if (pdf.isNew && !pdf.uploaded) { pdf.uploaded = true; pdf.isNew = false; } });
         this.updateUI();
         return { images: imageUrls.join(','), pdfs: pdfUrls.join(',') };
     },
 
     getOrderedMediaUrls: function() {
-        const allMedia = [...this.state.existing.filter(item => !item.markedForDeletion), ...this.state.files];
-        const allPdfs = [...this.state.existingPdfs.filter(item => !item.markedForDeletion), ...this.state.pdfs];
-        const imageUrls = allMedia.map(item => item.uploadedUrl || item.url).filter(url => url !== null && url !== undefined);
-        const pdfUrls = allPdfs.map(item => item.uploadedUrl || item.url).filter(url => url !== null && url !== undefined);
+        var allMedia = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
+        var imageUrls = allMedia.map(function(item) { return item.uploadedUrl || item.url; }).filter(function(url) { return url !== null && url !== undefined; });
+        var pdfUrls = allPdfs.map(function(item) { return item.uploadedUrl || item.url; }).filter(function(url) { return url !== null && url !== undefined; });
         return { images: imageUrls.join(','), pdfs: pdfUrls.join(',') };
     },
 
     // ========== UI DELEGATION ==========
     updateUI: function() {
+        var self = this;
         if (this._updateTimeout) clearTimeout(this._updateTimeout);
-        this._updateTimeout = setTimeout(() => {
+        this._updateTimeout = setTimeout(function() {
             if (window.SupportUI && typeof window.SupportUI.renderMediaPreview === 'function') {
-                // Modo DEBUG: UI avançada via Support System (com recursos extras)
-                window.SupportUI.renderMediaPreview(this);
-                window.SupportUI.renderPdfPreview(this);
+                window.SupportUI.renderMediaPreview(self);
+                window.SupportUI.renderPdfPreview(self);
             } else {
-                // Modo PRODUÇÃO: UI completa do Core (com drag & drop)
-                this.renderMediaPreviewComplete();
-                this.renderPdfPreviewComplete();
-                this.setupCompleteDragAndDrop();
+                self.renderMediaPreviewComplete();
+                self.renderPdfPreviewComplete();
+                self.setupCompleteDragAndDrop();
             }
         }, 50);
     },
 
     // ========== RENDER COMPLETO COM DRAG & DROP (PRODUÇÃO) ==========
     renderMediaPreviewComplete: function() {
-        const container = document.getElementById('uploadPreview');
+        var container = document.getElementById('uploadPreview');
         if (!container) return;
+        var self = this;
         
-        const allFiles = [...this.state.existing.filter(item => !item.markedForDeletion), ...this.state.files];
+        var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
         if (allFiles.length === 0) {
-            container.innerHTML = `<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>`;
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>';
             return;
         }
         
-        let html = '<div class="media-sortable-container" style="display:flex;flex-wrap:wrap;gap:10px;">';
-        allFiles.forEach((item, index) => {
-            const isMarked = item.markedForDeletion;
-            const isExisting = item.isExisting;
-            const isNew = item.isNew;
-            const isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
-            let borderColor = isVideo ? '#9b59b6' : '#3498db';
-            let statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
+        var html = '<div class="media-sortable-container" style="display:flex;flex-wrap:wrap;gap:10px;">';
+        
+        for (var idx = 0; idx < allFiles.length; idx++) {
+            var item = allFiles[idx];
+            var index = idx;
+            var isMarked = item.markedForDeletion;
+            var isExisting = item.isExisting;
+            var isNew = item.isNew;
+            var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
+            var borderColor = isVideo ? '#9b59b6' : '#3498db';
+            var statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
             if (isMarked) { borderColor = '#e74c3c'; statusText = 'Excluir'; }
-            let imageUrl = item.uploadedUrl || item.url || item.preview;
-            const displayName = item.name || 'Arquivo';
-            const shortName = displayName.length > 15 ? displayName.substring(0,12)+'...' : displayName;
-            html += `<div class="media-preview-item-complete draggable-item" draggable="true" data-id="${item.id}" data-type="media" title="${this.escapeHtml(displayName)}" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ${borderColor};background:#f0f0f0;cursor:grab;">
-                <div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">
-                    ${imageUrl ? `<img src="${imageUrl}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex';">` : ''}
-                    <div style="display:${imageUrl ? 'none' : 'flex'};flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1.5rem;"></i><span style="font-size:0.6rem;">${this.escapeHtml(shortName)}</span></div>
-                </div>
-                <div style="padding:5px;font-size:0.65rem;text-align:center;background:white;">${statusText}</div>
-                <div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.6);color:white;width:20px;height:20px;border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;"><i class="fas fa-arrows-alt"></i></div>
-                <div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.8);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;">${index+1}</div>
-                <button onclick="MediaSystem.removeFile('${item.id}')" style="position:absolute;top:-5px;right:-5px;background:${isMarked ? '#c0392b' : '#e74c3c'};color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;z-index:10;">${isMarked ? '↺' : '×'}</button>
-            </div>`;
-        });
+            var imageUrl = item.uploadedUrl || item.url || item.preview;
+            var displayName = item.name || 'Arquivo';
+            var shortName = displayName.length > 15 ? displayName.substring(0,12)+'...' : displayName;
+            
+            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + this.escapeHtml(displayName) + '" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
+            html += '<div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
+            if (imageUrl) {
+                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
+            }
+            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1.5rem;"></i><span style="font-size:0.6rem;">' + this.escapeHtml(shortName) + '</span></div>';
+            html += '</div>';
+            html += '<div style="padding:5px;font-size:0.65rem;text-align:center;background:white;">' + statusText + '</div>';
+            html += '<div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.6);color:white;width:20px;height:20px;border-radius:0 0 6px 0;display:flex;align-items:center;justify-content:center;font-size:0.65rem;"><i class="fas fa-arrows-alt"></i></div>';
+            html += '<div style="position:absolute;bottom:2px;right:2px;background:rgba(0,0,0,0.8);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:bold;">' + (index+1) + '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-5px;right:-5px;background:' + (isMarked ? '#c0392b' : '#e74c3c') + ';color:white;border:none;width:22px;height:22px;border-radius:50%;cursor:pointer;font-size:12px;font-weight:bold;z-index:10;">' + (isMarked ? '↺' : '×') + '</button>';
+            html += '</div>';
+        }
+        
         html += '</div>';
         container.innerHTML = html;
     },
 
     renderPdfPreviewComplete: function() {
-        const container = document.getElementById('pdfUploadPreview');
+        var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
+        var self = this;
         
-        const allPdfs = [...this.state.existingPdfs.filter(item => !item.markedForDeletion), ...this.state.pdfs];
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
         
         if (allPdfs.length === 0) {
-            container.innerHTML = `<div style="text-align:center;color:#95a5a6;padding:1rem;font-size:0.9rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>`;
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;font-size:0.9rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>';
             return;
         }
         
-        let html = '<div class="pdf-sortable-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
-        allPdfs.forEach((pdf, index) => {
-            const isMarked = pdf.markedForDeletion;
-            const isExisting = pdf.isExisting;
-            let borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            let statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
-            const shortName = pdf.name.length > 15 ? pdf.name.substring(0,12)+'...' : pdf.name;
-            html += `<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="${pdf.id}" data-type="pdf" style="position:relative;cursor:grab;">
-                <div style="background:#f8f9fa;border:1px solid ${borderColor};border-radius:6px;padding:0.5rem;width:80px;text-align:center;">
-                    <div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-arrows-alt"></i></div>
-                    <i class="fas fa-file-pdf" style="font-size:1.2rem;color:${borderColor};"></i>
-                    <p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${this.escapeHtml(shortName)}</p>
-                    <small style="color:#666;font-size:0.6rem;">${statusText}</small>
-                </div>
-                <button onclick="MediaSystem.removeFile('${pdf.id}')" style="position:absolute;top:-8px;right:-8px;background:${borderColor};color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">×</button>
-            </div>`;
-        });
+        var html = '<div class="pdf-sortable-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
+        
+        for (var idx = 0; idx < allPdfs.length; idx++) {
+            var pdf = allPdfs[idx];
+            var index = idx;
+            var isMarked = pdf.markedForDeletion;
+            var isExisting = pdf.isExisting;
+            var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
+            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            var shortName = pdf.name.length > 15 ? pdf.name.substring(0,12)+'...' : pdf.name;
+            
+            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;cursor:grab;">';
+            html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:6px;padding:0.5rem;width:80px;text-align:center;">';
+            html += '<div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-arrows-alt"></i></div>';
+            html += '<i class="fas fa-file-pdf" style="font-size:1.2rem;color:' + borderColor + ';"></i>';
+            html += '<p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + this.escapeHtml(shortName) + '</p>';
+            html += '<small style="color:#666;font-size:0.6rem;">' + statusText + '</small>';
+            html += '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-8px;right:-8px;background:' + borderColor + ';color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">×</button>';
+            html += '</div>';
+        }
+        
         html += '</div>';
         container.innerHTML = html;
     },
 
     // ========== DRAG & DROP COMPLETO (PRODUÇÃO) ==========
     setupCompleteDragAndDrop: function() {
-        const containers = ['uploadPreview', 'pdfUploadPreview'];
-        containers.forEach(containerId => {
-            const container = document.getElementById(containerId);
-            if (!container || container.hasAttribute('data-drag-drop')) return;
+        var containers = ['uploadPreview', 'pdfUploadPreview'];
+        var self = this;
+        
+        for (var c = 0; c < containers.length; c++) {
+            var containerId = containers[c];
+            var container = document.getElementById(containerId);
+            if (!container || container.hasAttribute('data-drag-drop')) continue;
             container.setAttribute('data-drag-drop', 'true');
             
-            container.addEventListener('dragstart', (e) => {
-                const draggable = e.target.closest('.draggable-item');
+            container.addEventListener('dragstart', function(e) {
+                var draggable = e.target.closest('.draggable-item');
                 if (!draggable) return;
                 e.dataTransfer.setData('text/plain', JSON.stringify({ id: draggable.dataset.id, type: draggable.dataset.type || 'media' }));
                 e.dataTransfer.effectAllowed = 'move';
@@ -510,16 +567,24 @@ const MediaSystem = {
                 draggable.style.opacity = '0.5';
             });
             
-            container.addEventListener('dragend', () => {
-                document.querySelectorAll('.dragging').forEach(el => { el.classList.remove('dragging'); el.style.opacity = ''; });
+            container.addEventListener('dragend', function() {
+                var dragging = document.querySelectorAll('.dragging');
+                for (var i = 0; i < dragging.length; i++) {
+                    dragging[i].classList.remove('dragging');
+                    dragging[i].style.opacity = '';
+                }
             });
             
-            container.addEventListener('dragover', (e) => {
+            container.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
-                const dropTarget = e.target.closest('.draggable-item');
+                var dropTarget = e.target.closest('.draggable-item');
                 if (dropTarget && !dropTarget.classList.contains('drag-over')) {
-                    document.querySelectorAll('.drag-over').forEach(el => { el.classList.remove('drag-over'); el.style.borderColor = ''; });
+                    var dragOver = document.querySelectorAll('.drag-over');
+                    for (var i = 0; i < dragOver.length; i++) {
+                        dragOver[i].classList.remove('drag-over');
+                        dragOver[i].style.borderColor = '';
+                    }
                     dropTarget.classList.add('drag-over');
                     dropTarget.style.borderColor = '#f39c12';
                     dropTarget.style.borderWidth = '2px';
@@ -527,50 +592,68 @@ const MediaSystem = {
                 }
             });
             
-            container.addEventListener('dragleave', (e) => {
-                const dropTarget = e.target.closest('.draggable-item');
+            container.addEventListener('dragleave', function(e) {
+                var dropTarget = e.target.closest('.draggable-item');
                 if (dropTarget) { dropTarget.classList.remove('drag-over'); dropTarget.style.borderColor = ''; }
             });
             
-            container.addEventListener('drop', (e) => {
+            container.addEventListener('drop', function(e) {
                 e.preventDefault();
-                document.querySelectorAll('.drag-over').forEach(el => { el.classList.remove('drag-over'); el.style.borderColor = ''; });
-                let dragData;
+                var dragOver = document.querySelectorAll('.drag-over');
+                for (var i = 0; i < dragOver.length; i++) {
+                    dragOver[i].classList.remove('drag-over');
+                    dragOver[i].style.borderColor = '';
+                }
+                var dragData;
                 try { dragData = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err) { return; }
-                const dropTarget = e.target.closest('.draggable-item');
+                var dropTarget = e.target.closest('.draggable-item');
                 if (!dropTarget) return;
-                const targetId = dropTarget.dataset.id;
-                const targetType = dropTarget.dataset.type || 'media';
+                var targetId = dropTarget.dataset.id;
+                var targetType = dropTarget.dataset.type || 'media';
                 if (dragData.id === targetId || dragData.type !== targetType) return;
-                if (dragData.type === 'media') { this.reorderMediaItemsComplete(dragData.id, targetId); }
-                else if (dragData.type === 'pdf') { this.reorderPdfItemsComplete(dragData.id, targetId); }
-                setTimeout(() => { this.renderMediaPreviewComplete(); this.renderPdfPreviewComplete(); this.setupCompleteDragAndDrop(); }, 50);
-            }.bind(this));
-        });
+                if (dragData.type === 'media') { self.reorderMediaItemsComplete(dragData.id, targetId); }
+                else if (dragData.type === 'pdf') { self.reorderPdfItemsComplete(dragData.id, targetId); }
+                setTimeout(function() { self.renderMediaPreviewComplete(); self.renderPdfPreviewComplete(); self.setupCompleteDragAndDrop(); }, 50);
+            });
+        }
     },
 
     reorderMediaItemsComplete: function(draggedId, targetId) {
-        const allMedia = [...this.state.existing.filter(item => !item.markedForDeletion), ...this.state.files];
-        const draggedIndex = allMedia.findIndex(item => item.id === draggedId);
-        const targetIndex = allMedia.findIndex(item => item.id === targetId);
+        var allMedia = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
+        var draggedIndex = -1, targetIndex = -1;
+        for (var i = 0; i < allMedia.length; i++) {
+            if (allMedia[i].id === draggedId) draggedIndex = i;
+            if (allMedia[i].id === targetId) targetIndex = i;
+        }
         if (draggedIndex === -1 || targetIndex === -1) return;
-        const [draggedItem] = allMedia.splice(draggedIndex, 1);
+        var draggedItem = allMedia[draggedIndex];
+        allMedia.splice(draggedIndex, 1);
         allMedia.splice(targetIndex, 0, draggedItem);
-        const newExisting = [], newFiles = [];
-        allMedia.forEach(item => { if (item.isExisting) newExisting.push(item); else newFiles.push(item); });
+        var newExisting = [], newFiles = [];
+        for (var j = 0; j < allMedia.length; j++) {
+            if (allMedia[j].isExisting) newExisting.push(allMedia[j]);
+            else newFiles.push(allMedia[j]);
+        }
         this.state.existing = newExisting;
         this.state.files = newFiles;
     },
 
     reorderPdfItemsComplete: function(draggedId, targetId) {
-        const allPdfs = [...this.state.existingPdfs.filter(item => !item.markedForDeletion), ...this.state.pdfs];
-        const draggedIndex = allPdfs.findIndex(item => item.id === draggedId);
-        const targetIndex = allPdfs.findIndex(item => item.id === targetId);
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
+        var draggedIndex = -1, targetIndex = -1;
+        for (var i = 0; i < allPdfs.length; i++) {
+            if (allPdfs[i].id === draggedId) draggedIndex = i;
+            if (allPdfs[i].id === targetId) targetIndex = i;
+        }
         if (draggedIndex === -1 || targetIndex === -1) return;
-        const [draggedItem] = allPdfs.splice(draggedIndex, 1);
+        var draggedItem = allPdfs[draggedIndex];
+        allPdfs.splice(draggedIndex, 1);
         allPdfs.splice(targetIndex, 0, draggedItem);
-        const newExistingPdfs = [], newPdfs = [];
-        allPdfs.forEach(item => { if (item.isExisting) newExistingPdfs.push(item); else newPdfs.push(item); });
+        var newExistingPdfs = [], newPdfs = [];
+        for (var j = 0; j < allPdfs.length; j++) {
+            if (allPdfs[j].isExisting) newExistingPdfs.push(allPdfs[j]);
+            else newPdfs.push(allPdfs[j]);
+        }
         this.state.existingPdfs = newExistingPdfs;
         this.state.pdfs = newPdfs;
     },
@@ -579,52 +662,62 @@ const MediaSystem = {
     extractFileName: function(url) {
         if (!url) return 'arquivo';
         try {
-            const urlWithoutQuery = url.split('?')[0];
-            const parts = urlWithoutQuery.split('/');
-            let fileName = parts[parts.length - 1] || 'arquivo';
+            var urlWithoutQuery = url.split('?')[0];
+            var parts = urlWithoutQuery.split('/');
+            var fileName = parts[parts.length - 1] || 'arquivo';
             try { fileName = decodeURIComponent(fileName); } catch(e) {}
             if (fileName.length > 50) fileName = fileName.substring(0,47)+'...';
             return fileName;
-        } catch { return 'arquivo'; }
+        } catch(e) { return 'arquivo'; }
     },
 
     reconstructSupabaseUrl: function(filename) {
         if (!filename || typeof filename !== 'string') return null;
         if (filename.startsWith('http')) return filename;
-        if (!filename.includes('.')) return null;
+        if (filename.indexOf('.') === -1) return null;
         try {
-            const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-            const bucket = this.config.buckets[this.config.currentSystem];
-            return `${SUPABASE_URL}/storage/v1/object/public/${bucket}/${filename}`;
-        } catch { return null; }
+            var SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+            var bucket = this.config.buckets[this.config.currentSystem];
+            return SUPABASE_URL + '/storage/v1/object/public/' + bucket + '/' + filename;
+        } catch(e) { return null; }
     },
 
     getFileTypeFromUrl: function(url) {
         if (!url) return 'image/jpeg';
-        const urlLower = url.toLowerCase();
-        if (urlLower.includes('.mp4') || urlLower.includes('.mov')) return 'video/mp4';
-        if (urlLower.includes('.jpg') || urlLower.includes('.jpeg')) return 'image/jpeg';
-        if (urlLower.includes('.pdf')) return 'application/pdf';
+        var urlLower = url.toLowerCase();
+        if (urlLower.indexOf('.mp4') !== -1 || urlLower.indexOf('.mov') !== -1) return 'video/mp4';
+        if (urlLower.indexOf('.jpg') !== -1 || urlLower.indexOf('.jpeg') !== -1) return 'image/jpeg';
+        if (urlLower.indexOf('.pdf') !== -1) return 'application/pdf';
         return 'image/jpeg';
     },
 
     resetState: function() {
-        const cleanupBlobUrls = (items) => { items.forEach(item => { if (item.preview && item.preview.startsWith('blob:')) URL.revokeObjectURL(item.preview); if (item.blobUrl) URL.revokeObjectURL(item.blobUrl); }); };
+        var cleanupBlobUrls = function(items) {
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].preview && items[i].preview.startsWith('blob:')) URL.revokeObjectURL(items[i].preview);
+                if (items[i].blobUrl) URL.revokeObjectURL(items[i].blobUrl);
+            }
+        };
         cleanupBlobUrls(this.state.files);
         cleanupBlobUrls(this.state.pdfs);
-        this.state.files = []; this.state.existing = []; this.state.pdfs = []; this.state.existingPdfs = [];
-        this.state.isUploading = false; this.state.currentPropertyId = null; this.state.lastUploadResult = null;
+        this.state.files = [];
+        this.state.existing = [];
+        this.state.pdfs = [];
+        this.state.existingPdfs = [];
+        this.state.isUploading = false;
+        this.state.currentPropertyId = null;
+        this.state.lastUploadResult = null;
         return this;
     }
 };
 
 window.MediaSystem = MediaSystem;
 
-setTimeout(() => {
+setTimeout(function() {
     window.MediaSystem.init('vendas');
-    const isDebug = window.location.search.includes('debug=true');
-    console.log(`✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop`);
-    console.log(`📦 Modo: ${isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'}`);
+    var isDebug = window.location.search.indexOf('debug=true') !== -1;
+    console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop');
+    console.log('📦 Modo: ' + (isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'));
 }, 1000);
 
-console.log('✅ media-unified.js CORE - ' + (window.location.search.includes('debug=true') ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
+console.log('✅ media-unified.js CORE - ' + (window.location.search.indexOf('debug=true') !== -1 ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
