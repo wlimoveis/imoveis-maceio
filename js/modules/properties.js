@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES + PADRÃO 4 ITENS
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + PADRÃO 4 ITENS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO POR BAIRRO
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO POR BAIRRO');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -470,6 +470,106 @@ window.FeatureIconMapper = {
 
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
+
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO ==========
+window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
+    console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
+    
+    if (!window.properties) return [];
+    
+    let filtered = window.properties;
+    
+    // Filtrar por categoria
+    if (category && category !== 'todos') {
+        const filterMap = {
+            'Residencial': p => p.type === 'residencial',
+            'Comercial': p => p.type === 'comercial',
+            'Rural': p => p.type === 'rural' || p.rural === true,
+            'Minha Casa Minha Vida': p => p.badge === 'MCMV'
+        };
+        const filterFn = filterMap[category];
+        if (filterFn) {
+            filtered = filtered.filter(filterFn);
+        }
+    }
+    
+    // Filtrar por bairro
+    if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
+        filtered = filtered.filter(property => {
+            if (!property.location) return false;
+            // Extrair bairro da localização
+            let location = property.location;
+            let propertyBairro = '';
+            
+            // Tenta extrair após vírgula
+            const matchComma = location.match(/,\s*([^,-]+)/);
+            if (matchComma) {
+                propertyBairro = matchComma[1].trim().replace(/Maceió\/AL/i, '').trim();
+            }
+            // Tenta extrair antes da vírgula
+            if (!propertyBairro && location.includes(',')) {
+                propertyBairro = location.split(',')[0].trim();
+            }
+            // Tenta extrair antes do hífen
+            if (!propertyBairro && location.includes('-')) {
+                propertyBairro = location.split('-')[0].trim();
+            }
+            // Fallback: pegar primeira parte
+            if (!propertyBairro) {
+                propertyBairro = location.split(/[,-]/)[0].trim();
+            }
+            
+            return propertyBairro.toLowerCase() === bairro.toLowerCase();
+        });
+    }
+    
+    // Renderizar resultados
+    if (typeof window.renderPropertiesWithFilter === 'function') {
+        window.renderPropertiesWithFilter(filtered);
+    } else if (typeof window.renderProperties === 'function') {
+        // Criar um filtro virtual para o renderer
+        window.currentFilterCategory = category;
+        window.currentFilterBairro = bairro;
+        const container = document.getElementById('properties-container');
+        if (container) {
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>';
+            } else {
+                container.innerHTML = filtered.map(prop => 
+                    window.propertyTemplates.generate(prop)
+                ).join('');
+            }
+        }
+    }
+    
+    return filtered;
+};
+
+// ========== RENDERIZAR COM FILTRO PERSONALIZADO ==========
+window.renderPropertiesWithFilter = function(filteredProperties) {
+    const container = document.getElementById('properties-container');
+    if (!container) {
+        console.error('❌ Container properties-container não encontrado');
+        return;
+    }
+    
+    if (!filteredProperties || filteredProperties.length === 0) {
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>';
+        console.log('ℹ️ Nenhum imóvel encontrado para o filtro aplicado');
+        return;
+    }
+    
+    container.innerHTML = filteredProperties.map(prop => 
+        window.propertyTemplates.generate(prop)
+    ).join('');
+    
+    console.log(`✅ ${filteredProperties.length} imóveis renderizados com filtro personalizado`);
+    
+    const countElement = document.getElementById('propertyCount');
+    if (countElement) {
+        countElement.textContent = `${filteredProperties.length} imóveis`;
+    }
+};
 
 window.updatePropertyCard = function(propertyId, updatedData = null) {
     console.log('🔄 Atualizando card do imóvel:', propertyId);
@@ -1692,7 +1792,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + PADRÃO 4 ITENS CARREGADA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO POR BAIRRO CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1734,8 +1834,9 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtro por Bairro');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
+console.log('📍 Novo: Filtro combinado por Categoria + Bairro');
