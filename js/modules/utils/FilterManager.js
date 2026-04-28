@@ -21,12 +21,24 @@ const FilterManager = (function() {
         hoverTimeout: null
     };
 
-    // ========== MAPEAMENTO: BOTÃO → VALORES DO CAMPO DESTAQUE ==========
-    const DESTAQUE_TO_BADGES = {
-        'Rural': ['Fazenda', 'Chácara'],
-        'Residencial': ['Novo', 'Destaque', 'Luxo'],
-        'Comercial': ['Comercial'],
-        'Minha Casa Minha Vida': ['MCMV']
+    // ========== MAPEAMENTO: BOTÃO → (BADGES + TIPO) ==========
+    const DESTAQUE_TO_BADGES_AND_TYPE = {
+        'Rural': {
+            badges: ['Fazenda', 'Chácara'],
+            tipos: ['rural']
+        },
+        'Residencial': {
+            badges: ['Novo', 'Destaque', 'Luxo'],
+            tipos: ['residencial']
+        },
+        'Comercial': {
+            badges: ['Comercial'],
+            tipos: ['comercial']
+        },
+        'Minha Casa Minha Vida': {
+            badges: ['MCMV'],
+            tipos: ['residencial']  // MCMV é um tipo de residencial
+        }
     };
 
     // ========== FUNÇÃO ROBUSTA PARA EXTRAIR BAIRRO DA LOCALIZAÇÃO ==========
@@ -115,25 +127,30 @@ const FilterManager = (function() {
         return bairro || 'Localização não especificada';
     }
 
-    // ========== EXTRAIR BAIRROS POR CATEGORIA DE DESTAQUE ==========
+    // ========== EXTRAIR BAIRROS POR CATEGORIA (FILTRANDO POR BADGE + TIPO) ==========
     function extractBairrosByDestaqueCategory(properties, category) {
         if (!properties || !Array.isArray(properties)) return [];
         
-        const allowedBadges = DESTAQUE_TO_BADGES[category];
-        if (!allowedBadges) return [];
+        const config = DESTAQUE_TO_BADGES_AND_TYPE[category];
+        if (!config) return [];
         
-        console.log(`🔍 Buscando imóveis com badges: ${allowedBadges.join(', ')}`);
+        const { badges, tipos } = config;
         
-        // Filtrar imóveis que têm o badge correspondente
-        const filteredProperties = properties.filter(property => 
-            property.badge && allowedBadges.includes(property.badge)
-        );
+        console.log(`🔍 Buscando imóveis com badges: ${badges.join(', ')} E tipo: ${tipos.join(', ')}`);
+        
+        // Filtrar imóveis que têm o badge correspondente E o tipo correspondente
+        const filteredProperties = properties.filter(property => {
+            const hasCorrectBadge = property.badge && badges.includes(property.badge);
+            const hasCorrectType = property.type && tipos.includes(property.type);
+            return hasCorrectBadge && hasCorrectType;
+        });
         
         console.log(`📊 Encontrados ${filteredProperties.length} imóveis para categoria ${category}`);
         
-        // Se não houver imóveis, mostrar dados de exemplo para teste
+        // Se não houver imóveis, mostrar aviso
         if (filteredProperties.length === 0) {
-            console.warn(`⚠️ Nenhum imóvel encontrado para categoria ${category}. Verifique se existem imóveis com badges: ${allowedBadges.join(', ')}`);
+            console.warn(`⚠️ Nenhum imóvel encontrado para categoria ${category}.`);
+            console.warn(`   Condições: badge IN (${badges.join(', ')}) AND type IN (${tipos.join(', ')})`);
             return [];
         }
         
@@ -145,9 +162,7 @@ const FilterManager = (function() {
                 const bairro = extractBairroFromLocation(property.location);
                 if (bairro && bairro !== 'Localização não especificada') {
                     bairrosSet.add(bairro);
-                    console.log(`  📍 Imóvel "${property.title}" → Bairro: ${bairro}`);
-                } else if (property.location) {
-                    console.log(`  ❓ Não foi possível extrair bairro de: "${property.location}"`);
+                    console.log(`  📍 Imóvel "${property.title}" (badge: ${property.badge}, type: ${property.type}) → Bairro: ${bairro}`);
                 }
             }
         });
@@ -312,11 +327,16 @@ const FilterManager = (function() {
     // ========== CONTAR IMÓVEIS POR CATEGORIA E BAIRRO ==========
     function getPropertyCountByCategoryAndBairro(category, bairro) {
         const properties = window.properties || [];
-        const allowedBadges = DESTAQUE_TO_BADGES[category];
+        const config = DESTAQUE_TO_BADGES_AND_TYPE[category];
         
-        if (!allowedBadges) return 0;
+        if (!config) return 0;
         
-        let filtered = properties.filter(p => p.badge && allowedBadges.includes(p.badge));
+        const { badges, tipos } = config;
+        
+        let filtered = properties.filter(p => 
+            p.badge && badges.includes(p.badge) && 
+            p.type && tipos.includes(p.type)
+        );
         
         if (bairro) {
             filtered = filtered.filter(p => {
@@ -332,7 +352,7 @@ const FilterManager = (function() {
     function applyFilterWithBairro(category, bairro) {
         state.currentFilter = category;
         
-        // Disparar callback
+        // Disparar callback com filtro composto
         const filterValue = bairro ? `${category}|${bairro}` : category;
         
         state.callbacks.forEach(callback => {
@@ -342,7 +362,12 @@ const FilterManager = (function() {
         });
         
         updateActiveButtonStyle(category);
-        console.log(`🎯 Filtro: Categoria="${category}", Bairro="${bairro || 'Todos'}"`);
+        console.log(`🎯 Filtro aplicado: Categoria="${category}", Bairro="${bairro || 'Todos'}"`);
+    }
+
+    // ========== VERIFICAR SE CATEGORIA TEM DROPDOWN ==========
+    function hasDropdown(category) {
+        return DESTAQUE_TO_BADGES_AND_TYPE[category] !== undefined;
     }
 
     // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
@@ -371,7 +396,7 @@ const FilterManager = (function() {
     function showDropdown(button, category) {
         if (state.dropdownActive) return;
         
-        if (!DESTAQUE_TO_BADGES[category]) {
+        if (!hasDropdown(category)) {
             console.log(`ℹ️ Categoria "${category}" não tem dropdown configurado`);
             return;
         }
@@ -493,7 +518,7 @@ const FilterManager = (function() {
                 newBtn.style.cursor = 'pointer';
                 
                 // Adicionar indicador de dropdown para botões com mapeamento
-                if (filterValue !== 'todos' && DESTAQUE_TO_BADGES[filterValue]) {
+                if (filterValue !== 'todos' && hasDropdown(filterValue)) {
                     newBtn.classList.add('has-dropdown');
                     
                     let hoverTimer;
@@ -630,4 +655,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Dropdown de BAIRROS por Destaque');
+console.log('✅ FilterManager carregado - Dropdown de BAIRROS por Destaque com filtro por TIPO');
