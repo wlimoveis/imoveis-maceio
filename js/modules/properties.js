@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES + SELETOR 4/8/12/16
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + SELETOR 4/8/12/16');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -7,7 +7,7 @@ window.currentFilter = 'todos';
 
 // ========== VARIÁVEIS DE PAGINAÇÃO DO ADMIN ==========
 window.adminCurrentPage = 1;
-window.adminItemsPerPage = 10; // Itens por página (ajustável)
+window.adminItemsPerPage = 8; // Itens por página padrão (4/8/12/16) - múltiplos de 4 para grid responsivo
 
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
@@ -1673,16 +1673,14 @@ function createPaginationControls(totalPages, currentPage) {
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
-    // Selector de itens por página
+    // Selector de itens por página (4/8/12/16) - múltiplos de 4 para grid responsivo
     const perPageSelect = document.createElement('select');
     perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
-        <option value="5" ${window.adminItemsPerPage === 5 ? 'selected' : ''}>5 por página</option>
-        <option value="10" ${window.adminItemsPerPage === 10 ? 'selected' : ''}>10 por página</option>
-        <option value="15" ${window.adminItemsPerPage === 15 ? 'selected' : ''}>15 por página</option>
-        <option value="20" ${window.adminItemsPerPage === 20 ? 'selected' : ''}>20 por página</option>
-        <option value="30" ${window.adminItemsPerPage === 30 ? 'selected' : ''}>30 por página</option>
-        <option value="50" ${window.adminItemsPerPage === 50 ? 'selected' : ''}>50 por página</option>
+        <option value="4" ${window.adminItemsPerPage === 4 ? 'selected' : ''}>4 por página</option>
+        <option value="8" ${window.adminItemsPerPage === 8 ? 'selected' : ''}>8 por página</option>
+        <option value="12" ${window.adminItemsPerPage === 12 ? 'selected' : ''}>12 por página</option>
+        <option value="16" ${window.adminItemsPerPage === 16 ? 'selected' : ''}>16 por página</option>
     `;
     perPageSelect.onchange = (e) => {
         window.adminItemsPerPage = parseInt(e.target.value);
@@ -1694,7 +1692,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NAS FEATURES CARREGADA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + SELETOR 4/8/12/16 CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1736,7 +1734,7 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação + Ícones nas Features');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
