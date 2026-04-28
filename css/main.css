@@ -342,6 +342,7 @@ body {
 }
 
 /* ========== ESTILOS PARA FEATURES COM ALTO CONTRASTE ========== */
+/* RECOMENDAÇÃO APLICADA: Cor única preta e negrito para todos os ícones de features */
 .feature-tag {
     display: inline-flex !important;
     align-items: center;
@@ -359,7 +360,9 @@ body {
 
 .feature-tag i {
     font-size: 1.6rem;
-    color: #f39c12;
+    /* COR ÚNICA PRETA EM NEGRITO CONFORME SOLICITADO */
+    color: #000000 !important; 
+    font-weight: bold !important;
     transition: transform 0.2s ease;
 }
 
@@ -386,32 +389,34 @@ body {
     }
 }
 
-/* Estilo para tags rurais */
+/* Estilo para tags rurais - Mantém a cor de fundo, mas o ícone segue o padrão preto */
 .rural-tag {
     background: #e8f5e9;
     border-color: #c8e6c9;
     color: #2e7d32;
 }
 
-.rural-tag i {
+/* A regra abaixo foi REMOVIDA pois não é mais necessária com a padronização preta */
+/* .rural-tag i {
     color: #43a047;
-}
+} */
 
 .rural-tag:hover {
     background: #c8e6c9;
     border-color: #81c784;
 }
 
-/* Estilo para tags de destaque (opcional) */
+/* Estilo para tags de destaque (opcional) - Mantém a cor de fundo, mas o ícone segue o padrão preto */
 .feature-tag.highlight {
     background: #fff8e1;
     border-color: #ffe082;
     color: #f57c00;
 }
 
-.feature-tag.highlight i {
+/* A regra abaixo foi REMOVIDA pois não é mais necessária com a padronização preta */
+/* .feature-tag.highlight i {
     color: #ff9800;
-}
+} */
 
 .feature-tag.highlight:hover {
     background: #ffecb3;
