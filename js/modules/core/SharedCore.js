@@ -38,6 +38,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/diagnostics/diagnostics61.js',
         'debug/diagnostics/diagnostics62.js',
         'debug/diagnostics/diagnostics63.js',
+        'debug/diagnostics/diagnostics64.js',  // NOVO
         'debug/function-verifier.js',
         'debug/media-logger.js',
         'debug/media-recovery.js', 
