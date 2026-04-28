@@ -21,23 +21,34 @@ const FilterManager = (function() {
         hoverTimeout: null
     };
 
-    // ========== MAPEAMENTO: BOTÃO → (BADGES + TIPO) ==========
-    const DESTAQUE_TO_BADGES_AND_TYPE = {
-        'Rural': {
-            badges: ['Fazenda', 'Chácara'],
-            tipos: ['rural']
+    // ========== MAPEAMENTO CORRETO POR CATEGORIA ==========
+    const CATEGORY_CONFIG = {
+        'Comercial': {
+            filterBy: 'type',           // Filtra pelo campo "type"
+            expectedValues: ['comercial'],
+            icon: 'fa-building',
+            title: 'Comercial'
         },
         'Residencial': {
-            badges: ['Novo', 'Destaque', 'Luxo'],
-            tipos: ['residencial']
+            filterBy: 'badge',          // Filtra pelo campo "badge" + type
+            expectedValues: ['Novo', 'Destaque', 'Luxo'],
+            requiredType: 'residencial',
+            icon: 'fa-home',
+            title: 'Residencial'
         },
-        'Comercial': {
-            badges: ['Comercial'],
-            tipos: ['comercial']
+        'Rural': {
+            filterBy: 'badge',
+            expectedValues: ['Fazenda', 'Chácara'],
+            requiredType: 'rural',
+            icon: 'fa-tractor',
+            title: 'Zona Rural'
         },
         'Minha Casa Minha Vida': {
-            badges: ['MCMV'],
-            tipos: ['residencial']  // MCMV é um tipo de residencial
+            filterBy: 'badge',
+            expectedValues: ['MCMV'],
+            requiredType: null,         // Sem restrição de tipo
+            icon: 'fa-hand-holding-heart',
+            title: 'Minha Casa Minha Vida'
         }
     };
 
@@ -127,31 +138,43 @@ const FilterManager = (function() {
         return bairro || 'Localização não especificada';
     }
 
-    // ========== EXTRAIR BAIRROS POR CATEGORIA (FILTRANDO POR BADGE + TIPO) ==========
-    function extractBairrosByDestaqueCategory(properties, category) {
+    // ========== EXTRAIR BAIRROS POR CATEGORIA ==========
+    function extractBairrosByCategory(properties, category) {
         if (!properties || !Array.isArray(properties)) return [];
         
-        const config = DESTAQUE_TO_BADGES_AND_TYPE[category];
+        const config = CATEGORY_CONFIG[category];
         if (!config) return [];
         
-        const { badges, tipos } = config;
+        console.log(`🔍 Buscando imóveis para categoria: ${category}`);
+        console.log(`   Critério: filterBy="${config.filterBy}", valores=${config.expectedValues.join(', ')}`);
         
-        console.log(`🔍 Buscando imóveis com badges: ${badges.join(', ')} E tipo: ${tipos.join(', ')}`);
+        let filteredProperties = [];
         
-        // Filtrar imóveis que têm o badge correspondente E o tipo correspondente
-        const filteredProperties = properties.filter(property => {
-            const hasCorrectBadge = property.badge && badges.includes(property.badge);
-            const hasCorrectType = property.type && tipos.includes(property.type);
-            return hasCorrectBadge && hasCorrectType;
-        });
+        if (config.filterBy === 'type') {
+            // Filtrar APENAS pelo campo "type" (para Comercial)
+            filteredProperties = properties.filter(property => 
+                property.type && config.expectedValues.includes(property.type)
+            );
+        } else {
+            // Filtrar por badge e opcionalmente por tipo
+            filteredProperties = properties.filter(property => {
+                const hasCorrectBadge = property.badge && config.expectedValues.includes(property.badge);
+                if (config.requiredType) {
+                    return hasCorrectBadge && property.type === config.requiredType;
+                }
+                return hasCorrectBadge;
+            });
+        }
         
         console.log(`📊 Encontrados ${filteredProperties.length} imóveis para categoria ${category}`);
         
-        // Se não houver imóveis, mostrar aviso com dica de cadastro
         if (filteredProperties.length === 0) {
             console.warn(`⚠️ Nenhum imóvel encontrado para categoria ${category}.`);
-            console.warn(`   Condições: badge IN (${badges.join(', ')}) AND type IN (${tipos.join(', ')})`);
-            console.warn(`   💡 Dica: Cadastre um imóvel com badge="${badges[0]}" e type="${tipos[0]}"`);
+            if (config.filterBy === 'type') {
+                console.warn(`   💡 Verifique se existem imóveis com type="${config.expectedValues[0]}"`);
+            } else {
+                console.warn(`   💡 Verifique se existem imóveis com badge IN (${config.expectedValues.join(', ')})`);
+            }
             return [];
         }
         
@@ -163,12 +186,11 @@ const FilterManager = (function() {
                 const bairro = extractBairroFromLocation(property.location);
                 if (bairro && bairro !== 'Localização não especificada') {
                     bairrosSet.add(bairro);
-                    console.log(`  📍 Imóvel "${property.title}" (badge: ${property.badge}, type: ${property.type}) → Bairro: ${bairro}`);
+                    console.log(`  📍 "${property.title}" → Bairro: ${bairro}`);
                 }
             }
         });
         
-        // Converter para array e ordenar
         let bairros = Array.from(bairrosSet);
         bairros.sort((a, b) => a.localeCompare(b, 'pt-BR'));
         
@@ -185,28 +207,10 @@ const FilterManager = (function() {
         const existingDropdown = document.querySelector('.filter-dropdown-active');
         if (existingDropdown) existingDropdown.remove();
         
-        // Definir ícone e título
-        let icon = 'fa-home';
-        let title = category;
-        
-        switch(category) {
-            case 'Rural':
-                icon = 'fa-tractor';
-                title = '🏡 Zona Rural';
-                break;
-            case 'Residencial':
-                icon = 'fa-building';
-                title = '🏘️ Residencial';
-                break;
-            case 'Comercial':
-                icon = 'fa-store';
-                title = '🏢 Comercial';
-                break;
-            case 'Minha Casa Minha Vida':
-                icon = 'fa-hand-holding-heart';
-                title = '❤️ Minha Casa Minha Vida';
-                break;
-        }
+        // Obter configuração da categoria
+        const config = CATEGORY_CONFIG[category];
+        const icon = config ? config.icon : 'fa-home';
+        const title = config ? config.title : category;
         
         // Criar dropdown
         const dropdown = document.createElement('div');
@@ -328,16 +332,25 @@ const FilterManager = (function() {
     // ========== CONTAR IMÓVEIS POR CATEGORIA E BAIRRO ==========
     function getPropertyCountByCategoryAndBairro(category, bairro) {
         const properties = window.properties || [];
-        const config = DESTAQUE_TO_BADGES_AND_TYPE[category];
+        const config = CATEGORY_CONFIG[category];
         
         if (!config) return 0;
         
-        const { badges, tipos } = config;
+        let filtered = [];
         
-        let filtered = properties.filter(p => 
-            p.badge && badges.includes(p.badge) && 
-            p.type && tipos.includes(p.type)
-        );
+        if (config.filterBy === 'type') {
+            filtered = properties.filter(p => 
+                p.type && config.expectedValues.includes(p.type)
+            );
+        } else {
+            filtered = properties.filter(p => {
+                const hasCorrectBadge = p.badge && config.expectedValues.includes(p.badge);
+                if (config.requiredType) {
+                    return hasCorrectBadge && p.type === config.requiredType;
+                }
+                return hasCorrectBadge;
+            });
+        }
         
         if (bairro) {
             filtered = filtered.filter(p => {
@@ -368,7 +381,7 @@ const FilterManager = (function() {
 
     // ========== VERIFICAR SE CATEGORIA TEM DROPDOWN ==========
     function hasDropdown(category) {
-        return DESTAQUE_TO_BADGES_AND_TYPE[category] !== undefined;
+        return CATEGORY_CONFIG[category] !== undefined;
     }
 
     // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
@@ -403,11 +416,10 @@ const FilterManager = (function() {
         }
         
         const properties = window.properties || [];
-        const bairros = extractBairrosByDestaqueCategory(properties, category);
+        const bairros = extractBairrosByCategory(properties, category);
         
         if (bairros.length === 0) {
             console.log(`ℹ️ Nenhum bairro encontrado para categoria: ${category}`);
-            // Mostrar mensagem temporária
             const tempMsg = document.createElement('div');
             tempMsg.style.cssText = `
                 position: absolute;
@@ -422,7 +434,13 @@ const FilterManager = (function() {
             const rect = button.getBoundingClientRect();
             tempMsg.style.top = `${rect.bottom + window.scrollY + 5}px`;
             tempMsg.style.left = `${rect.left + window.scrollX}px`;
-            tempMsg.innerHTML = '⚠️ Nenhum bairro cadastrado para esta categoria';
+            
+            const config = CATEGORY_CONFIG[category];
+            if (config.filterBy === 'type') {
+                tempMsg.innerHTML = `⚠️ Nenhum imóvel com tipo "${config.expectedValues[0]}" encontrado`;
+            } else {
+                tempMsg.innerHTML = `⚠️ Nenhum imóvel com badge "${config.expectedValues[0]}" encontrado`;
+            }
             document.body.appendChild(tempMsg);
             setTimeout(() => tempMsg.remove(), 2000);
             return;
@@ -656,4 +674,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Dropdown de BAIRROS por Destaque com filtro por TIPO');
+console.log('✅ FilterManager carregado - Configuração flexível por categoria');
