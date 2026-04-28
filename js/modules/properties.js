@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN - GALERIA COM SETAS FUNCIONAIS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -83,10 +83,14 @@ class PropertyTemplateEngine {
                     </div>
                     <p data-description-field>${this.escapeHtml(truncatedDesc)}</p>
                     ${displayFeatures ? `
-                        <div class="property-features" data-features-field>
-                            ${displayFeatures.split(',').map(f => `
-                                <span class="feature-tag ${property.rural ? 'rural-tag' : ''}">${this.escapeHtml(f.trim())}</span>
-                            `).join('')}
+                        <div class="property-features" data-features-field style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
+                            ${displayFeatures.split(',').map(f => {
+                                const feature = f.trim();
+                                if (feature) {
+                                    return window.FeatureIconMapper.renderFeatureWithIcon(feature, property.rural);
+                                }
+                                return '';
+                            }).join('')}
                         </div>
                     ` : ''}
                     <button class="contact-btn" onclick="contactAgent(${property.id})">
@@ -296,17 +300,27 @@ class PropertyTemplateEngine {
                 }
             }
             
+            // Atualizar features se fornecido (COM ÍCONES)
             if (propertyData.features !== undefined) {
                 const featuresElement = card.querySelector('[data-features-field]');
                 const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
                 
                 if (featuresElement) {
                     if (displayFeatures) {
-                        featuresElement.innerHTML = displayFeatures.split(',').map(f => `
-                            <span class="feature-tag ${propertyData.rural ? 'rural-tag' : ''}">${this.escapeHtml(f.trim())}</span>
-                        `).join('');
+                        featuresElement.innerHTML = displayFeatures.split(',').map(f => {
+                            const feature = f.trim();
+                            if (feature) {
+                                return window.FeatureIconMapper.renderFeatureWithIcon(feature, propertyData.rural);
+                            }
+                            return '';
+                        }).join('');
+                        featuresElement.style.display = 'flex';
+                        featuresElement.style.flexWrap = 'wrap';
+                        featuresElement.style.gap = '8px';
+                        featuresElement.style.margin = '12px 0';
                     } else {
                         featuresElement.innerHTML = '';
+                        featuresElement.style.display = 'none';
                     }
                 }
             }
@@ -385,6 +399,77 @@ class PropertyTemplateEngine {
 }
 
 window.propertyTemplates = new PropertyTemplateEngine();
+
+// ========== SISTEMA DE ÍCONES PARA FEATURES ==========
+window.FeatureIconMapper = {
+    // Mapeamento de palavras-chave para ícones e cores
+    mappings: [
+        { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens'], icon: 'fa-car', color: '#3498db', label: 'Vaga' },
+        { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
+        { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
+        { keywords: ['cozinha', 'copa'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
+        { keywords: ['sala', 'estar', 'living', 'salao', 'salão'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
+        { keywords: ['varanda', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+        { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
+        { keywords: ['churrasqueira', 'churrasco'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
+        { keywords: ['ar condicionado', 'ar-condicionado', 'climatização'], icon: 'fa-snowflake', color: '#1abc9c', label: 'Ar Cond.' },
+        { keywords: ['elevador'], icon: 'fa-arrow-up', color: '#7f8c8d', label: 'Elevador' },
+        { keywords: ['portaria', '24h', 'segurança', 'vigilância'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Segurança' },
+        { keywords: ['jardim', 'paisagismo'], icon: 'fa-leaf', color: '#27ae60', label: 'Jardim' },
+        { keywords: ['quintal', 'área externa'], icon: 'fa-tree', color: '#27ae60', label: 'Quintal' },
+        { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        { keywords: ['área de serviço', 'lavanderia'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Lavanderia' },
+        { keywords: ['escritório', 'home office'], icon: 'fa-laptop', color: '#3498db', label: 'Escritório' },
+        { keywords: ['lazer'], icon: 'fa-gamepad', color: '#9b59b6', label: 'Lazer' },
+        { keywords: ['playground', 'parque infantil'], icon: 'fa-child', color: '#f39c12', label: 'Playground' },
+        { keywords: ['mobiliado', 'mobília'], icon: 'fa-couch', color: '#e67e22', label: 'Mobiliado' },
+        { keywords: ['vista mar', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
+        { keywords: ['perto praia', 'proximo praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Perto Praia' },
+        { keywords: ['comércio', 'loja', 'comercial'], icon: 'fa-store', color: '#e74c3c', label: 'Comercial' },
+        { keywords: ['sítio', 'chácara', 'fazenda', 'rural'], icon: 'fa-tractor', color: '#27ae60', label: 'Rural' },
+        { keywords: ['reforma', 'novo'], icon: 'fa-hammer', color: '#f39c12', label: 'Novo/Reforma' }
+    ],
+    
+    // Função para obter ícone baseado no texto da feature
+    getIconForFeature: function(featureText) {
+        const lowerText = featureText.toLowerCase().trim();
+        
+        for (let mapping of this.mappings) {
+            for (let keyword of mapping.keywords) {
+                if (lowerText.includes(keyword)) {
+                    return {
+                        icon: mapping.icon,
+                        color: mapping.color,
+                        label: mapping.label || featureText
+                    };
+                }
+            }
+        }
+        
+        // Fallback: ícone padrão para features não mapeadas
+        return {
+            icon: 'fa-tag',
+            color: '#95a5a6',
+            label: featureText
+        };
+    },
+    
+    // Função para gerar HTML da feature com ícone
+    renderFeatureWithIcon: function(featureText, isRural = false) {
+        const iconData = this.getIconForFeature(featureText);
+        const ruralClass = isRural ? 'rural-tag' : '';
+        
+        return `
+            <span class="feature-tag ${ruralClass}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0f0f0; border-radius: 20px; font-size: 0.75rem;">
+                <i class="fas ${iconData.icon}" style="color: ${iconData.color}; font-size: 0.7rem;"></i>
+                <span>${window.SharedCore?.escapeHtml(featureText) || featureText}</span>
+            </span>
+        `;
+    }
+};
+
+// Tornar acessível globalmente
+window.FeatureIconMapper = FeatureIconMapper;
 
 window.updatePropertyCard = function(propertyId, updatedData = null) {
     console.log('🔄 Atualizando card do imóvel:', propertyId);
@@ -613,7 +698,7 @@ function getInitialProperties() {
             price: "R$ 180.000",
             location: "Residência Conj. Portal do Renascer, Forene",
             description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;",
-            features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de carro"]),
+            features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de garagem"]),
             type: "residencial",
             has_video: true,
             badge: "Destaque",
@@ -627,7 +712,7 @@ function getInitialProperties() {
             price: "R$ 1.500.000",
             location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL",
             description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.",
-            features: JSON.stringify(["4Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]),
+            features: JSON.stringify(["4 Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]),
             type: "residencial",
             has_video: false,
             badge: "Luxo",
@@ -1609,7 +1694,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO CARREGADA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NAS FEATURES CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1651,6 +1736,7 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria com setas funcionais + Paginação no Admin');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação + Ícones nas Features');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
+console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
