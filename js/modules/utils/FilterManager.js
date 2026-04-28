@@ -373,7 +373,9 @@ const FilterManager = (function() {
             }
         });
         
+        // Atualizar estilo dos botões (garantir que o botão da categoria fique ativo)
         updateActiveButtonStyle(category);
+        
         console.log(`🎯 Filtro aplicado: Categoria="${category}", Bairro="${bairro || 'Todos'}"`);
     }
 
@@ -384,21 +386,26 @@ const FilterManager = (function() {
 
     // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
     function updateActiveButtonStyle(filterValue) {
+        console.log(`🎨 Atualizando estilo dos botões para filtro: ${filterValue}`);
+        
         state.containers.forEach((containerState) => {
             containerState.buttons.forEach(button => {
-                const isActive = button.value === filterValue;
-                button.element.classList.toggle(CONFIG.activeClass, isActive);
+                const isActive = (button.value === filterValue);
                 
                 if (isActive) {
+                    button.element.classList.add(CONFIG.activeClass);
                     button.element.style.backgroundColor = 'var(--primary)';
                     button.element.style.color = 'white';
                     button.element.style.borderColor = 'var(--primary)';
                     button.element.style.fontWeight = '700';
+                    button.element.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
                 } else {
+                    button.element.classList.remove(CONFIG.activeClass);
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
                     button.element.style.fontWeight = '';
+                    button.element.style.boxShadow = '';
                 }
             });
         });
@@ -535,7 +542,7 @@ const FilterManager = (function() {
                 newBtn.style.cursor = 'pointer';
                 
                 // Adicionar indicador de dropdown para botões com mapeamento
-                if (filterValue !== 'todos' && hasDropdown(filterValue)) {
+                if (filterValue !== 'todos' && CATEGORY_CONFIG[filterValue]) {
                     newBtn.classList.add('has-dropdown');
                     
                     let hoverTimer;
@@ -550,15 +557,40 @@ const FilterManager = (function() {
                     });
                 }
                 
+                // ========== CORREÇÃO: EVENTO DE CLIQUE COM LIMPEZA DE CLASSES ==========
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
+                    // REMOVER CLASSE ACTIVE DE TODOS OS BOTÕES
+                    const allBtns = document.querySelectorAll(`.${CONFIG.buttonClass}`);
+                    allBtns.forEach(btn => {
+                        btn.classList.remove(CONFIG.activeClass);
+                        // Resetar estilos inline também
+                        btn.style.backgroundColor = '';
+                        btn.style.color = '';
+                        btn.style.borderColor = '';
+                        btn.style.fontWeight = '';
+                        btn.style.boxShadow = '';
+                    });
+                    
+                    // ADICIONAR CLASSE ACTIVE APENAS NO BOTÃO CLICADO
+                    newBtn.classList.add(CONFIG.activeClass);
+                    newBtn.style.backgroundColor = 'var(--primary)';
+                    newBtn.style.color = 'white';
+                    newBtn.style.borderColor = 'var(--primary)';
+                    newBtn.style.fontWeight = '700';
+                    newBtn.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
+                    
+                    // Atualizar estado do filtro
                     if (filterValue === 'todos') {
                         state.currentBairro = null;
                         state.currentFilter = 'todos';
+                    } else {
+                        state.currentFilter = filterValue;
                     }
                     
+                    // Disparar callbacks
                     if (onFilterChange) {
                         onFilterChange(filterValue);
                     }
@@ -568,6 +600,8 @@ const FilterManager = (function() {
                             callback(filterValue);
                         }
                     });
+                    
+                    console.log(`🎯 Botão clicado: "${filterText}" - Classe active aplicada`);
                 });
 
                 containerState.buttons.push({
@@ -582,7 +616,34 @@ const FilterManager = (function() {
 
         setActiveFilter(filterValue, sourceContainerId = null) {
             state.currentFilter = filterValue;
-            updateActiveButtonStyle(filterValue);
+            
+            // Limpar todos os estilos ativos primeiro
+            state.containers.forEach((containerState) => {
+                containerState.buttons.forEach(button => {
+                    button.element.classList.remove(CONFIG.activeClass);
+                    button.element.style.backgroundColor = '';
+                    button.element.style.color = '';
+                    button.element.style.borderColor = '';
+                    button.element.style.fontWeight = '';
+                    button.element.style.boxShadow = '';
+                });
+            });
+            
+            // Aplicar estilo apenas ao botão correspondente
+            state.containers.forEach((containerState) => {
+                containerState.buttons.forEach(button => {
+                    if (button.value === filterValue) {
+                        button.element.classList.add(CONFIG.activeClass);
+                        button.element.style.backgroundColor = 'var(--primary)';
+                        button.element.style.color = 'white';
+                        button.element.style.borderColor = 'var(--primary)';
+                        button.element.style.fontWeight = '700';
+                        button.element.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
+                    }
+                });
+            });
+            
+            console.log(`🎯 Filtro alterado para: ${filterValue}`);
         },
 
         activateDefaultFilter() {
@@ -672,4 +733,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Extração robusta de bairros com validação');
+console.log('✅ FilterManager carregado - Correção de classe active nos botões');
