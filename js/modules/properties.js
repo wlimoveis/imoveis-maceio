@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -91,6 +91,7 @@ class PropertyTemplateEngine {
                                 }
                                 return '';
                             }).join('')}
+
                         </div>
                     ` : ''}
                     <button class="contact-btn" onclick="contactAgent(${property.id})">
@@ -471,51 +472,100 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VIA BADGE) ==========
+// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO ==========
+function extractBairroFromLocation(location) {
+    if (!location || typeof location !== 'string') return null;
+    
+    const bairrosConhecidos = [
+        'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
+        'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
+        'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
+        'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
+        'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
+        'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
+        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+        'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
+        'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra', 'Prado'
+    ];
+    
+    let bairro = '';
+    const locationClean = location.trim();
+    
+    for (const b of bairrosConhecidos) {
+        if (locationClean.toLowerCase().includes(b.toLowerCase())) {
+            bairro = b;
+            break;
+        }
+    }
+    
+    if (!bairro && locationClean.includes(',')) {
+        const parts = locationClean.split(',');
+        if (parts.length >= 2) {
+            bairro = parts[1].trim().replace(/-.*$/, '').replace(/AL$/i, '').trim();
+        }
+    }
+    
+    // Remove "Maceió/AL" se ainda estiver presente
+    bairro = bairro.replace(/Maceió\/AL/i, '').trim();
+    
+    return bairro || 'Localização não especificada';
+}
+
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO CORRIGIDA - BADGE + TYPE) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
     if (!window.properties) return [];
     
-    // Mapeamento de categorias para badges permitidos
-    const allowedBadges = {
-        'Rural': ['Fazenda', 'Chácara', 'Rural'],
-        'Residencial': ['Novo', 'Destaque', 'Luxo'],
-        'Comercial': ['Comercial'],
-        'Minha Casa Minha Vida': ['MCMV']
+    // Mapeamento correto com badges + tipos
+    const categoryConfig = {
+        'Rural': {
+            badges: ['Fazenda', 'Chácara', 'Rural'],
+            tipos: ['rural']
+        },
+        'Residencial': {
+            badges: ['Novo', 'Destaque', 'Luxo'],
+            tipos: ['residencial']
+        },
+        'Comercial': {
+            badges: ['Comercial'],
+            tipos: ['comercial']
+        },
+        'Minha Casa Minha Vida': {
+            badges: ['MCMV'],
+            tipos: ['residencial']
+        }
     };
     
-    const badges = allowedBadges[category];
-    if (!badges) {
+    const config = categoryConfig[category];
+    if (!config) {
         console.warn(`⚠️ Categoria "${category}" não reconhecida, usando fallback`);
-        // Fallback para filtro padrão (por type)
+        // Fallback para filtro padrão
         if (typeof window.renderProperties === 'function') {
             window.renderProperties(category);
         }
         return [];
     }
     
-    // Filtrar por badge (apenas imóveis com badges permitidos)
-    let filtered = window.properties.filter(p => p.badge && badges.includes(p.badge));
-    console.log(`📊 Após filtro por badge (${badges.join(', ')}): ${filtered.length} imóveis`);
+    const { badges, tipos } = config;
+    
+    console.log(`📊 Filtrando por badges: ${badges.join(', ')} e tipos: ${tipos.join(', ')}`);
+    
+    // Filtrar por badge E tipo
+    let filtered = window.properties.filter(p => {
+        const hasCorrectBadge = p.badge && badges.includes(p.badge);
+        const hasCorrectType = p.type && tipos.includes(p.type);
+        return hasCorrectBadge && hasCorrectType;
+    });
+    
+    console.log(`📊 Após filtro por badge + tipo: ${filtered.length} imóveis`);
     
     // Filtrar por bairro
     if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
         filtered = filtered.filter(p => {
             if (!p.location) return false;
-            // Extrair bairro da localização
-            let propertyBairro = '';
-            const matchComma = p.location.match(/,\s*([^,-]+)/);
-            if (matchComma) {
-                propertyBairro = matchComma[1].trim().replace(/Maceió\/AL/i, '').trim();
-            }
-            if (!propertyBairro && p.location.includes(',')) {
-                propertyBairro = p.location.split(',')[0].trim();
-            }
-            if (!propertyBairro && p.location.includes('-')) {
-                propertyBairro = p.location.split('-')[0].trim();
-            }
-            return propertyBairro.toLowerCase() === bairro.toLowerCase();
+            const propertyBairro = extractBairroFromLocation(p.location);
+            return propertyBairro === bairro;
         });
         console.log(`📊 Após filtro por bairro "${bairro}": ${filtered.length} imóveis`);
     }
@@ -537,6 +587,13 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     }
     
     console.log(`✅ ${filtered.length} imóvel(is) encontrado(s)`);
+    
+    // Atualizar contador na mensagem
+    const countElement = document.getElementById('propertyCount');
+    if (countElement) {
+        countElement.textContent = `${filtered.length} imóvel(is)`;
+    }
+    
     return filtered;
 };
 
@@ -1638,7 +1695,8 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             <span><i class="fas fa-images"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex} de ${totalItems}</span>
         </div>
         <button onclick="if(window.resetAllGalleryViews) window.resetAllGalleryViews()" style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-            <i class="fas fa-trash-alt"></i> Zerar TODAS        </button>
+            <i class="fas fa-trash-alt"></i> Zerar TODAS
+        </button>
     `;
     container.appendChild(statsHeader);
     
@@ -1865,7 +1923,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1907,11 +1965,12 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtros + Imóveis Comerciais');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtro CORRIGIDO (Badge + Type)');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
-console.log('📍 Filtro Categoria + Bairro: Filtrando por BADGE (Destaque, Luxo, Novo, MCMV, Comercial)');
+console.log('📍 Filtro Categoria + Bairro: Usa BADGE + TYPE para maior precisão');
 console.log('⭐ Filtro Categoria + Destaque: Filtro específico por badge');
 console.log('🏢 Adicionados 2 imóveis comerciais de exemplo (IDs 99 e 100)');
+console.log('🔧 Função extractBairroFromLocation com lista de bairros de Maceió');
