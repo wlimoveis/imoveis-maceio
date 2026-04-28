@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES + SELETOR 4/8/12/16
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + SELETOR 4/8/12/16');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN + ÍCONES NAS FEATURES + PADRÃO 4 ITENS
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + PADRÃO 4 ITENS');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -7,7 +7,7 @@ window.currentFilter = 'todos';
 
 // ========== VARIÁVEIS DE PAGINAÇÃO DO ADMIN ==========
 window.adminCurrentPage = 1;
-window.adminItemsPerPage = 8; // Itens por página padrão (4/8/12/16) - múltiplos de 4 para grid responsivo
+window.adminItemsPerPage = 4; // Itens por página padrão (4/8/12/16) - Padrão 4 para melhor experiência mobile
 
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
@@ -1673,7 +1673,7 @@ function createPaginationControls(totalPages, currentPage) {
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
-    // Selector de itens por página (4/8/12/16) - múltiplos de 4 para grid responsivo
+    // Selector de itens por página (4/8/12/16) - Padrão 4 selecionado
     const perPageSelect = document.createElement('select');
     perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
@@ -1692,7 +1692,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + SELETOR 4/8/12/16 CARREGADA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + PADRÃO 4 ITENS CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1738,3 +1738,4 @@ console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
+console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
