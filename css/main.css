@@ -289,7 +289,7 @@ body {
 }
 
 .feature-tag i {
-    font-size: 1.1rem;  /* Ícone ainda maior */
+    font-size: 1.3rem;  /* Ícone ainda maior */
     color: #f39c12;      /* Cor dourada para destaque */
     transition: transform 0.2s ease;
 }
