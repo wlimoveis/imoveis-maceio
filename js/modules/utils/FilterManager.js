@@ -21,6 +21,10 @@ const FilterManager = (function() {
         hoverTimeout: null
     };
 
+    // Variáveis de controle para dropdown
+    let currentActiveDropdown = null; // Referência ao dropdown aberto atualmente
+    let dropdownCloseTimeout = null;   // Timeout para fechar dropdown
+
     // ========== MAPEAMENTO CORRETO POR CATEGORIA ==========
     const CATEGORY_CONFIG = {
         'Comercial': {
@@ -197,13 +201,59 @@ const FilterManager = (function() {
         return bairros;
     }
 
+    // ========== FUNÇÃO PARA FECHAR DROPDOWN IMEDIATAMENTE ==========
+    function closeDropdownImmediately() {
+        if (currentActiveDropdown && currentActiveDropdown.parentNode) {
+            currentActiveDropdown.remove();
+        }
+        
+        // Remover event listeners dos botões
+        const allButtons = document.querySelectorAll('.filter-btn');
+        allButtons.forEach(btn => {
+            if (btn._closeHandler) {
+                btn.removeEventListener('mouseenter', btn._closeHandler);
+                delete btn._closeHandler;
+            }
+        });
+        
+        currentActiveDropdown = null;
+        state.dropdownActive = false;
+        
+        if (dropdownCloseTimeout) {
+            clearTimeout(dropdownCloseTimeout);
+            dropdownCloseTimeout = null;
+        }
+    }
+
+    // ========== FUNÇÃO PARA MOSTRAR MENSAGEM TEMPORÁRIA ==========
+    function showTemporaryMessage(button, message) {
+        const tempMsg = document.createElement('div');
+        tempMsg.style.cssText = `
+            position: absolute;
+            background: #f0f0f0;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            color: #666;
+            z-index: 10000;
+            white-space: nowrap;
+        `;
+        const rect = button.getBoundingClientRect();
+        tempMsg.style.top = `${rect.bottom + window.scrollY + 5}px`;
+        tempMsg.style.left = `${rect.left + window.scrollX}px`;
+        tempMsg.innerHTML = message;
+        document.body.appendChild(tempMsg);
+        setTimeout(() => tempMsg.remove(), 2000);
+    }
+
     // ========== CRIAR DROPDOWN DE BAIRROS ==========
     function createBairroDropdown(buttonElement, category, bairros) {
         if (!bairros || bairros.length === 0) return null;
         
         // Remover dropdown existente
-        const existingDropdown = document.querySelector('.filter-dropdown-active');
-        if (existingDropdown) existingDropdown.remove();
+        if (currentActiveDropdown) {
+            closeDropdownImmediately();
+        }
         
         // Obter configuração da categoria
         const config = CATEGORY_CONFIG[category];
@@ -228,6 +278,20 @@ const FilterManager = (function() {
             left: 0;
             margin-top: 5px;
         `;
+        
+        // Adicionar eventos para manter dropdown aberto
+        dropdown.addEventListener('mouseenter', () => {
+            if (dropdownCloseTimeout) {
+                clearTimeout(dropdownCloseTimeout);
+                dropdownCloseTimeout = null;
+            }
+        });
+        
+        dropdown.addEventListener('mouseleave', () => {
+            dropdownCloseTimeout = setTimeout(() => {
+                closeDropdownImmediately();
+            }, 300);
+        });
         
         // Cabeçalho
         const header = document.createElement('div');
@@ -271,8 +335,7 @@ const FilterManager = (function() {
             e.stopPropagation();
             state.currentBairro = null;
             applyFilterWithBairro(category, null);
-            dropdown.remove();
-            state.dropdownActive = false;
+            closeDropdownImmediately();
         };
         dropdown.appendChild(allOption);
         
@@ -301,8 +364,7 @@ const FilterManager = (function() {
                 e.stopPropagation();
                 state.currentBairro = bairro;
                 applyFilterWithBairro(category, bairro);
-                dropdown.remove();
-                state.dropdownActive = false;
+                closeDropdownImmediately();
             };
             dropdown.appendChild(option);
         });
@@ -325,6 +387,97 @@ const FilterManager = (function() {
         dropdown.appendChild(footer);
         
         return dropdown;
+    }
+
+    // ========== MOSTRAR DROPDOWN ==========
+    function showDropdown(button, category) {
+        // Se já existe um dropdown aberto e é diferente do atual, fechar primeiro
+        if (state.dropdownActive && currentActiveDropdown) {
+            closeDropdownImmediately();
+        }
+        
+        // Limpar timeout pendente
+        if (dropdownCloseTimeout) {
+            clearTimeout(dropdownCloseTimeout);
+            dropdownCloseTimeout = null;
+        }
+        
+        if (!hasDropdown(category)) {
+            console.log(`ℹ️ Categoria "${category}" não tem dropdown configurado`);
+            return;
+        }
+        
+        const properties = window.properties || [];
+        const bairros = extractBairrosByCategory(properties, category);
+        
+        if (bairros.length === 0) {
+            showTemporaryMessage(button, `⚠️ Nenhum bairro encontrado para ${category}`);
+            return;
+        }
+        
+        // Fechar dropdown existente se houver
+        if (currentActiveDropdown && currentActiveDropdown !== button) {
+            closeDropdownImmediately();
+        }
+        
+        const dropdown = createBairroDropdown(button, category, bairros);
+        if (!dropdown) return;
+        
+        // Salvar referência para fechar depois
+        currentActiveDropdown = dropdown;
+        
+        const rect = button.getBoundingClientRect();
+        dropdown.style.top = `${rect.bottom + window.scrollY}px`;
+        dropdown.style.left = `${rect.left + window.scrollX}px`;
+        
+        // Fechar ao clicar fora
+        const closeDropdownHandler = (e) => {
+            if (!dropdown.contains(e.target) && e.target !== button) {
+                closeDropdownImmediately();
+                document.removeEventListener('click', closeDropdownHandler);
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        
+        const escapeHandler = (e) => {
+            if (e.key === 'Escape') {
+                closeDropdownImmediately();
+                document.removeEventListener('click', closeDropdownHandler);
+                document.removeEventListener('keydown', escapeHandler);
+            }
+        };
+        
+        // Função para fechar dropdown de outros botões
+        const closeOtherDropdowns = () => {
+            if (currentActiveDropdown && currentActiveDropdown !== dropdown) {
+                closeDropdownImmediately();
+            }
+        };
+        
+        document.body.appendChild(dropdown);
+        state.dropdownActive = true;
+        
+        const closeBtn = dropdown.querySelector('.dropdown-close');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                closeDropdownImmediately();
+            };
+        }
+        
+        setTimeout(() => {
+            document.addEventListener('click', closeDropdownHandler);
+            document.addEventListener('keydown', escapeHandler);
+            
+            // Adicionar evento para fechar ao passar mouse em outros botões
+            const allButtons = document.querySelectorAll('.filter-btn');
+            allButtons.forEach(otherBtn => {
+                if (otherBtn !== button) {
+                    otherBtn.addEventListener('mouseenter', closeOtherDropdowns);
+                    // Armazenar para remover depois
+                    otherBtn._closeHandler = closeOtherDropdowns;
+                }
+            });
+        }, 100);
     }
 
     // ========== CONTAR IMÓVEIS POR CATEGORIA E BAIRRO ==========
@@ -411,88 +564,6 @@ const FilterManager = (function() {
         });
     }
 
-    // ========== MOSTRAR DROPDOWN ==========
-    function showDropdown(button, category) {
-        if (state.dropdownActive) return;
-        
-        if (!hasDropdown(category)) {
-            console.log(`ℹ️ Categoria "${category}" não tem dropdown configurado`);
-            return;
-        }
-        
-        const properties = window.properties || [];
-        const bairros = extractBairrosByCategory(properties, category);
-        
-        if (bairros.length === 0) {
-            console.log(`ℹ️ Nenhum bairro encontrado para categoria: ${category}`);
-            const tempMsg = document.createElement('div');
-            tempMsg.style.cssText = `
-                position: absolute;
-                background: #f0f0f0;
-                padding: 5px 10px;
-                border-radius: 5px;
-                font-size: 0.75rem;
-                color: #666;
-                z-index: 10000;
-                white-space: nowrap;
-            `;
-            const rect = button.getBoundingClientRect();
-            tempMsg.style.top = `${rect.bottom + window.scrollY + 5}px`;
-            tempMsg.style.left = `${rect.left + window.scrollX}px`;
-            
-            const config = CATEGORY_CONFIG[category];
-            if (config.filterBy === 'type') {
-                tempMsg.innerHTML = `⚠️ Nenhum imóvel com tipo "${config.expectedValues[0]}" encontrado`;
-            } else {
-                tempMsg.innerHTML = `⚠️ Nenhum imóvel com badge "${config.expectedValues[0]}" encontrado`;
-            }
-            document.body.appendChild(tempMsg);
-            setTimeout(() => tempMsg.remove(), 2000);
-            return;
-        }
-        
-        const dropdown = createBairroDropdown(button, category, bairros);
-        if (!dropdown) return;
-        
-        const rect = button.getBoundingClientRect();
-        dropdown.style.top = `${rect.bottom + window.scrollY}px`;
-        dropdown.style.left = `${rect.left + window.scrollX}px`;
-        
-        const closeDropdown = (e) => {
-            if (!dropdown.contains(e.target) && e.target !== button) {
-                dropdown.remove();
-                state.dropdownActive = false;
-                document.removeEventListener('click', closeDropdown);
-                document.removeEventListener('keydown', escapeHandler);
-            }
-        };
-        
-        const escapeHandler = (e) => {
-            if (e.key === 'Escape') {
-                dropdown.remove();
-                state.dropdownActive = false;
-                document.removeEventListener('click', closeDropdown);
-                document.removeEventListener('keydown', escapeHandler);
-            }
-        };
-        
-        document.body.appendChild(dropdown);
-        state.dropdownActive = true;
-        
-        const closeBtn = dropdown.querySelector('.dropdown-close');
-        if (closeBtn) {
-            closeBtn.onclick = () => {
-                dropdown.remove();
-                state.dropdownActive = false;
-            };
-        }
-        
-        setTimeout(() => {
-            document.addEventListener('click', closeDropdown);
-            document.addEventListener('keydown', escapeHandler);
-        }, 100);
-    }
-
     // ========== API PÚBLICA ==========
     return {
         init(onFilterChange = null) {
@@ -546,14 +617,39 @@ const FilterManager = (function() {
                     newBtn.classList.add('has-dropdown');
                     
                     let hoverTimer;
+                    
+                    // Mouse enter: mostrar dropdown
                     newBtn.addEventListener('mouseenter', () => {
-                        if (state.dropdownActive) return;
+                        if (state.dropdownActive && currentActiveDropdown) {
+                            // Fechar dropdown anterior antes de abrir novo
+                            closeDropdownImmediately();
+                        }
+                        if (dropdownCloseTimeout) {
+                            clearTimeout(dropdownCloseTimeout);
+                            dropdownCloseTimeout = null;
+                        }
                         hoverTimer = setTimeout(() => {
                             showDropdown(newBtn, filterValue);
                         }, CONFIG.dropdownDelay);
                     });
-                    newBtn.addEventListener('mouseleave', () => {
+                    
+                    // Mouse leave: esconder dropdown após delay
+                    newBtn.addEventListener('mouseleave', (event) => {
                         clearTimeout(hoverTimer);
+                        // Pequeno delay para permitir entrar no dropdown
+                        dropdownCloseTimeout = setTimeout(() => {
+                            // Verificar se o mouse não está dentro do dropdown
+                            if (currentActiveDropdown) {
+                                const rect = currentActiveDropdown.getBoundingClientRect();
+                                const mouseX = event?.clientX || 0;
+                                const mouseY = event?.clientY || 0;
+                                const isInsideDropdown = mouseX >= rect.left && mouseX <= rect.right && 
+                                                        mouseY >= rect.top && mouseY <= rect.bottom;
+                                if (!isInsideDropdown) {
+                                    closeDropdownImmediately();
+                                }
+                            }
+                        }, 200);
                     });
                 }
                 
@@ -561,6 +657,11 @@ const FilterManager = (function() {
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    
+                    // Fechar dropdown se estiver aberto
+                    if (currentActiveDropdown) {
+                        closeDropdownImmediately();
+                    }
                     
                     // REMOVER CLASSE ACTIVE DE TODOS OS BOTÕES
                     const allBtns = document.querySelectorAll(`.${CONFIG.buttonClass}`);
@@ -702,10 +803,8 @@ const FilterManager = (function() {
         },
         
         refreshBairros() {
-            const activeDropdown = document.querySelector('.filter-dropdown-active');
-            if (activeDropdown) {
-                activeDropdown.remove();
-                state.dropdownActive = false;
+            if (currentActiveDropdown) {
+                closeDropdownImmediately();
             }
         }
     };
@@ -733,4 +832,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Correção de classe active nos botões');
+console.log('✅ FilterManager carregado - Dropdown fecha ao mover mouse entre botões');
