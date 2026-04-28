@@ -153,36 +153,37 @@ body {
     justify-content: center;
 }
 
+/* ========== GARANTIR ESTILOS DOS BOTÕES ATIVOS ========== */
+/* RECOMENDAÇÃO APLICADA: Estilos robustos com !important para garantir consistência */
 .filter-btn {
-    background: #f8f9fa;
-    border: 2px solid #e0e0e0;
-    padding: 0.7rem 1.5rem;
-    border-radius: 30px;
-    font-size: 1rem;
-    cursor: pointer;
     transition: all 0.3s ease;
-    color: #2c3e50;
-    font-weight: 600;
-}
-
-.filter-btn:hover {
-    background: #e9ecef;
-    border-color: var(--accent);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
 .filter-btn.active {
-    background: var(--primary);
-    border-color: var(--primary);
+    background: var(--primary) !important;
     color: white !important;
-    font-weight: 700;
-    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.3);
+    border-color: var(--primary) !important;
+    font-weight: 700 !important;
+    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.3) !important;
 }
 
 .filter-btn.active:hover {
-    background: #154060;
-    border-color: #154060;
+    background: #154060 !important;
+    transform: translateY(-2px);
+}
+
+/* Reset para botões não ativos */
+.filter-btn:not(.active) {
+    background: #f8f9fa;
+    color: #2c3e50;
+    border-color: #e0e0e0;
+    font-weight: normal;
+    box-shadow: none;
+}
+
+.filter-btn:not(.active):hover {
+    background: #e9ecef;
+    border-color: var(--accent);
 }
 
 /* ========== ESTILOS PARA DROPDOWN ========== */
@@ -660,6 +661,8 @@ body {
 }
 
 /* ========== CORREÇÃO DEFINITIVA DOS FILTROS ========== */
+/* NOTA: As regras abaixo são mantidas para compatibilidade, 
+   mas as regras mais robustas com !important acima já garantem os estilos */
 .filter-btn[style*="color:"] {
     color: #2c3e50 !important;
 }
