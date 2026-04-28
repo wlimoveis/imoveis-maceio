@@ -272,39 +272,71 @@ body {
     margin-bottom: 1rem;
 }
 
-/* ========== ESTILOS PARA FEATURES COM ÍCONES ========== */
+/* ========== ESTILOS PARA FEATURES COM ALTO CONTRASTE ========== */
 .feature-tag {
     display: inline-flex !important;
     align-items: center;
     gap: 6px;
-    background: var(--accent);
-    color: white;
+    background: #f0f4f8;  /* Fundo claro suave */
+    color: #2c3e50;        /* Texto escuro para contraste */
+    border: 1px solid #e0e6ed;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.8rem;
-    font-weight: 500;
+    font-weight: 600;      /* Semi-negrito para melhor leitura */
     transition: all 0.2s ease;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .feature-tag i {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     transition: transform 0.2s ease;
 }
 
 .feature-tag:hover {
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    background: #e8f0fe;
+    border-color: var(--accent);
 }
 
 .feature-tag:hover i {
     transform: scale(1.1);
 }
 
+/* Estilo para tags rurais */
 .rural-tag {
-    background: var(--green);
+    background: #e8f5e9;
+    border-color: #c8e6c9;
+    color: #2e7d32;
 }
 
-/* Responsividade para features em mobile */
+.rural-tag i {
+    color: #43a047;
+}
+
+.rural-tag:hover {
+    background: #c8e6c9;
+    border-color: #81c784;
+}
+
+/* Estilo para tags de destaque (opcional) */
+.feature-tag.highlight {
+    background: #fff8e1;
+    border-color: #ffe082;
+    color: #f57c00;
+}
+
+.feature-tag.highlight i {
+    color: #ff9800;
+}
+
+.feature-tag.highlight:hover {
+    background: #ffecb3;
+    border-color: #ffb74d;
+}
+
+/* Responsividade para features */
 @media (max-width: 768px) {
     .feature-tag {
         padding: 0.25rem 0.6rem;
@@ -313,7 +345,7 @@ body {
     }
     
     .feature-tag i {
-        font-size: 0.6rem;
+        font-size: 0.65rem;
     }
 }
 
