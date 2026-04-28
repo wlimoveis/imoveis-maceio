@@ -272,17 +272,49 @@ body {
     margin-bottom: 1rem;
 }
 
+/* ========== ESTILOS PARA FEATURES COM ÍCONES ========== */
 .feature-tag {
+    display: inline-flex !important;
+    align-items: center;
+    gap: 6px;
     background: var(--accent);
     color: white;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
-    font-size: 0.9rem;
+    font-size: 0.8rem;
     font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.feature-tag i {
+    font-size: 0.7rem;
+    transition: transform 0.2s ease;
+}
+
+.feature-tag:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.feature-tag:hover i {
+    transform: scale(1.1);
 }
 
 .rural-tag {
     background: var(--green);
+}
+
+/* Responsividade para features em mobile */
+@media (max-width: 768px) {
+    .feature-tag {
+        padding: 0.25rem 0.6rem;
+        font-size: 0.7rem;
+        gap: 4px;
+    }
+    
+    .feature-tag i {
+        font-size: 0.6rem;
+    }
 }
 
 /* ========== BOTÃO WHATSAPP COM EFEITO PULSANTE ========== */
