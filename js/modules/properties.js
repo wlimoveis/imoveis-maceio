@@ -776,6 +776,7 @@ window.setupFilters = function() {
     return false;
 };
 
+// ========== 6. CONTATAR AGENTE (COM ÍCONE WHATSAPP) ==========
 window.contactAgent = function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -1652,3 +1653,4 @@ window.getInitialProperties = getInitialProperties;
 
 console.log('🎯 VERSÃO COMPLETA - Galeria com setas funcionais + Paginação no Admin');
 console.log('📝 Descrições truncadas em 120 caracteres');
+console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
