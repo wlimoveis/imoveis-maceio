@@ -342,26 +342,26 @@ body {
 }
 
 /* ========== ESTILOS PARA FEATURES COM ALTO CONTRASTE ========== */
-/* RECOMENDAÇÃO APLICADA: Cor única preta e negrito para todos os ícones de features */
+/* RECOMENDAÇÃO 1: Cor única preta e negrito para todos os ícones de features */
+/* RECOMENDAÇÃO 2: Tamanho dos ícones aumentado para o DOBRO */
 .feature-tag {
     display: inline-flex !important;
     align-items: center;
-    gap: 6px;
+    gap: 12px; /* Aumentado para acompanhar o tamanho maior dos ícones */
     background: #f0f4f8;
     color: #2c3e50;
     border: 1px solid #e0e6ed;
-    padding: 0.3rem 0.8rem;
-    border-radius: 20px;
-    font-size: 0.8rem;
+    padding: 0.5rem 1rem; /* Padding ligeiramente aumentado para acomodar ícones maiores */
+    border-radius: 30px; /* Border-radius ligeiramente maior para proporção */
+    font-size: 0.9rem;
     font-weight: 600;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .feature-tag i {
-    font-size: 1.6rem;
-    /* COR ÚNICA PRETA EM NEGRITO CONFORME SOLICITADO */
-    color: #000000 !important; 
+    font-size: 3.2rem !important; /* DOBRO do tamanho original (1.6rem * 2 = 3.2rem) */
+    color: #000000 !important; /* Cor única preta conforme solicitado */
     font-weight: bold !important;
     transition: transform 0.2s ease;
 }
@@ -374,18 +374,18 @@ body {
 }
 
 .feature-tag:hover i {
-    transform: scale(1.2);
+    transform: scale(1.1); /* Leve ajuste no hover para não ficar excessivo com ícones grandes */
 }
 
 /* Ajuste para dispositivos móveis */
 @media (max-width: 768px) {
     .feature-tag {
-        padding: 0.35rem 0.9rem;
-        gap: 6px;
+        padding: 0.5rem 1rem;
+        gap: 10px;
     }
     
     .feature-tag i {
-        font-size: 0.9rem;
+        font-size: 1.8rem !important; /* DOBRO do tamanho original mobile (0.9rem * 2 = 1.8rem) */
     }
 }
 
@@ -395,11 +395,6 @@ body {
     border-color: #c8e6c9;
     color: #2e7d32;
 }
-
-/* A regra abaixo foi REMOVIDA pois não é mais necessária com a padronização preta */
-/* .rural-tag i {
-    color: #43a047;
-} */
 
 .rural-tag:hover {
     background: #c8e6c9;
@@ -413,26 +408,21 @@ body {
     color: #f57c00;
 }
 
-/* A regra abaixo foi REMOVIDA pois não é mais necessária com a padronização preta */
-/* .feature-tag.highlight i {
-    color: #ff9800;
-} */
-
 .feature-tag.highlight:hover {
     background: #ffecb3;
     border-color: #ffb74d;
 }
 
-/* Responsividade para features */
-@media (max-width: 768px) {
+/* Responsividade para features - Ajuste para telas muito pequenas */
+@media (max-width: 480px) {
     .feature-tag {
-        padding: 0.25rem 0.6rem;
-        font-size: 0.7rem;
-        gap: 4px;
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+        gap: 8px;
     }
     
     .feature-tag i {
-        font-size: 0.65rem;
+        font-size: 1.3rem !important; /* DOBRO do tamanho original (0.65rem * 2 = 1.3rem) */
     }
 }
 
