@@ -285,8 +285,22 @@ body {
     background: var(--green);
 }
 
+/* ========== BOTÃO WHATSAPP COM EFEITO PULSANTE ========== */
+/* Efeito pulsante suave para o botão WhatsApp */
+@keyframes whatsappPulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+    }
+}
+
 .contact-btn {
-    background: #25D366;  /* Verde oficial do WhatsApp */
+    background: #25D366;
     color: white;
     border: none;
     padding: 0.8rem 1.5rem;
@@ -299,12 +313,14 @@ body {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    animation: whatsappPulse 2s infinite;
 }
 
 .contact-btn:hover {
-    background: #20B038;  /* Verde mais escuro no hover */
+    background: #20B038;
     transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+    animation: none;
 }
 
 .contact-btn:active {
