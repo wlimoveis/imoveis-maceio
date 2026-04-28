@@ -1,4 +1,4 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE (VERSÃO ATUALIZADA)
 console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE');
 
 window.properties = [];
@@ -471,63 +471,74 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO ==========
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO ATUALIZADA - POR BADGE) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
     if (!window.properties) return [];
     
-    let filtered = window.properties;
+    // Mapeamento de categorias para badges permitidos
+    const allowedBadges = {
+        'Rural': ['Fazenda', 'Chácara', 'Rural'],
+        'Residencial': ['Novo', 'Destaque', 'Luxo'],
+        'Comercial': ['Comercial'],
+        'Minha Casa Minha Vida': ['MCMV']
+    };
     
-    // Filtrar por categoria
-    if (category && category !== 'todos') {
-        const filterMap = {
-            'Residencial': p => p.type === 'residencial',
-            'Comercial': p => p.type === 'comercial',
-            'Rural': p => p.type === 'rural' || p.rural === true,
-            'Minha Casa Minha Vida': p => p.badge === 'MCMV'
-        };
-        const filterFn = filterMap[category];
-        if (filterFn) {
-            filtered = filtered.filter(filterFn);
+    const badges = allowedBadges[category];
+    if (!badges) {
+        console.warn(`⚠️ Categoria "${category}" não reconhecida, usando fallback`);
+        // Fallback para filtro padrão (por type)
+        if (typeof window.renderProperties === 'function') {
+            window.renderProperties(category);
         }
+        return [];
     }
+    
+    // Filtrar por badge (apenas imóveis com badges permitidos)
+    let filtered = window.properties.filter(p => p.badge && badges.includes(p.badge));
+    console.log(`📊 Após filtro por badge (${badges.join(', ')}): ${filtered.length} imóveis`);
     
     // Filtrar por bairro
     if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
-        filtered = filtered.filter(property => {
-            if (!property.location) return false;
+        filtered = filtered.filter(p => {
+            if (!p.location) return false;
             // Extrair bairro da localização
-            let location = property.location;
             let propertyBairro = '';
-            
-            // Tenta extrair após vírgula
-            const matchComma = location.match(/,\s*([^,-]+)/);
+            const matchComma = p.location.match(/,\s*([^,-]+)/);
             if (matchComma) {
                 propertyBairro = matchComma[1].trim().replace(/Maceió\/AL/i, '').trim();
             }
-            // Tenta extrair antes da vírgula
-            if (!propertyBairro && location.includes(',')) {
-                propertyBairro = location.split(',')[0].trim();
+            // Fallback: se não encontrar após vírgula, tenta antes da vírgula
+            if (!propertyBairro && p.location.includes(',')) {
+                propertyBairro = p.location.split(',')[0].trim();
             }
-            // Tenta extrair antes do hífen
-            if (!propertyBairro && location.includes('-')) {
-                propertyBairro = location.split('-')[0].trim();
+            // Fallback: se não encontrar vírgula, tenta antes do hífen
+            if (!propertyBairro && p.location.includes('-')) {
+                propertyBairro = p.location.split('-')[0].trim();
             }
-            // Fallback: pegar primeira parte
-            if (!propertyBairro) {
-                propertyBairro = location.split(/[,-]/)[0].trim();
-            }
-            
             return propertyBairro.toLowerCase() === bairro.toLowerCase();
         });
+        console.log(`📊 Após filtro por bairro "${bairro}": ${filtered.length} imóveis`);
     }
     
     // Renderizar resultados
     if (typeof window.renderPropertiesWithFilter === 'function') {
         window.renderPropertiesWithFilter(filtered);
+    } else {
+        const container = document.getElementById('properties-container');
+        if (container) {
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>';
+            } else {
+                container.innerHTML = filtered.map(prop => 
+                    window.propertyTemplates.generate(prop)
+                ).join('');
+            }
+        }
     }
     
+    console.log(`✅ ${filtered.length} imóvel(is) encontrado(s)`);
     return filtered;
 };
 
@@ -1830,7 +1841,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE CARREGADA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO (VIA BADGE) E DESTAQUE');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1872,10 +1883,10 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtros por Bairro e Destaque');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtros por Bairro (Badge) e Destaque');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
-console.log('📍 Filtro: Categoria + Bairro');
-console.log('⭐ Filtro: Categoria + Destaque (Destaque, Luxo, MCMV, Novo)');
+console.log('📍 Filtro Categoria + Bairro: Filtrando por BADGE (Destaque, Luxo, Novo, MCMV, etc.)');
+console.log('⭐ Filtro Categoria + Destaque: Filtro específico por badge');
