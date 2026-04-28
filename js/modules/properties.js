@@ -1,9 +1,13 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM TRUNCAMENTO
-console.log('🏠 properties.js - VERSÃO COMPLETA COM TRUNCAMENTO - GALERIA COM SETAS FUNCIONAIS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO NO ADMIN - GALERIA COM SETAS FUNCIONAIS');
 
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
+
+// ========== VARIÁVEIS DE PAGINAÇÃO DO ADMIN ==========
+window.adminCurrentPage = 1;
+window.adminItemsPerPage = 10; // Itens por página (ajustável)
 
 // ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
@@ -1322,9 +1326,8 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== 12. CARREGAR LISTA PARA ADMIN (COM CONTADOR DE VISUALIZAÇÕES) ==========
-// ========== 12. CARREGAR LISTA PARA ADMIN (COM PREVIEW DE IMAGEM E CONTADOR) ==========
-window.loadPropertyList = function() {
+// ========== 12. CARREGAR LISTA PARA ADMIN (COM PAGINAÇÃO, PREVIEW E CONTADOR) ==========
+window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
         return;
@@ -1335,37 +1338,65 @@ window.loadPropertyList = function() {
     
     if (!container) return;
     
+    // Salvar página atual
+    window.adminCurrentPage = page;
+    
+    // Calcular paginação
+    const totalItems = window.properties.length;
+    const totalPages = Math.ceil(totalItems / window.adminItemsPerPage);
+    const startIndex = (page - 1) * window.adminItemsPerPage;
+    const endIndex = Math.min(startIndex + window.adminItemsPerPage, totalItems);
+    const paginatedProperties = window.properties.slice(startIndex, endIndex);
+    
+    // Limpar container mas manter estrutura para paginação
     container.innerHTML = '';
     
     if (countElement) {
-        countElement.textContent = window.properties.length;
+        countElement.textContent = totalItems;
     }
     
-    if (window.properties.length === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666;">Nenhum imóvel cadastrado</p>';
+    if (totalItems === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Nenhum imóvel cadastrado</p>';
         return;
     }
+    
+    // Adicionar estilo para scroll suave na lista
+    container.style.maxHeight = '600px';
+    container.style.overflowY = 'auto';
+    container.style.paddingRight = '5px';
     
     // Calcular total de visualizações
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
-    // Adicionar cabeçalho com estatísticas
+    // ========== CABEÇALHO COM ESTATÍSTICAS ==========
     const statsHeader = document.createElement('div');
-    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.8rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem;';
+    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;';
     statsHeader.innerHTML = `
-        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+        <div style="display: flex; flex-wrap: wrap; gap: 1rem; align-items: center;">
             <span><i class="fas fa-eye"></i> <strong>Total de visualizações:</strong> ${totalViews}</span>
-            <button onclick="if(window.resetAllGalleryViews) window.resetAllGalleryViews()" style="background: #e67e22; color: white; border: none; padding: 0.3rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-                <i class="fas fa-trash-alt"></i> Zerar TODAS
-            </button>
+            <span><i class="fas fa-building"></i> <strong>Total de imóveis:</strong> ${totalItems}</span>
+            <span><i class="fas fa-images"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex} de ${totalItems}</span>
         </div>
+        <button onclick="if(window.resetAllGalleryViews) window.resetAllGalleryViews()" style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+            <i class="fas fa-trash-alt"></i> Zerar TODAS
+        </button>
     `;
     container.appendChild(statsHeader);
     
-    // Imagem padrão (fallback)
+    // ========== CONTROLES DE PAGINAÇÃO (TOPO) ==========
+    if (totalPages > 1) {
+        const paginationTop = createPaginationControls(totalPages, page);
+        container.appendChild(paginationTop);
+    }
+    
+    // ========== LISTA DE IMÓVEIS (APENAS PÁGINA ATUAL) ==========
+    const listContainer = document.createElement('div');
+    listContainer.id = 'propertyListItems';
+    listContainer.style.cssText = 'margin: 1rem 0;';
+    
     const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
     
-    window.properties.forEach(property => {
+    paginatedProperties.forEach(property => {
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
@@ -1388,7 +1419,7 @@ window.loadPropertyList = function() {
         item.style.cssText = 'background: #f5f5f5; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
         
         item.innerHTML = `
-            <!-- COLUNA DA IMAGEM PREVIEW -->
+            <!-- MINIATURA DA IMAGEM -->
             <div style="flex-shrink: 0; width: 70px; height: 70px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease;" 
                  onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
                  onmouseenter="this.style.transform='scale(1.05)'"
@@ -1409,7 +1440,7 @@ window.loadPropertyList = function() {
                 `}
             </div>
             
-            <!-- COLUNA DAS INFORMAÇÕES -->
+            <!-- INFORMAÇÕES DO IMÓVEL -->
             <div style="flex: 3; min-width: 200px;">
                 <strong style="color: var(--primary); font-size: 1rem; display: block; margin-bottom: 0.3rem;">
                     ${window.SharedCore?.escapeHtml(property.title) || property.title}
@@ -1432,7 +1463,7 @@ window.loadPropertyList = function() {
                 </div>
             </div>
             
-            <!-- COLUNA DOS BOTÕES -->
+            <!-- BOTÕES DE AÇÃO -->
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
                         style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
@@ -1454,18 +1485,130 @@ window.loadPropertyList = function() {
                 </button>
             </div>
         `;
-        container.appendChild(item);
+        listContainer.appendChild(item);
     });
     
-    // Adicionar estilo para scroll suave na lista
-    container.style.maxHeight = '500px';
-    container.style.overflowY = 'auto';
-    container.style.paddingRight = '5px';
+    container.appendChild(listContainer);
     
-    console.log(`✅ ${window.properties.length} imóveis listados no admin com preview de imagem`);
+    // ========== CONTROLES DE PAGINAÇÃO (RODAPÉ) ==========
+    if (totalPages > 1) {
+        const paginationBottom = createPaginationControls(totalPages, page);
+        container.appendChild(paginationBottom);
+    }
+    
+    console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (total: ${totalItems})`);
 };
 
-console.log('✅ properties.js - VERSÃO COMPLETA CARREGADA');
+// ========== FUNÇÃO PARA CRIAR CONTROLES DE PAGINAÇÃO ==========
+function createPaginationControls(totalPages, currentPage) {
+    const paginationDiv = document.createElement('div');
+    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap;';
+    
+    // Botão Primeira Página
+    const firstBtn = document.createElement('button');
+    firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+    firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    firstBtn.disabled = currentPage === 1;
+    if (currentPage === 1) firstBtn.style.opacity = '0.5';
+    firstBtn.onclick = () => window.loadPropertyList(1);
+    paginationDiv.appendChild(firstBtn);
+    
+    // Botão Anterior
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    prevBtn.disabled = currentPage === 1;
+    if (currentPage === 1) prevBtn.style.opacity = '0.5';
+    prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
+    paginationDiv.appendChild(prevBtn);
+    
+    // Números das Páginas (com elipse para muitas páginas)
+    const maxVisiblePages = 5;
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        const firstPageSpan = document.createElement('span');
+        firstPageSpan.textContent = '1';
+        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease;';
+        firstPageSpan.onclick = () => window.loadPropertyList(1);
+        paginationDiv.appendChild(firstPageSpan);
+        
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.5rem; color: #666;';
+            paginationDiv.appendChild(ellipsis);
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.style.cssText = `background: ${i === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${i === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'};`;
+        pageBtn.onclick = () => window.loadPropertyList(i);
+        paginationDiv.appendChild(pageBtn);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.5rem; color: #666;';
+            paginationDiv.appendChild(ellipsis);
+        }
+        
+        const lastPageSpan = document.createElement('span');
+        lastPageSpan.textContent = totalPages;
+        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease;';
+        lastPageSpan.onclick = () => window.loadPropertyList(totalPages);
+        paginationDiv.appendChild(lastPageSpan);
+    }
+    
+    // Botão Próximo
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    nextBtn.disabled = currentPage === totalPages;
+    if (currentPage === totalPages) nextBtn.style.opacity = '0.5';
+    nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
+    paginationDiv.appendChild(nextBtn);
+    
+    // Botão Última Página
+    const lastBtn = document.createElement('button');
+    lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+    lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    lastBtn.disabled = currentPage === totalPages;
+    if (currentPage === totalPages) lastBtn.style.opacity = '0.5';
+    lastBtn.onclick = () => window.loadPropertyList(totalPages);
+    paginationDiv.appendChild(lastBtn);
+    
+    // Selector de itens por página
+    const perPageSelect = document.createElement('select');
+    perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
+    perPageSelect.innerHTML = `
+        <option value="5" ${window.adminItemsPerPage === 5 ? 'selected' : ''}>5 por página</option>
+        <option value="10" ${window.adminItemsPerPage === 10 ? 'selected' : ''}>10 por página</option>
+        <option value="15" ${window.adminItemsPerPage === 15 ? 'selected' : ''}>15 por página</option>
+        <option value="20" ${window.adminItemsPerPage === 20 ? 'selected' : ''}>20 por página</option>
+        <option value="30" ${window.adminItemsPerPage === 30 ? 'selected' : ''}>30 por página</option>
+        <option value="50" ${window.adminItemsPerPage === 50 ? 'selected' : ''}>50 por página</option>
+    `;
+    perPageSelect.onchange = (e) => {
+        window.adminItemsPerPage = parseInt(e.target.value);
+        window.adminCurrentPage = 1; // Reset para primeira página
+        window.loadPropertyList(1);
+    };
+    paginationDiv.appendChild(perPageSelect);
+    
+    return paginationDiv;
+}
+
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO CARREGADA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1507,5 +1650,5 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria com setas funcionais');
+console.log('🎯 VERSÃO COMPLETA - Galeria com setas funcionais + Paginação no Admin');
 console.log('📝 Descrições truncadas em 120 caracteres');
