@@ -147,10 +147,11 @@ const FilterManager = (function() {
         
         console.log(`📊 Encontrados ${filteredProperties.length} imóveis para categoria ${category}`);
         
-        // Se não houver imóveis, mostrar aviso
+        // Se não houver imóveis, mostrar aviso com dica de cadastro
         if (filteredProperties.length === 0) {
             console.warn(`⚠️ Nenhum imóvel encontrado para categoria ${category}.`);
             console.warn(`   Condições: badge IN (${badges.join(', ')}) AND type IN (${tipos.join(', ')})`);
+            console.warn(`   💡 Dica: Cadastre um imóvel com badge="${badges[0]}" e type="${tipos[0]}"`);
             return [];
         }
         
