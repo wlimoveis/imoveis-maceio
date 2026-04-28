@@ -286,7 +286,7 @@ body {
 }
 
 .contact-btn {
-    background: linear-gradient(45deg, var(--primary), var(--secondary));
+    background: #25D366;  /* Verde oficial do WhatsApp */
     color: white;
     border: none;
     padding: 0.8rem 1.5rem;
@@ -302,8 +302,13 @@ body {
 }
 
 .contact-btn:hover {
+    background: #20B038;  /* Verde mais escuro no hover */
     transform: scale(1.02);
     box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+}
+
+.contact-btn:active {
+    transform: scale(0.98);
 }
 
 /* ========== ANIMAÇÕES DO SISTEMA ========== */
