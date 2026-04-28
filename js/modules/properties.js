@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO COM LÓGICA DIFERENCIADA POR CATEGORIA
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -510,54 +510,62 @@ function extractBairroFromLocation(location) {
     return bairro || 'Localização não especificada';
 }
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO CORRIGIDA - BADGE + TYPE) ==========
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (COM LÓGICA DIFERENCIADA) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
     if (!window.properties) return [];
     
-    // Mapeamento correto com badges + tipos
-    const categoryConfig = {
-        'Rural': {
-            badges: ['Fazenda', 'Chácara', 'Rural'],
-            tipos: ['rural']
+    const CATEGORY_CONFIG = {
+        'Comercial': {
+            filterBy: 'type',
+            expectedValues: ['comercial']
         },
         'Residencial': {
-            badges: ['Novo', 'Destaque', 'Luxo'],
-            tipos: ['residencial']
+            filterBy: 'badge',
+            expectedValues: ['Novo', 'Destaque', 'Luxo'],
+            requiredType: 'residencial'
         },
-        'Comercial': {
-            badges: ['Comercial', 'Empresarial'],
-            tipos: ['comercial']
+        'Rural': {
+            filterBy: 'badge',
+            expectedValues: ['Fazenda', 'Chácara', 'Rural'],
+            requiredType: 'rural'
         },
         'Minha Casa Minha Vida': {
-            badges: ['MCMV'],
-            tipos: ['residencial']
+            filterBy: 'badge',
+            expectedValues: ['MCMV'],
+            requiredType: null
         }
     };
     
-    const config = categoryConfig[category];
+    const config = CATEGORY_CONFIG[category];
     if (!config) {
         console.warn(`⚠️ Categoria "${category}" não reconhecida, usando fallback`);
-        // Fallback para filtro padrão
         if (typeof window.renderProperties === 'function') {
             window.renderProperties(category);
         }
         return [];
     }
     
-    const { badges, tipos } = config;
+    let filtered = [];
     
-    console.log(`📊 Filtrando por badges: ${badges.join(', ')} e tipos: ${tipos.join(', ')}`);
-    
-    // Filtrar por badge E tipo
-    let filtered = window.properties.filter(p => {
-        const hasCorrectBadge = p.badge && badges.includes(p.badge);
-        const hasCorrectType = p.type && tipos.includes(p.type);
-        return hasCorrectBadge && hasCorrectType;
-    });
-    
-    console.log(`📊 Após filtro por badge + tipo: ${filtered.length} imóveis`);
+    if (config.filterBy === 'type') {
+        // PARA COMERCIAL: filtrar APENAS por tipo (ignora badge)
+        filtered = window.properties.filter(p => 
+            p.type && config.expectedValues.includes(p.type)
+        );
+        console.log(`📊 Filtrando Comercial por tipo (${config.expectedValues.join(', ')}): ${filtered.length} imóveis`);
+    } else if (config.filterBy === 'badge') {
+        // Para outras categorias: filtrar por badge + tipo (quando aplicável)
+        filtered = window.properties.filter(p => {
+            const hasCorrectBadge = p.badge && config.expectedValues.includes(p.badge);
+            if (config.requiredType) {
+                return hasCorrectBadge && p.type === config.requiredType;
+            }
+            return hasCorrectBadge;
+        });
+        console.log(`📊 Filtrando ${category} por badge (${config.expectedValues.join(', ')}): ${filtered.length} imóveis`);
+    }
     
     // Filtrar por bairro
     if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
@@ -587,7 +595,6 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     
     console.log(`✅ ${filtered.length} imóvel(is) encontrado(s)`);
     
-    // Atualizar contador na mensagem
     const countElement = document.getElementById('propertyCount');
     if (countElement) {
         countElement.textContent = `${filtered.length} imóvel(is)`;
@@ -921,7 +928,7 @@ function getInitialProperties() {
             images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
             created_at: new Date().toISOString()
         },
-        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO (BADGE "Comercial") ==========
+        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO ==========
         {
             id: 99,
             title: "Loja Comercial - Centro",
@@ -950,7 +957,6 @@ function getInitialProperties() {
             images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
             created_at: new Date().toISOString()
         },
-        // ========== MAIS IMÓVEIS COMERCIAIS (BADGE "Comercial" - GARANTINDO VARIEDADE) ==========
         {
             id: 101,
             title: "Loja Comercial - Centro",
@@ -1965,7 +1971,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO POR CATEGORIA');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -2007,13 +2013,13 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtro CORRIGIDO (Badge + Type)');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtro DIFERENCIADO');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
-console.log('📍 Filtro Categoria + Bairro: Usa BADGE + TYPE para maior precisão');
-console.log('⭐ Filtro Categoria + Destaque: Filtro específico por badge');
-console.log('🏢 Adicionados 5 imóveis comerciais com badge "Comercial" (IDs 99, 100, 101, 102, 103)');
+console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualquer badge');
+console.log('🏠 Residencial: badge Novo/Destaque/Luxo + TYPE residencial');
+console.log('🌾 Rural: badge Fazenda/Chácara/Rural + TYPE rural');
+console.log('🏘️ MCMV: badge MCMV (sem validação de tipo)');
 console.log('🔧 Função extractBairroFromLocation com lista de bairros de Maceió');
-console.log('📌 Badge "Empresarial" também suportado na categoria Comercial');
