@@ -59,7 +59,7 @@ const FilterManager = (function() {
         let bairro = '';
         const locationClean = location.trim();
         
-        // Lista de bairros conhecidos de Maceió para matching
+        // Lista de bairros conhecidos de Maceió (para referência)
         const bairrosConhecidos = [
             'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
             'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -69,12 +69,15 @@ const FilterManager = (function() {
             'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
             'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
             'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
-            'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural'
+            'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
+            'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
         ];
         
-        // Tentativa 1: Procurar por bairro conhecido na string
+        // Tentativa 1: Procurar por bairro conhecido na string (match exato ou contido)
         for (const b of bairrosConhecidos) {
-            if (locationClean.includes(b)) {
+            // Criar regex para match exato (case insensitive)
+            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(locationClean)) {
                 bairro = b;
                 break;
             }
@@ -85,60 +88,41 @@ const FilterManager = (function() {
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
-                // Remover sufixos comuns
-                possibleBairro = possibleBairro.replace(/-.*$/, '').replace(/AL$/i, '').trim();
-                if (possibleBairro.length > 0 && possibleBairro.length < 40) {
+                // Remover sufixos comuns como "Maceió/AL", "AL", etc.
+                possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
+                if (possibleBairro.length > 0 && possibleBairro.length < 50 && !possibleBairro.match(/^(Rua|Av|Avenida|Travessa)$/i)) {
                     bairro = possibleBairro;
                 }
             }
         }
         
-        // Tentativa 3: Extrair texto antes de vírgula (padrão "Bairro, Cidade")
-        if (!bairro && locationClean.includes(',')) {
-            let possibleBairro = locationClean.split(',')[0].trim();
-            possibleBairro = possibleBairro.replace(/Rua |Av\. |Avenida /i, '').trim();
-            if (possibleBairro.length > 0 && possibleBairro.length < 40 && !possibleBairro.includes(' ')) {
-                bairro = possibleBairro;
-            }
-        }
-        
-        // Tentativa 4: Extrair último segmento antes de hífen
-        if (!bairro && locationClean.includes('-')) {
-            let possibleBairro = locationClean.split('-')[0].trim();
-            if (possibleBairro.length > 0 && possibleBairro.length < 40) {
-                bairro = possibleBairro;
-            }
-        }
-        
-        // Tentativa 5: Se for "Zona Rural" ou similar
+        // Tentativa 3: Se for "Zona Rural" ou similar
         if (!bairro && (locationClean.toLowerCase().includes('rural') || 
                         locationClean.toLowerCase().includes('zona rural'))) {
             bairro = 'Zona Rural';
         }
         
-        // Fallback: limpar e usar a primeira palavra significativa
-        if (!bairro && locationClean.length > 0) {
-            let words = locationClean.split(/[ ,-]/);
-            for (let word of words) {
-                word = word.trim();
-                if (word.length > 3 && !word.match(/^(Rua|Av|Avenida|Travessa|Alameda|Praça)$/i)) {
-                    bairro = word;
-                    break;
-                }
-            }
-        }
-        
         // Limpeza final
         if (bairro) {
+            // Remover palavras comuns
             bairro = bairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').trim();
-            // Capitalizar primeira letra
-            bairro = bairro.charAt(0).toUpperCase() + bairro.slice(1).toLowerCase();
+            // Remover números
+            bairro = bairro.replace(/^\d+/, '').trim();
+            // Capitalizar primeira letra de cada palavra
+            bairro = bairro.split(' ').map(word => 
+                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+            ).join(' ');
         }
         
-        return bairro || 'Localização não especificada';
+        // Validar se o bairro extraído é válido (não é muito longo ou contém caracteres estranhos)
+        if (bairro && bairro.length > 0 && bairro.length < 50 && !bairro.match(/[<>{}]/)) {
+            return bairro;
+        }
+        
+        return null;
     }
 
-    // ========== EXTRAIR BAIRROS POR CATEGORIA ==========
+    // ========== EXTRAIR BAIRROS POR CATEGORIA (APENAS COM IMÓVEIS VÁLIDOS) ==========
     function extractBairrosByCategory(properties, category) {
         if (!properties || !Array.isArray(properties)) return [];
         
@@ -170,31 +154,45 @@ const FilterManager = (function() {
         
         if (filteredProperties.length === 0) {
             console.warn(`⚠️ Nenhum imóvel encontrado para categoria ${category}.`);
-            if (config.filterBy === 'type') {
-                console.warn(`   💡 Verifique se existem imóveis com type="${config.expectedValues[0]}"`);
-            } else {
-                console.warn(`   💡 Verifique se existem imóveis com badge IN (${config.expectedValues.join(', ')})`);
-            }
             return [];
         }
         
-        // Extrair bairros únicos
-        const bairrosSet = new Set();
+        // Extrair bairros APENAS dos imóveis que realmente existem
+        const bairrosMap = new Map(); // Usar Map para evitar duplicatas e contar ocorrências
         
         filteredProperties.forEach(property => {
-            if (property.location) {
+            if (property.location && property.location.trim() !== '') {
                 const bairro = extractBairroFromLocation(property.location);
-                if (bairro && bairro !== 'Localização não especificada') {
-                    bairrosSet.add(bairro);
-                    console.log(`  📍 "${property.title}" → Bairro: ${bairro}`);
+                if (bairro && bairro !== 'Localização não especificada' && bairro !== '') {
+                    // Contar quantos imóveis têm este bairro
+                    if (bairrosMap.has(bairro)) {
+                        bairrosMap.set(bairro, bairrosMap.get(bairro) + 1);
+                    } else {
+                        bairrosMap.set(bairro, 1);
+                    }
+                    console.log(`  📍 "${property.title}" → Bairro: ${bairro} (${bairrosMap.get(bairro)}º imóvel)`);
+                } else {
+                    console.warn(`  ⚠️ Não foi possível extrair bairro de: "${property.location}"`);
                 }
             }
         });
         
-        let bairros = Array.from(bairrosSet);
-        bairros.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        // Converter para array de objetos com nome e contagem
+        let bairrosComContagem = Array.from(bairrosMap.entries()).map(([nome, count]) => ({
+            nome: nome,
+            count: count
+        }));
         
-        console.log(`📍 Categoria "${category}" - ${bairros.length} bairros únicos encontrados:`, bairros);
+        // Ordenar por nome (alfabeticamente)
+        bairrosComContagem.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+        
+        // Extrair apenas os nomes para o dropdown
+        let bairros = bairrosComContagem.map(item => item.nome);
+        
+        console.log(`📍 Categoria "${category}" - ${bairros.length} bairros únicos encontrados:`);
+        bairrosComContagem.forEach(item => {
+            console.log(`   - ${item.nome}: ${item.count} imóvel(is)`);
+        });
         
         return bairros;
     }
@@ -674,4 +672,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Configuração flexível por categoria');
+console.log('✅ FilterManager carregado - Extração robusta de bairros com validação');
