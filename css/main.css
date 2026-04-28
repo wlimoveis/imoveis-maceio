@@ -153,50 +153,55 @@ body {
     justify-content: center;
 }
 
-/* ========== GARANTIR ESTILOS DOS BOTÕES ATIVOS ========== */
-/* RECOMENDAÇÃO APLICADA: Estilos robustos com !important para garantir consistência */
+/* ========== ESTILOS DOS BOTÕES DE FILTRO COM HOVER ========== */
+/* RECOMENDAÇÃO APLICADA: Efeitos hover completos e refinados */
+
 .filter-btn {
-    transition: all 0.3s ease;
-}
-
-.filter-btn.active {
-    background: var(--primary) !important;
-    color: white !important;
-    border-color: var(--primary) !important;
-    font-weight: 700 !important;
-    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.3) !important;
-}
-
-.filter-btn.active:hover {
-    background: #154060 !important;
-    transform: translateY(-2px);
-}
-
-/* Reset para botões não ativos */
-.filter-btn:not(.active) {
     background: #f8f9fa;
+    border: 2px solid #e0e0e0;
+    padding: 0.7rem 1.5rem;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
     color: #2c3e50;
-    border-color: #e0e0e0;
-    font-weight: normal;
-    box-shadow: none;
-}
-
-.filter-btn:not(.active):hover {
-    background: #e9ecef;
-    border-color: var(--accent);
-}
-
-/* ========== ESTILOS PARA DROPDOWN ========== */
-.filter-btn.has-dropdown {
+    font-weight: 600;
     position: relative;
 }
 
+/* Efeito HOVER - muda a cor ao passar o mouse */
+.filter-btn:hover {
+    background: #e9ecef !important;
+    border-color: var(--accent) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+    color: var(--primary) !important;
+}
+
+/* Botão ativo (clicado) - mantém a cor primária */
+.filter-btn.active {
+    background: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: white !important;
+    font-weight: 700;
+    box-shadow: 0 4px 12px rgba(26, 82, 118, 0.3);
+}
+
+/* Botão ativo com hover - mantém a cor, apenas sobe um pouco */
+.filter-btn.active:hover {
+    background: #154060 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(26, 82, 118, 0.4);
+}
+
+/* Indicador de dropdown (seta) */
 .filter-btn.has-dropdown::after {
     content: "▼";
     font-size: 0.6rem;
     margin-left: 6px;
     opacity: 0.7;
     transition: transform 0.2s ease;
+    display: inline-block;
 }
 
 .filter-btn.has-dropdown:hover::after {
@@ -204,6 +209,13 @@ body {
     opacity: 1;
 }
 
+/* Botão ativo com seta */
+.filter-btn.active.has-dropdown::after {
+    color: white;
+    opacity: 1;
+}
+
+/* ========== ESTILOS PARA DROPDOWN ========== */
 .filter-dropdown {
     animation: dropdownFadeIn 0.2s ease;
 }
@@ -348,12 +360,12 @@ body {
 .feature-tag {
     display: inline-flex !important;
     align-items: center;
-    gap: 12px; /* Aumentado para acompanhar o tamanho maior dos ícones */
+    gap: 12px;
     background: #f0f4f8;
     color: #2c3e50;
     border: 1px solid #e0e6ed;
-    padding: 0.5rem 1rem; /* Padding ligeiramente aumentado para acomodar ícones maiores */
-    border-radius: 30px; /* Border-radius ligeiramente maior para proporção */
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
     font-size: 0.9rem;
     font-weight: 600;
     transition: all 0.2s ease;
@@ -361,8 +373,8 @@ body {
 }
 
 .feature-tag i {
-    font-size: 3.2rem !important; /* DOBRO do tamanho original (1.6rem * 2 = 3.2rem) */
-    color: #000000 !important; /* Cor única preta conforme solicitado */
+    font-size: 3.2rem !important;
+    color: #000000 !important;
     font-weight: bold !important;
     transition: transform 0.2s ease;
 }
@@ -375,7 +387,7 @@ body {
 }
 
 .feature-tag:hover i {
-    transform: scale(1.1); /* Leve ajuste no hover para não ficar excessivo com ícones grandes */
+    transform: scale(1.1);
 }
 
 /* Ajuste para dispositivos móveis */
@@ -386,11 +398,11 @@ body {
     }
     
     .feature-tag i {
-        font-size: 1.8rem !important; /* DOBRO do tamanho original mobile (0.9rem * 2 = 1.8rem) */
+        font-size: 1.8rem !important;
     }
 }
 
-/* Estilo para tags rurais - Mantém a cor de fundo, mas o ícone segue o padrão preto */
+/* Estilo para tags rurais */
 .rural-tag {
     background: #e8f5e9;
     border-color: #c8e6c9;
@@ -402,7 +414,7 @@ body {
     border-color: #81c784;
 }
 
-/* Estilo para tags de destaque (opcional) - Mantém a cor de fundo, mas o ícone segue o padrão preto */
+/* Estilo para tags de destaque */
 .feature-tag.highlight {
     background: #fff8e1;
     border-color: #ffe082;
@@ -423,7 +435,7 @@ body {
     }
     
     .feature-tag i {
-        font-size: 1.3rem !important; /* DOBRO do tamanho original (0.65rem * 2 = 1.3rem) */
+        font-size: 1.3rem !important;
     }
 }
 
@@ -661,8 +673,7 @@ body {
 }
 
 /* ========== CORREÇÃO DEFINITIVA DOS FILTROS ========== */
-/* NOTA: As regras abaixo são mantidas para compatibilidade, 
-   mas as regras mais robustas com !important acima já garantem os estilos */
+/* Regras de compatibilidade mantidas para garantir funcionamento */
 .filter-btn[style*="color:"] {
     color: #2c3e50 !important;
 }
