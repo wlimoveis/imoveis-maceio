@@ -289,7 +289,8 @@ body {
 }
 
 .feature-tag i {
-    font-size: 0.75rem;
+    font-size: 1.1rem;  /* Ícone ainda maior */
+    color: #f39c12;      /* Cor dourada para destaque */
     transition: transform 0.2s ease;
 }
 
@@ -301,7 +302,19 @@ body {
 }
 
 .feature-tag:hover i {
-    transform: scale(1.1);
+    transform: scale(1.2);
+}
+
+/* Ajuste para dispositivos móveis */
+@media (max-width: 768px) {
+    .feature-tag {
+        padding: 0.35rem 0.9rem;
+        gap: 6px;
+    }
+    
+    .feature-tag i {
+        font-size: 0.9rem;
+    }
 }
 
 /* Estilo para tags rurais */
