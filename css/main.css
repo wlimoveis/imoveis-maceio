@@ -289,7 +289,7 @@ body {
 }
 
 .feature-tag i {
-    font-size: 1.3rem;  /* Ícone ainda maior */
+    font-size: 1.6rem;  /* Ícone ainda maior */
     color: #f39c12;      /* Cor dourada para destaque */
     transition: transform 0.2s ease;
 }
@@ -377,7 +377,7 @@ body {
 }
 
 .contact-btn {
-    background: #25D366;
+    background: #128C7E;
     color: white;
     border: none;
     padding: 0.8rem 1.5rem;
