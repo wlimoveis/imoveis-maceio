@@ -408,7 +408,7 @@ window.setupLocationAutocomplete = function() {
         'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
         'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL', 'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma',
         'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL', 'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 'São Miguel dos Campos, AL', 'Murilopes, Maceió/AL',
-        'Barra de São Miguel, AL', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres, AL',
+        'Barra de São Miguel, AL', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres, AL', 'Zona Rural, AL',
     ];
 
     const locationInput = document.getElementById('propLocation');
