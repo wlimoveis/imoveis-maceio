@@ -22,19 +22,19 @@ const FilterManager = (function() {
     };
 
     // Variáveis de controle para dropdown
-    let currentActiveDropdown = null;
-    let dropdownCloseTimeout = null;
+    let currentActiveDropdown = null; // Referência ao dropdown aberto atualmente
+    let dropdownCloseTimeout = null;   // Timeout para fechar dropdown
 
-    // ========== CATEGORY CONFIGURATION ==========
+    // ========== MAPEAMENTO CORRETO POR CATEGORIA ==========
     const CATEGORY_CONFIG = {
         'Comercial': {
-            filterBy: 'type',
+            filterBy: 'type',           // Filtra pelo campo "type"
             expectedValues: ['comercial'],
             icon: 'fa-building',
             title: 'Comercial'
         },
         'Residencial': {
-            filterBy: 'badge',
+            filterBy: 'badge',          // Filtra pelo campo "badge" + type
             expectedValues: ['Novo', 'Destaque', 'Luxo'],
             requiredType: 'residencial',
             icon: 'fa-home',
@@ -50,50 +50,20 @@ const FilterManager = (function() {
         'Minha Casa Minha Vida': {
             filterBy: 'badge',
             expectedValues: ['MCMV'],
-            requiredType: null,
+            requiredType: null,         // Sem restrição de tipo
             icon: 'fa-hand-holding-heart',
             title: 'Minha Casa Minha Vida'
         }
     };
 
-    // ========== FUNÇÃO PARA LIMPAR STRING DE LOCALIZAÇÃO ==========
-    function cleanLocationString(location) {
-        if (!location) return '';
-        
-        let cleaned = location
-            // Remover "Maceió/AL" e variações
-            .replace(/Maceió\/AL/gi, '')
-            .replace(/-\s*AL/gi, '')
-            .replace(/,\s*AL/gi, '')
-            .replace(/\s*AL$/gi, '')
-            // Remover números de CEP
-            .replace(/\b\d{5}-\d{3}\b/g, '')
-            .replace(/\b\d{8}\b/g, '')
-            // Remover emojis e caracteres especiais
-            .replace(/[\u{1F300}-\u{1F9FF}]/gu, '')
-            // Remover espaços extras
-            .replace(/\s+/g, ' ')
-            .trim();
-        
-        // Remover vírgulas e hífens no início/fim
-        cleaned = cleaned.replace(/^[,\-\s]+/, '').replace(/[,\-\s]+$/, '');
-        
-        return cleaned;
-    }
-
-    // ========== FUNÇÃO ROBUSTA PARA EXTRAIR BAIRRO DA LOCALIZAÇÃO (VERSÃO MELHORADA) ==========
+    // ========== FUNÇÃO ROBUSTA PARA EXTRAIR BAIRRO DA LOCALIZAÇÃO ==========
     function extractBairroFromLocation(location) {
         if (!location || typeof location !== 'string') return null;
         
         let bairro = '';
+        const locationClean = location.trim();
         
-        // Primeiro, limpar a string
-        let cleanLocation = cleanLocationString(location);
-        
-        // Se após limpeza ficou vazio, retorna null
-        if (!cleanLocation) return null;
-        
-        // Lista completa de bairros conhecidos de Maceió e região
+        // Lista de bairros conhecidos de Maceió (para referência)
         const bairrosConhecidos = [
             'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
             'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -107,97 +77,52 @@ const FilterManager = (function() {
             'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
         ];
         
-        // Tentativa 1: Procurar por bairro conhecido na string (match exato com boundaries)
+        // Tentativa 1: Procurar por bairro conhecido na string (match exato ou contido)
         for (const b of bairrosConhecidos) {
-            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(cleanLocation)) {
+            // Criar regex para match exato (case insensitive)
+            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(locationClean)) {
                 bairro = b;
                 break;
             }
         }
         
-        // Tentativa 2: Extrair texto após vírgula (padrão "Rua X, Bairro")
-        if (!bairro && cleanLocation.includes(',')) {
-            const parts = cleanLocation.split(',');
+        // Tentativa 2: Extrair texto após vírgula (padrão "Rua X, Bairro - Cidade")
+        if (!bairro && locationClean.includes(',')) {
+            const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
-                // Remover sufixos comuns
-                possibleBairro = possibleBairro
-                    .replace(/Maceió/gi, '')
-                    .replace(/AL/gi, '')
-                    .replace(/-\s*$/, '')
-                    .trim();
-                
-                if (possibleBairro.length > 0 && possibleBairro.length < 50 && 
-                    !possibleBairro.match(/^(Rua|Av|Avenida|Travessa|Viela|Alameda|Praça)/i) &&
-                    !possibleBairro.match(/^\d+$/)) {
+                // Remover sufixos comuns como "Maceió/AL", "AL", etc.
+                possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
+                if (possibleBairro.length > 0 && possibleBairro.length < 50 && !possibleBairro.match(/^(Rua|Av|Avenida|Travessa)$/i)) {
                     bairro = possibleBairro;
                 }
             }
         }
         
-        // Tentativa 3: Extrair texto após hífen (padrão "Endereço - Bairro")
-        if (!bairro && cleanLocation.includes('-')) {
-            const parts = cleanLocation.split('-');
-            if (parts.length >= 2) {
-                let possibleBairro = parts[1].trim();
-                possibleBairro = possibleBairro
-                    .replace(/Maceió/gi, '')
-                    .replace(/AL/gi, '')
-                    .trim();
-                
-                if (possibleBairro.length > 0 && possibleBairro.length < 50) {
-                    bairro = possibleBairro;
-                }
-            }
-        }
-        
-        // Tentativa 4: Se for "Zona Rural" ou similar
-        if (!bairro && (cleanLocation.toLowerCase().includes('rural') || 
-                        cleanLocation.toLowerCase().includes('zona rural'))) {
+        // Tentativa 3: Se for "Zona Rural" ou similar
+        if (!bairro && (locationClean.toLowerCase().includes('rural') || 
+                        locationClean.toLowerCase().includes('zona rural'))) {
             bairro = 'Zona Rural';
         }
         
-        // Limpeza final do bairro extraído
+        // Limpeza final
         if (bairro) {
-            // Remover palavras indesejadas
-            bairro = bairro
-                .replace(/Maceió/gi, '')
-                .replace(/AL/gi, '')
-                .replace(/^\d+/, '')
-                .replace(/[<>{}]/g, '')
-                .replace(/,$/, '')
-                .trim();
-            
+            // Remover palavras comuns
+            bairro = bairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').trim();
+            // Remover números
+            bairro = bairro.replace(/^\d+/, '').trim();
             // Capitalizar primeira letra de cada palavra
             bairro = bairro.split(' ').map(word => 
                 word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
             ).join(' ');
-            
-            // Corrigir casos especiais (preposições minúsculas)
-            bairro = bairro
-                .replace(/\bDe\b/g, 'de')
-                .replace(/\bDa\b/g, 'da')
-                .replace(/\bDo\b/g, 'do')
-                .replace(/\bDas\b/g, 'das')
-                .replace(/\bDos\b/g, 'dos')
-                .replace(/\bE\b/g, 'e');
-            
-            // CORREÇÃO ESPECIAL: "Zona Rur" -> "Zona Rural"
-            if (bairro === 'Zona Rur' || bairro === 'Zona Rur Al') {
-                bairro = 'Zona Rural';
-            }
         }
         
-        // VALIDAÇÃO FINAL: Verificar se o bairro é válido
-        if (bairro && bairro.length > 0 && bairro.length < 50) {
-            if (!/^\d+$/.test(bairro) && bairro !== 'Maceió' && bairro !== 'Al') {
-                console.log(`   ✅ Bairro extraído: "${bairro}" ← "${location}"`);
-                return bairro;
-            }
+        // Validar se o bairro extraído é válido (não é muito longo ou contém caracteres estranhos)
+        if (bairro && bairro.length > 0 && bairro.length < 50 && !bairro.match(/[<>{}]/)) {
+            return bairro;
         }
         
-        console.warn(`   ⚠️ Falha ao extrair bairro de: "${location}"`);
         return null;
     }
 
@@ -214,10 +139,12 @@ const FilterManager = (function() {
         let filteredProperties = [];
         
         if (config.filterBy === 'type') {
+            // Filtrar APENAS pelo campo "type" (para Comercial)
             filteredProperties = properties.filter(property => 
                 property.type && config.expectedValues.includes(property.type)
             );
         } else {
+            // Filtrar por badge e opcionalmente por tipo
             filteredProperties = properties.filter(property => {
                 const hasCorrectBadge = property.badge && config.expectedValues.includes(property.badge);
                 if (config.requiredType) {
@@ -235,17 +162,21 @@ const FilterManager = (function() {
         }
         
         // Extrair bairros APENAS dos imóveis que realmente existem
-        const bairrosMap = new Map();
+        const bairrosMap = new Map(); // Usar Map para evitar duplicatas e contar ocorrências
         
         filteredProperties.forEach(property => {
             if (property.location && property.location.trim() !== '') {
                 const bairro = extractBairroFromLocation(property.location);
                 if (bairro && bairro !== 'Localização não especificada' && bairro !== '') {
+                    // Contar quantos imóveis têm este bairro
                     if (bairrosMap.has(bairro)) {
                         bairrosMap.set(bairro, bairrosMap.get(bairro) + 1);
                     } else {
                         bairrosMap.set(bairro, 1);
                     }
+                    console.log(`  📍 "${property.title}" → Bairro: ${bairro} (${bairrosMap.get(bairro)}º imóvel)`);
+                } else {
+                    console.warn(`  ⚠️ Não foi possível extrair bairro de: "${property.location}"`);
                 }
             }
         });
@@ -276,6 +207,7 @@ const FilterManager = (function() {
             currentActiveDropdown.remove();
         }
         
+        // Remover event listeners dos botões
         const allButtons = document.querySelectorAll('.filter-btn');
         allButtons.forEach(btn => {
             if (btn._closeHandler) {
@@ -318,14 +250,17 @@ const FilterManager = (function() {
     function createBairroDropdown(buttonElement, category, bairros) {
         if (!bairros || bairros.length === 0) return null;
         
+        // Remover dropdown existente
         if (currentActiveDropdown) {
             closeDropdownImmediately();
         }
         
+        // Obter configuração da categoria
         const config = CATEGORY_CONFIG[category];
         const icon = config ? config.icon : 'fa-home';
         const title = config ? config.title : category;
         
+        // Criar dropdown
         const dropdown = document.createElement('div');
         dropdown.className = 'filter-dropdown filter-dropdown-active';
         dropdown.style.cssText = `
@@ -344,6 +279,7 @@ const FilterManager = (function() {
             margin-top: 5px;
         `;
         
+        // Adicionar eventos para manter dropdown aberto
         dropdown.addEventListener('mouseenter', () => {
             if (dropdownCloseTimeout) {
                 clearTimeout(dropdownCloseTimeout);
@@ -357,6 +293,7 @@ const FilterManager = (function() {
             }, 300);
         });
         
+        // Cabeçalho
         const header = document.createElement('div');
         header.style.cssText = `
             padding: 10px 12px;
@@ -378,6 +315,7 @@ const FilterManager = (function() {
         `;
         dropdown.appendChild(header);
         
+        // Opção "Todos os bairros"
         const allOption = document.createElement('div');
         allOption.style.cssText = `
             padding: 10px 12px;
@@ -401,6 +339,7 @@ const FilterManager = (function() {
         };
         dropdown.appendChild(allOption);
         
+        // Lista de bairros
         bairros.forEach(bairro => {
             const isActive = state.currentBairro === bairro && state.currentFilter === category;
             const option = document.createElement('div');
@@ -430,6 +369,7 @@ const FilterManager = (function() {
             dropdown.appendChild(option);
         });
         
+        // Footer com estatísticas
         const propertyCount = getPropertyCountByCategoryAndBairro(category, null);
         const footer = document.createElement('div');
         footer.style.cssText = `
@@ -451,10 +391,12 @@ const FilterManager = (function() {
 
     // ========== MOSTRAR DROPDOWN ==========
     function showDropdown(button, category) {
+        // Se já existe um dropdown aberto e é diferente do atual, fechar primeiro
         if (state.dropdownActive && currentActiveDropdown) {
             closeDropdownImmediately();
         }
         
+        // Limpar timeout pendente
         if (dropdownCloseTimeout) {
             clearTimeout(dropdownCloseTimeout);
             dropdownCloseTimeout = null;
@@ -473,6 +415,7 @@ const FilterManager = (function() {
             return;
         }
         
+        // Fechar dropdown existente se houver
         if (currentActiveDropdown && currentActiveDropdown !== button) {
             closeDropdownImmediately();
         }
@@ -480,12 +423,14 @@ const FilterManager = (function() {
         const dropdown = createBairroDropdown(button, category, bairros);
         if (!dropdown) return;
         
+        // Salvar referência para fechar depois
         currentActiveDropdown = dropdown;
         
         const rect = button.getBoundingClientRect();
         dropdown.style.top = `${rect.bottom + window.scrollY}px`;
         dropdown.style.left = `${rect.left + window.scrollX}px`;
         
+        // Fechar ao clicar fora
         const closeDropdownHandler = (e) => {
             if (!dropdown.contains(e.target) && e.target !== button) {
                 closeDropdownImmediately();
@@ -502,6 +447,7 @@ const FilterManager = (function() {
             }
         };
         
+        // Função para fechar dropdown de outros botões
         const closeOtherDropdowns = () => {
             if (currentActiveDropdown && currentActiveDropdown !== dropdown) {
                 closeDropdownImmediately();
@@ -522,10 +468,12 @@ const FilterManager = (function() {
             document.addEventListener('click', closeDropdownHandler);
             document.addEventListener('keydown', escapeHandler);
             
+            // Adicionar evento para fechar ao passar mouse em outros botões
             const allButtons = document.querySelectorAll('.filter-btn');
             allButtons.forEach(otherBtn => {
                 if (otherBtn !== button) {
                     otherBtn.addEventListener('mouseenter', closeOtherDropdowns);
+                    // Armazenar para remover depois
                     otherBtn._closeHandler = closeOtherDropdowns;
                 }
             });
@@ -569,6 +517,7 @@ const FilterManager = (function() {
     function applyFilterWithBairro(category, bairro) {
         state.currentFilter = category;
         
+        // Disparar callback com filtro composto
         const filterValue = bairro ? `${category}|${bairro}` : category;
         
         state.callbacks.forEach(callback => {
@@ -577,6 +526,7 @@ const FilterManager = (function() {
             }
         });
         
+        // Atualizar estilo dos botões (garantir que o botão da categoria fique ativo)
         updateActiveButtonStyle(category);
         
         console.log(`🎯 Filtro aplicado: Categoria="${category}", Bairro="${bairro || 'Todos'}"`);
@@ -587,7 +537,7 @@ const FilterManager = (function() {
         return CATEGORY_CONFIG[category] !== undefined;
     }
 
-    // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
+    // ========== ATUALIZAR ESTILO DOS BOTÕES (APENAS CLASSES, SEM INLINE) ==========
     function updateActiveButtonStyle(filterValue) {
         console.log(`🎨 Atualizando estilo dos botões para filtro: ${filterValue}`);
         
@@ -597,6 +547,7 @@ const FilterManager = (function() {
                 
                 if (isActive) {
                     button.element.classList.add(CONFIG.activeClass);
+                    // Remover estilos inline para permitir CSS
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
@@ -604,6 +555,7 @@ const FilterManager = (function() {
                     button.element.style.boxShadow = '';
                 } else {
                     button.element.classList.remove(CONFIG.activeClass);
+                    // Limpar estilos inline
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
@@ -659,14 +611,17 @@ const FilterManager = (function() {
                 const filterText = newBtn.textContent.trim();
                 const filterValue = filterText === 'Todos' ? 'todos' : filterText;
                 
+                // ========== REMOVER ESTILOS INLINE QUE ATRAPALHAM O HOVER ==========
                 newBtn.style.backgroundColor = '';
                 newBtn.style.color = '';
                 newBtn.style.borderColor = '';
                 newBtn.style.fontWeight = '';
                 newBtn.style.boxShadow = '';
+                
                 newBtn.style.position = 'relative';
                 newBtn.style.cursor = 'pointer';
                 
+                // Adicionar classe para dropdown se necessário
                 if (filterValue !== 'todos' && CATEGORY_CONFIG[filterValue]) {
                     newBtn.classList.add('has-dropdown');
                     
@@ -702,17 +657,21 @@ const FilterManager = (function() {
                     });
                 }
                 
+                // ========== EVENTO DE CLIQUE COM LIMPEZA DE CLASSES ==========
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
+                    // Fechar dropdown se estiver aberto
                     if (currentActiveDropdown) {
                         closeDropdownImmediately();
                     }
                     
+                    // REMOVER CLASSE ACTIVE DE TODOS OS BOTÕES
                     const allBtns = document.querySelectorAll(`.${CONFIG.buttonClass}`);
                     allBtns.forEach(btn => {
                         btn.classList.remove(CONFIG.activeClass);
+                        // Limpar estilos inline também
                         btn.style.backgroundColor = '';
                         btn.style.color = '';
                         btn.style.borderColor = '';
@@ -720,8 +679,11 @@ const FilterManager = (function() {
                         btn.style.boxShadow = '';
                     });
                     
+                    // ADICIONAR CLASSE ACTIVE APENAS NO BOTÃO CLICADO
                     newBtn.classList.add(CONFIG.activeClass);
+                    // NÃO aplicar estilos inline para permitir que o CSS gerencie o hover
                     
+                    // Atualizar estado do filtro
                     if (filterValue === 'todos') {
                         state.currentBairro = null;
                         state.currentFilter = 'todos';
@@ -729,6 +691,7 @@ const FilterManager = (function() {
                         state.currentFilter = filterValue;
                     }
                     
+                    // Disparar callbacks
                     if (onFilterChange) {
                         onFilterChange(filterValue);
                     }
@@ -755,9 +718,11 @@ const FilterManager = (function() {
         setActiveFilter(filterValue, sourceContainerId = null) {
             state.currentFilter = filterValue;
             
+            // Limpar todos os estilos ativos primeiro
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     button.element.classList.remove(CONFIG.activeClass);
+                    // Limpar estilos inline
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
@@ -766,10 +731,12 @@ const FilterManager = (function() {
                 });
             });
             
+            // Aplicar classe active apenas ao botão correspondente
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     if (button.value === filterValue) {
                         button.element.classList.add(CONFIG.activeClass);
+                        // Remover estilos inline
                         button.element.style.backgroundColor = '';
                         button.element.style.color = '';
                         button.element.style.borderColor = '';
@@ -854,67 +821,7 @@ function escapeHtml(str) {
               .replace(/'/g, '&#39;');
 }
 
-// ========== FUNÇÃO DE DIAGNÓSTICO PARA VERIFICAR BAIRROS ==========
-function diagnoseBairros() {
-    console.group('🔍 DIAGNÓSTICO DE BAIRROS NO DROPDOWN');
-    
-    const properties = window.properties || [];
-    console.log(`📊 Total de imóveis na base: ${properties.length}`);
-    
-    const categorias = ['Residencial', 'Comercial', 'Rural', 'Minha Casa Minha Vida'];
-    
-    categorias.forEach(categoria => {
-        const config = CATEGORY_CONFIG[categoria];
-        if (!config) return;
-        
-        let filteredProperties = [];
-        
-        if (config.filterBy === 'type') {
-            filteredProperties = properties.filter(p => 
-                p.type && config.expectedValues.includes(p.type)
-            );
-        } else {
-            filteredProperties = properties.filter(p => {
-                const hasCorrectBadge = p.badge && config.expectedValues.includes(p.badge);
-                if (config.requiredType) {
-                    return hasCorrectBadge && p.type === config.requiredType;
-                }
-                return hasCorrectBadge;
-            });
-        }
-        
-        console.log(`\n📌 Categoria: ${categoria}`);
-        console.log(`   Imóveis: ${filteredProperties.length}`);
-        
-        const bairrosMap = new Map();
-        
-        filteredProperties.forEach(property => {
-            if (property.location) {
-                const bairro = extractBairroFromLocation(property.location);
-                if (bairro) {
-                    bairrosMap.set(bairro, (bairrosMap.get(bairro) || 0) + 1);
-                }
-            }
-        });
-        
-        if (bairrosMap.size > 0) {
-            console.log(`   Bairros encontrados (${bairrosMap.size}):`);
-            Array.from(bairrosMap.entries())
-                .sort((a, b) => a[0].localeCompare(b[0]))
-                .forEach(([nome, count]) => {
-                    console.log(`      - ${nome}: ${count} imóvel(is)`);
-                });
-        } else {
-            console.log(`   ⚠️ Nenhum bairro encontrado para esta categoria`);
-        }
-    });
-    
-    console.groupEnd();
-}
-
-// Expor funções globalmente
 window.FilterManager = FilterManager;
-window.diagnoseBairros = diagnoseBairros;
 
 if (!window._filterManagerInitScheduled) {
     window._filterManagerInitScheduled = true;
