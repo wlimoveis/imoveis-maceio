@@ -1,5 +1,5 @@
-// js/modules/utils/FilterManager.js - Sistema unificado de filtros COM DROPDOWN DE BAIRROS
-console.log('🎛️ FilterManager.js carregado - Sistema com dropdown de bairros');
+// js/modules/utils/FilterManager.js - Sistema de filtros COM DROPDOWN POR CAMPO DESTAQUE
+console.log('🎛️ FilterManager.js carregado - Dropdown por campo Destaque');
 
 const FilterManager = (function() {
     // Configuração centralizada
@@ -9,15 +9,14 @@ const FilterManager = (function() {
         activeClass: 'active',
         defaultFilter: 'todos',
         animationDuration: 200,
-        dropdownDelay: 300, // Delay para hover (ms)
-        useClickForDropdown: false, // false = hover, true = click
-        maxBairrosPerCategory: 20 // Limite máximo de bairros por dropdown
+        dropdownDelay: 300,
+        useClickForDropdown: false
     };
 
-    // Estado global dos filtros
+    // Estado global
     const state = {
         currentFilter: CONFIG.defaultFilter,
-        currentBairro: null,
+        currentDestaque: null,
         containers: new Map(),
         callbacks: new Map(),
         initialized: false,
@@ -25,84 +24,93 @@ const FilterManager = (function() {
         hoverTimeout: null
     };
 
-    // ========== FUNÇÃO PARA EXTRAIR BAIRROS DOS IMÓVEIS ==========
-    function extractBairrosFromProperties(properties, categoryFilter = null) {
+    // ========== MAPEAMENTO: BOTÃO MENU → CAMPO DESTAQUE ==========
+    const DESTAQUE_MAPPING = {
+        'Rural': {
+            displayName: 'Zona Rural, AL',
+            destaqueValues: ['Fazenda', 'Chácara'],
+            icon: 'fa-tractor'
+        },
+        'Residencial': {
+            displayName: 'Residencial',
+            destaqueValues: ['Novo', 'Destaque', 'Luxo'],
+            icon: 'fa-home'
+        },
+        'Comercial': {
+            displayName: 'Comercial',
+            destaqueValues: ['Comercial', 'Empresarial'],
+            icon: 'fa-building'
+        },
+        'Minha Casa Minha Vida': {
+            displayName: 'Minha Casa Minha Vida',
+            destaqueValues: ['MCMV'],
+            icon: 'fa-hand-holding-heart'
+        }
+    };
+
+    // ========== EXTRAIR OPÇÕES DE DESTAQUE DOS IMÓVEIS ==========
+    function extractDestaqueOptions(properties, categoryFilter) {
         if (!properties || !Array.isArray(properties)) return [];
         
+        const mapping = DESTAQUE_MAPPING[categoryFilter];
+        if (!mapping) return [];
+        
+        // Filtrar imóveis da categoria
         let filteredProperties = properties;
         
-        // Filtrar por categoria se especificada
-        if (categoryFilter && categoryFilter !== 'todos') {
-            const filterMap = {
-                'Residencial': p => p.type === 'residencial',
-                'Comercial': p => p.type === 'comercial',
-                'Rural': p => p.type === 'rural' || p.rural === true,
-                'Minha Casa Minha Vida': p => p.badge === 'MCMV'
-            };
-            const filterFn = filterMap[categoryFilter];
-            if (filterFn) {
-                filteredProperties = properties.filter(filterFn);
-            }
+        if (categoryFilter === 'Rural') {
+            filteredProperties = properties.filter(p => p.type === 'rural' || p.rural === true);
+        } else if (categoryFilter === 'Residencial') {
+            filteredProperties = properties.filter(p => p.type === 'residencial');
+        } else if (categoryFilter === 'Comercial') {
+            filteredProperties = properties.filter(p => p.type === 'comercial');
+        } else if (categoryFilter === 'Minha Casa Minha Vida') {
+            filteredProperties = properties.filter(p => p.badge === 'MCMV');
         }
         
-        // Extrair bairros do campo location
-        const bairrosSet = new Set();
+        // Extrair valores únicos do campo badge que correspondem ao mapeamento
+        const optionsSet = new Set();
         
         filteredProperties.forEach(property => {
-            if (property.location) {
-                // Padrões comuns de extração de bairro
-                let location = property.location;
-                
-                // Tentar extrair bairro (texto antes de vírgula ou padrões conhecidos)
-                let bairro = '';
-                
-                // Padrão: "Rua X, Bairro - Cidade/UF"
-                const matchComma = location.match(/,\s*([^,-]+)/);
-                if (matchComma) {
-                    bairro = matchComma[1].trim();
-                }
-                
-                // Padrão: "Bairro, Cidade/UF"
-                if (!bairro && location.includes(',')) {
-                    bairro = location.split(',')[0].trim();
-                }
-                
-                // Padrão: "Bairro - Cidade/UF"
-                if (!bairro && location.includes('-')) {
-                    bairro = location.split('-')[0].trim();
-                }
-                
-                // Fallback: pegar o primeiro segmento
-                if (!bairro && location.length > 0) {
-                    bairro = location.split(/[,-]/)[0].trim();
-                }
-                
-                // Limpar e adicionar
-                if (bairro && bairro.length > 0 && bairro.length < 50) {
-                    // Remover "Maceió/AL" e similares
-                    bairro = bairro.replace(/Maceió\/AL/i, '').trim();
-                    if (bairro) {
-                        bairrosSet.add(bairro);
-                    }
-                }
+            if (property.badge && mapping.destaqueValues.includes(property.badge)) {
+                optionsSet.add(property.badge);
             }
         });
         
         // Converter para array e ordenar
-        let bairros = Array.from(bairrosSet);
-        bairros.sort((a, b) => a.localeCompare(b, 'pt-BR'));
+        let options = Array.from(optionsSet);
         
-        // Limitar quantidade
-        if (bairros.length > CONFIG.maxBairrosPerCategory) {
-            bairros = bairros.slice(0, CONFIG.maxBairrosPerCategory);
+        // Garantir que opções padrão existam mesmo sem imóveis
+        if (options.length === 0) {
+            options = [...mapping.destaqueValues];
         }
         
-        return bairros;
+        // Criar opções com nome amigável
+        const friendlyOptions = options.map(opt => {
+            let displayName = opt;
+            if (opt === 'Fazenda') displayName = '🏡 Fazenda';
+            else if (opt === 'Chácara') displayName = '🌳 Chácara';
+            else if (opt === 'Novo') displayName = '🆕 Novo';
+            else if (opt === 'Destaque') displayName = '⭐ Destaque';
+            else if (opt === 'Luxo') displayName = '💎 Luxo';
+            else if (opt === 'MCMV') displayName = '🏠 Minha Casa Minha Vida';
+            else if (opt === 'Comercial') displayName = '🏢 Comercial';
+            
+            return {
+                value: opt,
+                display: displayName
+            };
+        });
+        
+        return friendlyOptions;
     }
 
-    // ========== FUNÇÃO PARA CRIAR DROPDOWN ==========
-    function createBairroDropdown(buttonElement, categoryFilter, bairros) {
-        if (!bairros || bairros.length === 0) return null;
+    // ========== CRIAR DROPDOWN ==========
+    function createDestaqueDropdown(buttonElement, categoryFilter, options) {
+        if (!options || options.length === 0) return null;
+        
+        const mapping = DESTAQUE_MAPPING[categoryFilter];
+        if (!mapping) return null;
         
         // Remover dropdown existente
         const existingDropdown = document.querySelector('.filter-dropdown-active');
@@ -120,8 +128,8 @@ const FilterManager = (function() {
             border: 2px solid var(--primary);
             border-radius: 8px;
             box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            min-width: 200px;
-            max-height: 300px;
+            min-width: 220px;
+            max-height: 320px;
             overflow-y: auto;
             overflow-x: hidden;
             top: 100%;
@@ -143,40 +151,40 @@ const FilterManager = (function() {
             align-items: center;
         `;
         header.innerHTML = `
-            <span><i class="fas fa-map-marker-alt"></i> Filtrar por bairro</span>
+            <span><i class="fas ${mapping.icon}"></i> ${mapping.displayName}</span>
             <span style="cursor:pointer; font-size:1.1rem;" class="dropdown-close">×</span>
         `;
         dropdown.appendChild(header);
         
-        // Opção "Todos os bairros"
+        // Opção "Todos"
         const allOption = document.createElement('div');
         allOption.style.cssText = `
-            padding: 8px 12px;
+            padding: 10px 12px;
             cursor: pointer;
             transition: background 0.2s ease;
             border-bottom: 1px solid #eee;
-            font-weight: ${state.currentBairro === null ? 'bold' : 'normal'};
-            background: ${state.currentBairro === null ? '#e8f4fd' : 'white'};
-            color: ${state.currentBairro === null ? 'var(--primary)' : '#333'};
+            font-weight: ${state.currentDestaque === null ? 'bold' : 'normal'};
+            background: ${state.currentDestaque === null ? '#e8f4fd' : 'white'};
+            color: ${state.currentDestaque === null ? 'var(--primary)' : '#333'};
         `;
-        allOption.innerHTML = `<i class="fas fa-globe"></i> Todos os bairros`;
+        allOption.innerHTML = `<i class="fas fa-globe"></i> Todos os ${mapping.displayName.toLowerCase()}`;
         allOption.onmouseenter = () => { allOption.style.background = '#f0f7ff'; };
-        allOption.onmouseleave = () => { allOption.style.background = state.currentBairro === null ? '#e8f4fd' : 'white'; };
+        allOption.onmouseleave = () => { allOption.style.background = state.currentDestaque === null ? '#e8f4fd' : 'white'; };
         allOption.onclick = (e) => {
             e.stopPropagation();
-            state.currentBairro = null;
-            applyFilterWithBairro(categoryFilter, null);
+            state.currentDestaque = null;
+            applyFilterWithDestaque(categoryFilter, null);
             dropdown.remove();
             state.dropdownActive = false;
         };
         dropdown.appendChild(allOption);
         
-        // Lista de bairros
-        bairros.forEach(bairro => {
-            const option = document.createElement('div');
-            const isActive = state.currentBairro === bairro && state.currentFilter === categoryFilter;
-            option.style.cssText = `
-                padding: 8px 12px;
+        // Lista de opções de destaque
+        options.forEach(opt => {
+            const isActive = state.currentDestaque === opt.value && state.currentFilter === categoryFilter;
+            const optionDiv = document.createElement('div');
+            optionDiv.style.cssText = `
+                padding: 10px 12px;
                 cursor: pointer;
                 transition: background 0.2s ease;
                 border-bottom: 1px solid #eee;
@@ -184,22 +192,23 @@ const FilterManager = (function() {
                 background: ${isActive ? '#e8f4fd' : 'white'};
                 color: ${isActive ? 'var(--primary)' : '#333'};
             `;
-            option.innerHTML = `<i class="fas fa-location-dot"></i> ${escapeHtml(bairro)}`;
-            option.onmouseenter = () => { option.style.background = '#f0f7ff'; };
-            option.onmouseleave = () => { 
-                option.style.background = isActive ? '#e8f4fd' : 'white'; 
+            optionDiv.innerHTML = opt.display;
+            optionDiv.onmouseenter = () => { optionDiv.style.background = '#f0f7ff'; };
+            optionDiv.onmouseleave = () => { 
+                optionDiv.style.background = isActive ? '#e8f4fd' : 'white'; 
             };
-            option.onclick = (e) => {
+            optionDiv.onclick = (e) => {
                 e.stopPropagation();
-                state.currentBairro = bairro;
-                applyFilterWithBairro(categoryFilter, bairro);
+                state.currentDestaque = opt.value;
+                applyFilterWithDestaque(categoryFilter, opt.value);
                 dropdown.remove();
                 state.dropdownActive = false;
             };
-            dropdown.appendChild(option);
+            dropdown.appendChild(optionDiv);
         });
         
-        // Adicionar estatística
+        // Adicionar contagem
+        const propertyCount = getPropertyCountByCategoryAndDestaque(categoryFilter, null);
         const footer = document.createElement('div');
         footer.style.cssText = `
             padding: 8px 12px;
@@ -210,29 +219,59 @@ const FilterManager = (function() {
             border-top: 1px solid #eee;
             border-radius: 0 0 6px 6px;
         `;
-        footer.innerHTML = `<i class="fas fa-chart-line"></i> ${bairros.length} bairros disponíveis`;
+        footer.innerHTML = `<i class="fas fa-chart-line"></i> ${propertyCount} imóveis encontrados`;
         dropdown.appendChild(footer);
         
         return dropdown;
     }
 
-    // ========== APLICAR FILTRO COM BAIRRO ==========
-    function applyFilterWithBairro(categoryFilter, bairro) {
+    // ========== CONTAR IMÓVEIS POR CATEGORIA E DESTAQUE ==========
+    function getPropertyCountByCategoryAndDestaque(category, destaqueValue) {
+        const properties = window.properties || [];
+        let filtered = [...properties];
+        
+        if (category === 'Rural') {
+            filtered = filtered.filter(p => p.type === 'rural' || p.rural === true);
+            if (destaqueValue) {
+                filtered = filtered.filter(p => p.badge === destaqueValue);
+            }
+        } else if (category === 'Residencial') {
+            filtered = filtered.filter(p => p.type === 'residencial');
+            if (destaqueValue) {
+                filtered = filtered.filter(p => p.badge === destaqueValue);
+            }
+        } else if (category === 'Comercial') {
+            filtered = filtered.filter(p => p.type === 'comercial');
+            if (destaqueValue) {
+                filtered = filtered.filter(p => p.badge === destaqueValue);
+            }
+        } else if (category === 'Minha Casa Minha Vida') {
+            filtered = filtered.filter(p => p.badge === 'MCMV');
+            if (destaqueValue) {
+                filtered = filtered.filter(p => p.badge === destaqueValue);
+            }
+        }
+        
+        return filtered.length;
+    }
+
+    // ========== APLICAR FILTRO COM DESTAQUE ==========
+    function applyFilterWithDestaque(categoryFilter, destaqueValue) {
         state.currentFilter = categoryFilter;
         
         // Disparar callback com filtro composto
-        const filterValue = bairro ? `${categoryFilter}|${bairro}` : categoryFilter;
+        const filterValue = destaqueValue ? `${categoryFilter}|${destaqueValue}` : categoryFilter;
         
         state.callbacks.forEach(callback => {
             if (typeof callback === 'function') {
-                callback(filterValue, { category: categoryFilter, bairro: bairro });
+                callback(filterValue, { category: categoryFilter, destaque: destaqueValue });
             }
         });
         
         // Atualizar UI dos botões
         updateActiveButtonStyle(categoryFilter);
         
-        console.log(`🎯 Filtro aplicado: Categoria="${categoryFilter}", Bairro="${bairro || 'Todos'}"`);
+        console.log(`🎯 Filtro aplicado: Categoria="${categoryFilter}", Destaque="${destaqueValue || 'Todos'}"`);
     }
 
     // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
@@ -259,20 +298,25 @@ const FilterManager = (function() {
         });
     }
 
-    // ========== FUNÇÃO PARA MOSTRAR DROPDOWN ==========
+    // ========== MOSTRAR DROPDOWN ==========
     function showDropdown(button, categoryFilter) {
         if (state.dropdownActive) return;
         
-        // Extrair bairros da categoria atual
-        const properties = window.properties || [];
-        const bairros = extractBairrosFromProperties(properties, categoryFilter);
-        
-        if (bairros.length === 0) {
-            console.log(`ℹ️ Nenhum bairro encontrado para categoria: ${categoryFilter}`);
+        // Verificar se a categoria tem mapeamento
+        if (!DESTAQUE_MAPPING[categoryFilter]) {
+            console.log(`ℹ️ Categoria "${categoryFilter}" não tem dropdown configurado`);
             return;
         }
         
-        const dropdown = createBairroDropdown(button, categoryFilter, bairros);
+        const properties = window.properties || [];
+        const options = extractDestaqueOptions(properties, categoryFilter);
+        
+        if (options.length === 0) {
+            console.log(`ℹ️ Nenhuma opção de destaque encontrada para categoria: ${categoryFilter}`);
+            return;
+        }
+        
+        const dropdown = createDestaqueDropdown(button, categoryFilter, options);
         if (!dropdown) return;
         
         // Posicionar dropdown
@@ -303,7 +347,6 @@ const FilterManager = (function() {
         document.body.appendChild(dropdown);
         state.dropdownActive = true;
         
-        // Fechar ao clicar no X
         const closeBtn = dropdown.querySelector('.dropdown-close');
         if (closeBtn) {
             closeBtn.onclick = () => {
@@ -322,11 +365,11 @@ const FilterManager = (function() {
     return {
         init(onFilterChange = null) {
             if (state.initialized) {
-                console.log('⏭️ FilterManager já está inicializado, ignorando...');
+                console.log('⏭️ FilterManager já inicializado');
                 return;
             }
             
-            console.log('🔧 Inicializando FilterManager com suporte a dropdown de bairros...');
+            console.log('🔧 Inicializando FilterManager com dropdown por campo Destaque...');
             
             const containers = document.querySelectorAll(`.${CONFIG.containerClass}`);
             if (containers.length === 0) {
@@ -340,7 +383,6 @@ const FilterManager = (function() {
                     element: container,
                     buttons: []
                 });
-
                 this.setupContainer(container, containerId, onFilterChange);
             });
 
@@ -349,7 +391,6 @@ const FilterManager = (function() {
             }
 
             this.activateDefaultFilter();
-            
             state.initialized = true;
             console.log(`✅ FilterManager inicializado: ${state.containers.size} container(s)`);
         },
@@ -358,34 +399,26 @@ const FilterManager = (function() {
             const buttons = container.querySelectorAll(`.${CONFIG.buttonClass}`);
             const containerState = state.containers.get(containerId);
 
-            buttons.forEach((button, btnIndex) => {
+            buttons.forEach((button) => {
                 const newBtn = button.cloneNode(true);
                 button.parentNode.replaceChild(newBtn, button);
 
                 const filterText = newBtn.textContent.trim();
                 const filterValue = filterText === 'Todos' ? 'todos' : filterText;
                 
-                // Configurar hover/click para mostrar dropdown
                 newBtn.style.position = 'relative';
                 newBtn.style.cursor = 'pointer';
                 
-                // Mostrar dropdown ao passar o mouse (ou clique)
-                if (CONFIG.useClickForDropdown) {
-                    newBtn.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        if (filterValue !== 'todos') {
-                            showDropdown(newBtn, filterValue);
-                        }
-                    });
-                } else {
+                // Adicionar indicador de dropdown para botões com mapeamento
+                if (filterValue !== 'todos' && DESTAQUE_MAPPING[filterValue]) {
+                    newBtn.classList.add('has-dropdown');
+                    
+                    // Mostrar dropdown ao passar mouse
                     let hoverTimer;
                     newBtn.addEventListener('mouseenter', () => {
                         if (state.dropdownActive) return;
                         hoverTimer = setTimeout(() => {
-                            if (filterValue !== 'todos') {
-                                showDropdown(newBtn, filterValue);
-                            }
+                            showDropdown(newBtn, filterValue);
                         }, CONFIG.dropdownDelay);
                     });
                     newBtn.addEventListener('mouseleave', () => {
@@ -393,19 +426,16 @@ const FilterManager = (function() {
                     });
                 }
                 
-                // Clique normal para filtro (sem dropdown) - apenas para 'Todos'
+                // Clique normal para filtro
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     
-                    // Se for 'Todos', limpar filtro de bairro
                     if (filterValue === 'todos') {
-                        state.currentBairro = null;
+                        state.currentDestaque = null;
                         state.currentFilter = 'todos';
-                        applyFilterWithBairro('todos', null);
                     }
                     
-                    // Disparar callback padrão
                     if (onFilterChange) {
                         onFilterChange(filterValue);
                     }
@@ -430,7 +460,6 @@ const FilterManager = (function() {
         setActiveFilter(filterValue, sourceContainerId = null) {
             state.currentFilter = filterValue;
             updateActiveButtonStyle(filterValue);
-            console.log(`🎯 Filtro alterado para: ${filterValue}`);
         },
 
         activateDefaultFilter() {
@@ -441,8 +470,8 @@ const FilterManager = (function() {
             return state.currentFilter;
         },
         
-        getCurrentBairro() {
-            return state.currentBairro;
+        getCurrentDestaque() {
+            return state.currentDestaque;
         },
 
         onFilterChange(callback, id = 'custom') {
@@ -455,30 +484,22 @@ const FilterManager = (function() {
 
         setupWithFallback() {
             if (state.initialized) {
-                console.log('⏭️ setupWithFallback ignorado - FilterManager já inicializado');
                 return true;
             }
-            
-            console.log('🎛️ Configurando filtros com fallback e dropdown...');
             
             if (this.init) {
                 this.init((filterValue, details) => {
                     window.currentFilter = filterValue;
-                    if (details && details.bairro) {
-                        // Filtrar propriedades por categoria + bairro
-                        if (typeof window.filterPropertiesByCategoryAndBairro === 'function') {
-                            window.filterPropertiesByCategoryAndBairro(details.category, details.bairro);
-                        } else if (typeof window.renderProperties === 'function') {
-                            window.renderProperties(filterValue);
+                    if (details && details.destaque) {
+                        if (typeof window.filterPropertiesByCategoryAndDestaque === 'function') {
+                            window.filterPropertiesByCategoryAndDestaque(details.category, details.destaque);
                         }
                     } else if (typeof window.renderProperties === 'function') {
                         window.renderProperties(filterValue);
                     }
                 });
-                console.log('✅ Filtros configurados via FilterManager com dropdown');
                 return true;
             }
-            
             return false;
         },
 
@@ -489,21 +510,16 @@ const FilterManager = (function() {
                     button.element.parentNode.replaceChild(newBtn, button.element);
                 });
             });
-            
             state.containers.clear();
             state.callbacks.clear();
             state.initialized = false;
-            console.log('🧹 FilterManager destruído');
         },
         
         isInitialized() {
             return state.initialized;
         },
         
-        // Método para atualizar bairros dinamicamente (após adicionar/editar imóvel)
-        refreshBairros() {
-            console.log('🔄 Refresh de bairros solicitado');
-            // Limpar dropdown ativo se existir
+        refreshDestaques() {
             const activeDropdown = document.querySelector('.filter-dropdown-active');
             if (activeDropdown) {
                 activeDropdown.remove();
@@ -513,22 +529,11 @@ const FilterManager = (function() {
     };
 })();
 
-// Função auxiliar escapeHtml
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;');
-}
-
 window.FilterManager = FilterManager;
 
 // Auto-inicialização
 if (!window._filterManagerInitScheduled) {
     window._filterManagerInitScheduled = true;
-    
     setTimeout(() => {
         if (document.readyState === 'complete' || document.readyState === 'interactive') {
             if (document.querySelector('.filter-options') && !FilterManager.isInitialized()) {
@@ -538,4 +543,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Modo dropdown de bairros ativo');
+console.log('✅ FilterManager carregado - Dropdown por campo Destaque ativo');
