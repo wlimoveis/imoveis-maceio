@@ -185,6 +185,90 @@ body {
     border-color: #154060;
 }
 
+/* ========== ESTILOS PARA DROPDOWN DE BAIRROS ========== */
+.filter-btn {
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+/* Indicador de que há dropdown disponível */
+.filter-btn:not(:first-child)::after {
+    content: "▼";
+    font-size: 0.6rem;
+    margin-left: 5px;
+    opacity: 0.7;
+    transition: transform 0.2s ease;
+}
+
+.filter-btn:hover::after {
+    transform: rotate(180deg);
+    opacity: 1;
+}
+
+/* Estilo do dropdown */
+.filter-dropdown {
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+.filter-dropdown div:hover {
+    background: #f0f7ff !important;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollbar customizada para o dropdown */
+.filter-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filter-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filter-dropdown::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+/* Responsividade para mobile */
+@media (max-width: 768px) {
+    .filter-btn::after {
+        display: inline-block;
+    }
+    
+    .filter-dropdown {
+        position: fixed !important;
+        top: auto !important;
+        bottom: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 90% !important;
+        max-width: 300px !important;
+        max-height: 60vh !important;
+    }
+    
+    @keyframes dropdownFadeIn {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+}
+
 .property-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
