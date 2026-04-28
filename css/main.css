@@ -185,33 +185,26 @@ body {
     border-color: #154060;
 }
 
-/* ========== ESTILOS PARA DROPDOWN DE BAIRROS ========== */
-.filter-btn {
+/* ========== ESTILOS PARA DROPDOWN ========== */
+.filter-btn.has-dropdown {
     position: relative;
-    transition: all 0.3s ease;
 }
 
-/* Indicador de que há dropdown disponível */
-.filter-btn:not(:first-child)::after {
+.filter-btn.has-dropdown::after {
     content: "▼";
     font-size: 0.6rem;
-    margin-left: 5px;
+    margin-left: 6px;
     opacity: 0.7;
     transition: transform 0.2s ease;
 }
 
-.filter-btn:hover::after {
+.filter-btn.has-dropdown:hover::after {
     transform: rotate(180deg);
     opacity: 1;
 }
 
-/* Estilo do dropdown */
 .filter-dropdown {
     animation: dropdownFadeIn 0.2s ease;
-}
-
-.filter-dropdown div:hover {
-    background: #f0f7ff !important;
 }
 
 @keyframes dropdownFadeIn {
@@ -225,7 +218,6 @@ body {
     }
 }
 
-/* Scrollbar customizada para o dropdown */
 .filter-dropdown::-webkit-scrollbar {
     width: 6px;
 }
@@ -240,21 +232,14 @@ body {
     border-radius: 3px;
 }
 
-/* Responsividade para mobile */
+/* Mobile */
 @media (max-width: 768px) {
-    .filter-btn::after {
-        display: inline-block;
-    }
-    
     .filter-dropdown {
         position: fixed !important;
-        top: auto !important;
-        bottom: auto !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 90% !important;
-        max-width: 300px !important;
-        max-height: 60vh !important;
+        max-width: 280px !important;
     }
     
     @keyframes dropdownFadeIn {
@@ -361,20 +346,20 @@ body {
     display: inline-flex !important;
     align-items: center;
     gap: 6px;
-    background: #f0f4f8;  /* Fundo claro suave */
-    color: #2c3e50;        /* Texto escuro para contraste */
+    background: #f0f4f8;
+    color: #2c3e50;
     border: 1px solid #e0e6ed;
     padding: 0.3rem 0.8rem;
     border-radius: 20px;
     font-size: 0.8rem;
-    font-weight: 600;      /* Semi-negrito para melhor leitura */
+    font-weight: 600;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .feature-tag i {
-    font-size: 1.6rem;  /* Ícone ainda maior */
-    color: #f39c12;      /* Cor dourada para destaque */
+    font-size: 1.6rem;
+    color: #f39c12;
     transition: transform 0.2s ease;
 }
 
@@ -447,7 +432,6 @@ body {
 }
 
 /* ========== BOTÃO WHATSAPP COM EFEITO PULSANTE ========== */
-/* Efeito pulsante suave para o botão WhatsApp */
 @keyframes whatsappPulse {
     0% {
         box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
@@ -495,12 +479,10 @@ body {
     100% { box-shadow: 0 0 0 0 rgba(52, 152, 219, 0); }
 }
 
-/* Classes para animações programáticas */
 .property-card.highlighted {
     animation: highlightUpdate 1s ease;
 }
 
-/* Estilos para campos atualizáveis */
 [data-title-field], [data-price-field], [data-location-field], 
 [data-description-field], [data-features-field] {
     transition: all 0.3s ease;
