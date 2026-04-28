@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -91,7 +91,6 @@ class PropertyTemplateEngine {
                                 }
                                 return '';
                             }).join('')}
-
                         </div>
                     ` : ''}
                     <button class="contact-btn" onclick="contactAgent(${property.id})">
@@ -528,7 +527,7 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
             tipos: ['residencial']
         },
         'Comercial': {
-            badges: ['Comercial'],
+            badges: ['Comercial', 'Empresarial'],
             tipos: ['comercial']
         },
         'Minha Casa Minha Vida': {
@@ -922,7 +921,7 @@ function getInitialProperties() {
             images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
             created_at: new Date().toISOString()
         },
-        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO ==========
+        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO (BADGE "Comercial") ==========
         {
             id: 99,
             title: "Loja Comercial - Centro",
@@ -944,6 +943,49 @@ function getInitialProperties() {
             location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL",
             description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.",
             features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]),
+            type: "comercial",
+            has_video: false,
+            badge: "Comercial",
+            rural: false,
+            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            created_at: new Date().toISOString()
+        },
+        // ========== MAIS IMÓVEIS COMERCIAIS (BADGE "Comercial" - GARANTINDO VARIEDADE) ==========
+        {
+            id: 101,
+            title: "Loja Comercial - Centro",
+            price: "R$ 450.000",
+            location: "Rua do Comércio, Centro, Maceió/AL",
+            description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótimo para qualquer negócio.",
+            features: JSON.stringify(["80m²", "Banheiro", "Ponto comercial", "Vidraça frontal"]),
+            type: "comercial",
+            has_video: false,
+            badge: "Comercial",
+            rural: false,
+            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            created_at: new Date().toISOString()
+        },
+        {
+            id: 102,
+            title: "Sala Comercial - Ponta Verde",
+            price: "R$ 320.000",
+            location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL",
+            description: "Sala comercial no coração de Ponta Verde. Próximo a bancos e comércio.",
+            features: JSON.stringify(["50m²", "Ar condicionado", "2 vagas garagem", "Recepção"]),
+            type: "comercial",
+            has_video: false,
+            badge: "Comercial",
+            rural: false,
+            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            created_at: new Date().toISOString()
+        },
+        {
+            id: 103,
+            title: "Galpão Comercial - Tabuleiro",
+            price: "R$ 850.000",
+            location: "Av. Menino Marcelo, Tabuleiro do Martins, Maceió/AL",
+            description: "Galpão comercial para depósito ou indústria. Área ampla com escritório.",
+            features: JSON.stringify(["300m²", "Pé direito alto", "Escritório", "Banheiros", "Estacionamento"]),
             type: "comercial",
             has_video: false,
             badge: "Comercial",
@@ -1923,7 +1965,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (BADGE + TYPE)');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO + MAIS IMÓVEIS COMERCIAIS');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1972,5 +2014,6 @@ console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensíli
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
 console.log('📍 Filtro Categoria + Bairro: Usa BADGE + TYPE para maior precisão');
 console.log('⭐ Filtro Categoria + Destaque: Filtro específico por badge');
-console.log('🏢 Adicionados 2 imóveis comerciais de exemplo (IDs 99 e 100)');
+console.log('🏢 Adicionados 5 imóveis comerciais com badge "Comercial" (IDs 99, 100, 101, 102, 103)');
 console.log('🔧 Função extractBairroFromLocation com lista de bairros de Maceió');
+console.log('📌 Badge "Empresarial" também suportado na categoria Comercial');
