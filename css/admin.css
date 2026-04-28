@@ -1084,3 +1084,56 @@ div[class*="location-suggestions-item"] strong {
         margin-top: 0.5rem;
     }
 }
+
+/* ========== MELHORIAS PARA PAGINAÇÃO COM 4/8/12/16 ========== */
+
+/* Ajuste de altura máxima da lista para as novas opções */
+#propertyList {
+    max-height: 650px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+/* Transição suave ao trocar itens por página */
+#propertyListItems {
+    animation: fadeIn 0.25s ease;
+}
+
+/* Indicador visual da quantidade selecionada */
+select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
+}
+
+/* Responsividade para as novas opções */
+@media (max-width: 768px) {
+    select {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
+    }
+    
+    /* Para 4 itens por página em mobile, exibir mais informações */
+    .property-item {
+        padding: 0.8rem;
+    }
+}
+
+/* Indicador de carregamento ao trocar página */
+.pagination-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.pagination-loading::after {
+    content: "🔄";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    background: rgba(255,255,255,0.9);
+    padding: 1rem;
+    border-radius: 50%;
+}
