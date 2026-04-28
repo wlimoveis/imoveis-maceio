@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE (VERSÃO ATUALIZADA)
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO E DESTAQUE');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -471,7 +471,7 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO ATUALIZADA - POR BADGE) ==========
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VIA BADGE) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
@@ -509,11 +509,9 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
             if (matchComma) {
                 propertyBairro = matchComma[1].trim().replace(/Maceió\/AL/i, '').trim();
             }
-            // Fallback: se não encontrar após vírgula, tenta antes da vírgula
             if (!propertyBairro && p.location.includes(',')) {
                 propertyBairro = p.location.split(',')[0].trim();
             }
-            // Fallback: se não encontrar vírgula, tenta antes do hífen
             if (!propertyBairro && p.location.includes('-')) {
                 propertyBairro = p.location.split('-')[0].trim();
             }
@@ -561,7 +559,6 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
         } else if (category === 'Minha Casa Minha Vida') {
             filtered = filtered.filter(p => p.badge === 'MCMV');
         } else {
-            // Fallback para filtro padrão
             const filterMap = {
                 'Residencial': p => p.type === 'residencial',
                 'Comercial': p => p.type === 'comercial',
@@ -585,7 +582,6 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
         window.renderPropertiesWithFilter(filtered);
     }
     
-    // Log com contador
     const message = destaqueValue 
         ? `Mostrando ${filtered.length} imóvel(is) da categoria "${category}" com destaque "${destaqueValue}"`
         : `Mostrando ${filtered.length} imóvel(is) da categoria "${category}"`;
@@ -867,6 +863,35 @@ function getInitialProperties() {
             badge: "Luxo",
             rural: false,
             images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            created_at: new Date().toISOString()
+        },
+        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO ==========
+        {
+            id: 99,
+            title: "Loja Comercial - Centro",
+            price: "R$ 350.000",
+            location: "Rua do Comércio, Centro, Maceió/AL",
+            description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótima para comércio varejista, com grande fluxo de pessoas e fácil acesso.",
+            features: JSON.stringify(["100m²", "Banheiro", "Ponto comercial", "Boa localização"]),
+            type: "comercial",
+            has_video: false,
+            badge: "Comercial",
+            rural: false,
+            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
+            created_at: new Date().toISOString()
+        },
+        {
+            id: 100,
+            title: "Sala Comercial - Ponta Verde",
+            price: "R$ 280.000",
+            location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL",
+            description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.",
+            features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]),
+            type: "comercial",
+            has_video: false,
+            badge: "Comercial",
+            rural: false,
+            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
             created_at: new Date().toISOString()
         }
     ];
@@ -1613,8 +1638,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             <span><i class="fas fa-images"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex} de ${totalItems}</span>
         </div>
         <button onclick="if(window.resetAllGalleryViews) window.resetAllGalleryViews()" style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-            <i class="fas fa-trash-alt"></i> Zerar TODAS
-        </button>
+            <i class="fas fa-trash-alt"></i> Zerar TODAS        </button>
     `;
     container.appendChild(statsHeader);
     
@@ -1841,7 +1865,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS POR BAIRRO (VIA BADGE) E DESTAQUE');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTROS + IMÓVEIS COMERCIAIS');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -1883,10 +1907,11 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtros por Bairro (Badge) e Destaque');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtros + Imóveis Comerciais');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
-console.log('📍 Filtro Categoria + Bairro: Filtrando por BADGE (Destaque, Luxo, Novo, MCMV, etc.)');
+console.log('📍 Filtro Categoria + Bairro: Filtrando por BADGE (Destaque, Luxo, Novo, MCMV, Comercial)');
 console.log('⭐ Filtro Categoria + Destaque: Filtro específico por badge');
+console.log('🏢 Adicionados 2 imóveis comerciais de exemplo (IDs 99 e 100)');
