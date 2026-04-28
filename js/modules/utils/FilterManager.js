@@ -537,7 +537,7 @@ const FilterManager = (function() {
         return CATEGORY_CONFIG[category] !== undefined;
     }
 
-    // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
+    // ========== ATUALIZAR ESTILO DOS BOTÕES (APENAS CLASSES, SEM INLINE) ==========
     function updateActiveButtonStyle(filterValue) {
         console.log(`🎨 Atualizando estilo dos botões para filtro: ${filterValue}`);
         
@@ -547,13 +547,15 @@ const FilterManager = (function() {
                 
                 if (isActive) {
                     button.element.classList.add(CONFIG.activeClass);
-                    button.element.style.backgroundColor = 'var(--primary)';
-                    button.element.style.color = 'white';
-                    button.element.style.borderColor = 'var(--primary)';
-                    button.element.style.fontWeight = '700';
-                    button.element.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
+                    // Remover estilos inline para permitir CSS
+                    button.element.style.backgroundColor = '';
+                    button.element.style.color = '';
+                    button.element.style.borderColor = '';
+                    button.element.style.fontWeight = '';
+                    button.element.style.boxShadow = '';
                 } else {
                     button.element.classList.remove(CONFIG.activeClass);
+                    // Limpar estilos inline
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
@@ -609,19 +611,24 @@ const FilterManager = (function() {
                 const filterText = newBtn.textContent.trim();
                 const filterValue = filterText === 'Todos' ? 'todos' : filterText;
                 
+                // ========== REMOVER ESTILOS INLINE QUE ATRAPALHAM O HOVER ==========
+                newBtn.style.backgroundColor = '';
+                newBtn.style.color = '';
+                newBtn.style.borderColor = '';
+                newBtn.style.fontWeight = '';
+                newBtn.style.boxShadow = '';
+                
                 newBtn.style.position = 'relative';
                 newBtn.style.cursor = 'pointer';
                 
-                // Adicionar indicador de dropdown para botões com mapeamento
+                // Adicionar classe para dropdown se necessário
                 if (filterValue !== 'todos' && CATEGORY_CONFIG[filterValue]) {
                     newBtn.classList.add('has-dropdown');
                     
                     let hoverTimer;
                     
-                    // Mouse enter: mostrar dropdown
                     newBtn.addEventListener('mouseenter', () => {
                         if (state.dropdownActive && currentActiveDropdown) {
-                            // Fechar dropdown anterior antes de abrir novo
                             closeDropdownImmediately();
                         }
                         if (dropdownCloseTimeout) {
@@ -633,12 +640,9 @@ const FilterManager = (function() {
                         }, CONFIG.dropdownDelay);
                     });
                     
-                    // Mouse leave: esconder dropdown após delay
                     newBtn.addEventListener('mouseleave', (event) => {
                         clearTimeout(hoverTimer);
-                        // Pequeno delay para permitir entrar no dropdown
                         dropdownCloseTimeout = setTimeout(() => {
-                            // Verificar se o mouse não está dentro do dropdown
                             if (currentActiveDropdown) {
                                 const rect = currentActiveDropdown.getBoundingClientRect();
                                 const mouseX = event?.clientX || 0;
@@ -653,7 +657,7 @@ const FilterManager = (function() {
                     });
                 }
                 
-                // ========== CORREÇÃO: EVENTO DE CLIQUE COM LIMPEZA DE CLASSES ==========
+                // ========== EVENTO DE CLIQUE COM LIMPEZA DE CLASSES ==========
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
@@ -667,7 +671,7 @@ const FilterManager = (function() {
                     const allBtns = document.querySelectorAll(`.${CONFIG.buttonClass}`);
                     allBtns.forEach(btn => {
                         btn.classList.remove(CONFIG.activeClass);
-                        // Resetar estilos inline também
+                        // Limpar estilos inline também
                         btn.style.backgroundColor = '';
                         btn.style.color = '';
                         btn.style.borderColor = '';
@@ -677,11 +681,7 @@ const FilterManager = (function() {
                     
                     // ADICIONAR CLASSE ACTIVE APENAS NO BOTÃO CLICADO
                     newBtn.classList.add(CONFIG.activeClass);
-                    newBtn.style.backgroundColor = 'var(--primary)';
-                    newBtn.style.color = 'white';
-                    newBtn.style.borderColor = 'var(--primary)';
-                    newBtn.style.fontWeight = '700';
-                    newBtn.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
+                    // NÃO aplicar estilos inline para permitir que o CSS gerencie o hover
                     
                     // Atualizar estado do filtro
                     if (filterValue === 'todos') {
@@ -722,6 +722,7 @@ const FilterManager = (function() {
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     button.element.classList.remove(CONFIG.activeClass);
+                    // Limpar estilos inline
                     button.element.style.backgroundColor = '';
                     button.element.style.color = '';
                     button.element.style.borderColor = '';
@@ -730,16 +731,17 @@ const FilterManager = (function() {
                 });
             });
             
-            // Aplicar estilo apenas ao botão correspondente
+            // Aplicar classe active apenas ao botão correspondente
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     if (button.value === filterValue) {
                         button.element.classList.add(CONFIG.activeClass);
-                        button.element.style.backgroundColor = 'var(--primary)';
-                        button.element.style.color = 'white';
-                        button.element.style.borderColor = 'var(--primary)';
-                        button.element.style.fontWeight = '700';
-                        button.element.style.boxShadow = '0 4px 12px rgba(26, 82, 118, 0.3)';
+                        // Remover estilos inline
+                        button.element.style.backgroundColor = '';
+                        button.element.style.color = '';
+                        button.element.style.borderColor = '';
+                        button.element.style.fontWeight = '';
+                        button.element.style.boxShadow = '';
                     }
                 });
             });
@@ -832,4 +834,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Dropdown fecha ao mover mouse entre botões');
+console.log('✅ FilterManager carregado - Gerenciamento por CSS classes (sem estilos inline)');
