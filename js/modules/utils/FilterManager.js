@@ -57,13 +57,20 @@ const FilterManager = (function() {
     };
 
     // ========== FUNÇÃO ROBUSTA PARA EXTRAIR BAIRRO DA LOCALIZAÇÃO ==========
+    // ✅ AGORA USANDO A FUNÇÃO CENTRALIZADA DO SHAREDCORE
     function extractBairroFromLocation(location) {
+        // Delegar para o SharedCore (única fonte da verdade)
+        if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
+            return window.SharedCore.extractBairroFromLocation(location);
+        }
+        
+        // Fallback crítico apenas se SharedCore não estiver disponível
+        console.warn('⚠️ SharedCore.extractBairroFromLocation não disponível, usando fallback');
         if (!location || typeof location !== 'string') return null;
         
-        let bairro = '';
         const locationClean = location.trim();
         
-        // Lista de bairros conhecidos de Maceió (para referência)
+        // Lista de bairros conhecidos de Maceió (fallback)
         const bairrosConhecidos = [
             'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
             'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -77,50 +84,27 @@ const FilterManager = (function() {
             'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
         ];
         
-        // Tentativa 1: Procurar por bairro conhecido na string (match exato ou contido)
         for (const b of bairrosConhecidos) {
-            // Criar regex para match exato (case insensitive)
-            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\\]\\\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(locationClean)) {
-                bairro = b;
-                break;
-            }
+            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(locationClean)) return b;
         }
         
-        // Tentativa 2: Extrair texto após vírgula (padrão "Rua X, Bairro - Cidade")
-        if (!bairro && locationClean.includes(',')) {
+        if (locationClean.includes(',')) {
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
-                // Remover sufixos comuns como "Maceió/AL", "AL", etc.
                 possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
-                if (possibleBairro.length > 0 && possibleBairro.length < 50 && !possibleBairro.match(/^(Rua|Av|Avenida|Travessa)$/i)) {
-                    bairro = possibleBairro;
+                if (possibleBairro.length > 0 && possibleBairro.length < 50) {
+                    possibleBairro = possibleBairro.split(' ').map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ');
+                    return possibleBairro;
                 }
             }
         }
         
-        // Tentativa 3: Se for "Zona Rural" ou similar
-        if (!bairro && (locationClean.toLowerCase().includes('rural') || 
-                        locationClean.toLowerCase().includes('zona rural'))) {
-            bairro = 'Zona Rural';
-        }
-        
-        // Limpeza final
-        if (bairro) {
-            // Remover palavras comuns
-            bairro = bairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').trim();
-            // Remover números
-            bairro = bairro.replace(/^\d+/, '').trim();
-            // Capitalizar primeira letra de cada palavra
-            bairro = bairro.split(' ').map(word => 
-                word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-            ).join(' ');
-        }
-        
-        // Validar se o bairro extraído é válido (não é muito longo ou contém caracteres estranhos)
-        if (bairro && bairro.length > 0 && bairro.length < 50 && !bairro.match(/[<>{}]/)) {
-            return bairro;
+        if (locationClean.toLowerCase().includes('rural') || locationClean.toLowerCase().includes('zona rural')) {
+            return 'Zona Rural';
         }
         
         return null;
