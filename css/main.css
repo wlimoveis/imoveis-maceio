@@ -566,7 +566,6 @@ body {
 }
 
 /* ========== ESTILOS PARA A IMAGEM DA EQUIPE ========== */
-/* RECOMENDAÇÃO APLICADA: Foto da equipe Weber Lessa com efeitos modernos */
 .about-image {
     background: linear-gradient(45deg, var(--accent), var(--secondary));
     border-radius: 15px;
