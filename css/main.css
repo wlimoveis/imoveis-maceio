@@ -94,9 +94,11 @@ body {
     font-size: 1rem;
 }
 
+/* ========== GRID DE SERVIÇOS - 3 CARDS POR LINHA ========== */
+/* RECOMENDAÇÃO APLICADA: Layout consistente com 3 cards por linha no desktop */
 .services-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    grid-template-columns: repeat(3, 1fr); /* 3 colunas fixas em telas grandes */
     gap: 20px;
     max-width: 1200px;
     margin: 0 auto;
@@ -109,7 +111,6 @@ body {
     text-align: center;
     transition: all 0.3s ease;
     box-shadow: 0 3px 10px rgba(0,0,0,0.05);
-    /* Altura reduzida */
     min-height: auto;
     height: auto;
     display: flex;
@@ -131,17 +132,46 @@ body {
     font-size: 1.2rem;
     margin-bottom: 0.6rem;
     color: var(--primary);
-    /* Mantém tamanho original */
 }
 
 .service-card p {
     color: var(--dark);
     font-size: 0.9rem;
     line-height: 1.4;
-    /* Reduz espaço entre linhas */
     margin-bottom: 0;
-    /* Remove margem inferior extra */
     flex-shrink: 0;
+}
+
+/* Responsividade: 2 colunas em tablets */
+@media (max-width: 900px) {
+    .services-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 18px;
+    }
+}
+
+/* Responsividade: 1 coluna em mobile */
+@media (max-width: 600px) {
+    .services-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+    
+    .service-card {
+        padding: 1rem;
+    }
+    
+    .service-icon {
+        font-size: 1.8rem;
+    }
+    
+    .service-card h3 {
+        font-size: 1.1rem;
+    }
+    
+    .service-card p {
+        font-size: 0.85rem;
+    }
 }
 
 /* ========== IMÓVEIS SECTION ========== */
