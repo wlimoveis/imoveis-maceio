@@ -218,11 +218,12 @@ window.createVideoThumbnail = function(videoUrl, index, propertyId) {
     `;
 };
 
-// ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM ==========
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM (COM LAZY LOADING) ==========
 window.createImageThumbnail = function(imageUrl, index) {
     return `
         <div class="gallery-image-item" data-index="${index}" style="width:100%; height:100%;">
             <img src="${imageUrl}" 
+                 loading="lazy"
                  style="width:100%; height:100%; object-fit:cover;"
                  onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
         </div>
@@ -527,6 +528,7 @@ function updateGalleryModalMedia() {
         container.innerHTML = `
             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;">
                 <img src="${currentUrl}" 
+                     loading="lazy"
                      style="width:100%; height:100%; object-fit:contain;"
                      onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
             </div>
@@ -584,7 +586,7 @@ window.handleTouchEnd = function(event) {
     event.stopPropagation();
 };
 
-// ========== CONFIGURAR EVENTOS ==========
+// ========== CONFIGURAR EVENTOS (COM DEBOUNCE E THROTTLE) ==========
 window.setupGalleryEvents = function() {
     document.addEventListener('click', function(event) {
         const galleryModal = document.getElementById('propertyGalleryModal');
@@ -602,6 +604,56 @@ window.setupGalleryEvents = function() {
             case 'Escape': event.preventDefault(); window.closeGallery(); break;
         }
     });
+    
+    // ========== DEBOUNCE PARA EVENTO DE RESIZE ==========
+    let resizeTimeout;
+    window.addEventListener('resize', function() {
+        // Limpar timeout anterior
+        if (resizeTimeout) clearTimeout(resizeTimeout);
+        
+        // Executar apenas após 250ms sem novos eventos de resize
+        resizeTimeout = setTimeout(function() {
+            const galleryModal = document.getElementById('propertyGalleryModal');
+            if (galleryModal && galleryModal.style.display === 'block') {
+                // Se o modal da galeria estiver aberto, reajustar o conteúdo
+                const currentVideo = document.getElementById('galleryVideo');
+                if (currentVideo) {
+                    // Pequeno ajuste para garantir que o vídeo se ajuste à nova tela
+                    currentVideo.style.maxHeight = window.innerHeight * 0.8 + 'px';
+                }
+            }
+            console.log('🖼️ Galeria ajustada após resize (debounced)');
+        }, 250);
+    });
+    
+    // ========== THROTTLE PARA EVENTO DE SCROLL ==========
+    let scrollThrottleTimeout = null;
+    let lastScrollPosition = 0;
+    
+    window.addEventListener('scroll', function() {
+        // Ignorar se já tem um timeout agendado
+        if (scrollThrottleTimeout) return;
+        
+        scrollThrottleTimeout = setTimeout(function() {
+            scrollThrottleTimeout = null;
+            
+            const currentScroll = window.scrollY;
+            const scrollDelta = Math.abs(currentScroll - lastScrollPosition);
+            
+            // Se a rolagem foi significativa (> 100px), verificar imagens lazy
+            if (scrollDelta > 100) {
+                const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+                // O navegador já gerencia o lazy loading, apenas log para debug
+                if (lazyImages.length > 0 && window.DEBUG_MODE) {
+                    console.log(`📜 Scroll detectado: ${lazyImages.length} imagens lazy aguardando`);
+                }
+            }
+            
+            lastScrollPosition = currentScroll;
+        }, 100); // Executa no máximo a cada 100ms
+    });
+    
+    console.log('✅ Throttle de scroll configurado');
     
     const style = document.createElement('style');
     style.textContent = `
@@ -646,3 +698,4 @@ if (document.readyState === 'loading') {
 window.openGallery = window.openGalleryAtCurrentIndex;
 
 console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
+console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll');
