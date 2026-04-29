@@ -27,7 +27,7 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== TEMPLATE ENGINE COM CACHE ==========
+// ========== TEMPLATE ENGINE COM CACHE (OTIMIZADO) ==========
 class PropertyTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
@@ -47,7 +47,8 @@ class PropertyTemplateEngine {
         const html = this._generateTemplate(property);
         this._localCache.set(cacheKey, html);
         
-        if (this._localCache.size > 50) {
+        // Otimização: Limite reduzido de 50 para 30 (mais que suficiente para a maioria das páginas)
+        if (this._localCache.size > 30) {
             const keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
             keysToDelete.forEach(key => this._localCache.delete(key));
         }
@@ -129,6 +130,7 @@ class PropertyTemplateEngine {
                      style="cursor:pointer; position:relative; width:100%; height:100%;">
                     
                     <img src="${firstImageUrl}" 
+                         loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
                          alt="${this.escapeHtml(property.title)}"
                          data-original-src="${firstImageUrl}"
@@ -2016,6 +2018,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     </div>
                 ` : `
                     <img src="${firstImage}" 
+                         loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
                          onerror="this.src='${defaultImage}'; this.onerror=null;"
                          alt="${window.SharedCore?.escapeHtml(property.title) || property.title}">
@@ -2244,3 +2247,6 @@ console.log('🌾 Rural: badge Fazenda/Chácara/Rural + TYPE rural');
 console.log('🏘️ MCMV: badge MCMV (sem validação de tipo)');
 console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore (única fonte da verdade)');
 console.log('🔍 Filtro por bairro agora é case-insensitive e tolerante a variações');
+console.log('⚡ OTIMIZAÇÕES:');
+console.log('   - Lazy loading nas imagens da galeria e cards');
+console.log('   - Cache de templates reduzido: 30 itens (antes 50) - economia de memória');
