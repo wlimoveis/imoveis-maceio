@@ -358,19 +358,23 @@ body {
 }
 
 /* ========== ESTILOS PARA FEATURES COM ALTO CONTRASTE ========== */
+/* RECOMENDAÇÃO APLICADA: 
+   - Tamanho da fonte aumentado para 1.1rem (mesmo da descrição)
+   - Cor alterada para var(--primary) (mesma do preço do imóvel) */
 .feature-tag {
     display: inline-flex !important;
     align-items: center;
     gap: 12px;
     background: #f0f4f8;
-    color: #2c3e50;
     border: 1px solid #e0e6ed;
     padding: 0.5rem 1rem;
     border-radius: 30px;
-    font-size: 0.9rem;
-    font-weight: 600;
     transition: all 0.2s ease;
     box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    /* NOVOS ESTILOS CONFORME RECOMENDAÇÃO */
+    font-size: 1.1rem !important; /* Aumentado para o mesmo tamanho da descrição */
+    color: var(--primary) !important; /* Alterado para a mesma cor do preço do imóvel */
+    font-weight: 600;
 }
 
 .feature-tag i {
@@ -396,6 +400,7 @@ body {
     .feature-tag {
         padding: 0.5rem 1rem;
         gap: 10px;
+        font-size: 1rem !important; /* Ajuste proporcional para mobile */
     }
     
     .feature-tag i {
@@ -403,11 +408,11 @@ body {
     }
 }
 
-/* Estilo para tags rurais */
+/* Estilo para tags rurais - Mantém a cor personalizada do texto rural */
 .rural-tag {
     background: #e8f5e9;
     border-color: #c8e6c9;
-    color: #2e7d32;
+    color: #2e7d32 !important; /* Mantém a cor verde para tags rurais no texto */
 }
 
 .rural-tag:hover {
@@ -419,7 +424,7 @@ body {
 .feature-tag.highlight {
     background: #fff8e1;
     border-color: #ffe082;
-    color: #f57c00;
+    color: #f57c00 !important; /* Mantém a cor laranja para tags de destaque no texto */
 }
 
 .feature-tag.highlight:hover {
@@ -427,11 +432,11 @@ body {
     border-color: #ffb74d;
 }
 
-/* Responsividade para features */
+/* Responsividade para features - Ajuste para telas muito pequenas */
 @media (max-width: 480px) {
     .feature-tag {
         padding: 0.4rem 0.8rem;
-        font-size: 0.8rem;
+        font-size: 0.9rem !important; /* Ajuste proporcional para mobile pequeno */
         gap: 8px;
     }
     
