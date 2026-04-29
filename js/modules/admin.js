@@ -1,5 +1,5 @@
-// js/modules/admin.js - VERSÃO OTIMIZADA
-console.log('🔧 admin.js - Versão core com autocomplete funcional');
+// js/modules/admin.js - VERSÃO OTIMIZADA COM DESTAQUE AO EDITAR
+console.log('🔧 admin.js - Versão core com autocomplete funcional + destaque ao editar');
 
 const ADMIN_CONFIG = {
     password: "wl654",
@@ -199,6 +199,24 @@ window.editProperty = function(id) {
             panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 150);
+    
+    // ========== DESTAQUE VISUAL DO CARD SENDO EDITADO ==========
+    setTimeout(() => {
+        const card = document.querySelector(`.property-card[data-property-id="${id}"]`);
+        if (card) {
+            card.classList.add('editing-highlight');
+            card.style.transition = 'all 0.3s ease';
+            card.style.boxShadow = '0 0 0 3px #f39c12, 0 8px 25px rgba(0,0,0,0.15)';
+            card.style.transform = 'scale(1.02)';
+            
+            // Remover destaque após 5 segundos (tempo suficiente para editar)
+            setTimeout(() => {
+                card.classList.remove('editing-highlight');
+                card.style.boxShadow = '';
+                card.style.transform = '';
+            }, 5000);
+        }
+    }, 200);
     
     console.log('✅ Modo edição ativado para ID:', property.id);
     return true;
@@ -700,4 +718,4 @@ if (document.readyState === 'loading') {
     initializeAdmin();
 }
 
-console.log('✅ admin.js - Versão otimizada carregada');
+console.log('✅ admin.js - Versão otimizada com destaque ao editar carregada');
