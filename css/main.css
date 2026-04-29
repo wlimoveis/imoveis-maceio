@@ -32,7 +32,7 @@ body {
 .hero {
     background: linear-gradient(rgba(26, 82, 118, 0.8), rgba(41, 128, 185, 0.8)), 'url(https://github.com/wlimoveis/imoveis-maceio/raw/6b0066aa7ac84fb2c74ce260facbca3a177ab84f/assets/praia02.webp');
     background-size: cover;
-    background-position: center 30%;
+    background-position: center 40%;
     color: white;
     text-align: center;
     padding: 4rem 1rem;
