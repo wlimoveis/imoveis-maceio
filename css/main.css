@@ -538,7 +538,7 @@ body {
     transition: all 0.3s ease;
 }
 
-/* ========== SOBRE SECTION ========== */
+/* ========== SOBRE SECTION COM OVERLAY E CAPTION ========== */
 .about {
     background: white;
     padding: 4rem 1rem;
@@ -565,18 +565,13 @@ body {
     line-height: 1.7;
 }
 
-/* ========== ESTILOS PARA A IMAGEM DA EQUIPE ========== */
+/* Container da imagem com overlay */
 .about-image {
     background: linear-gradient(45deg, var(--accent), var(--secondary));
     border-radius: 15px;
     overflow: hidden;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
     transition: transform 0.3s ease;
-    min-height: 350px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
 }
 
 .about-image:hover {
@@ -584,31 +579,158 @@ body {
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
 }
 
-/* Estilo para a imagem da equipe */
-.about-image img {
+.image-container {
+    position: relative;
     width: 100%;
-    height: 100%;
-    object-fit: cover;
+    overflow: hidden;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
     display: block;
+    transition: transform 0.5s ease;
 }
 
-/* Fallback caso a imagem não carregue */
-.about-image .image-fallback {
-    text-align: center;
+.image-container:hover img {
+    transform: scale(1.05);
+}
+
+/* OVERLAY SOBRE A IMAGEM (ESTATÍSTICAS) */
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.85), rgba(0,0,0,0.6), transparent);
+    padding: 20px 15px 12px;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.overlay-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     color: white;
-    padding: 2rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+    background: rgba(255,255,255,0.15);
+    padding: 5px 12px;
+    border-radius: 25px;
+    backdrop-filter: blur(4px);
 }
 
-.about-image .image-fallback i {
-    font-size: 4rem;
-    margin-bottom: 1rem;
+.overlay-content i {
+    color: var(--gold);
+    font-size: 0.8rem;
+}
+
+.overlay-content i:first-child {
+    color: #FFD700;
+}
+
+.overlay-content i:last-child {
+    color: var(--accent);
+}
+
+/* CAPTION ABAIXO DA FOTO */
+.image-caption {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    padding: 12px 20px;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    border-radius: 0 0 15px 15px;
+}
+
+.image-caption i {
+    color: var(--gold);
+    font-size: 0.9rem;
     opacity: 0.8;
 }
 
-.about-image .image-fallback p {
-    font-size: 1rem;
+.image-caption p {
     margin: 0;
+    font-size: 0.85rem;
     color: white;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.image-caption strong {
+    color: var(--gold);
+    font-weight: 700;
+}
+
+/* Fallback */
+.image-fallback {
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 3rem;
+    color: white;
+}
+
+.image-fallback i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--gold);
+}
+
+.image-fallback p {
+    font-size: 1rem;
+    margin: 0.3rem 0;
+}
+
+.image-fallback .subtitle {
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .about-content {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
+    
+    .image-overlay {
+        padding: 12px 10px 8px;
+        gap: 8px;
+    }
+    
+    .overlay-content {
+        font-size: 0.65rem;
+        padding: 3px 8px;
+        gap: 4px;
+    }
+    
+    .overlay-content i {
+        font-size: 0.65rem;
+    }
+    
+    .image-caption p {
+        font-size: 0.7rem;
+    }
+    
+    .about-text h2 {
+        font-size: 1.8rem;
+        text-align: center;
+    }
+    
+    .about-text p {
+        font-size: 0.95rem;
+        text-align: center;
+    }
 }
 
 /* ========== FOOTER ========== */
@@ -722,10 +844,6 @@ body {
     
     .hero h1 {
         font-size: 2.2rem;
-    }
-    
-    .about-content {
-        grid-template-columns: 1fr;
     }
     
     .property-grid {
