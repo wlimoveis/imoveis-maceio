@@ -1,6 +1,4 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM PROXY PURO PARA SUPPORT SYSTEM
-// ✅ As funções locais foram removidas - Core delega completamente para Support System
-// ✅ Fallback mínimo inline garante operação mesmo sem Support System
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM CENTRALIZAÇÃO DE BAIRROS
 console.log('🔧 SharedCore.js carregado - PROXY PURO PARA SUPPORT SYSTEM (sem duplicidade)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
@@ -234,6 +232,61 @@ const SharedCore = (function() {
                urlLower.includes('.webm') || 
                urlLower.includes('.avi') ||
                urlLower.includes('video/');
+    };
+    
+    // ========== EXTRAÇÃO DE BAIRRO (DOMÍNIO) - CENTRALIZADO ==========
+    // ✅ ÚNICA FONTE DA VERDADE PARA EXTRAÇÃO DE BAIRROS
+    // ✅ UTILIZADA POR: FilterManager.js, properties.js, e qualquer outro módulo
+    const extractBairroFromLocation = function(location) {
+        if (!location || typeof location !== 'string') return null;
+        
+        const locationClean = location.trim();
+        
+        // Lista de bairros conhecidos de Maceió
+        const bairrosConhecidos = [
+            'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
+            'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
+            'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
+            'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
+            'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
+            'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
+            'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+            'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
+            'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
+            'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
+        ];
+        
+        // Tentativa 1: Procurar por bairro conhecido (case-insensitive, palavra inteira)
+        for (const b of bairrosConhecidos) {
+            const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+            if (regex.test(locationClean)) {
+                return b;
+            }
+        }
+        
+        // Tentativa 2: Extrair texto após vírgula (padrão "Rua X, Bairro - Cidade")
+        if (locationClean.includes(',')) {
+            const parts = locationClean.split(',');
+            if (parts.length >= 2) {
+                let possibleBairro = parts[1].trim();
+                possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
+                if (possibleBairro.length > 0 && possibleBairro.length < 50) {
+                    // Capitalizar primeira letra de cada palavra
+                    possibleBairro = possibleBairro.split(' ').map(word => 
+                        word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                    ).join(' ');
+                    return possibleBairro;
+                }
+            }
+        }
+        
+        // Tentativa 3: Se for "Zona Rural" ou similar
+        if (locationClean.toLowerCase().includes('rural') || 
+            locationClean.toLowerCase().includes('zona rural')) {
+            return 'Zona Rural';
+        }
+        
+        return null;
     };
     
     // ========== FUNÇÕES DE VALIDAÇÃO ==========
@@ -724,6 +777,9 @@ const SharedCore = (function() {
         parseFeaturesForStorage,
         ensureBooleanVideo,
         
+        // Extração de Bairro (Centralizado - ÚNICA FONTE DA VERDADE)
+        extractBairroFromLocation,
+        
         // Validação de ID e Estado
         validateIdForSupabase,
         manageEditingState,
@@ -803,6 +859,12 @@ window.SharedCore = SharedCore;
         };
     }
     
+    if (typeof window.extractBairroFromLocation === 'undefined') {
+        window.extractBairroFromLocation = function(location) {
+            return SharedCore.extractBairroFromLocation(location);
+        };
+    }
+    
     if (typeof window.validateIdForSupabase === 'undefined') {
         window.validateIdForSupabase = function(propertyId) {
             return SharedCore.validateIdForSupabase(propertyId);
@@ -846,6 +908,7 @@ function initializeGlobalCompatibility() {
         formatFeaturesForDisplay: SharedCore.formatFeaturesForDisplay,
         parseFeaturesForStorage: SharedCore.parseFeaturesForStorage,
         ensureBooleanVideo: SharedCore.ensureBooleanVideo,
+        extractBairroFromLocation: SharedCore.extractBairroFromLocation,
         validateIdForSupabase: SharedCore.validateIdForSupabase,
         manageEditingState: SharedCore.manageEditingState,
         formatPriceForInput: SharedCore.formatPriceForInput,
@@ -888,7 +951,7 @@ setTimeout(() => {
         'debounce', 'throttle', 'formatPrice', 'supabaseFetch',
         'elementExists', 'isMobileDevice', 'copyToClipboard',
         'logModule', 'runLowPriority', 'validateProperty',
-        'escapeHtml', 'isVideoUrl'
+        'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation'
     ];
     
     let allAvailable = true;
@@ -905,7 +968,7 @@ setTimeout(() => {
         if (!exists) allAvailable = false;
     });
     
-    const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo', 'validateIdForSupabase', 'manageEditingState'];
+    const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo', 'validateIdForSupabase', 'manageEditingState', 'extractBairroFromLocation'];
     unifiedFunctions.forEach(func => {
         const available = window.SharedCore?.[func] !== undefined;
         console.log(`${available ? '✅' : '❌'} ${func} disponível no SharedCore`);
