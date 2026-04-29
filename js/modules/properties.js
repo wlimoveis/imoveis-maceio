@@ -674,96 +674,13 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO (VERSÃO ORIGINAL - PARA COMPATIBILIDADE) ==========
-function extractBairroFromLocation(location) {
-    if (!location || typeof location !== 'string') return null;
-    
-    const bairrosConhecidos = [
-        'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
-        'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
-        'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
-        'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
-        'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
-        'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
-        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
-        'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
-        'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra', 'Prado'
-    ];
-    
-    let bairro = '';
-    const locationClean = location.trim();
-    
-    for (const b of bairrosConhecidos) {
-        if (locationClean.toLowerCase().includes(b.toLowerCase())) {
-            bairro = b;
-            break;
-        }
-    }
-    
-    if (!bairro && locationClean.includes(',')) {
-        const parts = locationClean.split(',');
-        if (parts.length >= 2) {
-            bairro = parts[1].trim().replace(/-.*$/, '').replace(/AL$/i, '').trim();
-        }
-    }
-    
-    // Remove "Maceió/AL" se ainda estiver presente
-    bairro = bairro.replace(/Maceió\/AL/i, '').trim();
-    
-    return bairro || 'Localização não especificada';
-}
+// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO (COMPATIBILIDADE) ==========
+// ✅ REMOVIDA - utilizando a versão centralizada do SharedCore
+// Agora: window.SharedCore.extractBairroFromLocation
 
-// ========== FUNÇÃO NORMALIZADA PARA EXTRAIR BAIRRO (USADA NO FILTRO - MAIS ROBUSTA) ==========
-function extractBairroForComparison(location) {
-    if (!location || typeof location !== 'string') return null;
-    
-    const locationClean = location.trim();
-    
-    // Lista de bairros conhecidos (para referência)
-    const bairrosConhecidos = [
-        'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
-        'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
-        'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
-        'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
-        'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
-        'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
-        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
-        'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
-        'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
-        'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
-    ];
-    
-    // Tentativa 1: Procurar por bairro conhecido
-    for (const b of bairrosConhecidos) {
-        const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-        if (regex.test(locationClean)) {
-            return b; // Retorna o nome padronizado
-        }
-    }
-    
-    // Tentativa 2: Extrair texto após vírgula
-    if (locationClean.includes(',')) {
-        const parts = locationClean.split(',');
-        if (parts.length >= 2) {
-            let possibleBairro = parts[1].trim();
-            possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
-            if (possibleBairro.length > 0 && possibleBairro.length < 50) {
-                // Capitalizar
-                possibleBairro = possibleBairro.split(' ').map(word => 
-                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
-                ).join(' ');
-                return possibleBairro;
-            }
-        }
-    }
-    
-    // Tentativa 3: Se for "Zona Rural"
-    if (locationClean.toLowerCase().includes('rural')) {
-        return 'Zona Rural';
-    }
-    
-    return null;
-}
+// ========== FUNÇÃO NORMALIZADA PARA EXTRAIR BAIRRO (USADA NO FILTRO) ==========
+// ✅ REMOVIDA - utilizando a versão centralizada do SharedCore
+// Agora: window.SharedCore.extractBairroFromLocation
 
 // ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO CORRIGIDA COM NORMALIZAÇÃO) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
@@ -822,15 +739,15 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
         console.log(`📊 Filtrando ${category} por badge (${config.expectedValues.join(', ')}): ${filtered.length} imóveis`);
     }
     
-    // Filtrar por bairro (usando função normalizada e comparação case-insensitive)
+    // Filtrar por bairro (usando função centralizada do SharedCore)
     if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
         const normalizedBairroFilter = bairro.trim().toLowerCase();
         
         filtered = filtered.filter(p => {
             if (!p.location) return false;
             
-            // Extrair bairro da localização usando a função robusta
-            let propertyBairro = extractBairroForComparison(p.location);
+            // ✅ AGORA USANDO A FUNÇÃO CENTRALIZADA DO SHAREDCORE
+            let propertyBairro = window.SharedCore.extractBairroFromLocation(p.location);
             
             // Normalizar para comparação (lowercase)
             if (propertyBairro) {
@@ -868,7 +785,8 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
         
         tempFiltered.forEach(p => {
             if (p.location) {
-                const b = extractBairroForComparison(p.location);
+                // ✅ AGORA USANDO A FUNÇÃO CENTRALIZADA DO SHAREDCORE
+                const b = window.SharedCore.extractBairroFromLocation(p.location);
                 if (b) allBairrosNaCategoria.add(b);
             }
         });
@@ -2324,5 +2242,5 @@ console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualqu
 console.log('🏠 Residencial: badge Novo/Destaque/Luxo + TYPE residencial');
 console.log('🌾 Rural: badge Fazenda/Chácara/Rural + TYPE rural');
 console.log('🏘️ MCMV: badge MCMV (sem validação de tipo)');
-console.log('🔧 Função extractBairroForComparison com normalização de capitalização');
+console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore (única fonte da verdade)');
 console.log('🔍 Filtro por bairro agora é case-insensitive e tolerante a variações');
