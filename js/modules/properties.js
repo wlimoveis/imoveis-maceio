@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (NORMALIZAÇÃO DE BAIRROS)
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO + NORMALIZAÇÃO DE BAIRROS');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -300,7 +300,7 @@ class PropertyTemplateEngine {
                 }
             }
             
-            // Atualizar features se fornecido (COM ÍCONES)
+            // Atualizar features se fornecido (COM ÍCONES NORMALIZADOS)
             if (propertyData.features !== undefined) {
                 const featuresElement = card.querySelector('[data-features-field]');
                 const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
@@ -400,49 +400,252 @@ class PropertyTemplateEngine {
 
 window.propertyTemplates = new PropertyTemplateEngine();
 
-// ========== SISTEMA DE ÍCONES PARA FEATURES ==========
+// ========== SISTEMA DE ÍCONES PARA FEATURES (COM NORMALIZAÇÃO) ==========
 window.FeatureIconMapper = {
     // Mapeamento de palavras-chave para ícones e cores
     mappings: [
-        { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens'], icon: 'fa-car', color: '#3498db', label: 'Vaga' },
-        { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
-        { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
-        { keywords: ['cozinha', 'copa'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
-        { keywords: ['sala', 'estar', 'living', 'salao', 'salão'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
-        { keywords: ['varanda', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
-        { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
-        { keywords: ['churrasqueira', 'churrasco'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
-        { keywords: ['ar condicionado', 'ar-condicionado', 'climatização'], icon: 'fa-snowflake', color: '#1abc9c', label: 'Ar Cond.' },
-        { keywords: ['elevador'], icon: 'fa-arrow-up', color: '#7f8c8d', label: 'Elevador' },
-        { keywords: ['portaria', '24h', 'segurança', 'vigilância'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Segurança' },
-        { keywords: ['jardim', 'paisagismo'], icon: 'fa-leaf', color: '#27ae60', label: 'Jardim' },
-        { keywords: ['quintal', 'área externa'], icon: 'fa-tree', color: '#27ae60', label: 'Quintal' },
-        { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
-        { keywords: ['área de serviço', 'lavanderia'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Lavanderia' },
-        { keywords: ['escritório', 'home office'], icon: 'fa-laptop', color: '#3498db', label: 'Escritório' },
-        { keywords: ['lazer'], icon: 'fa-gamepad', color: '#9b59b6', label: 'Lazer' },
-        { keywords: ['playground', 'parque infantil'], icon: 'fa-child', color: '#f39c12', label: 'Playground' },
-        { keywords: ['mobiliado', 'mobília'], icon: 'fa-couch', color: '#e67e22', label: 'Mobiliado' },
-        { keywords: ['vista mar', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
-        { keywords: ['perto praia', 'proximo praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Perto Praia' },
-        { keywords: ['comércio', 'loja', 'comercial'], icon: 'fa-store', color: '#e74c3c', label: 'Comercial' },
-        { keywords: ['sítio', 'chácara', 'fazenda', 'rural'], icon: 'fa-tractor', color: '#27ae60', label: 'Rural' },
-        { keywords: ['reforma', 'novo'], icon: 'fa-hammer', color: '#f39c12', label: 'Novo/Reforma' }
+        // GARAGEM/VAGA
+        { 
+            keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], 
+            icon: 'fa-car', 
+            color: '#3498db', 
+            label: 'Garagem/Vaga' 
+        },
+        
+        // QUARTO/DORMITÓRIO (NORMALIZADO PARA INCLUIR TODAS VARIAÇÕES)
+        { 
+            keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts', 'QUARTO', 'Qtos', 'Qto', 'Qts'], 
+            icon: 'fa-bed', 
+            color: '#e74c3c', 
+            label: 'Quarto' 
+        },
+        
+        // BANHEIRO
+        { 
+            keywords: ['banheiro', 'wc', 'lavabo', 'banheiros', 'suíte'], 
+            icon: 'fa-shower', 
+            color: '#1abc9c', 
+            label: 'Banheiro' 
+        },
+        
+        // COZINHA
+        { 
+            keywords: ['cozinha', 'copa', 'cozinha americana'], 
+            icon: 'fa-utensils', 
+            color: '#f39c12', 
+            label: 'Cozinha' 
+        },
+        
+        // SALA/ESTAR
+        { 
+            keywords: ['sala', 'estar', 'living', 'salao', 'salão', 'sala de estar'], 
+            icon: 'fa-couch', 
+            color: '#9b59b6', 
+            label: 'Sala' 
+        },
+        
+        // VARANDA/SACADA
+        { 
+            keywords: ['varanda', 'sacada', 'terraço', 'terraco'], 
+            icon: 'fa-umbrella-beach', 
+            color: '#e67e22', 
+            label: 'Varanda' 
+        },
+        
+        // PISCINA
+        { 
+            keywords: ['piscina'], 
+            icon: 'fa-swimmer', 
+            color: '#3498db', 
+            label: 'Piscina' 
+        },
+        
+        // CHURRASQUEIRA
+        { 
+            keywords: ['churrasqueira', 'churrasco'], 
+            icon: 'fa-drumstick-bite', 
+            color: '#e67e22', 
+            label: 'Churrasqueira' 
+        },
+        
+        // AR CONDICIONADO
+        { 
+            keywords: ['ar condicionado', 'ar-condicionado', 'climatização', 'ac'], 
+            icon: 'fa-snowflake', 
+            color: '#1abc9c', 
+            label: 'Ar Condicionado' 
+        },
+        
+        // ELEVADOR
+        { 
+            keywords: ['elevador'], 
+            icon: 'fa-arrow-up', 
+            color: '#7f8c8d', 
+            label: 'Elevador' 
+        },
+        
+        // SEGURANÇA/PORTARIA
+        { 
+            keywords: ['portaria', '24h', 'segurança', 'vigilância', 'porteiro'], 
+            icon: 'fa-shield-alt', 
+            color: '#2c3e50', 
+            label: 'Segurança' 
+        },
+        
+        // JARDIM
+        { 
+            keywords: ['jardim', 'paisagismo'], 
+            icon: 'fa-leaf', 
+            color: '#27ae60', 
+            label: 'Jardim' 
+        },
+        
+        // QUINTAL
+        { 
+            keywords: ['quintal', 'área externa', 'area externa'], 
+            icon: 'fa-tree', 
+            color: '#27ae60', 
+            label: 'Quintal' 
+        },
+        
+        // ACADEMIA
+        { 
+            keywords: ['academia', 'ginásio', 'ginasio'], 
+            icon: 'fa-dumbbell', 
+            color: '#e74c3c', 
+            label: 'Academia' 
+        },
+        
+        // LAVANDERIA
+        { 
+            keywords: ['área de serviço', 'lavanderia', 'area de servico'], 
+            icon: 'fa-tshirt', 
+            color: '#95a5a6', 
+            label: 'Lavanderia' 
+        },
+        
+        // ESCRITÓRIO
+        { 
+            keywords: ['escritório', 'home office', 'escritorio'], 
+            icon: 'fa-laptop', 
+            color: '#3498db', 
+            label: 'Escritório' 
+        },
+        
+        // LAZER
+        { 
+            keywords: ['lazer'], 
+            icon: 'fa-gamepad', 
+            color: '#9b59b6', 
+            label: 'Lazer' 
+        },
+        
+        // PLAYGROUND
+        { 
+            keywords: ['playground', 'parque infantil', 'parquinho'], 
+            icon: 'fa-child', 
+            color: '#f39c12', 
+            label: 'Playground' 
+        },
+        
+        // MOBILIADO
+        { 
+            keywords: ['mobiliado', 'mobília', 'mobilia'], 
+            icon: 'fa-couch', 
+            color: '#e67e22', 
+            label: 'Mobiliado' 
+        },
+        
+        // VISTA MAR
+        { 
+            keywords: ['vista mar', 'vista para o mar', 'vista pro mar'], 
+            icon: 'fa-water', 
+            color: '#3498db', 
+            label: 'Vista Mar' 
+        },
+        
+        // PERTO PRAIA
+        { 
+            keywords: ['perto praia', 'proximo praia', 'próximo praia', 'beira mar'], 
+            icon: 'fa-umbrella-beach', 
+            color: '#f39c12', 
+            label: 'Perto da Praia' 
+        },
+        
+        // COMERCIAL/LOJA
+        { 
+            keywords: ['comércio', 'loja', 'comercial', 'ponto comercial'], 
+            icon: 'fa-store', 
+            color: '#e74c3c', 
+            label: 'Comercial' 
+        },
+        
+        // RURAL
+        { 
+            keywords: ['sítio', 'chácara', 'fazenda', 'rural', 'sitio', 'chacara'], 
+            icon: 'fa-tractor', 
+            color: '#27ae60', 
+            label: 'Rural' 
+        },
+        
+        // REFORMA/NOVO
+        { 
+            keywords: ['reforma', 'novo', 'novo em folha'], 
+            icon: 'fa-hammer', 
+            color: '#f39c12', 
+            label: 'Novo/Reforma' 
+        }
     ],
+    
+    // Função para normalizar texto (remover acentos, lower case)
+    normalizeText: function(text) {
+        if (!text) return '';
+        return text.toString()
+            .toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '') // Remove acentos
+            .trim();
+    },
+    
+    // Função para verificar se texto contém alguma palavra-chave
+    matchesKeyword: function(text, keywordList) {
+        const normalizedText = this.normalizeText(text);
+        
+        for (const keyword of keywordList) {
+            const normalizedKeyword = this.normalizeText(keyword);
+            // Verificar se a palavra completa está contida ou se é igual
+            if (normalizedText === normalizedKeyword || 
+                normalizedText.includes(normalizedKeyword) ||
+                normalizedKeyword.includes(normalizedText)) {
+                return true;
+            }
+            // Verificar quebra por espaços (para casos como "2 Quartos" -> "quartos")
+            const words = normalizedText.split(/\s+/);
+            for (const word of words) {
+                if (word === normalizedKeyword || 
+                    (normalizedKeyword.length > 2 && word.includes(normalizedKeyword))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    },
     
     // Função para obter ícone baseado no texto da feature
     getIconForFeature: function(featureText) {
-        const lowerText = featureText.toLowerCase().trim();
+        if (!featureText) {
+            return { icon: 'fa-tag', color: '#95a5a6', label: 'Característica' };
+        }
+        
+        const lowerText = this.normalizeText(featureText);
         
         for (let mapping of this.mappings) {
-            for (let keyword of mapping.keywords) {
-                if (lowerText.includes(keyword)) {
-                    return {
-                        icon: mapping.icon,
-                        color: mapping.color,
-                        label: mapping.label || featureText
-                    };
-                }
+            if (this.matchesKeyword(lowerText, mapping.keywords)) {
+                return {
+                    icon: mapping.icon,
+                    color: mapping.color,
+                    label: mapping.label || featureText
+                };
             }
         }
         
@@ -2067,7 +2270,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO + NORMALIZAÇÃO DE BAIRROS');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -2109,10 +2312,13 @@ if (document.readyState === 'loading') {
 
 window.getInitialProperties = getInitialProperties;
 
-console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones nas Features + Filtro DIFERENCIADO');
+console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones NORMALIZADOS + Filtro DIFERENCIADO');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
-console.log('🎨 Features com ícones visuais: carro, cama, chuveiro, utensílios, sofá, praia, piscina, etc.');
+console.log('🎨 Features com ícones NORMALIZADOS:');
+console.log('   - "Qtos", "Qto", "Qts", "QUARTO" → 🛏️ fa-bed');
+console.log('   - "2 Quartos", "3 Qtos" → 🛏️ fa-bed');
+console.log('   - Suporte a acentos removidos na comparação');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
 console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualquer badge');
 console.log('🏠 Residencial: badge Novo/Destaque/Luxo + TYPE residencial');
