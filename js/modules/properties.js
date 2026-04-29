@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO COM LÓGICA DIFERENCIADA POR CATEGORIA
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO CORRIGIDO (NORMALIZAÇÃO DE BAIRROS)
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO + NORMALIZAÇÃO DE BAIRROS');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -471,7 +471,7 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO ==========
+// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO (VERSÃO ORIGINAL - PARA COMPATIBILIDADE) ==========
 function extractBairroFromLocation(location) {
     if (!location || typeof location !== 'string') return null;
     
@@ -510,7 +510,59 @@ function extractBairroFromLocation(location) {
     return bairro || 'Localização não especificada';
 }
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (COM LÓGICA DIFERENCIADA) ==========
+// ========== FUNÇÃO NORMALIZADA PARA EXTRAIR BAIRRO (USADA NO FILTRO - MAIS ROBUSTA) ==========
+function extractBairroForComparison(location) {
+    if (!location || typeof location !== 'string') return null;
+    
+    const locationClean = location.trim();
+    
+    // Lista de bairros conhecidos (para referência)
+    const bairrosConhecidos = [
+        'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
+        'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
+        'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
+        'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
+        'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
+        'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
+        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+        'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
+        'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
+        'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
+    ];
+    
+    // Tentativa 1: Procurar por bairro conhecido
+    for (const b of bairrosConhecidos) {
+        const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+        if (regex.test(locationClean)) {
+            return b; // Retorna o nome padronizado
+        }
+    }
+    
+    // Tentativa 2: Extrair texto após vírgula
+    if (locationClean.includes(',')) {
+        const parts = locationClean.split(',');
+        if (parts.length >= 2) {
+            let possibleBairro = parts[1].trim();
+            possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
+            if (possibleBairro.length > 0 && possibleBairro.length < 50) {
+                // Capitalizar
+                possibleBairro = possibleBairro.split(' ').map(word => 
+                    word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
+                ).join(' ');
+                return possibleBairro;
+            }
+        }
+    }
+    
+    // Tentativa 3: Se for "Zona Rural"
+    if (locationClean.toLowerCase().includes('rural')) {
+        return 'Zona Rural';
+    }
+    
+    return null;
+}
+
+// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO CORRIGIDA COM NORMALIZAÇÃO) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
@@ -567,14 +619,58 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
         console.log(`📊 Filtrando ${category} por badge (${config.expectedValues.join(', ')}): ${filtered.length} imóveis`);
     }
     
-    // Filtrar por bairro
+    // Filtrar por bairro (usando função normalizada e comparação case-insensitive)
     if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
+        const normalizedBairroFilter = bairro.trim().toLowerCase();
+        
         filtered = filtered.filter(p => {
             if (!p.location) return false;
-            const propertyBairro = extractBairroFromLocation(p.location);
-            return propertyBairro === bairro;
+            
+            // Extrair bairro da localização usando a função robusta
+            let propertyBairro = extractBairroForComparison(p.location);
+            
+            // Normalizar para comparação (lowercase)
+            if (propertyBairro) {
+                propertyBairro = propertyBairro.trim().toLowerCase();
+                const isMatch = propertyBairro === normalizedBairroFilter;
+                if (isMatch) {
+                    console.log(`  ✅ Match: "${p.title}" → Bairro extraído: "${propertyBairro}"`);
+                }
+                return isMatch;
+            }
+            return false;
         });
-        console.log(`📊 Após filtro por bairro "${bairro}": ${filtered.length} imóveis`);
+        console.log(`📊 Após filtro por bairro "${bairro}" (normalizado: "${normalizedBairroFilter}"): ${filtered.length} imóveis`);
+    }
+    
+    // Mostrar resultados detalhados se nenhum imóvel for encontrado
+    if (filtered.length === 0 && bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
+        console.warn(`⚠️ Nenhum imóvel encontrado para bairro "${bairro}" na categoria ${category}`);
+        
+        // Diagnóstico: mostrar quais bairros existem na categoria
+        const allBairrosNaCategoria = new Set();
+        let tempFiltered = [];
+        
+        if (category === 'Comercial') {
+            tempFiltered = window.properties.filter(p => p.type && config.expectedValues.includes(p.type));
+        } else {
+            tempFiltered = window.properties.filter(p => {
+                const hasCorrectBadge = p.badge && config.expectedValues.includes(p.badge);
+                if (config.requiredType) {
+                    return hasCorrectBadge && p.type === config.requiredType;
+                }
+                return hasCorrectBadge;
+            });
+        }
+        
+        tempFiltered.forEach(p => {
+            if (p.location) {
+                const b = extractBairroForComparison(p.location);
+                if (b) allBairrosNaCategoria.add(b);
+            }
+        });
+        
+        console.log(`📋 Bairros disponíveis na categoria ${category}:`, Array.from(allBairrosNaCategoria));
     }
     
     // Renderizar resultados
@@ -1971,7 +2067,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO POR CATEGORIA');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES + FILTRO DIFERENCIADO + NORMALIZAÇÃO DE BAIRROS');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -2022,4 +2118,5 @@ console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualqu
 console.log('🏠 Residencial: badge Novo/Destaque/Luxo + TYPE residencial');
 console.log('🌾 Rural: badge Fazenda/Chácara/Rural + TYPE rural');
 console.log('🏘️ MCMV: badge MCMV (sem validação de tipo)');
-console.log('🔧 Função extractBairroFromLocation com lista de bairros de Maceió');
+console.log('🔧 Função extractBairroForComparison com normalização de capitalização');
+console.log('🔍 Filtro por bairro agora é case-insensitive e tolerante a variações');
