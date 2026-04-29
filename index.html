@@ -203,11 +203,11 @@
         <div class="filters">
             <h3>Filtrar por:</h3>
             <div class="filter-options">
-                <button class="filter-btn active">Todos</button>
-                <button class="filter-btn">Residencial</button>
-                <button class="filter-btn">Comercial</button>
-                <button class="filter-btn">Rural</button>
-                <button class="filter-btn">Minha Casa Minha Vida</button>
+                <button class="filter-btn active" data-tooltip="Ver todos os imóveis">Todos</button>
+                <button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button>
+                <button class="filter-btn" data-tooltip="Lojas, salas e galpões">Comercial</button>
+                <button class="filter-btn" data-tooltip="Sítios, chácaras e fazendas">Rural</button>
+                <button class="filter-btn" data-tooltip="Programa Minha Casa Minha Vida">Minha Casa Minha Vida</button>
             </div>
         </div>
         
@@ -552,6 +552,73 @@
 <button class="admin-toggle">
     <i class="fas fa-user-cog"></i>
 </button>
+
+<!-- ========== BOTÃO VOLTAR AO TOPO ========== -->
+<button id="backToTopBtn" style="
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: white;
+    border: none;
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 999;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+">
+    <i class="fas fa-arrow-up"></i>
+</button>
+
+<script>
+// Botão Voltar ao Topo
+(function() {
+    const backToTopBtn = document.getElementById('backToTopBtn');
+    if (!backToTopBtn) return;
+    
+    // Mostrar/esconder botão baseado no scroll
+    window.addEventListener('scroll', function() {
+        if (window.scrollY > 300) {
+            backToTopBtn.style.display = 'flex';
+            backToTopBtn.style.opacity = '1';
+        } else {
+            backToTopBtn.style.opacity = '0';
+            setTimeout(() => {
+                if (window.scrollY <= 300) {
+                    backToTopBtn.style.display = 'none';
+                }
+            }, 300);
+        }
+    });
+    
+    // Rolar suavemente para o topo
+    backToTopBtn.addEventListener('click', function() {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    });
+    
+    // Efeito hover
+    backToTopBtn.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-3px)';
+        this.style.background = '#2980b9';
+    });
+    
+    backToTopBtn.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.background = 'var(--primary)';
+    });
+    
+    console.log('✅ Botão Voltar ao Topo inicializado');
+})();
+</script>
 
 <!-- ========== SUPABASE E UTILITÁRIOS (CORE) ========== -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
