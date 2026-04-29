@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -25,6 +25,78 @@ window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_KEY) window.SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
     
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
+};
+
+// ========== COMPARTILHAR IMÓVEL (COPIA LINK) ==========
+window.shareProperty = async function(id) {
+    const property = window.properties.find(p => p.id === id);
+    if (!property) {
+        console.error('❌ Imóvel não encontrado');
+        return;
+    }
+    
+    const shareUrl = `${window.location.origin}${window.location.pathname}?property=${id}`;
+    
+    try {
+        await navigator.clipboard.writeText(shareUrl);
+        
+        // Mostrar feedback visual temporário
+        const card = document.querySelector(`.property-card[data-property-id="${id}"]`);
+        if (card) {
+            // Criar toast de confirmação
+            const toast = document.createElement('div');
+            toast.textContent = '✅ Link copiado! Compartilhe com seus amigos.';
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #27ae60;
+                color: white;
+                padding: 12px 24px;
+                border-radius: 50px;
+                font-size: 0.9rem;
+                font-weight: 600;
+                z-index: 10000;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+                animation: slideUpFade 0.3s ease;
+                pointer-events: none;
+            `;
+            
+            // Adicionar animação via CSS se não existir
+            if (!document.querySelector('#shareToastStyle')) {
+                const style = document.createElement('style');
+                style.id = 'shareToastStyle';
+                style.textContent = `
+                    @keyframes slideUpFade {
+                        from {
+                            opacity: 0;
+                            transform: translateX(-50%) translateY(20px);
+                        }
+                        to {
+                            opacity: 1;
+                            transform: translateX(-50%) translateY(0);
+                        }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(toast);
+            
+            // Remover toast após 2 segundos
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 2000);
+        }
+        
+        console.log(`✅ Link copiado: ${shareUrl}`);
+    } catch (err) {
+        console.error('❌ Erro ao copiar:', err);
+        alert('⚠️ Não foi possível copiar o link. Copie manualmente da barra de endereços.');
+    }
 };
 
 // ========== TEMPLATE ENGINE COM CACHE (OTIMIZADO) ==========
@@ -56,6 +128,15 @@ class PropertyTemplateEngine {
         return html;
     }
     
+    // ========== FUNÇÃO AUXILIAR PARA VERIFICAR IMÓVEL NOVO ==========
+    isNewProperty(createdAt) {
+        if (!createdAt) return false;
+        const createdDate = new Date(createdAt);
+        const now = new Date();
+        const diffDays = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
+        return diffDays <= 7; // Imóveis dos últimos 7 dias
+    }
+    
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
@@ -73,9 +154,30 @@ class PropertyTemplateEngine {
             ? descriptionText.substring(0, 120) + '...' 
             : descriptionText;
 
+        // ========== INDICADOR "NOVO" PARA IMÓVEIS RECENTES ==========
+        const showNewBadge = this.isNewProperty(property.created_at);
+        const newBadgeHtml = showNewBadge ? `
+            <div style="
+                position: absolute;
+                top: ${property.badge ? '45px' : '15px'};
+                right: 15px;
+                background: linear-gradient(135deg, #27ae60, #2ecc71);
+                color: white;
+                padding: 4px 10px;
+                border-radius: 20px;
+                font-size: 0.7rem;
+                font-weight: bold;
+                z-index: 15;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+                animation: pulse 1.5s infinite;
+            ">
+                <i class="fas fa-star"></i> NOVO
+            </div>
+        ` : '';
+
         const html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
-                ${this.generateImageSection(property)}
+                ${this.generateImageSection(property, newBadgeHtml)}
                 <div class="property-content">
                     <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
                     <h3 class="property-title" data-title-field>${this.escapeHtml(property.title) || 'Sem título'}</h3>
@@ -94,9 +196,28 @@ class PropertyTemplateEngine {
                             }).join('')}
                         </div>
                     ` : ''}
-                    <button class="contact-btn" onclick="contactAgent(${property.id})">
-                        <i class="fab fa-whatsapp"></i> Entrar em Contato
-                    </button>
+                    <div style="display: flex; gap: 8px; margin-top: 10px;">
+                        <button class="contact-btn" onclick="contactAgent(${property.id})" style="flex: 2;">
+                            <i class="fab fa-whatsapp"></i> Entrar em Contato
+                        </button>
+                        <button class="share-btn" onclick="shareProperty(${property.id})" style="
+                            background: #3498db;
+                            color: white;
+                            border: none;
+                            padding: 0.8rem;
+                            border-radius: 8px;
+                            cursor: pointer;
+                            flex: 1;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 5px;
+                            transition: all 0.3s ease;
+                        ">
+                            <i class="fas fa-share-alt"></i>
+                            <span style="font-size: 0.8rem;">Compartilhar</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         `;
@@ -104,7 +225,7 @@ class PropertyTemplateEngine {
         return html;
     }
 
-    generateImageSection(property) {
+    generateImageSection(property, newBadgeHtml = '') {
         const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
         const imageUrls = hasImages ? property.images.split(',').filter(url => url && url.trim() !== '') : [];
         const imageCount = imageUrls.length;
@@ -152,6 +273,8 @@ class PropertyTemplateEngine {
                             ${this.escapeHtml(property.badge)}
                         </div>
                     ` : ''}
+                    
+                    ${newBadgeHtml}
                     
                     ${hasVideo ? `
                         <div class="video-indicator" style="
@@ -2191,7 +2314,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -2236,17 +2359,9 @@ window.getInitialProperties = getInitialProperties;
 console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones NORMALIZADOS + Filtro DIFERENCIADO');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
-console.log('🎨 Features com ícones NORMALIZADOS:');
-console.log('   - "Qtos", "Qto", "Qts", "QUARTO" → 🛏️ fa-bed');
-console.log('   - "2 Quartos", "3 Qtos" → 🛏️ fa-bed');
-console.log('   - Suporte a acentos removidos na comparação');
+console.log('🎨 Features com ícones NORMALIZADOS');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
 console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualquer badge');
-console.log('🏠 Residencial: badge Novo/Destaque/Luxo + TYPE residencial');
-console.log('🌾 Rural: badge Fazenda/Chácara/Rural + TYPE rural');
-console.log('🏘️ MCMV: badge MCMV (sem validação de tipo)');
-console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore (única fonte da verdade)');
-console.log('🔍 Filtro por bairro agora é case-insensitive e tolerante a variações');
-console.log('⚡ OTIMIZAÇÕES:');
-console.log('   - Lazy loading nas imagens da galeria e cards');
-console.log('   - Cache de templates reduzido: 30 itens (antes 50) - economia de memória');
+console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore');
+console.log('🔄 SHARE: Botão "Compartilhar" com toast de confirmação');
+console.log('🆕 NOVO BADGE: Imóveis com menos de 7 dias têm selo "NOVO" animado');
