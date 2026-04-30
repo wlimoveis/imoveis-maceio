@@ -41,11 +41,22 @@ window.initializeWeberLessaSystem = async function() {
             console.log('ℹ️ Função de unificação não disponível (modo produção)');
         }
         
-        // ✅ CARREGAMENTO PRINCIPAL
+        // ✅ CARREGAMENTO PRINCIPAL COM VERIFICAÇÃO DE LINK DIRETO
         if (typeof window.loadPropertiesData === 'function') {
             console.log('🏠 Carregando imóveis via sistema existente...');
             await window.loadPropertiesData();
             console.log('✅ Imóveis carregados com sucesso');
+            
+            // *** NOVO: Após carregar os dados, verifica se há um imóvel específico na URL ***
+            if (typeof window.loadPropertiesBasedOnUrl === 'function') {
+                window.loadPropertiesBasedOnUrl();
+            } else {
+                // Fallback: se a nova função não existir, exibe todos (comportamento antigo)
+                console.warn('⚠️ Função loadPropertiesBasedOnUrl não encontrada. Usando fallback.');
+                if (typeof window.renderProperties === 'function') {
+                    window.renderProperties('todos');
+                }
+            }
         } else {
             console.error('❌ loadPropertiesData() não encontrado!');
         }
