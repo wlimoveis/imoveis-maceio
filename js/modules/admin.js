@@ -135,11 +135,9 @@ window.editProperty = function(id) {
     
     window.resetAdminFormCompletely(false);
     
+    // Usar o PriceFormatter centralizado do SharedCore
     const formatPrice = (price) => {
-        if (window.SharedCore?.PriceFormatter?.formatForAdmin) {
-            return window.SharedCore.PriceFormatter.formatForAdmin(price);
-        }
-        return price || '';
+        return window.SharedCore?.PriceFormatter?.formatForAdmin(price) ?? price ?? '';
     };
     
     const formatFeatures = (features) => {
