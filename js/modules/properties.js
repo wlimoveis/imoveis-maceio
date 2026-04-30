@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE
-console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE + LINK DIRETO
+console.log('🏠 properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE + LINK DIRETO');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -27,7 +27,7 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== COMPARTILHAR IMÓVEL (COPIA LINK) ==========
+// ========== COMPARTILHAR IMÓVEL (COPIA LINK) - VERSÃO MELHORADA COM URL ABSOLUTA ==========
 window.shareProperty = async function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -35,7 +35,9 @@ window.shareProperty = async function(id) {
         return;
     }
     
-    const shareUrl = `${window.location.origin}${window.location.pathname}?property=${id}`;
+    // Gera uma URL absoluta garantindo que o protocolo e domínio estejam corretos
+    const shareUrl = new URL(`?property=${id}`, window.location.href).href;
+    console.log(`🔗 Link de compartilhamento gerado: ${shareUrl}`);
     
     try {
         await navigator.clipboard.writeText(shareUrl);
@@ -96,6 +98,90 @@ window.shareProperty = async function(id) {
     } catch (err) {
         console.error('❌ Erro ao copiar:', err);
         alert('⚠️ Não foi possível copiar o link. Copie manualmente da barra de endereços.');
+    }
+};
+
+// ============================================================
+// FUNÇÃO PARA FILTRAR IMÓVEL INDIVIDUAL POR ID (via URL)
+// ============================================================
+window.filterPropertyById = function(propertyId) {
+    if (!propertyId) return null;
+    
+    // Converte o parâmetro da URL (string) para número, para comparar com os IDs dos imóveis
+    const idToFind = Number(propertyId);
+    
+    // Verifica se a conversão foi válida
+    if (isNaN(idToFind)) {
+        console.warn(`⚠️ ID inválido na URL: "${propertyId}"`);
+        return null;
+    }
+    
+    // Procura o imóvel na lista global
+    const foundProperty = window.properties.find(p => p.id === idToFind);
+    
+    if (foundProperty) {
+        console.log(`🔍 Link direto: Exibindo apenas o imóvel ID ${idToFind} - "${foundProperty.title}"`);
+    } else {
+        console.warn(`⚠️ Link direto: Imóvel com ID ${idToFind} não encontrado.`);
+    }
+    
+    return foundProperty;
+};
+
+// ============================================================
+// FUNÇÃO PARA INICIALIZAR A EXIBIÇÃO BASEADA NA URL
+// ============================================================
+window.loadPropertiesBasedOnUrl = function() {
+    // 1. Obtém o parâmetro 'property' da URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const propertyIdFromUrl = urlParams.get('property');
+    
+    // 2. Se o parâmetro NÃO EXISTE, exibe todos os imóveis (comportamento padrão)
+    if (!propertyIdFromUrl) {
+        console.log('🏠 Nenhum imóvel específico na URL. Exibindo todos.');
+        // Chama a função de renderização padrão com o filtro 'todos'
+        if (typeof window.renderProperties === 'function') {
+            window.renderProperties('todos');
+        }
+        return;
+    }
+    
+    // 3. Se o parâmetro EXISTE, tenta encontrar o imóvel
+    console.log(`🔗 Link direto detectado para o imóvel ID: ${propertyIdFromUrl}`);
+    const singleProperty = window.filterPropertyById(propertyIdFromUrl);
+    
+    // 4. Obtém o container onde os imóveis são renderizados
+    const container = document.getElementById('properties-container');
+    if (!container) {
+        console.error('❌ Container "properties-container" não encontrado.');
+        return;
+    }
+    
+    // 5. Se o imóvel foi encontrado, renderiza SOMENTE ele
+    if (singleProperty) {
+        // Usa o template engine existente para gerar o HTML do card individual
+        if (window.propertyTemplates && typeof window.propertyTemplates.generate === 'function') {
+            const singlePropertyHtml = window.propertyTemplates.generate(singleProperty);
+            container.innerHTML = singlePropertyHtml;
+            console.log(`✨ Exibindo apenas o imóvel: "${singleProperty.title}"`);
+        } else {
+            console.error('❌ Template engine não encontrado.');
+            container.innerHTML = '<p class="error-message">Erro ao carregar o imóvel solicitado.</p>';
+        }
+    } 
+    // 6. Se o imóvel NÃO FOI ENCONTRADO, exibe uma mensagem amigável
+    else {
+        container.innerHTML = `
+            <div class="no-properties" style="text-align: center; padding: 3rem;">
+                <i class="fas fa-home" style="font-size: 3rem; color: #95a5a6; margin-bottom: 1rem; display: block;"></i>
+                <h3>Imóvel não encontrado</h3>
+                <p>O imóvel que você está procurando pode não existir mais ou o link pode estar incorreto.</p>
+                <a href="./" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border-radius: 5px; text-decoration: none;">
+                    <i class="fas fa-arrow-left"></i> Ver todos os imóveis
+                </a>
+            </div>
+        `;
+        console.warn(`⚠️ Imóvel com ID ${propertyIdFromUrl} não encontrado na base de dados.`);
     }
 };
 
@@ -1207,7 +1293,17 @@ window.loadPropertiesData = async function () {
         }
         
         loading?.updateMessage?.(finalMessage);
-        window.renderProperties('todos');
+        
+        // *** NOVO: Após carregar os dados, verifica se há um imóvel específico na URL ***
+        if (typeof window.loadPropertiesBasedOnUrl === 'function') {
+            window.loadPropertiesBasedOnUrl();
+        } else {
+            // Fallback: se a nova função não existir, exibe todos (comportamento antigo)
+            console.warn('⚠️ Função loadPropertiesBasedOnUrl não encontrada. Usando fallback.');
+            if (typeof window.renderProperties === 'function') {
+                window.renderProperties('todos');
+            }
+        }
 
         if (typeof window.waitForAllPropertyImages === 'function') {
             const imagesLoaded = await window.waitForAllPropertyImages();
@@ -1233,7 +1329,11 @@ window.loadPropertiesData = async function () {
         loading?.setVariant?.('error');
         loading?.updateMessage?.('⚠️ Erro ao carregar imóveis');
         window.properties = getInitialProperties();
-        window.renderProperties('todos');
+        
+        // Fallback: exibe todos os imóveis em caso de erro
+        if (typeof window.renderProperties === 'function') {
+            window.renderProperties('todos');
+        }
         
     } finally {
         setTimeout(() => loading?.hide?.(), 1200);
@@ -2314,7 +2414,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE');
+console.log('✅ properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + FILTRO DIFERENCIADO + SHARE + NOVO BADGE + LINK DIRETO');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
@@ -2363,5 +2463,6 @@ console.log('🎨 Features com ícones NORMALIZADOS');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
 console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualquer badge');
 console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore');
-console.log('🔄 SHARE: Botão "Compartilhar" com toast de confirmação');
+console.log('🔄 SHARE: Botão "Compartilhar" com toast de confirmação e URL ABSOLUTA');
 console.log('🆕 NOVO BADGE: Imóveis com menos de 7 dias têm selo "NOVO" animado');
+console.log('🔗 LINK DIRETO: Suporte a ?property=ID com mensagem amigável para IDs inválidos');
