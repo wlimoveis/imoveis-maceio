@@ -375,24 +375,56 @@ body {
 /* ========== PROPERTY GRID ========== */
 .property-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(320px, 380px));
     gap: 25px;
     max-width: 1200px;
     margin: 0 auto;
+    justify-content: center;
 }
 
+/* ========== AJUSTE PARA GALERIA UNITÁRIA ========== */
+/* Para telas muito pequenas, cards ocupam toda largura (melhor para mobile) */
+@media (max-width: 768px) {
+    .property-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+        max-width: 100%;
+        padding: 0 10px;
+    }
+    
+    .property-card {
+        max-width: 100%;
+        margin: 0 auto;
+    }
+}
+
+/* Para tablets (2 cards por linha em vez de 3) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .property-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+/* Para desktop grande (3 cards por linha, com limites) */
+@media (min-width: 1025px) {
+    .property-grid {
+        grid-template-columns: repeat(auto-fill, minmax(320px, 380px));
+    }
+}
+
+/* ========== CONSISTÊNCIA DE CARDS ========== */
 .property-card {
-    background: white;
-    border-radius: 15px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
     transition: all 0.3s ease;
-    cursor: pointer;
+    width: 100%;
+    height: auto;
+    min-width: 0; /* Previne overflow */
 }
 
-.property-card:hover {
-    transform: translateY(-10px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+/* Garantir que imagens não quebrem o layout */
+.property-card img {
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
 }
 
 /* ========== DESTAQUE DO CARD EM EDIÇÃO ========== */
@@ -930,6 +962,8 @@ body {
     
     .property-grid {
         grid-template-columns: 1fr;
+        gap: 20px;
+        padding: 0 10px;
     }
     
     .filter-options {
