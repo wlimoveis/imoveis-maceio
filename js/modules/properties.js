@@ -226,13 +226,9 @@ class PropertyTemplateEngine {
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
         
+        // Usar o PriceFormatter centralizado do SharedCore (única fonte da verdade)
         const formatPrice = (price) => {
-            if (window.SharedCore?.PriceFormatter?.formatForCard) {
-                return window.SharedCore.PriceFormatter.formatForCard(price);
-            }
-            if (!price) return 'R$ 0,00';
-            if (typeof price === 'string' && price.includes('R$')) return price;
-            return `R$ ${price.toString().replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`;
+            return window.SharedCore?.PriceFormatter?.formatForCard(price) ?? 'R$ 0,00';
         };
 
         const descriptionText = property.description || 'Descrição não disponível.';
@@ -476,11 +472,7 @@ class PropertyTemplateEngine {
             if (propertyData.price !== undefined) {
                 const priceElement = card.querySelector('[data-price-field]');
                 if (priceElement) {
-                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard 
-                        ? window.SharedCore.PriceFormatter.formatForCard(propertyData.price)
-                        : (propertyData.price.includes('R$') 
-                            ? propertyData.price 
-                            : `R$ ${propertyData.price.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')}`);
+                    const formattedPrice = window.SharedCore?.PriceFormatter?.formatForCard(propertyData.price) ?? 'R$ 0,00';
                     priceElement.textContent = formattedPrice;
                 }
             }
@@ -1605,16 +1597,9 @@ window.addNewProperty = async function(propertyData) {
     }
 
     try {
+        // Usar o PriceFormatter centralizado do SharedCore
         if (propertyData.price) {
-            if (window.SharedCore?.PriceFormatter?.formatForInput) {
-                propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
-            } else {
-                let formattedPrice = propertyData.price;
-                if (!formattedPrice.startsWith('R$')) {
-                    formattedPrice = 'R$ ' + formattedPrice.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-                }
-                propertyData.price = formattedPrice;
-            }
+            propertyData.price = window.SharedCore?.PriceFormatter?.formatForInput(propertyData.price) ?? propertyData.price;
         }
 
         if (propertyData.features) {
@@ -1803,16 +1788,9 @@ window.updateProperty = async function(id, propertyData) {
     }
 
     try {
+        // Usar o PriceFormatter centralizado do SharedCore
         if (propertyData.price) {
-            if (window.SharedCore?.PriceFormatter?.formatForInput) {
-                propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
-            } else {
-                let formattedPrice = propertyData.price;
-                if (!formattedPrice.startsWith('R$')) {
-                    formattedPrice = 'R$ ' + formattedPrice.replace(/\D/g, '').replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
-                }
-                propertyData.price = formattedPrice;
-            }
+            propertyData.price = window.SharedCore?.PriceFormatter?.formatForInput(propertyData.price) ?? propertyData.price;
         }
 
         const processedData = {
