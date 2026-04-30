@@ -171,8 +171,40 @@ const FilterManager = (function() {
             count: count
         }));
         
-        // Ordenar por nome (alfabeticamente)
-        bairrosComContagem.sort((a, b) => a.nome.localeCompare(b.nome, 'pt-BR'));
+        // ========== ORDENAÇÃO PERSONALIZADA POR IMPORTÂNCIA ==========
+        // Reutiliza a mesma lista de bairros conhecidos do início do arquivo
+        const bairrosPrioridade = [
+            'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
+            'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
+            'Farol', 'Jardim Petrópolis', 'Centro', 'Prado', 'Jaraguá', 'Feitosa',
+            'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
+            'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
+            'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
+            'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+            'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
+            'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
+            'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
+        ];
+        
+        // Ordenar pela ordem de prioridade (bairros conhecidos vêm primeiro)
+        bairrosComContagem.sort((a, b) => {
+            const indexA = bairrosPrioridade.indexOf(a.nome);
+            const indexB = bairrosPrioridade.indexOf(b.nome);
+            
+            // Se ambos estão na lista de prioridade, ordenar pela posição
+            if (indexA !== -1 && indexB !== -1) {
+                return indexA - indexB;
+            }
+            
+            // Se apenas A está na lista, A vem primeiro
+            if (indexA !== -1) return -1;
+            
+            // Se apenas B está na lista, B vem primeiro
+            if (indexB !== -1) return 1;
+            
+            // Se nenhum está na lista, ordenar alfabeticamente como fallback
+            return a.nome.localeCompare(b.nome, 'pt-BR');
+        });
         
         // Extrair apenas os nomes para o dropdown
         let bairros = bairrosComContagem.map(item => item.nome);
