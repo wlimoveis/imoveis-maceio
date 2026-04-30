@@ -305,145 +305,145 @@
         </div>
     </footer>
     
-<!-- ========== PAINEL DE ADMINISTRAÇÃO ATUALIZADO ========== -->
-<section class="admin-panel" id="adminPanel">
-    <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem;">
-        <i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa
-    </h3>
-    
-    <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-        <h4 id="formTitle">Adicionar Novo Imóvel</h4>
-        <form id="propertyForm">
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div>
-                    <label><strong>Título do Imóvel *</strong></label>
-                    <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                </div>
-                <div>
-                    <label><strong>Preço *</strong></label>
-                    <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <label><strong>Localização *</strong></label>
-                <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <label><strong>Descrição</strong></label>
-                <textarea id="propDescription" placeholder="Descreva o imóvel..." style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%; height: 100px;"></textarea>
-            </div>
-            
-            <div style="margin-bottom: 1rem;">
-                <label><strong>Características (separadas por vírgula)</strong></label>
-                <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Varanda" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                <small style="color: #666;">Separe por vírgulas</small>
-            </div>
-
-                        <!-- ========== SEÇÃO UPLOAD DE PDFs OTIMIZADA ========== -->
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
-                    <i class="fas fa-file-pdf"></i> Documentos PDF
-                </label>
-                
-                <div id="pdfUploadArea" style="
-                    border: 2px dashed #95a5a6; 
-                    border-radius: 8px; 
-                    padding: 1.2rem; 
-                    text-align: center; 
-                    margin: 0.5rem 0; 
-                    cursor: pointer; 
-                    transition: all 0.3s ease; 
-                    background: #fafafa;
-                ">
-                    <div style="font-size: 2.5rem; color: #95a5a6; margin-bottom: 0.5rem; opacity: 0.7;">
-                        <i class="fas fa-cloud-upload-alt"></i>
-                    </div>
-                    <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #555; font-weight: 500;">
-                        Arraste ou clique para adicionar PDFs
-                    </p>
-                    <p style="margin: 0; font-size: 0.75rem; color: #888;">
-                        Máximo: 5 arquivos • 10MB cada
-                    </p>
-                </div>
-                
-                <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display: none;">
-                
-                <!-- ÁREA DE PREVIEW COMPACTA -->
-                <div id="pdfUploadPreview" style="margin: 0.8rem 0; min-height: 40px;">
-                    <!-- PDFs serão renderizados aqui automaticamente -->
-                </div>
-            </div>
-            
-            <!-- ========== SEÇÃO UPLOAD DE FOTOS/VIDEOS ========== -->
-            <div style="margin-bottom: 1.5rem;">
-                <label><strong>Fotos e Vídeos do Imóvel</strong></label>
-                
-                <div id="uploadArea" style="border: 2px dashed #ddd; border-radius: 10px; padding: 2rem; text-align: center; margin: 1rem 0; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
-                    <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #ccc; margin-bottom: 1rem;"></i>
-                    <p style="margin: 0.5rem 0; font-size: 1.1rem; color: #555;">Clique ou arraste fotos e vídeos aqui</p>
-                    <p style="margin: 0; font-size: 0.9rem; color: #888;">
-                        <i class="fas fa-image"></i> Fotos (JPG, PNG) • 
-                        <i class="fas fa-video"></i> Vídeos (MP4)
-                    </p>
-                    <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: #999;">Máximo: 10 arquivos • 5MB cada</p>
-                </div>
-                
-                <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
-                
-                <div id="uploadPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0; min-height: 60px;"></div>
-            </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                <div>
-                    <label><strong>Tipo do Imóvel</strong></label>
-                    <select id="propType" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                        <option value="residencial">Residencial</option>
-                        <option value="comercial">Comercial</option>
-                        <option value="rural">Rural</option>
-                    </select>
-                </div>
-                <div>
-                    <label><strong>Destaque</strong></label>
-                    <select id="propBadge" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                        <option value="Novo">Novo</option>
-                        <option value="Destaque">Destaque</option>
-                        <option value="Luxo">Luxo</option>
-                        <option value="MCMV">Minha Casa Minha Vida</option>
-                        <option value="Fazenda">Fazenda</option>
-                        <option value="Chácara">Chácara</option>
-                    </select>
-                </div>
-            </div>
-            
-            <div style="margin-bottom: 1.5rem;">
-                <label style="display: flex; align-items: center; gap: 0.5rem;">
-                    <input type="checkbox" id="propHasVideo"> 
-                    <span><strong>Este imóvel tem vídeo?</strong></span>
-                </label>
-            </div>
-            
-            <div style="display: flex; gap: 1rem;">
-                <button type="submit" style="background: var(--success); color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1.1rem;">
-                    <i class="fas fa-plus"></i> Adicionar Imóvel ao Site
-                </button>
-                <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background: #95a5a6; color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; display: none;">
-                    <i class="fas fa-times"></i> Cancelar Edição
-                </button>
-            </div>
-        </form>
+    <!-- ========== PAINEL DE ADMINISTRAÇÃO ATUALIZADO ========== -->
+    <section class="admin-panel" id="adminPanel">
+        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem;">
+            <i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa
+        </h3>
         
-        <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
-            <h4>Gerenciar Imóveis Existentes</h4>
-            <p><small>Total de imóveis: <span id="propertyCount">0</span></small></p>
-            <div id="propertyList"></div>
+        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <h4 id="formTitle">Adicionar Novo Imóvel</h4>
+            <form id="propertyForm">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label><strong>Título do Imóvel *</strong></label>
+                        <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                    </div>
+                    <div>
+                        <label><strong>Preço *</strong></label>
+                        <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label><strong>Localização *</strong></label>
+                    <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label><strong>Descrição</strong></label>
+                    <textarea id="propDescription" placeholder="Descreva o imóvel..." style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%; height: 100px;"></textarea>
+                </div>
+                
+                <div style="margin-bottom: 1rem;">
+                    <label><strong>Características (separadas por vírgula)</strong></label>
+                    <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Varanda" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                    <small style="color: #666;">Separe por vírgulas</small>
+                </div>
+
+                <!-- ========== SEÇÃO UPLOAD DE PDFs OTIMIZADA ========== -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
+                        <i class="fas fa-file-pdf"></i> Documentos PDF
+                    </label>
+                    
+                    <div id="pdfUploadArea" style="
+                        border: 2px dashed #95a5a6; 
+                        border-radius: 8px; 
+                        padding: 1.2rem; 
+                        text-align: center; 
+                        margin: 0.5rem 0; 
+                        cursor: pointer; 
+                        transition: all 0.3s ease; 
+                        background: #fafafa;
+                    ">
+                        <div style="font-size: 2.5rem; color: #95a5a6; margin-bottom: 0.5rem; opacity: 0.7;">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #555; font-weight: 500;">
+                            Arraste ou clique para adicionar PDFs
+                        </p>
+                        <p style="margin: 0; font-size: 0.75rem; color: #888;">
+                            Máximo: 5 arquivos • 10MB cada
+                        </p>
+                    </div>
+                    
+                    <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display: none;">
+                    
+                    <!-- ÁREA DE PREVIEW COMPACTA -->
+                    <div id="pdfUploadPreview" style="margin: 0.8rem 0; min-height: 40px;">
+                        <!-- PDFs serão renderizados aqui automaticamente -->
+                    </div>
+                </div>
+                
+                <!-- ========== SEÇÃO UPLOAD DE FOTOS/VIDEOS ========== -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label><strong>Fotos e Vídeos do Imóvel</strong></label>
+                    
+                    <div id="uploadArea" style="border: 2px dashed #ddd; border-radius: 10px; padding: 2rem; text-align: center; margin: 1rem 0; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
+                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #ccc; margin-bottom: 1rem;"></i>
+                        <p style="margin: 0.5rem 0; font-size: 1.1rem; color: #555;">Clique ou arraste fotos e vídeos aqui</p>
+                        <p style="margin: 0; font-size: 0.9rem; color: #888;">
+                            <i class="fas fa-image"></i> Fotos (JPG, PNG) • 
+                            <i class="fas fa-video"></i> Vídeos (MP4)
+                        </p>
+                        <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: #999;">Máximo: 10 arquivos • 5MB cada</p>
+                    </div>
+                    
+                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                    
+                    <div id="uploadPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0; min-height: 60px;"></div>
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <label><strong>Tipo do Imóvel</strong></label>
+                        <select id="propType" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                            <option value="residencial">Residencial</option>
+                            <option value="comercial">Comercial</option>
+                            <option value="rural">Rural</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label><strong>Destaque</strong></label>
+                        <select id="propBadge" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                            <option value="Novo">Novo</option>
+                            <option value="Destaque">Destaque</option>
+                            <option value="Luxo">Luxo</option>
+                            <option value="MCMV">Minha Casa Minha Vida</option>
+                            <option value="Fazenda">Fazenda</option>
+                            <option value="Chácara">Chácara</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: flex; align-items: center; gap: 0.5rem;">
+                        <input type="checkbox" id="propHasVideo"> 
+                        <span><strong>Este imóvel tem vídeo?</strong></span>
+                    </label>
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button type="submit" style="background: var(--success); color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1.1rem;">
+                        <i class="fas fa-plus"></i> Adicionar Imóvel ao Site
+                    </button>
+                    <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background: #95a5a6; color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; display: none;">
+                        <i class="fas fa-times"></i> Cancelar Edição
+                    </button>
+                </div>
+            </form>
+            
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
+                <h4>Gerenciar Imóveis Existentes</h4>
+                <p><small>Total de imóveis: <span id="propertyCount">0</span></small></p>
+                <div id="propertyList"></div>
+            </div>
         </div>
-    </div>
-</section>
-   
+    </section>
+    
     <!-- ========== MODAL PARA DOCUMENTOS PDF ========== -->
-        <div id="pdfModal" class="pdf-modal" style="display: none;">
+    <div id="pdfModal" class="pdf-modal" style="display: none;">
         <div class="pdf-modal-content" style="
             background: white;
             border-radius: 10px;
@@ -462,7 +462,6 @@
                 <i class="fas fa-file-pdf"></i> Documentos do Imóvel
             </h3>
             
-            <!-- ✅ FORMULÁRIO ADICIONADO PARA CORRIGIR O AVISO DO CONSOLE -->
             <form id="pdfPasswordForm" style="margin: 0;">
                 <div id="pdfPreview" style="
                     margin: 1rem 0;
@@ -475,7 +474,6 @@
                     <p>Digite a senha para visualizar os documentos</p>
                 </div>
                 
-                <!-- ✅ CAMPO DE SENHA DENTRO DO FORMULÁRIO -->
                 <input type="password" 
                        id="pdfPassword" 
                        name="pdfPassword"
@@ -549,209 +547,174 @@
         </div>
     </div>
 
-<button class="admin-toggle">
-    <i class="fas fa-user-cog"></i>
-</button>
+    <button class="admin-toggle">
+        <i class="fas fa-user-cog"></i>
+    </button>
 
-<!-- ========== BOTÃO VOLTAR AO TOPO - VERSÃO CILÍNDRICA LIQUID GLASS ========== -->
-<button id="backToTopBtn" style="
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    border-radius: 20px;
-    background: rgba(0, 0, 0, 0.65);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 1rem;
-    z-index: 999;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
-    transition: all 0.3s ease;
-    opacity: 0.85;
-">
-    <i class="fas fa-chevron-up" style="font-size: 0.9rem; text-shadow: 0 1px 2px rgba(0,0,0,0.3);"></i>
-</button>
+    <!-- ========== BOTÃO VOLTAR AO TOPO ========== -->
+    <button id="backToTopBtn">
+        <i class="fas fa-chevron-up"></i>
+    </button>
 
-<script>
-// Botão Voltar ao Topo - Versão Liquid Glass
-(function() {
-    const backToTopBtn = document.getElementById('backToTopBtn');
-    if (!backToTopBtn) return;
-    
-    // Mostrar/esconder botão baseado no scroll
-    window.addEventListener('scroll', function() {
-        if (window.scrollY > 300) {
-            backToTopBtn.style.display = 'flex';
-            backToTopBtn.style.opacity = '0.85';
-        } else {
-            backToTopBtn.style.opacity = '0';
-            setTimeout(() => {
-                if (window.scrollY <= 300) {
-                    backToTopBtn.style.display = 'none';
-                }
-            }, 300);
-        }
-    });
-    
-    // Rolar suavemente para o topo
-    backToTopBtn.addEventListener('click', function() {
-        window.scrollTo({
-            top: 0,
-            behavior: 'smooth'
+    <script>
+    // Botão Voltar ao Topo - Versão Liquid Glass (CSS no main.css)
+    (function() {
+        const backToTopBtn = document.getElementById('backToTopBtn');
+        if (!backToTopBtn) return;
+        
+        // Mostrar/esconder botão baseado no scroll
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTopBtn.style.display = 'flex';
+                backToTopBtn.style.opacity = '0.85';
+            } else {
+                backToTopBtn.style.opacity = '0';
+                setTimeout(() => {
+                    if (window.scrollY <= 300) {
+                        backToTopBtn.style.display = 'none';
+                    }
+                }, 300);
+            }
         });
-    });
-    
-    // Efeito hover - igual aos botões da galeria
-    backToTopBtn.addEventListener('mouseenter', function() {
-        this.style.transform = 'translateY(-2px)';
-        this.style.background = 'rgba(0, 0, 0, 0.8)';
-        this.style.backdropFilter = 'blur(12px)';
-        this.style.opacity = '1';
-        this.style.borderColor = 'rgba(255, 255, 255, 0.4)';
-    });
-    
-    backToTopBtn.addEventListener('mouseleave', function() {
-        this.style.transform = 'translateY(0)';
-        this.style.background = 'rgba(0, 0, 0, 0.65)';
-        this.style.backdropFilter = 'blur(8px)';
-        this.style.opacity = '0.85';
-        this.style.borderColor = 'rgba(255, 255, 255, 0.25)';
-    });
-    
-    console.log('✅ Botão Voltar ao Topo (Liquid Glass) inicializado');
-})();
-</script>
-
-<!-- ========== SUPABASE E UTILITÁRIOS (CORE) ========== -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="js/modules/supabase.js" defer></script>
-<!-- utils.js REMOVIDO - funções disponíveis via SharedCore -->
-
-<!-- ========== CORE COMPARTILHADO (PRIMEIRO) ========== -->
-<script src="js/modules/core/SharedCore.js" defer></script>
-    
-<!-- ========== SISTEMA DE LOADING REUTILIZÁVEL (PRIMEIRO) ========== -->
-<script src="js/modules/utils/loading-manager.js" defer></script>
-
-<!-- ========== SISTEMA UNIFICADO DE FILTROS ========== -->
-<script src="js/modules/utils/FilterManager.js" defer></script>
-    
-<!-- ========== MÓDULOS PRINCIPAIS (DEFER) ========== -->
-<!-- <script src="js/modules/properties/properties-core.js" defer></script> -->
-<script src="js/modules/properties.js" defer></script>
-<script src="js/modules/gallery.js" defer></script>
-
-<!-- ========== MÓDULOS PDF (DEFER) ========== -->
-<script src="js/modules/reader/pdf-unified.js" defer></script>
-
-<!-- ========== SISTEMA DE MÍDIA UNIFICADO (DEFER) ========== -->
-<script src="js/modules/media/media-unified.js" defer></script>
-
-<!-- ========== ADMIN (DEPENDE DO SISTEMA DE MÍDIA E LOADING) ========== -->
-<script src="js/modules/admin.js" defer></script>
-
-<!-- ========== CARREGAMENTO CONDICIONAL DE MÓDULOS DE SUPORTE ========== -->
-<script>
-(() => {
-    // Aguardar configuração do SharedCore (único local com a lista de módulos)
-    const waitForConfig = setInterval(() => {
-        if (window.SYSTEM_CONFIG) {
-            clearInterval(waitForConfig);
-            loadSupportModules();
-        }
-    }, 100);
-    
-    // Timeout de segurança - apenas aguarda, NÃO contém lista duplicada
-    setTimeout(() => {
-        if (!window.SYSTEM_CONFIG) {
-            console.error('❌ [SUPORTE] SYSTEM_CONFIG não encontrado. Verifique se SharedCore.js carregou.');
-        }
-    }, 3000);
-    
-    function loadSupportModules() {
-        const config = window.SYSTEM_CONFIG;
         
-        if (!config) {
-            console.error('❌ [SUPORTE] Configuração não disponível');
-            return;
-        }
+        // Rolar suavemente para o topo
+        backToTopBtn.addEventListener('click', function() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
         
-        if (!config.shouldLoadSupport()) {
-            console.log('🚀 [SUPORTE] Modo produção - sem módulos de suporte');
-            return;
-        }
+        // Efeitos hover adicionais (CSS já cuida do visual, mas mantemos consistência)
+        backToTopBtn.addEventListener('mouseenter', function() {
+            this.style.transform = 'translateY(-2px)';
+        });
         
-        if (window.supportModulesLoaded) {
-            console.log('⚡ [SUPORTE] Módulos já carregados');
-            return;
-        }
+        backToTopBtn.addEventListener('mouseleave', function() {
+            this.style.transform = 'translateY(0)';
+        });
         
-        console.log('🔧 [SUPORTE] Carregando módulos do repositório:', config.supportBaseUrl);
-        window.supportModulesLoaded = true;
+        console.log('✅ Botão Voltar ao Topo (Liquid Glass) inicializado');
+    })();
+    </script>
+
+    <!-- ========== SUPABASE E UTILITÁRIOS (CORE) ========== -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/modules/supabase.js" defer></script>
+    
+    <!-- ========== CORE COMPARTILHADO (PRIMEIRO) ========== -->
+    <script src="js/modules/core/SharedCore.js" defer></script>
         
-        let loadedCount = 0;
-        const totalModules = config.supportModules.length;
+    <!-- ========== SISTEMA DE LOADING REUTILIZÁVEL (PRIMEIRO) ========== -->
+    <script src="js/modules/utils/loading-manager.js" defer></script>
+
+    <!-- ========== SISTEMA UNIFICADO DE FILTROS ========== -->
+    <script src="js/modules/utils/FilterManager.js" defer></script>
         
-        config.supportModules.forEach(modulePath => {
-            const fullUrl = config.getSupportUrl(modulePath);
+    <!-- ========== MÓDULOS PRINCIPAIS (DEFER) ========== -->
+    <script src="js/modules/properties.js" defer></script>
+    <script src="js/modules/gallery.js" defer></script>
+
+    <!-- ========== MÓDULOS PDF (DEFER) ========== -->
+    <script src="js/modules/reader/pdf-unified.js" defer></script>
+
+    <!-- ========== SISTEMA DE MÍDIA UNIFICADO (DEFER) ========== -->
+    <script src="js/modules/media/media-unified.js" defer></script>
+
+    <!-- ========== ADMIN (DEPENDE DO SISTEMA DE MÍDIA E LOADING) ========== -->
+    <script src="js/modules/admin.js" defer></script>
+
+    <!-- ========== CARREGAMENTO CONDICIONAL DE MÓDULOS DE SUPORTE ========== -->
+    <script>
+    (() => {
+        const waitForConfig = setInterval(() => {
+            if (window.SYSTEM_CONFIG) {
+                clearInterval(waitForConfig);
+                loadSupportModules();
+            }
+        }, 100);
+        
+        setTimeout(() => {
+            if (!window.SYSTEM_CONFIG) {
+                console.error('❌ [SUPORTE] SYSTEM_CONFIG não encontrado.');
+            }
+        }, 3000);
+        
+        function loadSupportModules() {
+            const config = window.SYSTEM_CONFIG;
             
-            const script = document.createElement('script');
-            script.src = fullUrl;
-            script.defer = true;
+            if (!config) {
+                console.error('❌ [SUPORTE] Configuração não disponível');
+                return;
+            }
             
-            script.onload = () => {
-                loadedCount++;
-                console.log(`✅ [SUPORTE] ${modulePath} (${loadedCount}/${totalModules})`);
+            if (!config.shouldLoadSupport()) {
+                console.log('🚀 [SUPORTE] Modo produção - sem módulos de suporte');
+                return;
+            }
+            
+            if (window.supportModulesLoaded) {
+                console.log('⚡ [SUPORTE] Módulos já carregados');
+                return;
+            }
+            
+            console.log('🔧 [SUPORTE] Carregando módulos do repositório:', config.supportBaseUrl);
+            window.supportModulesLoaded = true;
+            
+            let loadedCount = 0;
+            const totalModules = config.supportModules.length;
+            
+            config.supportModules.forEach(modulePath => {
+                const fullUrl = config.getSupportUrl(modulePath);
                 
-                if (loadedCount === totalModules) {
-                    console.log('🎉 [SUPORTE] TODOS os módulos carregados!');
-                    setTimeout(() => {
-                        if (typeof window.runSupportChecks === 'function') window.runSupportChecks();
-                        else if (typeof window.verifySystemFunctions === 'function') window.verifySystemFunctions();
-                    }, 1000);
-                }
-            };
+                const script = document.createElement('script');
+                script.src = fullUrl;
+                script.defer = true;
+                
+                script.onload = () => {
+                    loadedCount++;
+                    console.log(`✅ [SUPORTE] ${modulePath} (${loadedCount}/${totalModules})`);
+                    
+                    if (loadedCount === totalModules) {
+                        console.log('🎉 [SUPORTE] TODOS os módulos carregados!');
+                        setTimeout(() => {
+                            if (typeof window.runSupportChecks === 'function') window.runSupportChecks();
+                            else if (typeof window.verifySystemFunctions === 'function') window.verifySystemFunctions();
+                        }, 1000);
+                    }
+                };
+                
+                script.onerror = () => {
+                    console.error(`❌ [SUPORTE] Falha: ${modulePath}`);
+                    console.error(`   URL: ${fullUrl}`);
+                };
+                
+                document.head.appendChild(script);
+            });
             
-            script.onerror = () => {
-                console.error(`❌ [SUPORTE] Falha: ${modulePath}`);
-                console.error(`   URL: ${fullUrl}`);
-            };
+            console.log(`📦 [SUPORTE] Total: ${totalModules} módulos`);
+        }
+    })();
+    </script>
+        
+    <!-- ========== INICIALIZAÇÃO DO SISTEMA ========== -->
+    <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+        console.log('🏠 Site completamente carregado!');
+        
+        setTimeout(async () => {
+            if (typeof window.initializeProperties === 'function') {
+                await window.initializeProperties();
+            }
             
-            document.head.appendChild(script);
-        });
-        
-        console.log(`📦 [SUPORTE] Total: ${totalModules} módulos`);
-    }
-})();
-</script>
-    
-<!-- ========== INICIALIZAÇÃO DO SISTEMA ========== -->
-<script>
-document.addEventListener('DOMContentLoaded', async function() {
-    console.log('🏠 Site completamente carregado!');
-    
-    // Carregar imóveis após 1 segundo
-    setTimeout(async () => {
-        if (typeof window.initializeProperties === 'function') {
-            await window.initializeProperties();
-        }
-        
-        // Configurar filtros
-        if (typeof window.setupFilters === 'function') {
-            window.setupFilters();
-        }
-        
-        console.log('✅ Sistema Weber Lessa inicializado');
-    }, 1000);
-});
-</script>
+            if (typeof window.setupFilters === 'function') {
+                window.setupFilters();
+            }
+            
+            console.log('✅ Sistema Weber Lessa inicializado');
+        }, 1000);
+    });
+    </script>
     
 </body>
 </html>
