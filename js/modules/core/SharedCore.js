@@ -23,7 +23,6 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/utils/gallery-diagnostics.js',
         'debug/templates/property-template.js', 
         'debug/ui/location-autocomplete.js',
-        'debug/ui/admin-list-ui.js',  // <-- NOVO MÓDULO
         'debug/utils/admin-diagnostics.js',
         'debug/utils/core-utilities.js',
         'debug/diagnostics/diagnostics53.js',
