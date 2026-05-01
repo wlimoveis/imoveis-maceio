@@ -15,7 +15,7 @@ window.ensureSupabaseCredentials = function() {
         console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
         window.SUPABASE_CONSTANTS = {
             URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
-            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
+            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd3BzdmtseW1ndngiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3MjQxMTE3OSwiZXhwIjoyMDg3OTg3MTc5fQ.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
             ADMIN_PASSWORD: "wl654",
             PDF_PASSWORD: "doc123"
         };
@@ -877,13 +877,8 @@ window.FeatureIconMapper = {
 // Tornar acessível globalmente
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FUNÇÃO AUXILIAR PARA EXTRAIR BAIRRO (COMPATIBILIDADE) ==========
-// ✅ REMOVIDA - utilizando a versão centralizada do SharedCore
-// Agora: window.SharedCore.extractBairroFromLocation
-
-// ========== FUNÇÃO NORMALIZADA PARA EXTRAIR BAIRRO (USADA NO FILTRO) ==========
-// ✅ REMOVIDA - utilizando a versão centralizada do SharedCore
-// Agora: window.SharedCore.extractBairroFromLocation
+// ========== EXTRAIR BAIRRO (FUNÇÃO CENTRALIZADA NO SHAREDCORE) ==========
+// ✅ AGORA USANDO window.SharedCore.extractBairroFromLocation
 
 // ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO (VERSÃO CORRIGIDA COM NORMALIZAÇÃO) ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
@@ -1454,7 +1449,7 @@ window.renderProperties = function(filter = 'todos', forceClearCache = false) {
         return;
     }
 
-    const filtered = window.filterProperties(window.properties, filter);
+    const filtered = window.filterPropertiesByType(window.properties, filter);
     
     if (filtered.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>';
@@ -1473,7 +1468,7 @@ window.renderProperties = function(filter = 'todos', forceClearCache = false) {
     }
 };
 
-window.filterProperties = function(properties, filter) {
+window.filterPropertiesByType = function(properties, filter) {
     if (filter === 'todos' || !filter) return properties;
     
     const filterMap = {
@@ -1574,7 +1569,7 @@ window.setupFilters = function() {
     return false;
 };
 
-// ========== 6. CONTATAR AGENTE (COM ÍCONE WHATSAPP) ==========
+// ========== CONTATAR AGENTE (COM ÍCONE WHATSAPP) ==========
 window.contactAgent = function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -2111,7 +2106,7 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== 12. CARREGAR LISTA PARA ADMIN (COM PAGINAÇÃO, PREVIEW E CONTADOR) ==========
+// ========== CARREGAR LISTA PARA ADMIN (COM PAGINAÇÃO, PREVIEW E CONTADOR) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -2432,15 +2427,12 @@ if (document.readyState === 'loading') {
     }
 }
 
-window.getInitialProperties = getInitialProperties;
-
 console.log('🎯 VERSÃO COMPLETA - Galeria + Paginação (4/8/12/16) + Ícones NORMALIZADOS + Filtro DIFERENCIADO');
 console.log('📝 Descrições truncadas em 120 caracteres');
 console.log('📱 WhatsApp: contatoAgent com ícone e número 5582996044513');
 console.log('🎨 Features com ícones NORMALIZADOS');
 console.log('📄 Admin: padrão de 4 itens por página para melhor experiência mobile');
 console.log('🏢 Comercial: filtra por TYPE (comercial) - flexível para qualquer badge');
-console.log('🔧 Função extractBairroFromLocation centralizada no SharedCore');
 console.log('🔄 SHARE: Botão "Compartilhar" com toast de confirmação e URL ABSOLUTA');
 console.log('🆕 NOVO BADGE: Imóveis com menos de 7 dias têm selo "NOVO" animado');
 console.log('🔗 LINK DIRETO: Suporte a ?property=ID com mensagem amigável para IDs inválidos');
