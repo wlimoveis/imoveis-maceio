@@ -15,7 +15,7 @@ window.ensureSupabaseCredentials = function() {
         console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
         window.SUPABASE_CONSTANTS = {
             URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
-            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd3BzdmtseW1ndngiLCJyb2xlIjoiYW5vbiIsImlhdCI6MTc3MjQxMTE3OSwiZXhwIjoyMDg3OTg3MTc5fQ.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
+            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
             ADMIN_PASSWORD: "wl654",
             PDF_PASSWORD: "doc123"
         };
@@ -224,7 +224,8 @@ class PropertyTemplateEngine {
     }
     
     _generateTemplate(property) {
-        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(property.features) ?? '';
+        // Usar função centralizada do SharedCore (sem optional chaining redundante)
+        const displayFeatures = window.SharedCore?.formatFeaturesForDisplay(property.features) ?? '';
         
         // Usar o PriceFormatter centralizado do SharedCore (única fonte da verdade)
         const formatPrice = (price) => {
@@ -506,7 +507,7 @@ class PropertyTemplateEngine {
             // Atualizar features se fornecido (COM ÍCONES NORMALIZADOS)
             if (propertyData.features !== undefined) {
                 const featuresElement = card.querySelector('[data-features-field]');
-                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay?.(propertyData.features) ?? '';
+                const displayFeatures = window.SharedCore?.formatFeaturesForDisplay(propertyData.features) ?? '';
                 
                 if (featuresElement) {
                     if (displayFeatures) {
@@ -1357,7 +1358,6 @@ function getInitialProperties() {
             images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80",
             created_at: new Date().toISOString()
         },
-        // ========== IMÓVEIS COMERCIAIS DE EXEMPLO ==========
         {
             id: 99,
             title: "Loja Comercial - Centro",
@@ -1820,7 +1820,8 @@ window.updateProperty = async function(id, propertyData) {
         
         if (hasSupabase) {
             try {
-                const validId = window.validateIdForSupabase?.(id) || id;
+                // Usar função centralizada do SharedCore para validar ID
+                const validId = window.SharedCore?.validateIdForSupabase(id) ?? id;
                 
                 const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
                     method: 'PATCH',
@@ -2043,7 +2044,8 @@ window.deleteProperty = async function(id) {
     let supabaseError = null;
 
     if (window.ensureSupabaseCredentials()) {
-        const validId = window.validateIdForSupabase?.(id) || id;
+        // Usar função centralizada do SharedCore para validar ID
+        const validId = window.SharedCore?.validateIdForSupabase(id) ?? id;
         
         try {
             const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
