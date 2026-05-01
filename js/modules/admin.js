@@ -141,7 +141,8 @@ window.editProperty = function(id) {
     };
     
     const formatFeatures = (features) => {
-        return window.SharedCore?.formatFeaturesForDisplay?.(features) ?? features ?? '';
+        // Usar função centralizada do SharedCore
+        return window.SharedCore?.formatFeaturesForDisplay(features) ?? features ?? '';
     };
     
     const fieldMappings = {
@@ -260,7 +261,8 @@ window.saveProperty = async function() {
             propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
         }
         
-        propertyData.features = window.SharedCore?.parseFeaturesForStorage?.(propertyData.features) ?? '[]';
+        // Usar função centralizada do SharedCore (sem optional chaining redundante)
+        propertyData.features = window.SharedCore?.parseFeaturesForStorage(propertyData.features) ?? '[]';
         
         let imageUrls = '';
         let pdfUrls = '';
