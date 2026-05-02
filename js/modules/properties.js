@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + ANALYTICS RESTAURADO
-console.log('🏠 properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + ANALYTICS RESTAURADO + DELETE PROPERTY CORRIGIDO
+console.log('🏠 properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO E DELETE PROPERTY CORRIGIDO');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -1100,32 +1100,138 @@ window.updateLocalProperty = function(propertyId, updatedData) {
     return true;
 };
 
+// ========== DELETE PROPERTY CORRIGIDO (COM EXCLUSÃO DE MÍDIA) ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
     const property = window.properties.find(p => p.id === id);
-    if (!property) { alert('❌ Imóvel não encontrado!'); console.groupEnd(); return false; }
+    if (!property) {
+        alert('❌ Imóvel não encontrado!');
+        console.groupEnd();
+        return false;
+    }
+    
     if (!confirm(`⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"${property.title}"\n\nEsta ação NÃO pode ser desfeita.`)) {
-        console.log('❌ Exclusão cancelada'); console.groupEnd(); return false;
+        console.log('❌ Exclusão cancelada');
+        console.groupEnd();
+        return false;
     }
 
+    // ========== BLOCO DE EXCLUSÃO DE MÍDIA (CORRIGIDO) ==========
+    let mediaDeletionSuccess = true;
+    let mediaDeletionError = null;
+
+    if (typeof MediaSystem !== 'undefined' && typeof MediaSystem.deleteFilesFromStorage === 'function') {
+        const imageUrls = property.images && property.images !== 'EMPTY' 
+            ? property.images.split(',').filter(url => url && url.trim() !== '') 
+            : [];
+        const pdfUrls = property.pdfs && property.pdfs !== 'EMPTY' 
+            ? property.pdfs.split(',').filter(url => url && url.trim() !== '') 
+            : [];
+        const allFileUrls = [...imageUrls, ...pdfUrls];
+
+        if (allFileUrls.length > 0) {
+            console.log(`🗑️ Excluindo ${allFileUrls.length} arquivo(s) físico(s) do Storage...`);
+            try {
+                const deletionResult = await MediaSystem.deleteFilesFromStorage(allFileUrls);
+                if (!deletionResult.success) {
+                    console.warn(`⚠️ Falha ao excluir ${deletionResult.failedCount} arquivo(s)`);
+                    mediaDeletionError = `Falha ao excluir ${deletionResult.failedCount} arquivo(s)`;
+                    mediaDeletionSuccess = false;
+                } else {
+                    console.log(`✅ ${deletionResult.deletedCount} arquivo(s) excluídos do Storage`);
+                }
+            } catch (error) {
+                console.error('❌ Erro ao excluir arquivos:', error);
+                mediaDeletionError = error.message;
+                mediaDeletionSuccess = false;
+                
+                const userConfirmed = confirm(`⚠️ ERRO AO EXCLUIR ARQUIVOS:\n\n${mediaDeletionError}\n\nDeseja continuar com a exclusão do registro?`);
+                if (!userConfirmed) {
+                    console.log('❌ Exclusão cancelada pelo usuário');
+                    alert('❌ Exclusão cancelada');
+                    console.groupEnd();
+                    return false;
+                }
+            }
+        } else {
+            console.log('ℹ️ Nenhum arquivo de mídia associado a este imóvel');
+        }
+    }
+
+    // ========== EXCLUSÃO DO SUPABASE ==========
     let supabaseSuccess = false;
+    let supabaseError = null;
+
     if (window.ensureSupabaseCredentials()) {
         try {
             const validId = window.SharedCore.validateIdForSupabase(id);
             const response = await fetch(`${window.SUPABASE_URL}/rest/v1/properties?id=eq.${validId}`, {
                 method: 'DELETE',
-                headers: { 'apikey': window.SUPABASE_KEY, 'Authorization': `Bearer ${window.SUPABASE_KEY}` }
+                headers: {
+                    'apikey': window.SUPABASE_KEY,
+                    'Authorization': `Bearer ${window.SUPABASE_KEY}`
+                }
             });
-            if (response.ok) supabaseSuccess = true;
-        } catch (error) { console.error('❌ Erro ao excluir do Supabase:', error); }
+
+            if (response.ok) {
+                supabaseSuccess = true;
+                console.log('✅ Registro excluído do Supabase');
+            } else {
+                supabaseError = await response.text();
+                console.warn('⚠️ Erro no Supabase:', supabaseError);
+            }
+        } catch (error) {
+            supabaseError = error.message;
+            console.error('❌ Erro ao excluir do Supabase:', error);
+        }
     }
 
+    // ========== EXCLUSÃO LOCAL ==========
     window.properties = window.properties.filter(p => p.id !== id);
-    window.savePropertiesToStorage();
-    if (typeof window.renderProperties === 'function') window.renderProperties('todos', true);
-    if (typeof window.loadPropertyList === 'function') setTimeout(() => window.loadPropertyList(), 100);
+    
+    const saved = window.savePropertiesToStorage();
+    
+    if (!saved) {
+        console.error('❌ Falha ao salvar após exclusão local');
+        alert('⚠️ Erro ao salvar alterações localmente!');
+        console.groupEnd();
+        return false;
+    }
+    console.log('✅ Registro removido do armazenamento local');
 
-    alert(supabaseSuccess ? `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE!` : `⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.`);
+    // ========== RE-RENDERIZAÇÃO ==========
+    if (typeof window.renderProperties === 'function') {
+        window.renderProperties('todos', true);
+        console.log('🔄 Lista de imóveis re-renderizada');
+    }
+    if (typeof window.loadPropertyList === 'function') {
+        setTimeout(() => window.loadPropertyList(), 100);
+        console.log('🔄 Lista do admin agendada para recarregar');
+    }
+
+    // ========== MENSAGEM FINAL ==========
+    let finalMessage = '';
+    if (supabaseSuccess) {
+        finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE!\n\n`;
+        finalMessage += `✓ Registro removido do servidor.\n`;
+        if (mediaDeletionSuccess) {
+            finalMessage += `✓ Arquivos de mídia excluídos do Storage.`;
+        } else {
+            finalMessage += `⚠️ Falha na exclusão de arquivos: ${mediaDeletionError || 'erro desconhecido'}`;
+        }
+    } else {
+        finalMessage = `⚠️ Imóvel "${property.title}" excluído apenas LOCALMENTE.\n\n`;
+        finalMessage += `✓ Registro removido do navegador.\n`;
+        if (supabaseError) {
+            finalMessage += `❌ Erro no servidor: ${supabaseError.substring(0, 100)}...\n`;
+        }
+        if (!mediaDeletionSuccess) {
+            finalMessage += `⚠️ Arquivos de mídia NÃO foram excluídos do Storage.`;
+        }
+    }
+    alert(finalMessage);
+
+    console.log(`✅ Exclusão do imóvel ${id} concluída`);
     console.groupEnd();
     return supabaseSuccess;
 };
@@ -1411,7 +1517,7 @@ function createPaginationControls(totalPages, currentPage) {
     return paginationDiv;
 }
 
-console.log('✅ properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO');
+console.log('✅ properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO E DELETE PROPERTY CORRIGIDO');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
