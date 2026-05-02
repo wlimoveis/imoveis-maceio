@@ -1,5 +1,5 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
-// ✅ Função isVideoUrl centralizada no SharedCore
+// ✅ Função isVideoUrl centralizada no SharedCore (removido fallback redundante)
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -9,19 +9,8 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO PARA DETECTAR VÍDEO - USANDO SHAREDCORE ==========
-if (typeof window.isVideoUrl === 'undefined') {
-    window.isVideoUrl = function(url) {
-        if (!url) return false;
-        const urlLower = url.toLowerCase();
-        return urlLower.includes('.mp4') || 
-               urlLower.includes('.mov') || 
-               urlLower.includes('.webm') || 
-               urlLower.includes('.avi') ||
-               urlLower.includes('video/');
-    };
-    console.log('⚠️ isVideoUrl definido como fallback');
-}
+// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE ==========
+// A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
 // ========== FUNÇÃO PARA REGISTRAR VISUALIZAÇÃO (PERSISTENTE) ==========
 window.registerGalleryView = function(propertyId) {
@@ -699,3 +688,4 @@ window.openGallery = window.openGalleryAtCurrentIndex;
 
 console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
 console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll');
+console.log('✅ isVideoUrl centralizado no SharedCore (fallback removido)');
