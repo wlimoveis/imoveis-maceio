@@ -1,15 +1,13 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO + ÍCONES NORMALIZADOS + ANALYTICS RESTAURADO + DELETE PROPERTY CORRIGIDO
-console.log('🏠 properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO E DELETE PROPERTY CORRIGIDO');
+// js/modules/properties.js
+console.log('✅ properties.js carregado');
 
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
 
-// ========== VARIÁVEIS DE PAGINAÇÃO DO ADMIN ==========
 window.adminCurrentPage = 1;
 window.adminItemsPerPage = 4;
 
-// ========== FUNÇÃO PARA GARANTIR CREDENCIAIS SUPABASE ==========
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
         console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
@@ -27,7 +25,6 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-// ========== COMPARTILHAR IMÓVEL (COPIA LINK) ==========
 window.shareProperty = async function(id) {
     const property = window.properties.find(p => p.id === id);
     if (!property) {
@@ -95,9 +92,6 @@ window.shareProperty = async function(id) {
     }
 };
 
-// ============================================================
-// FUNÇÃO PARA FILTRAR IMÓVEL INDIVIDUAL POR ID (via URL)
-// ============================================================
 window.filterPropertyById = function(propertyId) {
     if (!propertyId) return null;
     
@@ -119,9 +113,6 @@ window.filterPropertyById = function(propertyId) {
     return foundProperty;
 };
 
-// ============================================================
-// FUNÇÃO PARA INICIALIZAR A EXIBIÇÃO BASEADA NA URL
-// ============================================================
 window.loadPropertiesBasedOnUrl = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const propertyIdFromUrl = urlParams.get('property');
@@ -167,7 +158,6 @@ window.loadPropertiesBasedOnUrl = function() {
     }
 };
 
-// ========== TEMPLATE ENGINE COM CACHE (OTIMIZADO) ==========
 class PropertyTemplateEngine {
     constructor() {
         this.imageFallback = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80';
@@ -580,7 +570,6 @@ class PropertyTemplateEngine {
 
 window.propertyTemplates = new PropertyTemplateEngine();
 
-// ========== SISTEMA DE ÍCONES PARA FEATURES ==========
 window.FeatureIconMapper = {
     mappings: [
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
@@ -656,7 +645,6 @@ window.FeatureIconMapper = {
 
 window.FeatureIconMapper = FeatureIconMapper;
 
-// ========== FILTRAR PROPRIEDADES POR CATEGORIA E BAIRRO ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
@@ -1100,7 +1088,6 @@ window.updateLocalProperty = function(propertyId, updatedData) {
     return true;
 };
 
-// ========== DELETE PROPERTY CORRIGIDO (COM EXCLUSÃO DE MÍDIA) ==========
 window.deleteProperty = async function(id) {
     console.group(`🗑️ deleteProperty: ${id}`);
     const property = window.properties.find(p => p.id === id);
@@ -1116,7 +1103,6 @@ window.deleteProperty = async function(id) {
         return false;
     }
 
-    // ========== BLOCO DE EXCLUSÃO DE MÍDIA (CORRIGIDO) ==========
     let mediaDeletionSuccess = true;
     let mediaDeletionError = null;
 
@@ -1158,7 +1144,6 @@ window.deleteProperty = async function(id) {
         }
     }
 
-    // ========== EXCLUSÃO DO SUPABASE ==========
     let supabaseSuccess = false;
     let supabaseError = null;
 
@@ -1186,7 +1171,6 @@ window.deleteProperty = async function(id) {
         }
     }
 
-    // ========== EXCLUSÃO LOCAL ==========
     window.properties = window.properties.filter(p => p.id !== id);
     
     const saved = window.savePropertiesToStorage();
@@ -1199,7 +1183,6 @@ window.deleteProperty = async function(id) {
     }
     console.log('✅ Registro removido do armazenamento local');
 
-    // ========== RE-RENDERIZAÇÃO ==========
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos', true);
         console.log('🔄 Lista de imóveis re-renderizada');
@@ -1209,7 +1192,6 @@ window.deleteProperty = async function(id) {
         console.log('🔄 Lista do admin agendada para recarregar');
     }
 
-    // ========== MENSAGEM FINAL ==========
     let finalMessage = '';
     if (supabaseSuccess) {
         finalMessage = `✅ Imóvel "${property.title}" excluído PERMANENTEMENTE!\n\n`;
@@ -1236,7 +1218,6 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== CARREGAR LISTA PARA ADMIN (COM PAGINAÇÃO, PREVIEW, CONTADOR E ANALYTICS RESTAURADO) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1248,17 +1229,14 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     if (!container) return;
     
-    // Salvar página atual
     window.adminCurrentPage = page;
     
-    // Calcular paginação
     const totalItems = window.properties.length;
     const totalPages = Math.ceil(totalItems / window.adminItemsPerPage);
     const startIndex = (page - 1) * window.adminItemsPerPage;
     const endIndex = Math.min(startIndex + window.adminItemsPerPage, totalItems);
     const paginatedProperties = window.properties.slice(startIndex, endIndex);
     
-    // Limpar container mas manter estrutura para paginação
     container.innerHTML = '';
     
     if (countElement) {
@@ -1270,15 +1248,12 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         return;
     }
     
-    // Adicionar estilo para scroll suave na lista
     container.style.maxHeight = '600px';
     container.style.overflowY = 'auto';
     container.style.paddingRight = '5px';
     
-    // Calcular total de visualizações
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
-    // ========== CABEÇALHO COM ESTATÍSTICAS (RESTAURADO) ==========
     const statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.8rem 1rem; border-radius: 8px; margin-bottom: 1rem; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;';
     statsHeader.innerHTML = `
@@ -1293,13 +1268,11 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     `;
     container.appendChild(statsHeader);
     
-    // ========== CONTROLES DE PAGINAÇÃO (TOPO) ==========
     if (totalPages > 1) {
         const paginationTop = createPaginationControls(totalPages, page);
         container.appendChild(paginationTop);
     }
     
-    // ========== LISTA DE IMÓVEIS (APENAS PÁGINA ATUAL) ==========
     const listContainer = document.createElement('div');
     listContainer.id = 'propertyListItems';
     listContainer.style.cssText = 'margin: 1rem 0;';
@@ -1310,7 +1283,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
-        // Extrair a primeira imagem do imóvel
         let firstImage = defaultImage;
         let isVideo = false;
         
@@ -1327,7 +1299,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         item.style.cssText = 'background: #f5f5f5; padding: 1rem; margin: 0.5rem 0; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
         
         item.innerHTML = `
-            <!-- MINIATURA DA IMAGEM (CLICÁVEL - ABRE GALERIA) -->
             <div style="flex-shrink: 0; width: 70px; height: 70px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1); transition: transform 0.2s ease;" 
                  onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
                  onmouseenter="this.style.transform='scale(1.05)'"
@@ -1349,7 +1320,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                 `}
             </div>
             
-            <!-- INFORMAÇÕES DO IMÓVEL -->
             <div style="flex: 3; min-width: 200px;">
                 <strong style="color: var(--primary); font-size: 1rem; display: block; margin-bottom: 0.3rem;">
                     ${window.SharedCore.escapeHtml(property.title) || property.title}
@@ -1367,13 +1337,11 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     ${property.has_video ? '<span style="color: #9b59b6;"><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
                     <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
-                    <!-- ========== ESTATÍSTICAS DE VISUALIZAÇÃO (RESTAURADO) ========== -->
                     <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
                     ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
                 </div>
             </div>
             
-            <!-- BOTÕES DE AÇÃO -->
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
                         style="background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
@@ -1381,7 +1349,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                         onmouseleave="this.style.transform='translateY(0)'">
                     <i class="fas fa-edit"></i> Editar
                 </button>
-                <!-- ========== BOTÃO ZERAR VIEWS POR IMÓVEL (RESTAURADO) ========== -->
                 <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
                         style="background: #e67e22; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;"
                         onmouseenter="this.style.transform='translateY(-2px)'"
@@ -1401,7 +1368,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     container.appendChild(listContainer);
     
-    // ========== CONTROLES DE PAGINAÇÃO (RODAPÉ) ==========
     if (totalPages > 1) {
         const paginationBottom = createPaginationControls(totalPages, page);
         container.appendChild(paginationBottom);
@@ -1410,12 +1376,10 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (total: ${totalItems})`);
 };
 
-// ========== FUNÇÃO PARA CRIAR CONTROLES DE PAGINAÇÃO ==========
 function createPaginationControls(totalPages, currentPage) {
     const paginationDiv = document.createElement('div');
     paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap;';
     
-    // Botão Primeira Página
     const firstBtn = document.createElement('button');
     firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
     firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1424,7 +1388,6 @@ function createPaginationControls(totalPages, currentPage) {
     firstBtn.onclick = () => window.loadPropertyList(1);
     paginationDiv.appendChild(firstBtn);
     
-    // Botão Anterior
     const prevBtn = document.createElement('button');
     prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1433,7 +1396,6 @@ function createPaginationControls(totalPages, currentPage) {
     prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
     paginationDiv.appendChild(prevBtn);
     
-    // Números das Páginas (com elipse para muitas páginas)
     const maxVisiblePages = 5;
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
     let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
@@ -1480,7 +1442,6 @@ function createPaginationControls(totalPages, currentPage) {
         paginationDiv.appendChild(lastPageSpan);
     }
     
-    // Botão Próximo
     const nextBtn = document.createElement('button');
     nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1489,7 +1450,6 @@ function createPaginationControls(totalPages, currentPage) {
     nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
     paginationDiv.appendChild(nextBtn);
     
-    // Botão Última Página
     const lastBtn = document.createElement('button');
     lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
     lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1498,7 +1458,6 @@ function createPaginationControls(totalPages, currentPage) {
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
-    // Selector de itens por página (4/8/12/16) - Padrão 4 selecionado
     const perPageSelect = document.createElement('select');
     perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
@@ -1516,8 +1475,6 @@ function createPaginationControls(totalPages, currentPage) {
     
     return paginationDiv;
 }
-
-console.log('✅ properties.js - VERSÃO COMPLETA COM ANALYTICS RESTAURADO E DELETE PROPERTY CORRIGIDO');
 
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
