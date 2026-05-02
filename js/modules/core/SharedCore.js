@@ -1,18 +1,10 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM CENTRALIZAÇÃO DE BAIRROS
-console.log('🔧 SharedCore.js carregado - PROXY PURO PARA SUPPORT SYSTEM (sem duplicidade)');
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (FUNÇÕES NÃO UTILIZADAS REMOVIDAS)
+console.log('🔧 SharedCore.js carregado - Versão Otimizada (funções não utilizadas removidas)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
-// ÚNICO LOCAL para configurar URLs, versões e módulos de suporte
-// ✅ QUALQUER NOVO MÓDULO DO SUPPORT SYSTEM DEVE SER ADICIONADO APENAS AQUI!
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
-    // Versão atual do sistema (para cache busting)
     version: '2.0.0',
-    
-    // Repositório de suporte (APENAS UM LUGAR PARA ALTERAR!)
     supportBaseUrl: 'https://wlimoveis.github.io/weberlessa-support/',
-    
-    // ========== LISTA ÚNICA DE MÓDULOS DO SUPPORT SYSTEM ==========
-    // ✅ ADICIONAR NOVOS MÓDULOS SOMENTE AQUI!
     supportModules: [
         'debug/ui/loading-manager.js',
         'debug/ui/media-ui-full.js',
@@ -36,7 +28,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/diagnostics/diagnostics61.js',
         'debug/diagnostics/diagnostics62.js',
         'debug/diagnostics/diagnostics63.js',
-        'debug/diagnostics/diagnostics64.js',  // NOVO
+        'debug/diagnostics/diagnostics64.js',
         'debug/function-verifier.js',
         'debug/media-logger.js',
         'debug/media-recovery.js', 
@@ -52,13 +44,9 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/media-migration-check.js',
         'debug/migration-cleanup.js'
     ],
-    
-    // Função auxiliar para obter URL completa com versionamento
     getSupportUrl: function(modulePath) {
         return this.supportBaseUrl + modulePath + (this.version ? `?v=${this.version}` : '');
     },
-    
-    // Verificar se deve carregar módulos de suporte
     shouldLoadSupport: function() {
         return window.location.search.includes('debug=true') || 
                window.location.search.includes('test=true') ||
@@ -78,14 +66,12 @@ if (typeof SUPABASE_CONSTANTS === 'undefined') {
         ADMIN_PASSWORD: "wl654",
         PDF_PASSWORD: "doc123"
     };
-    
     window.SUPABASE_CONSTANTS = SUPABASE_CONSTANTS;
     console.log('✅ SUPABASE_CONSTANTS definido por SharedCore');
 } else {
     console.log('✅ SUPABASE_CONSTANTS já definido por outro módulo');
 }
 
-// Garantir constantes no escopo global
 Object.entries(window.SUPABASE_CONSTANTS).forEach(([key, value]) => {
     if (typeof window[key] === 'undefined' || window[key] === 'undefined') {
         window[key] = value;
@@ -107,33 +93,10 @@ const SharedCore = (function() {
         };
     };
 
-    const throttle = (func, limit) => {
-        let inThrottle;
-        return function() {
-            const args = arguments;
-            const context = this;
-            if (!inThrottle) {
-                func.apply(context, args);
-                inThrottle = true;
-                setTimeout(() => inThrottle = false, limit);
-            }
-        };
-    };
-
     // ========== VALIDAÇÕES ==========
     const isMobileDevice = () => {
         return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
             .test(navigator.userAgent);
-    };
-
-    const isValidEmail = (email) => {
-        const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return re.test(email);
-    };
-
-    const isValidPhone = (phone) => {
-        const re = /^\(?\d{2}\)?\s?\d{4,5}-?\d{4}$/;
-        return re.test(phone);
     };
 
     // ========== MANIPULAÇÃO DE STRINGS ==========
@@ -208,13 +171,6 @@ const SharedCore = (function() {
     };
     
     // ========== UTILITÁRIOS GLOBAIS CENTRALIZADOS ==========
-    // ========== FUNÇÕES UTILITÁRIAS CENTRALIZADAS (Core System) ==========
-    // ⚠️ ATENÇÃO DESENVOLVEDORES: 
-    // - Coloque AQUI todas as funções utilitárias genéricas (escapeHtml, validação de URL, etc.)
-    // - Estas funções são a ÚNICA fonte da verdade para todo o sistema
-    // - Evite duplicação: sempre use window.SharedCore.nomeFuncao() em outros módulos
-    // - Exemplos: escapeHtml, isVideoUrl, formatadores, validadores genéricos
-    
     const escapeHtml = function(str) {
         if (!str) return '';
         return str.replace(/&/g, '&amp;')
@@ -234,15 +190,12 @@ const SharedCore = (function() {
                urlLower.includes('video/');
     };
     
-    // ========== EXTRAÇÃO DE BAIRRO (DOMÍNIO) - CENTRALIZADO ==========
-    // ✅ ÚNICA FONTE DA VERDADE PARA EXTRAÇÃO DE BAIRROS
-    // ✅ UTILIZADA POR: FilterManager.js, properties.js, e qualquer outro módulo
+    // ========== EXTRAÇÃO DE BAIRRO - CENTRALIZADO ==========
     const extractBairroFromLocation = function(location) {
         if (!location || typeof location !== 'string') return null;
         
         const locationClean = location.trim();
         
-        // Lista de bairros conhecidos de Maceió
         const bairrosConhecidos = [
             'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
             'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -256,7 +209,6 @@ const SharedCore = (function() {
             'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
         ];
         
-        // Tentativa 1: Procurar por bairro conhecido (case-insensitive, palavra inteira)
         for (const b of bairrosConhecidos) {
             const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
             if (regex.test(locationClean)) {
@@ -264,14 +216,12 @@ const SharedCore = (function() {
             }
         }
         
-        // Tentativa 2: Extrair texto após vírgula (padrão "Rua X, Bairro - Cidade")
         if (locationClean.includes(',')) {
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
                 possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
                 if (possibleBairro.length > 0 && possibleBairro.length < 50) {
-                    // Capitalizar primeira letra de cada palavra
                     possibleBairro = possibleBairro.split(' ').map(word => 
                         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
                     ).join(' ');
@@ -280,7 +230,6 @@ const SharedCore = (function() {
             }
         }
         
-        // Tentativa 3: Se for "Zona Rural" ou similar
         if (locationClean.toLowerCase().includes('rural') || 
             locationClean.toLowerCase().includes('zona rural')) {
             return 'Zona Rural';
@@ -316,70 +265,39 @@ const SharedCore = (function() {
         return text.substring(0, maxLength) + '...';
     };
 
-    const stringSimilarity = function(str1, str2) {
-        if (!str1 || !str2) return 0;
-        
-        str1 = str1.toLowerCase();
-        str2 = str2.toLowerCase();
-        
-        if (str1 === str2) return 1;
-        if (str1.length < 2 || str2.length < 2) return 0;
-        
-        let match = 0;
-        for (let i = 0; i < Math.min(str1.length, str2.length); i++) {
-            if (str1[i] === str2[i]) match++;
-        }
-        
-        return match / Math.max(str1.length, str2.length);
-    };
-
     // ========== SISTEMA DE FORMATAÇÃO UNIFICADO DE PREÇO ==========
     const PriceFormatter = {
         formatNumberWithSeparators: function(number) {
             if (isNaN(number) || !number) return '0';
-            
             const intNumber = Math.floor(Number(number));
-            
             let formatted = intNumber.toLocaleString('pt-BR', {
                 useGrouping: true,
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
             });
-            
-            if (formatted.includes('.')) {
-                return formatted;
-            }
-            
+            if (formatted.includes('.')) return formatted;
             const numStr = intNumber.toString();
             const parts = [];
-            
             for (let i = numStr.length; i > 0; i -= 3) {
                 const start = Math.max(0, i - 3);
                 parts.unshift(numStr.substring(start, i));
             }
-            
             return parts.join('.');
         },
 
         formatForInput: function(value) {
             if (!value && value !== 0) return '';
-            
             if (typeof value === 'string' && value.includes('R$')) {
                 const numbersOnly = value.replace(/\D/g, '');
                 if (numbersOnly === '') return value;
-                
                 const numericValue = parseInt(numbersOnly);
                 if (isNaN(numericValue)) return value;
-                
                 return 'R$ ' + this.formatNumberWithSeparators(numericValue);
             }
-            
             const numbersOnly = value.toString().replace(/\D/g, '');
             if (numbersOnly === '') return '';
-            
             const numericValue = parseInt(numbersOnly);
             if (isNaN(numericValue)) return '';
-            
             return 'R$ ' + this.formatNumberWithSeparators(numericValue);
         },
         
@@ -390,14 +308,9 @@ const SharedCore = (function() {
         
         formatForDisplay: function(value) {
             if (!value && value !== 0) return 'R$ 0,00';
-            
-            if (typeof value === 'string' && value.includes('R$') && value.includes(',')) {
-                return value;
-            }
-            
+            if (typeof value === 'string' && value.includes('R$') && value.includes(',')) return value;
             const numbersOnly = value.toString().replace(/\D/g, '');
             const numericValue = parseInt(numbersOnly) || 0;
-            
             return numericValue.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
@@ -408,14 +321,9 @@ const SharedCore = (function() {
 
         formatForCard: function(value, forceFormat = false) {
             if (!value && value !== 0) return 'R$ 0,00';
-            
-            if (!forceFormat && typeof value === 'string' && value.includes('R$')) {
-                return value;
-            }
-            
+            if (!forceFormat && typeof value === 'string' && value.includes('R$')) return value;
             const numbersOnly = value.toString().replace(/[^0-9,-]/g, '').replace(',', '.');
             const numericValue = parseFloat(numbersOnly) || 0;
-            
             return numericValue.toLocaleString('pt-BR', {
                 style: 'currency',
                 currency: 'BRL',
@@ -430,27 +338,21 @@ const SharedCore = (function() {
         
         setupAutoFormat: function(inputElement) {
             if (!inputElement || inputElement.tagName !== 'INPUT') return;
-            
             if (inputElement.value && !inputElement.value.startsWith('R$')) {
                 inputElement.value = this.formatForInput(inputElement.value);
             }
-            
             inputElement.addEventListener('input', (e) => {
                 if (e.inputType === 'deleteContentBackward' || 
                     e.inputType === 'deleteContentForward' ||
                     e.inputType === 'deleteByCut') {
                     return;
                 }
-                
                 const cursorPos = e.target.selectionStart;
                 const originalValue = e.target.value;
-                
                 e.target.value = this.formatForInput(e.target.value);
-                
                 const diff = e.target.value.length - originalValue.length;
                 e.target.setSelectionRange(cursorPos + diff, cursorPos + diff);
             });
-            
             inputElement.addEventListener('blur', (e) => {
                 if (e.target.value && !e.target.value.startsWith('R$')) {
                     e.target.value = this.formatForInput(e.target.value);
@@ -466,10 +368,8 @@ const SharedCore = (function() {
             selectors.forEach(selector => {
                 images.push(...document.querySelectorAll(selector));
             });
-            
             const limitedImages = images.slice(0, 8);
             if (limitedImages.length === 0) return 0;
-            
             return new Promise((resolve) => {
                 let loaded = 0;
                 limitedImages.forEach(img => {
@@ -482,7 +382,6 @@ const SharedCore = (function() {
                         };
                     }
                 });
-                
                 if (loaded >= limitedImages.length) {
                     resolve(loaded);
                 } else {
@@ -499,7 +398,6 @@ const SharedCore = (function() {
 
     const createElement = (tag, attributes = {}, children = []) => {
         const element = document.createElement(tag);
-        
         Object.entries(attributes).forEach(([key, value]) => {
             if (key === 'className') {
                 element.className = value;
@@ -513,7 +411,6 @@ const SharedCore = (function() {
                 element.setAttribute(key, value);
             }
         });
-        
         children.forEach(child => {
             if (typeof child === 'string') {
                 element.appendChild(document.createTextNode(child));
@@ -521,7 +418,6 @@ const SharedCore = (function() {
                 element.appendChild(child);
             }
         });
-        
         return element;
     };
 
@@ -529,7 +425,6 @@ const SharedCore = (function() {
     const logModule = (moduleName, message, level = 'info', data = null) => {
         const timestamp = new Date().toLocaleTimeString();
         const prefix = `[${timestamp}] [${moduleName.toUpperCase()}]`;
-        
         const levels = {
             info: () => console.log(`${prefix} ℹ️ ${message}`, data || ''),
             warn: () => console.warn(`${prefix} ⚠️ ${message}`, data || ''),
@@ -537,7 +432,6 @@ const SharedCore = (function() {
             success: () => console.log(`${prefix} ✅ ${message}`, data || ''),
             debug: () => console.debug(`${prefix} 🔍 ${message}`, data || '')
         };
-        
         (levels[level] || levels.info)();
     };
 
@@ -546,13 +440,10 @@ const SharedCore = (function() {
         try {
             const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
             const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-            
             const proxyUrl = 'https://corsproxy.io/?';
             const targetUrl = `${SUPABASE_URL}/rest/v1${endpoint}`;
             const finalUrl = proxyUrl + encodeURIComponent(targetUrl);
-            
             console.log(`📡 Supabase fetch: ${endpoint}`);
-            
             const response = await fetch(finalUrl, {
                 method: options.method || 'GET',
                 headers: {
@@ -563,54 +454,23 @@ const SharedCore = (function() {
                 },
                 ...options
             });
-            
             if (!response.ok) {
-                return { 
-                    ok: false, 
-                    data: [], 
-                    error: `HTTP ${response.status}: ${response.statusText}` 
-                };
+                return { ok: false, data: [], error: `HTTP ${response.status}: ${response.statusText}` };
             }
-            
             const data = await response.json();
-            
-            return { 
-                ok: true, 
-                data: data,
-                count: Array.isArray(data) ? data.length : 1
-            };
-            
+            return { ok: true, data: data, count: Array.isArray(data) ? data.length : 1 };
         } catch (error) {
-            return { 
-                ok: false, 
-                data: [], 
-                error: error.message
-            };
-        }
-    };
-
-    // ========== FUNÇÕES DE PERFORMANCE ==========
-    const runLowPriority = (task) => {
-        if ('requestIdleCallback' in window) {
-            requestIdleCallback(task, { timeout: 1000 });
-        } else {
-            setTimeout(task, 100);
+            return { ok: false, data: [], error: error.message };
         }
     };
 
     // ========== VALIDAÇÃO DE DADOS ==========
     const validateProperty = (propertyData) => {
         const errors = [];
-        
         if (!propertyData?.title?.trim()) errors.push('Título é obrigatório');
         if (!propertyData?.price?.trim()) errors.push('Preço é obrigatório');
         if (!propertyData?.location?.trim()) errors.push('Localização é obrigatória');
-        
-        return {
-            isValid: errors.length === 0,
-            errors,
-            hasErrors: errors.length > 0
-        };
+        return { isValid: errors.length === 0, errors, hasErrors: errors.length > 0 };
     };
 
     // ========== MANIPULAÇÃO DE ARRAYS ==========
@@ -618,7 +478,6 @@ const SharedCore = (function() {
         findDuplicates: (array, key) => {
             const seen = new Set();
             const duplicates = [];
-            
             array.forEach(item => {
                 const value = key ? item[key] : item;
                 if (seen.has(value)) {
@@ -627,45 +486,16 @@ const SharedCore = (function() {
                     seen.add(value);
                 }
             });
-            
             return duplicates;
         },
-        
         sortByKey: (array, key, ascending = true) => {
             return [...array].sort((a, b) => {
                 const aVal = a[key];
                 const bVal = b[key];
-                
                 if (aVal < bVal) return ascending ? -1 : 1;
                 if (aVal > bVal) return ascending ? 1 : -1;
                 return 0;
             });
-        }
-    };
-
-    const validateSupabaseConnection = async () => {
-        try {
-            const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-            const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-            
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/properties?select=id&limit=1`, {
-                headers: {
-                    'apikey': SUPABASE_KEY,
-                    'Authorization': `Bearer ${SUPABASE_KEY}`
-                }
-            });
-            
-            return {
-                connected: response.ok,
-                status: response.status,
-                online: response.ok ? '✅ CONECTADO' : '❌ OFFLINE'
-            };
-        } catch (error) {
-            return {
-                connected: false,
-                error: error.message,
-                online: '❌ ERRO DE CONEXÃO'
-            };
         }
     };
 
@@ -677,16 +507,13 @@ const SharedCore = (function() {
 
     const sanitizeText = (text, maxLength = null) => {
         if (!text) return '';
-        
         let sanitized = text.toString()
             .replace(/<[^>]*>/g, '')
             .replace(/\s+/g, ' ')
             .trim();
-        
         if (maxLength && sanitized.length > maxLength) {
             sanitized = sanitized.substring(0, maxLength - 3) + '...';
         }
-        
         return sanitized;
     };
 
@@ -702,90 +529,32 @@ const SharedCore = (function() {
         }
     };
 
-    const testFileUpload = async () => {
-        console.group('🧪 TESTE DE UPLOAD DE ARQUIVOS');
-        
-        const SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-        const SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-        
-        console.log('🔧 Configuração:', {
-            SUPABASE_URL: SUPABASE_URL.substring(0, 50) + '...',
-            SUPABASE_KEY: SUPABASE_KEY ? '✅ Disponível' : '❌ Indisponível'
-        });
-        
-        const testBlob = new Blob(['test content'], { type: 'text/plain' });
-        const testFile = new File([testBlob], 'test.txt', { type: 'text/plain' });
-        
-        const bucket = 'properties';
-        const fileName = `test_${Date.now()}.txt`;
-        const filePath = `${bucket}/${fileName}`;
-        const uploadUrl = `${SUPABASE_URL}/storage/v1/object/${filePath}`;
-        
-        console.log('📤 Tentando upload para:', uploadUrl.substring(0, 80) + '...');
-        
-        try {
-            const response = await fetch(uploadUrl, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                    'apikey': SUPABASE_KEY,
-                    'Content-Type': 'text/plain'
-                },
-                body: testFile
-            });
-            
-            console.log('📡 Resposta:', response.status, response.statusText);
-            
-            if (response.ok) {
-                const publicUrl = `${SUPABASE_URL}/storage/v1/object/public/${filePath}`;
-                console.log('✅ UPLOAD BEM-SUCEDIDO!');
-                console.log('🔗 URL pública:', publicUrl);
-                return { success: true, url: publicUrl };
-            } else {
-                const errorText = await response.text();
-                console.error('❌ Upload falhou:', errorText);
-                return { success: false, error: errorText };
-            }
-        } catch (error) {
-            console.error('❌ Erro de conexão:', error);
-            return { success: false, error: error.message };
-        } finally {
-            console.groupEnd();
-        }
-    };
-
     // ========== API PÚBLICA ==========
     return {
         // Performance
         debounce,
-        throttle,
-        runLowPriority,
         
         // Validações
         isMobileDevice,
-        isValidEmail,
-        isValidPhone,
         validateProperty,
         
         // Formatação
         formatPrice,
         truncateText,
-        stringSimilarity,
         
         // Features e Video (Proxy)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
         
-        // Extração de Bairro (Centralizado - ÚNICA FONTE DA VERDADE)
+        // Extração de Bairro
         extractBairroFromLocation,
         
         // Validação de ID e Estado
         validateIdForSupabase,
         manageEditingState,
         
-        // ========== UTILITÁRIOS CENTRALIZADOS (Core System) ==========
-        // ⚠️ NOVAS FUNÇÕES UTILITÁRIAS DEVEM SER ADICIONADAS AQUI
+        // Utilitários centralizados
         escapeHtml,
         isVideoUrl,
         
@@ -812,11 +581,9 @@ const SharedCore = (function() {
         
         // Utilitários Gerais
         copyToClipboard,
-        validateSupabaseConnection,
         generateUniqueId,
         sanitizeText,
         delay,
-        testFileUpload,
         
         // Constantes
         SUPABASE_CONSTANTS: window.SUPABASE_CONSTANTS
@@ -827,7 +594,7 @@ window.SharedCore = SharedCore;
 
 // ========== COMPATIBILIDADE GLOBAL ==========
 (function setupGlobalCompatibility() {
-    console.log('🔗 Configurando compatibilidade global de formatação...');
+    console.log('🔗 Configurando compatibilidade global...');
     
     if (typeof window.formatPrice === 'undefined') {
         window.formatPrice = function(value) {
@@ -889,7 +656,7 @@ window.SharedCore = SharedCore;
         };
     }
     
-    console.log('✅ Compatibilidade de formatação configurada');
+    console.log('✅ Compatibilidade global configurada');
 })();
 
 function initializeGlobalCompatibility() {
@@ -897,14 +664,9 @@ function initializeGlobalCompatibility() {
     
     const globalExports = {
         debounce: SharedCore.debounce,
-        throttle: SharedCore.throttle,
-        runLowPriority: SharedCore.runLowPriority,
         isMobileDevice: SharedCore.isMobileDevice,
-        isValidEmail: SharedCore.isValidEmail,
-        isValidPhone: SharedCore.isValidPhone,
         formatPrice: SharedCore.formatPrice,
         truncateText: SharedCore.truncateText,
-        stringSimilarity: SharedCore.stringSimilarity,
         formatFeaturesForDisplay: SharedCore.formatFeaturesForDisplay,
         parseFeaturesForStorage: SharedCore.parseFeaturesForStorage,
         ensureBooleanVideo: SharedCore.ensureBooleanVideo,
@@ -918,9 +680,11 @@ function initializeGlobalCompatibility() {
         logModule: SharedCore.logModule,
         supabaseFetch: SharedCore.supabaseFetch,
         copyToClipboard: SharedCore.copyToClipboard,
-        testFileUpload: SharedCore.testFileUpload,
         escapeHtml: SharedCore.escapeHtml,
-        isVideoUrl: SharedCore.isVideoUrl
+        isVideoUrl: SharedCore.isVideoUrl,
+        generateUniqueId: SharedCore.generateUniqueId,
+        sanitizeText: SharedCore.sanitizeText,
+        delay: SharedCore.delay
     };
     
     Object.entries(globalExports).forEach(([name, func]) => {
@@ -934,7 +698,6 @@ function initializeGlobalCompatibility() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initializeGlobalCompatibility();
-    
     setTimeout(() => {
         const priceField = document.getElementById('propPrice');
         if (priceField && window.SharedCore?.PriceFormatter) {
@@ -948,9 +711,8 @@ setTimeout(() => {
     console.group('🧪 VALIDAÇÃO DO SHAREDCORE');
     
     const essentialFunctions = [
-        'debounce', 'throttle', 'formatPrice', 'supabaseFetch',
-        'elementExists', 'isMobileDevice', 'copyToClipboard',
-        'logModule', 'runLowPriority', 'validateProperty',
+        'debounce', 'formatPrice', 'supabaseFetch', 'elementExists', 
+        'isMobileDevice', 'copyToClipboard', 'logModule', 'validateProperty',
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation'
     ];
     
@@ -968,34 +730,8 @@ setTimeout(() => {
         if (!exists) allAvailable = false;
     });
     
-    const unifiedFunctions = ['formatFeaturesForDisplay', 'parseFeaturesForStorage', 'ensureBooleanVideo', 'validateIdForSupabase', 'manageEditingState', 'extractBairroFromLocation'];
-    unifiedFunctions.forEach(func => {
-        const available = window.SharedCore?.[func] !== undefined;
-        console.log(`${available ? '✅' : '❌'} ${func} disponível no SharedCore`);
-        if (!available) allAvailable = false;
-    });
-    
-    const hasMediaUIFull = window.SYSTEM_CONFIG.supportModules.includes('debug/ui/media-ui-full.js');
-    console.log(`${hasMediaUIFull ? '✅' : '⚠️'} debug/ui/media-ui-full.js na lista supportModules`);
-    
     console.log(allAvailable ? '🎪 SHAREDCORE VALIDADO' : '⚠️ VERIFICAÇÃO REQUERIDA');
     console.groupEnd();
 }, 2000);
 
-(function ensureUniqueSupabaseConstants() {
-    if (window.SUPABASE_CONSTANTS && window.SUPABASE_CONSTANTS.URL) {
-        console.log('✅ SUPABASE_CONSTANTS já existe, usando referência existente');
-        return;
-    }
-    
-    window.SUPABASE_CONSTANTS = {
-        URL: 'https://syztbxvpdaplpetmixmt.supabase.co',
-        KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InN5enRieHZwZGFwbHBldG1peG10Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQxODY0OTAsImV4cCI6MjA3OTc2MjQ5MH0.SISlMoO1kLWbIgx9pze8Dv1O-kfQ_TAFDX6yPUxfJxo',
-        ADMIN_PASSWORD: "wl654",
-        PDF_PASSWORD: "doc123"
-    };
-    
-    console.log('✅ SUPABASE_CONSTANTS definido globalmente');
-})();
-
-console.log(`✅ SharedCore.js pronto - PROXY PURO (sem duplicidade) para Support System`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada (funções não utilizadas removidas)`);
