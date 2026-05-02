@@ -1,5 +1,4 @@
-// js/modules/admin.js - VERSÃO OTIMIZADA COM DESTAQUE AO EDITAR (SEM FALLBACKS)
-console.log('🔧 admin.js - Versão core com autocomplete funcional + destaque ao editar');
+console.log('✅ admin.js carregado');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -81,7 +80,6 @@ window.editProperty = function(id) {
     
     window.resetAdminFormCompletely(false);
     
-    // SIMPLIFICADO: SharedCore sempre disponível
     const formatPrice = (price) => window.SharedCore.PriceFormatter.formatForAdmin(price) ?? '';
     const formatFeatures = (features) => window.SharedCore.formatFeaturesForDisplay(features) ?? '';
     
@@ -170,7 +168,6 @@ window.saveProperty = async function() {
         
         if (window.SharedCore.PriceFormatter?.formatForAdmin) propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
         
-        // SIMPLIFICADO: SharedCore.parseFeaturesForStorage sempre disponível
         propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
         
         let imageUrls = '', pdfUrls = '';
@@ -334,5 +331,3 @@ function initializeAdmin() {
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
-
-console.log('✅ admin.js - Versão otimizada com destaque ao editar carregada (SEM FALLBACKS)');
