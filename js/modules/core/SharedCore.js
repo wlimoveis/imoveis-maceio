@@ -1,5 +1,5 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (validateProperty removida)
-console.log('🔧 SharedCore.js carregado - Versão Otimizada (funções não utilizadas removidas)');
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (logModule removida)
+console.log('🔧 SharedCore.js carregado - Versão Otimizada (logModule removida)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -421,20 +421,6 @@ const SharedCore = (function() {
         return element;
     };
 
-    // ========== LOGGING SISTEMÁTICO ==========
-    const logModule = (moduleName, message, level = 'info', data = null) => {
-        const timestamp = new Date().toLocaleTimeString();
-        const prefix = `[${timestamp}] [${moduleName.toUpperCase()}]`;
-        const levels = {
-            info: () => console.log(`${prefix} ℹ️ ${message}`, data || ''),
-            warn: () => console.warn(`${prefix} ⚠️ ${message}`, data || ''),
-            error: () => console.error(`${prefix} ❌ ${message}`, data || ''),
-            success: () => console.log(`${prefix} ✅ ${message}`, data || ''),
-            debug: () => console.debug(`${prefix} 🔍 ${message}`, data || '')
-        };
-        (levels[level] || levels.info)();
-    };
-
     // ========== SUPABASE ESSENCIAL ==========
     const supabaseFetch = async (endpoint, options = {}) => {
         try {
@@ -564,8 +550,7 @@ const SharedCore = (function() {
         elementExists,
         createElement,
         
-        // Logging e Dados
-        logModule,
+        // Dados
         supabaseFetch,
         arrayUtils,
         
@@ -667,7 +652,6 @@ function initializeGlobalCompatibility() {
         getPriceNumbersOnly: SharedCore.getPriceNumbersOnly,
         setupPriceAutoFormat: SharedCore.setupPriceAutoFormat,
         elementExists: SharedCore.elementExists,
-        logModule: SharedCore.logModule,
         supabaseFetch: SharedCore.supabaseFetch,
         copyToClipboard: SharedCore.copyToClipboard,
         escapeHtml: SharedCore.escapeHtml,
@@ -702,7 +686,7 @@ setTimeout(() => {
     
     const essentialFunctions = [
         'debounce', 'formatPrice', 'supabaseFetch', 'elementExists', 
-        'isMobileDevice', 'copyToClipboard', 'logModule',
+        'isMobileDevice', 'copyToClipboard',
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation'
     ];
     
@@ -724,4 +708,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada (validateProperty removida)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada (logModule removida)`);
