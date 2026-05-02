@@ -643,8 +643,6 @@ window.FeatureIconMapper = {
     }
 };
 
-window.FeatureIconMapper = FeatureIconMapper;
-
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     console.log(`🎯 Filtrando: categoria="${category}", bairro="${bairro}"`);
     
