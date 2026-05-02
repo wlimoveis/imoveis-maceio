@@ -1,4 +1,4 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (FUNÇÕES NÃO UTILIZADAS REMOVIDAS)
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (validateProperty removida)
 console.log('🔧 SharedCore.js carregado - Versão Otimizada (funções não utilizadas removidas)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
@@ -464,15 +464,6 @@ const SharedCore = (function() {
         }
     };
 
-    // ========== VALIDAÇÃO DE DADOS ==========
-    const validateProperty = (propertyData) => {
-        const errors = [];
-        if (!propertyData?.title?.trim()) errors.push('Título é obrigatório');
-        if (!propertyData?.price?.trim()) errors.push('Preço é obrigatório');
-        if (!propertyData?.location?.trim()) errors.push('Localização é obrigatória');
-        return { isValid: errors.length === 0, errors, hasErrors: errors.length > 0 };
-    };
-
     // ========== MANIPULAÇÃO DE ARRAYS ==========
     const arrayUtils = {
         findDuplicates: (array, key) => {
@@ -536,7 +527,6 @@ const SharedCore = (function() {
         
         // Validações
         isMobileDevice,
-        validateProperty,
         
         // Formatação
         formatPrice,
@@ -712,7 +702,7 @@ setTimeout(() => {
     
     const essentialFunctions = [
         'debounce', 'formatPrice', 'supabaseFetch', 'elementExists', 
-        'isMobileDevice', 'copyToClipboard', 'logModule', 'validateProperty',
+        'isMobileDevice', 'copyToClipboard', 'logModule',
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation'
     ];
     
@@ -734,4 +724,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada (funções não utilizadas removidas)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada (validateProperty removida)`);
