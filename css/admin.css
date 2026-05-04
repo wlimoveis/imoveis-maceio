@@ -1,5 +1,5 @@
 /* css/admin.css - Estilos do Painel Administrativo */
-/* VERSÃO ULTRA COMPACTA - FORMULÁRIO EM UMA ÚNICA TELA */
+/* VERSÃO ULTRA COMPACTA - COM AJUSTE FINO */
 
 /* ========== PAINEL ADMIN ========== */
 .admin-panel {
@@ -26,6 +26,9 @@
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.6rem;
+    margin-bottom: 0.4rem;
 }
 
 .form-row {
@@ -121,7 +124,7 @@
     flex-wrap: wrap;
     margin: 0.2rem 0;
     min-height: 35px;
-    max-height: 65px;
+    max-height: 55px;
     overflow-y: auto;
     padding: 0.2rem;
     background: #fff;
@@ -183,30 +186,30 @@
     background: #7f8c8d;
 }
 
-/* ========== TÍTULOS ========== */
-.admin-panel h3 {
-    margin: 0 0 0.4rem 0;
-    font-size: 1rem;
-    color: var(--primary);
-    text-align: center;
+/* ========== ÁREA DE GERENCIAMENTO - SEPARADA E COMPACTA ========== */
+.admin-list-header {
+    margin-top: 0.3rem;
+    padding-top: 0.3rem;
 }
 
-.admin-panel h4 {
-    margin: 0.5rem 0 0.2rem 0;
+.admin-list-header h4 {
+    margin: 0 0 0.15rem 0;
     font-size: 0.85rem;
     color: var(--primary);
 }
 
 .admin-list-header p {
-    margin: 0.2rem 0;
+    margin: 0 0 0.2rem 0;
     font-size: 0.7rem;
 }
 
-/* ========== LISTA DE PROPRIEDADES ========== */
+/* ========== LISTA DE PROPRIEDADES - ALTURA CONTROLADA ========== */
 #propertyList {
-    margin-top: 0.5rem;
-    max-height: 200px;
+    margin-top: 0.3rem;
+    max-height: 180px;
     overflow-y: auto;
+    border-top: 1px solid #e0e0e0;
+    padding-top: 0.3rem;
 }
 
 .property-item {
@@ -230,6 +233,7 @@
 .property-item button {
     padding: 0.15rem 0.4rem;
     font-size: 0.65rem;
+    cursor: pointer;
 }
 
 /* ========== ADMIN TOGGLE ========== */
@@ -271,6 +275,22 @@
     z-index: 15;
 }
 
+/* ========== VIDEO INDICATOR ========== */
+.video-indicator {
+    position: absolute !important;
+    top: 30px !important;
+    right: 8px !important;
+    background: rgba(0,0,0,0.7) !important;
+    color: white !important;
+    padding: 2px 6px !important;
+    border-radius: 3px !important;
+    font-size: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 3px !important;
+    z-index: 9 !important;
+}
+
 /* ========== RESPONSIVIDADE ========== */
 @media (max-width: 700px) {
     .form-row {
@@ -284,7 +304,11 @@
     }
     
     .preview-area {
-        max-height: 50px;
+        max-height: 45px;
+    }
+    
+    #propertyList {
+        max-height: 150px;
     }
 }
 
@@ -294,6 +318,38 @@
     }
     
     #propertyList {
-        max-height: 150px;
+        max-height: 120px;
     }
+    
+    .preview-area {
+        max-height: 40px;
+    }
+}
+
+/* ========== AJUSTE EXTRA - BORDA SEPARADORA ========== */
+#propertyForm {
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 0.5rem;
+    margin-bottom: 0.3rem;
+}
+
+.admin-list-header {
+    border-top: 1px solid #ddd;
+    padding-top: 0.3rem;
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pdf-modal {
+    animation: modalFadeIn 0.2s ease;
+}
+
+/* ========== DRAG & DROP ========== */
+.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
 }
