@@ -1,21 +1,30 @@
 /* css/admin.css - Estilos do Painel Administrativo */
-/* VERSÃO OTIMIZADA - Layout Responsivo Proporcional */
+/* VERSÃO OTIMIZADA - CONTIDA NA TELA */
 
-/* ========== ESTILOS DO PAINEL ADMIN ========== */
+/* ========== VARIÁVEIS (HERDADAS DO MAIN.CSS) ========== */
+:root {
+    --primary: #1a5276;
+    --accent: #3498db;
+    --success: #27ae60;
+}
+
+/* ========== PAINEL ADMIN - CONTIDO NA TELA ========== */
 .admin-panel {
     background: #f8f9fa;
-    padding: 2rem;
-    margin: 2rem auto;
-    max-width: min(1200px, 90vw);
+    padding: 1rem;
+    margin: 1rem auto;
+    max-width: min(1000px, 95vw);
     width: 100%;
     border-radius: 10px;
     display: none;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    max-height: 85vh;
+    max-height: calc(100vh - 2rem);
+    min-height: auto;
     overflow-y: auto;
+    position: relative;
 }
 
-/* Customização da barra de rolagem do painel */
+/* Customização da barra de rolagem */
 .admin-panel::-webkit-scrollbar {
     width: 6px;
 }
@@ -30,29 +39,30 @@
     border-radius: 3px;
 }
 
-/* Container do formulário principal */
+/* ========== FORMULÁRIO COMPACTO ========== */
 #propertyForm {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem;
+    gap: 0.8rem;
 }
 
-/* Grid responsivo para grupos de campos (compatível com style inline existente) */
+/* Grid responsivo */
 #propertyForm > div[style*="grid-template-columns"] {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
-    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)) !important;
+    gap: 0.6rem;
+    margin-bottom: 0 !important;
 }
 
-/* Melhorias nos campos do formulário */
+/* Campos */
 #propertyForm input,
 #propertyForm textarea,
 #propertyForm select {
-    padding: 0.8rem 1rem;
+    padding: 0.6rem 0.8rem;
     border: 1px solid #ddd;
-    border-radius: 8px;
+    border-radius: 6px;
     width: 100%;
-    font-size: 1rem;
+    font-size: 0.95rem;
     transition: all 0.2s ease;
     box-sizing: border-box;
 }
@@ -62,22 +72,30 @@
 #propertyForm select:focus {
     outline: none;
     border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+    box-shadow: 0 0 0 2px rgba(26, 82, 118, 0.1);
 }
 
 #propertyForm textarea {
-    min-height: 100px;
+    min-height: 70px;
     resize: vertical;
+}
+
+/* Labels */
+#propertyForm label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.2rem;
+    display: block;
 }
 
 /* ========== ÁREAS DE UPLOAD ========== */
 #uploadArea,
 #pdfUploadArea {
     border: 2px dashed #ddd;
-    border-radius: 10px;
-    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
     text-align: center;
-    margin: 0.5rem 0;
+    margin: 0.3rem 0;
     cursor: pointer;
     transition: all 0.3s ease;
     background: #fafafa;
@@ -89,47 +107,77 @@
     background: #f0f8ff;
 }
 
-/* Previews de mídia */
+#uploadArea i,
+#pdfUploadArea i {
+    font-size: 1.5rem;
+    color: #95a5a6;
+    margin-bottom: 0.2rem;
+}
+
+#uploadArea p,
+#pdfUploadArea p {
+    margin: 0.2rem 0;
+    font-size: 0.85rem;
+}
+
+/* Previews */
 #uploadPreview,
 #pdfUploadPreview {
     display: flex;
-    gap: 12px;
+    gap: 8px;
     flex-wrap: wrap;
-    margin: 1rem 0;
-    min-height: 80px;
-    max-height: 200px;
+    margin: 0.5rem 0;
+    min-height: 60px;
+    max-height: 150px;
     overflow-y: auto;
-    padding: 0.5rem;
+    padding: 0.3rem;
     background: #fff;
     border-radius: 8px;
     border: 1px solid #eee;
 }
 
-/* Container dos botões de ação (compatível com estrutura existente) */
+/* ========== BOTÕES ========== */
 #propertyForm > div:last-of-type {
     display: flex;
-    gap: 1rem;
+    gap: 0.8rem;
     flex-wrap: wrap;
-    margin-top: 1rem;
+    margin-top: 0.5rem;
 }
 
 #propertyForm button[type="submit"],
 #cancelEditBtn {
     flex: 1;
-    min-width: 180px;
-    padding: 1rem;
-    font-size: 1rem;
+    min-width: 150px;
+    padding: 0.7rem;
+    font-size: 0.9rem;
     font-weight: 600;
-    border-radius: 8px;
+    border-radius: 6px;
     transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
 }
 
-#propertyForm button[type="submit"]:hover,
+#propertyForm button[type="submit"] {
+    background: var(--success);
+    color: white;
+}
+
+#propertyForm button[type="submit"]:hover {
+    background: #219653;
+    transform: translateY(-1px);
+}
+
+#cancelEditBtn {
+    background: #95a5a6;
+    color: white;
+}
+
 #cancelEditBtn:hover {
-    transform: translateY(-2px);
+    background: #7f8c8d;
+    transform: translateY(-1px);
 }
 
-/* Botão admin toggle */
+/* ========== ADMIN TOGGLE ========== */
 .admin-toggle {
     position: fixed;
     bottom: 20px;
@@ -137,481 +185,187 @@
     background: var(--primary);
     color: white;
     border: none;
-    padding: 1rem;
+    padding: 0.8rem;
     border-radius: 50%;
     cursor: pointer;
     z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    font-size: 1.2rem;
+    font-size: 1rem;
     transition: all 0.3s ease;
 }
 
 .admin-toggle:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
 }
 
-/* Itens da lista de propriedades */
+/* ========== LISTA DE PROPRIEDADES ========== */
+#propertyList {
+    margin-top: 1rem;
+}
+
 .property-item {
     background: #f5f5f5;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    border-radius: 5px;
+    padding: 0.6rem;
+    margin: 0.3rem 0;
+    border-radius: 6px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-left: 4px solid var(--primary);
-    transition: all 0.3s ease;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    border-left: 3px solid var(--primary);
+    transition: all 0.2s ease;
 }
 
 .property-item:hover {
     background: #ffffff;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
 
-/* ========== ÍCONE DO PDF ========== */
+/* ========== TÍTULOS ========== */
+.admin-panel h3 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.2rem;
+    color: var(--primary);
+    text-align: center;
+}
+
+.admin-panel h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--primary);
+}
+
+/* ========== PDF ICON ========== */
 .pdf-access {
     position: absolute;
     bottom: 2px;
     right: 35px;
-    background: rgba(255, 255, 255, 0.95);
+    background: rgba(255,255,255,0.95);
     border: none;
     border-radius: 50%;
-    width: 28px;
-    height: 28px;
+    width: 24px;
+    height: 24px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     color: var(--primary);
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
     z-index: 15;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    border: 1px solid rgba(0,0,0,0.15);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2);
 }
 
 .pdf-access:hover {
-    background: white;
     transform: scale(1.1);
-    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
-    color: #1a5276;
 }
 
-/* ========== INDICADOR DE VÍDEO ========== */
+/* ========== VIDEO INDICATOR ========== */
 .video-indicator {
     position: absolute !important;
-    top: 40px !important;
+    top: 35px !important;
     right: 10px !important;
-    background: rgba(0, 0, 0, 0.7) !important;
+    background: rgba(0,0,0,0.7) !important;
     color: white !important;
-    padding: 5px 10px !important;
+    padding: 3px 8px !important;
     border-radius: 4px !important;
-    font-size: 12px !important;
+    font-size: 10px !important;
     display: flex !important;
     align-items: center !important;
-    gap: 5px !important;
+    gap: 4px !important;
     z-index: 9 !important;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
-    border: 1px solid rgba(255,255,255,0.2) !important;
-    backdrop-filter: blur(4px) !important;
-}
-
-.video-indicator i {
-    color: white !important;
-    font-size: 12px !important;
-}
-
-/* ========== BOTÃO CANCELAR EDIÇÃO - CORREÇÃO ========== */
-#cancelEditBtn {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    opacity: 1 !important;
-    background: #95a5a6;
-    color: white;
-    border: none;
-    transition: all 0.3s ease !important;
-}
-
-#cancelEditBtn:hover {
-    background: #7f8c8d !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3) !important;
-}
-
-#cancelEditBtn:disabled {
-    opacity: 0.5 !important;
-    cursor: not-allowed !important;
-    pointer-events: none !important;
-}
-
-#cancelEditBtn {
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative !important;
-    z-index: 1000 !important;
-}
-
-#cancelEditBtn * {
-    pointer-events: none !important;
-}
-
-/* ========== ANIMAÇÕES ========== */
-@keyframes modalSlideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-30px) scale(0.95);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes pulseCancel {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.95); box-shadow: 0 0 0 5px rgba(149, 165, 166, 0.3); }
-    100% { transform: scale(1); }
-}
-
-#cancelEditBtn.cancelling {
-    animation: pulseCancel 0.5s ease;
-}
-
-.pdf-modal {
-    animation: modalFadeIn 0.3s ease;
-}
-
-.pdf-modal-content {
-    animation: modalSlideIn 0.3s ease;
 }
 
 /* ========== RESPONSIVIDADE ========== */
 @media (max-width: 768px) {
     .admin-panel {
-        padding: 1.2rem;
-        margin: 1rem auto;
-        max-width: 95vw;
-        max-height: 90vh;
+        padding: 0.8rem;
+        margin: 0.5rem auto;
+        max-height: calc(100vh - 1rem);
+    }
+    
+    #propertyForm {
+        gap: 0.6rem;
     }
     
     #propertyForm > div[style*="grid-template-columns"] {
         grid-template-columns: 1fr !important;
-        gap: 0.8rem;
+        gap: 0.5rem;
     }
     
     #uploadArea,
     #pdfUploadArea {
-        padding: 1rem;
+        padding: 0.6rem;
     }
     
     #propertyForm button[type="submit"],
     #cancelEditBtn {
         min-width: 100%;
-    }
-    
-    #propertyForm > div:last-of-type {
-        flex-direction: column;
+        padding: 0.6rem;
     }
     
     .property-item {
         flex-direction: column;
         align-items: flex-start;
-        gap: 1rem;
     }
     
     .admin-toggle {
-        bottom: 70px;
-        right: 20px;
-        padding: 0.8rem;
-        font-size: 1rem;
+        bottom: 60px;
+        padding: 0.7rem;
+        font-size: 0.9rem;
     }
 }
 
 @media (max-width: 480px) {
     .admin-panel {
-        padding: 1rem;
+        padding: 0.6rem;
     }
     
     #uploadPreview,
     #pdfUploadPreview {
-        max-height: 150px;
+        max-height: 120px;
     }
 }
 
 @media (min-width: 1400px) {
     .admin-panel {
-        max-width: 1100px;
+        max-width: 900px;
     }
 }
 
-@media (max-height: 500px) and (orientation: landscape) {
+@media (max-height: 700px) {
     .admin-panel {
-        max-height: 85vh;
+        max-height: calc(100vh - 0.5rem);
+        padding: 0.5rem;
+    }
+    
+    #propertyForm textarea {
+        min-height: 50px;
     }
     
     #uploadPreview,
     #pdfUploadPreview {
         max-height: 100px;
     }
-}
-
-/* ========== ESTILOS DE VALIDAÇÃO PARA CAMPO DE SENHA PDF ========== */
-#pdfPassword[aria-invalid="true"] {
-    border-color: #e74c3c !important;
-    background-color: #ffeaea !important;
-    animation: shake 0.5s ease;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-#pdfPassword:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-#pdfPasswordForm {
-    position: relative;
-}
-
-#pdfPasswordForm:after {
-    content: "*";
-    color: #e74c3c;
-    position: absolute;
-    top: 1rem;
-    right: 0.5rem;
-    font-size: 1.2rem;
-}
-
-#pdfPassword:focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 2px;
-}
-
-#pdfPassword:valid:not(:placeholder-shown) {
-    border-color: var(--success) !important;
-    background-color: #e8f8ef !important;
-}
-
-/* ========== AUTOCOMPLETE DE LOCALIZAÇÃO ========== */
-#propLocation {
-    position: relative !important;
-    z-index: 100 !important;
-}
-
-#propertyForm,
-.admin-panel {
-    overflow: visible !important;
-}
-
-.location-suggestions,
-div[class*="location-suggestions"] {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    right: auto !important;
-    background: white !important;
-    border: 3px solid #1a5276 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-    max-height: 300px !important;
-    overflow-y: auto !important;
-    z-index: 9999999 !important;
-    width: 100% !important;
-    min-width: 250px !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-top: 4px !important;
-    animation: fadeInUp 0.2s ease;
-}
-
-.location-suggestions-item,
-div[class*="location-suggestions-item"] {
-    padding: 12px 16px !important;
-    cursor: pointer !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    font-size: 0.95rem !important;
-    color: #222222 !important;
-    background: white !important;
-    transition: all 0.2s ease !important;
-}
-
-.location-suggestions-item:last-child {
-    border-bottom: none !important;
-}
-
-.location-suggestions-item:hover {
-    background: #e8f0fe !important;
-    color: #1a5276 !important;
-}
-
-.location-suggestions-item strong {
-    color: #1a5276 !important;
-    background: #d4e6f1 !important;
-    padding: 2px 4px !important;
-    border-radius: 4px !important;
-    font-weight: 700 !important;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* ========== PAGINAÇÃO ========== */
-#propertyList {
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) #e0e0e0;
-    max-height: 650px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-}
-
-#propertyList::-webkit-scrollbar {
-    width: 6px;
-}
-
-#propertyList::-webkit-scrollbar-track {
-    background: #e0e0e0;
-    border-radius: 3px;
-}
-
-#propertyList::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 3px;
-}
-
-#propertyList button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-#propertyList button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-#propertyListItems {
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@media (max-width: 768px) {
-    #propertyList > div:first-child + div {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
     
-    #propertyList button, 
-    #propertyList span {
-        padding: 0.3rem 0.5rem !important;
-        font-size: 0.7rem !important;
+    .property-item {
+        padding: 0.4rem;
     }
-    
-    select[onchange*="adminItemsPerPage"] {
-        margin-left: 0 !important;
-        margin-top: 0.5rem;
-    }
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.pdf-modal {
+    animation: modalFadeIn 0.2s ease;
 }
 
 /* ========== DRAG & DROP ========== */
 .dragging {
-    opacity: 0.5 !important;
-    transform: rotate(5deg) scale(0.95) !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
-    z-index: 1000 !important;
-}
-
-.drag-active {
-    background: rgba(52, 152, 219, 0.05) !important;
-    border: 2px dashed var(--accent) !important;
-    min-height: 120px !important;
-}
-
-/* Preview de mídia */
-.media-preview-item:hover, .pdf-preview-container:hover {
-    transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
-    transition: all 0.3s ease !important;
-}
-
-/* ========== EXCLUSÃO DE FOTOS ========== */
-.image-preview-container {
-    position: relative;
-    display: inline-block;
-    margin: 5px;
-}
-
-.delete-image-btn {
-    position: absolute;
-    top: -8px;
-    right: -8px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 10;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    transition: all 0.3s ease;
-}
-
-.delete-image-btn:hover {
-    background: #c0392b;
-    transform: scale(1.1);
-}
-
-.image-count {
-    position: absolute;
-    bottom: 1px;
-    right: 1px;
-    background: rgba(0,0,0,0.9);
-    color: white;
-    padding: 0.1rem 0.35rem;
-    border-radius: 8px 0 8px 8px;
-    font-size: 0.75rem;
-    z-index: 10;
-    white-space: nowrap;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.6);
-    font-weight: 600;
-    min-width: 22px;
-    height: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
-    border: 0.5px solid rgba(255,255,255,0.15);
+    opacity: 0.5;
+    transform: scale(0.95);
 }
