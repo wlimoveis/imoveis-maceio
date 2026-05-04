@@ -12,17 +12,72 @@
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/gallery.css">  <!-- ÚLTIMO = MAIOR PRIORIDADE -->
+    <link rel="stylesheet" href="css/gallery.css">
 
-   
+    <style>
+        /* Estilos adicionais para as abas */
+        .admin-tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 0;
+        }
+        .admin-tab {
+            padding: 0.75rem 1.5rem;
+            background: #f0f0f0;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.2s ease;
+        }
+        .admin-tab.active {
+            background: var(--primary);
+            color: white;
+        }
+        .admin-tab:hover:not(.active) {
+            background: #e0e0e0;
+            color: var(--primary);
+        }
+        .admin-tab-content {
+            display: none;
+        }
+        .admin-tab-content.active {
+            display: block;
+        }
+        .admin-panel {
+            overflow-y: auto;
+            max-height: calc(100vh - 2rem);
+        }
+        /* Formulario compacto em uma tela */
+        .form-compact #propertyForm {
+            gap: 0.5rem;
+        }
+        .form-compact #propertyForm input,
+        .form-compact #propertyForm select {
+            padding: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .form-compact #propertyForm textarea {
+            min-height: 60px;
+            padding: 0.5rem;
+        }
+        .form-compact #uploadArea,
+        .form-compact #pdfUploadArea {
+            padding: 0.8rem;
+        }
+        .form-compact .form-actions button {
+            padding: 0.5rem 1rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-content">
-            <!-- Desktop Layout Único -->
             <div class="header-integrated">
-                <!-- Logo e Nome (Lado Esquerdo) -->
                 <div class="brand-section">
                     <div class="logo">
                         <span class="logo-wl">WL</span>
@@ -30,26 +85,22 @@
                             <i class="fas fa-key"></i>
                         </div>
                     </div>
-                    
                     <div class="brand-info">
                         <div class="brand-name-compact">
                             <span class="first-name-compact">WEBER</span>
                             <span class="last-name-compact">LESSA</span>
                         </div>
-                        
                         <div class="creci-info-compact">
                             <div class="creci-badge-compact">
                                 <i class="fas fa-shield-alt"></i>
                                 <span class="creci-label-compact">CRECI</span>
                                 <span class="creci-number-compact">654/AL</span>
                             </div>
-                            
                             <div class="certified-badge-compact">
                                 <i class="fas fa-award"></i>
                                 <span>CRECI CERTIFICADO</span>
                             </div>
                         </div>
-                        
                         <div class="specialty-compact">
                             <i class="fas fa-home"></i>
                             <span class="specialty-title-compact">CORRETOR & CONSULTOR</span>
@@ -57,10 +108,7 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Contato e Endereço (Lado Direito - Topo) -->
                 <div class="contact-section">
-                    <!-- Telefone/WhatsApp -->
                     <div class="phone-whatsapp-compact">
                         <div class="phone-icons-compact">
                             <i class="fas fa-mobile-alt"></i>
@@ -71,8 +119,6 @@
                             <span class="phone-main-compact">9.9604-4513</span>
                         </div>
                     </div>
-                    
-                    <!-- Endereço -->
                     <div class="address-compact">
                         <i class="fas fa-map-marker-alt"></i>
                         <div class="address-text-compact">
@@ -83,50 +129,25 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Mobile Layout Super Compacto -->
             <div class="mobile-header-ultimate">
-                <!-- Linha 1: Logo + Nome + Telefone -->
                 <div class="mobile-row-1">
-                    <div class="mobile-logo-mini">
-                        <span>WL</span>
-                    </div>
-                    
+                    <div class="mobile-logo-mini"><span>WL</span></div>
                     <div class="mobile-name-mini">
                         <span class="mobile-first-name-mini">WEBER</span>
                         <span class="mobile-last-name-mini">LESSA</span>
                     </div>
-                    
                     <div class="mobile-phone-mini">
                         <i class="fas fa-mobile-alt"></i>
                         <i class="fab fa-whatsapp"></i>
                     </div>
                 </div>
-                
-                <!-- Linha 2: CRECI + Especialização -->
                 <div class="mobile-row-2">
-                    <div class="mobile-creci-mini">
-                        <i class="fas fa-shield-alt"></i>
-                        <span>CRECI 654/AL</span>
-                    </div>
-                    
-                    <div class="mobile-specialty-mini">
-                        <i class="fas fa-home"></i>
-                        <span>CORRETOR</span>
-                    </div>
+                    <div class="mobile-creci-mini"><i class="fas fa-shield-alt"></i><span>CRECI 654/AL</span></div>
+                    <div class="mobile-specialty-mini"><i class="fas fa-home"></i><span>CORRETOR</span></div>
                 </div>
-                
-                <!-- Linha 3: Endereço + Certificado -->
                 <div class="mobile-row-3">
-                    <div class="mobile-address-mini">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <span>Emp. Sizi & Neusa</span>
-                    </div>
-                    
-                    <div class="mobile-certified-mini">
-                        <i class="fas fa-award"></i>
-                        <span>CERTIFICADO</span>
-                    </div>
+                    <div class="mobile-address-mini"><i class="fas fa-map-marker-alt"></i><span>Emp. Sizi & Neusa</span></div>
+                    <div class="mobile-certified-mini"><i class="fas fa-award"></i><span>CERTIFICADO</span></div>
                 </div>
             </div>
         </div>
@@ -136,9 +157,7 @@
     <section class="hero">
         <h1>Encontre seu imóvel dos sonhos em Maceió</h1>
         <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliário alagoano</p>
-        <a href="#properties" class="cta-button">
-            <i class="fas fa-home"></i> Ver Imóveis
-        </a>
+        <a href="#properties" class="cta-button"><i class="fas fa-home"></i> Ver Imóveis</a>
     </section>
 
     <!-- Serviços Section -->
@@ -148,48 +167,12 @@
             <p>Oferecemos soluções completas para suas necessidades imobiliárias</p>
         </div>
         <div class="services-grid">
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-users"></i>
-                </div>
-                <h3>Equipe de Corretagem</h3>
-                <p>Venda de lotes, imóveis residenciais, comerciais, sítios, incorporações, consultoria, avaliação de imóveis, chácaras e fazendas com equipe qualificada.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-building"></i>
-                </div>
-                <h3>Incorporação Imobiliária</h3>
-                <p>Desenvolvemos empreendimentos de alto padrão com qualidade e inovação.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-hand-holding-usd"></i>
-                </div>
-                <h3>Financiamento Facilitado</h3>
-                <p>Linhas bancárias com boleto facilitado e condições especiais para sua aquisição.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-gavel"></i>
-                </div>
-                <h3>Regularização de Imóveis</h3>
-                <p>Usucapião, herança, inventário e toda documentação necessária para regularização.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-hand-holding-heart"></i>
-                </div>
-                <h3>Minha Casa Minha Vida</h3>
-                <p>Acesso facilitado ao programa governamental para realização do sonho da casa própria.</p>
-            </div>
-            <div class="service-card">
-                <div class="service-icon">
-                    <i class="fas fa-tractor"></i>
-                </div>
-                <h3>Propriedades Rurais</h3>
-                <p>Especialistas em sítios, chácaras e fazendas com documentação completa e regularizada.</p>
-            </div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-users"></i></div><h3>Equipe de Corretagem</h3><p>Venda de lotes, imóveis residenciais, comerciais, sítios, incorporações, consultoria, avaliação de imóveis, chácaras e fazendas com equipe qualificada.</p></div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-building"></i></div><h3>Incorporação Imobiliária</h3><p>Desenvolvemos empreendimentos de alto padrão com qualidade e inovação.</p></div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-usd"></i></div><h3>Financiamento Facilitado</h3><p>Linhas bancárias com boleto facilitado e condições especiais para sua aquisição.</p></div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Regularização de Imóveis</h3><p>Usucapião, herança, inventário e toda documentação necessária para regularização.</p></div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-heart"></i></div><h3>Minha Casa Minha Vida</h3><p>Acesso facilitado ao programa governamental para realização do sonho da casa própria.</p></div>
+            <div class="service-card"><div class="service-icon"><i class="fas fa-tractor"></i></div><h3>Propriedades Rurais</h3><p>Especialistas em sítios, chácaras e fazendas com documentação completa e regularizada.</p></div>
         </div>
     </section>
 
@@ -199,7 +182,6 @@
             <h2>Imóveis em Destaque</h2>
             <p>Confira nossas melhores oportunidades em Maceió e região</p>
         </div>
-        
         <div class="filters">
             <h3>Filtrar por:</h3>
             <div class="filter-options">
@@ -210,13 +192,10 @@
                 <button class="filter-btn" data-tooltip="Programa Minha Casa Minha Vida">Minha Casa Minha Vida</button>
             </div>
         </div>
-        
-        <div class="property-grid" id="properties-container">
-            <!-- Os imóveis serão carregados aqui via JavaScript -->
-        </div>
+        <div class="property-grid" id="properties-container"></div>
     </section>
 
-    <!-- Sobre Section - Estratégia de Marketing com Overlay e Caption -->
+    <!-- Sobre Section -->
     <section class="about">
         <div class="about-content">
             <div class="about-text">
@@ -227,37 +206,15 @@
             </div>
             <div class="about-image">
                 <div class="image-container">
-                    <img src="https://wlimoveis.github.io/imoveis-maceio/assets/equipe-weber-lessa.jpg" 
-                         alt="Equipe Weber Lessa - Especialistas em Imóveis em Maceió"
-                         onerror="this.style.display='none'; this.parentElement.querySelector('.image-fallback').style.display='flex';">
+                    <img src="https://wlimoveis.github.io/imoveis-maceio/assets/equipe-weber-lessa.jpg" alt="Equipe Weber Lessa" onerror="this.style.display='none'; this.parentElement.querySelector('.image-fallback').style.display='flex';">
                     <div class="image-overlay">
-                        <div class="overlay-content">
-                            <i class="fas fa-star"></i>
-                            <span>+30 anos de experiência</span>
-                            <i class="fas fa-star"></i>
-                        </div>
-                        <div class="overlay-content">
-                            <i class="fas fa-home"></i>
-                            <span>+500 imóveis negociados</span>
-                            <i class="fas fa-home"></i>
-                        </div>
-                        <div class="overlay-content">
-                            <i class="fas fa-smile"></i>
-                            <span>Clientes satisfeitos</span>
-                            <i class="fas fa-smile"></i>
-                        </div>
+                        <div class="overlay-content"><i class="fas fa-star"></i><span>+30 anos de experiência</span><i class="fas fa-star"></i></div>
+                        <div class="overlay-content"><i class="fas fa-home"></i><span>+500 imóveis negociados</span><i class="fas fa-home"></i></div>
+                        <div class="overlay-content"><i class="fas fa-smile"></i><span>Clientes satisfeitos</span><i class="fas fa-smile"></i></div>
                     </div>
-                    <div class="image-fallback" style="display: none;">
-                        <i class="fas fa-users"></i>
-                        <p>Equipe Weber Lessa</p>
-                        <p class="subtitle">Corretor & Consultor</p>
-                    </div>
+                    <div class="image-fallback" style="display: none;"><i class="fas fa-users"></i><p>Equipe Weber Lessa</p><p class="subtitle">Corretor & Consultor</p></div>
                 </div>
-                <div class="image-caption">
-                    <i class="fas fa-quote-left"></i>
-                    <p><strong>Equipe Weber Lessa</strong> — Profissionais comprometidos com o seu sonho de morar bem em Maceió</p>
-                    <i class="fas fa-quote-right"></i>
-                </div>
+                <div class="image-caption"><i class="fas fa-quote-left"></i><p><strong>Equipe Weber Lessa</strong> — Profissionais comprometidos com o seu sonho de morar bem em Maceió</p><i class="fas fa-quote-right"></i></div>
             </div>
         </div>
     </section>
@@ -265,363 +222,146 @@
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
-            <div class="footer-section">
-                <h3>Weber Lessa</h3>
-                <p>Corretor & Consultor com tradição e qualidade no mercado imobiliário de Maceió desde 1995.</p>
-                <div class="social-icons">
-                    <a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
-                    <a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h3>Contato</h3>
-                <p><i class="fas fa-phone"></i> (82) 9.9604-4513</p>
-                <p><i class="fas fa-map-marker-alt"></i> Empresarial Sizi & Neusa</p>
-                <p>Praça São Vicente, 09 - Centro</p>
-                <p>Maceió - AL, 57020-420</p>
-                <p><i class="fas fa-clock"></i> Segunda a Sexta: 8h às 18h</p>
-            </div>
-            <div class="footer-section">
-                <h3>Links Rápidos</h3>
-                <a href="#properties">Imóveis</a>
-                <a href="#services">Serviços</a>
-                <a href="#about">Sobre Nós</a>
-                <a href="#contact">Contato</a>
-            </div>
-            <div class="footer-section">
-                <h3>Especialidades</h3>
-                <a href="#">Venda de Imóveis</a>
-                <a href="#">Aluguel de Imóveis</a>
-                <a href="#">Propriedades Rurais</a>
-                <a href="#">Incorporação</a>
-                <a href="#">Financiamento</a>
-                <a href="#">Regularização</a>
-                <a href="#">Minha Casa Minha Vida</a>
-            </div>
+            <div class="footer-section"><h3>Weber Lessa</h3><p>Corretor & Consultor com tradição e qualidade no mercado imobiliário de Maceió desde 1995.</p><div class="social-icons"><a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a><a href="#" class="social-icon"><i class="fab fa-instagram"></i></a><a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a></div></div>
+            <div class="footer-section"><h3>Contato</h3><p><i class="fas fa-phone"></i> (82) 9.9604-4513</p><p><i class="fas fa-map-marker-alt"></i> Empresarial Sizi & Neusa</p><p>Praça São Vicente, 09 - Centro</p><p>Maceió - AL, 57020-420</p><p><i class="fas fa-clock"></i> Segunda a Sexta: 8h às 18h</p></div>
+            <div class="footer-section"><h3>Links Rápidos</h3><a href="#properties">Imóveis</a><a href="#services">Serviços</a><a href="#about">Sobre Nós</a><a href="#contact">Contato</a></div>
+            <div class="footer-section"><h3>Especialidades</h3><a href="#">Venda de Imóveis</a><a href="#">Aluguel de Imóveis</a><a href="#">Propriedades Rurais</a><a href="#">Incorporação</a><a href="#">Financiamento</a><a href="#">Regularização</a><a href="#">Minha Casa Minha Vida</a></div>
         </div>
-        <div class="copyright">
-            <p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p>
-        </div>
+        <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRAÇÃO ATUALIZADO ========== -->
+    <!-- ========== PAINEL DE ADMINISTRAÇÃO COM ABAS ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem;">
-            <i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa
-        </h3>
+        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
-        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h4 id="formTitle">Adicionar Novo Imóvel</h4>
-            <form id="propertyForm">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label><strong>Título do Imóvel *</strong></label>
-                        <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+        <!-- Abas -->
+        <div class="admin-tabs">
+            <button class="admin-tab active" data-tab="form-tab"><i class="fas fa-edit"></i> Cadastrar/Editar Imóvel</button>
+            <button class="admin-tab" data-tab="manage-tab"><i class="fas fa-list"></i> Gerenciar Imóveis</button>
+        </div>
+        
+        <!-- Conteudo Aba 1: Formulario -->
+        <div id="form-tab" class="admin-tab-content active form-compact">
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imóvel</h4>
+                <form id="propertyForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem;">
+                        <div><label><strong>Título do Imóvel *</strong></label><input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required style="width:100%; padding:0.5rem;"></div>
+                        <div><label><strong>Preço *</strong></label><input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required style="width:100%; padding:0.5rem;"></div>
                     </div>
-                    <div>
-                        <label><strong>Preço *</strong></label>
-                        <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Localização *</strong></label>
-                    <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Descrição</strong></label>
-                    <textarea id="propDescription" placeholder="Descreva o imóvel..." style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%; height: 100px;"></textarea>
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Características (separadas por vírgula)</strong></label>
-                    <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Varanda" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                    <small style="color: #666;">Separe por vírgulas</small>
-                </div>
+                    <div style="margin-bottom: 0.8rem;"><label><strong>Localização *</strong></label><input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required style="width:100%; padding:0.5rem;"></div>
+                    <div style="margin-bottom: 0.8rem;"><label><strong>Descrição</strong></label><textarea id="propDescription" placeholder="Descreva o imóvel..." rows="2" style="width:100%; padding:0.5rem;"></textarea></div>
+                    <div style="margin-bottom: 0.8rem;"><label><strong>Características (separadas por vírgula)</strong></label><input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina" style="width:100%; padding:0.5rem;"><small>Separe por vírgulas</small></div>
 
-                <!-- ========== SEÇÃO UPLOAD DE PDFs OTIMIZADA ========== -->
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
-                        <i class="fas fa-file-pdf"></i> Documentos PDF
-                    </label>
-                    
-                    <div id="pdfUploadArea" style="
-                        border: 2px dashed #95a5a6; 
-                        border-radius: 8px; 
-                        padding: 1.2rem; 
-                        text-align: center; 
-                        margin: 0.5rem 0; 
-                        cursor: pointer; 
-                        transition: all 0.3s ease; 
-                        background: #fafafa;
-                    ">
-                        <div style="font-size: 2.5rem; color: #95a5a6; margin-bottom: 0.5rem; opacity: 0.7;">
-                            <i class="fas fa-cloud-upload-alt"></i>
+                    <div style="margin-bottom: 1rem;">
+                        <label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
+                        <div id="pdfUploadArea" style="border:2px dashed #ddd; border-radius:8px; padding:0.8rem; text-align:center; cursor:pointer; background:#fafafa;">
+                            <i class="fas fa-cloud-upload-alt"></i> <span>Arraste ou clique para adicionar PDFs</span>
+                            <small style="display:block;">Máximo: 5 arquivos • 10MB cada</small>
                         </div>
-                        <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #555; font-weight: 500;">
-                            Arraste ou clique para adicionar PDFs
-                        </p>
-                        <p style="margin: 0; font-size: 0.75rem; color: #888;">
-                            Máximo: 5 arquivos • 10MB cada
-                        </p>
+                        <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display:none;">
+                        <div id="pdfUploadPreview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:0.5rem;"></div>
                     </div>
                     
-                    <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display: none;">
-                    
-                    <!-- ÁREA DE PREVIEW COMPACTA -->
-                    <div id="pdfUploadPreview" style="margin: 0.8rem 0; min-height: 40px;">
-                        <!-- PDFs serão renderizados aqui automaticamente -->
-                    </div>
-                </div>
-                
-                <!-- ========== SEÇÃO UPLOAD DE FOTOS/VIDEOS ========== -->
-                <div style="margin-bottom: 1.5rem;">
-                    <label><strong>Fotos e Vídeos do Imóvel</strong></label>
-                    
-                    <div id="uploadArea" style="border: 2px dashed #ddd; border-radius: 10px; padding: 2rem; text-align: center; margin: 1rem 0; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #ccc; margin-bottom: 1rem;"></i>
-                        <p style="margin: 0.5rem 0; font-size: 1.1rem; color: #555;">Clique ou arraste fotos e vídeos aqui</p>
-                        <p style="margin: 0; font-size: 0.9rem; color: #888;">
-                            <i class="fas fa-image"></i> Fotos (JPG, PNG) • 
-                            <i class="fas fa-video"></i> Vídeos (MP4)
-                        </p>
-                        <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: #999;">Máximo: 10 arquivos • 5MB cada</p>
+                    <div style="margin-bottom: 1rem;">
+                        <label><strong>Fotos e Vídeos do Imóvel</strong></label>
+                        <div id="uploadArea" style="border:2px dashed #ddd; border-radius:8px; padding:0.8rem; text-align:center; cursor:pointer; background:#fafafa;">
+                            <i class="fas fa-cloud-upload-alt"></i> <span>Clique ou arraste fotos e vídeos aqui</span>
+                            <small style="display:block;">Fotos (JPG, PNG) • Vídeos (MP4) • Máx: 10 arquivos • 5MB cada</small>
+                        </div>
+                        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
+                        <div id="uploadPreview" style="display:flex; gap:8px; flex-wrap:wrap; margin-top:0.5rem;"></div>
                     </div>
                     
-                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem; margin-bottom: 0.8rem;">
+                        <div><label><strong>Tipo do Imóvel</strong></label><select id="propType" style="width:100%; padding:0.5rem;"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="rural">Rural</option></select></div>
+                        <div><label><strong>Destaque</strong></label><select id="propBadge" style="width:100%; padding:0.5rem;"><option value="Novo">Novo</option><option value="Destaque">Destaque</option><option value="Luxo">Luxo</option><option value="MCMV">Minha Casa Minha Vida</option><option value="Fazenda">Fazenda</option><option value="Chacara">Chacara</option></select></div>
+                    </div>
                     
-                    <div id="uploadPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0; min-height: 60px;"></div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label><strong>Tipo do Imóvel</strong></label>
-                        <select id="propType" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                            <option value="residencial">Residencial</option>
-                            <option value="comercial">Comercial</option>
-                            <option value="rural">Rural</option>
-                        </select>
+                    <div style="margin-bottom: 1rem;"><label style="display:flex; align-items:center; gap:0.5rem;"><input type="checkbox" id="propHasVideo"> <span><strong>Este imóvel tem vídeo?</strong></span></label></div>
+                    
+                    <div style="display: flex; gap: 0.8rem;">
+                        <button type="submit" style="background:var(--success); color:white; padding:0.6rem 1rem; border:none; border-radius:5px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imóvel</button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#95a5a6; color:white; padding:0.6rem 1rem; border:none; border-radius:5px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
                     </div>
-                    <div>
-                        <label><strong>Destaque</strong></label>
-                        <select id="propBadge" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                            <option value="Novo">Novo</option>
-                            <option value="Destaque">Destaque</option>
-                            <option value="Luxo">Luxo</option>
-                            <option value="MCMV">Minha Casa Minha Vida</option>
-                            <option value="Fazenda">Fazenda</option>
-                            <option value="Chácara">Chácara</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem;">
-                        <input type="checkbox" id="propHasVideo"> 
-                        <span><strong>Este imóvel tem vídeo?</strong></span>
-                    </label>
-                </div>
-                
-                <div style="display: flex; gap: 1rem;">
-                    <button type="submit" style="background: var(--success); color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1.1rem;">
-                        <i class="fas fa-plus"></i> Adicionar Imóvel ao Site
-                    </button>
-                    <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background: #95a5a6; color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; display: none;">
-                        <i class="fas fa-times"></i> Cancelar Edição
-                    </button>
-                </div>
-            </form>
-            
-            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
-                <h4>Gerenciar Imóveis Existentes</h4>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Conteudo Aba 2: Gerenciamento -->
+        <div id="manage-tab" class="admin-tab-content">
+            <div style="background: white; padding: 1.5rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                <h4 style="margin-top: 0;">Gerenciar Imóveis Existentes</h4>
                 <p><small>Total de imóveis: <span id="propertyCount">0</span></small></p>
-                <div id="propertyList"></div>
+                <div id="propertyList" style="max-height: 500px; overflow-y: auto;"></div>
             </div>
         </div>
     </section>
     
     <!-- ========== MODAL PARA DOCUMENTOS PDF ========== -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
-        <div class="pdf-modal-content" style="
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        ">
-            <h3 id="pdfModalTitle" style="
-                color: var(--primary);
-                margin: 0 0 1rem 0;
-                padding-right: 30px;
-                font-size: 1.4rem;
-            ">
-                <i class="fas fa-file-pdf"></i> Documentos do Imóvel
-            </h3>
-            
-            <form id="pdfPasswordForm" style="margin: 0;">
-                <div id="pdfPreview" style="
-                    margin: 1rem 0;
-                    padding: 1rem;
-                    background: #f8f9fa;
-                    border-radius: 5px;
-                    font-size: 0.9rem;
-                    color: #666;
-                ">
-                    <p>Digite a senha para visualizar os documentos</p>
-                </div>
-                
-                <input type="password" 
-                       id="pdfPassword" 
-                       name="pdfPassword"
-                       placeholder="Digite a senha para acessar"
-                       style="
-                           width: 100%;
-                           padding: 0.9rem;
-                           border: 2px solid #ddd;
-                           border-radius: 5px;
-                           margin: 1rem 0;
-                           font-size: 1rem;
-                           display: block !important;
-                           visibility: visible !important;
-                           opacity: 1 !important;
-                           background: white !important;
-                           color: #333 !important;
-                       "
-                       autocomplete="off"
-                       required
-                       aria-label="Senha para acessar documentos PDF">
-                
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="submit"
-                            id="pdfAccessBtn"
-                            style="
-                                background: var(--primary);
-                                color: white;
-                                padding: 0.9rem 1.5rem;
-                                border: none;
-                                border-radius: 5px;
-                                cursor: pointer;
-                                flex: 1;
-                                font-size: 1rem;
-                                font-weight: 600;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                            ">
-                        <i class="fas fa-lock-open"></i> Acessar
-                    </button>
-                    
-                    <button type="button"
-                            id="pdfCloseBtn"
-                            style="
-                                background: #95a5a6;
-                                color: white;
-                                padding: 0.9rem 1.5rem;
-                                border: none;
-                                border-radius: 5px;
-                                cursor: pointer;
-                                font-size: 1rem;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                            ">
-                        <i class="fas fa-times"></i> Fechar
-                    </button>
+        <div class="pdf-modal-content" style="background:white; border-radius:10px; padding:1.5rem; max-width:400px; width:90%; text-align:center;">
+            <h3 id="pdfModalTitle" style="color:var(--primary); margin:0 0 1rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imóvel</h3>
+            <form id="pdfPasswordForm">
+                <div id="pdfPreview" style="margin:1rem 0; padding:0.5rem; background:#f8f9fa; border-radius:5px;"><p>Digite a senha para visualizar os documentos</p></div>
+                <input type="password" id="pdfPassword" name="pdfPassword" placeholder="Digite a senha para acessar" style="width:100%; padding:0.6rem; border:1px solid #ddd; border-radius:5px; margin:0.5rem 0;" autocomplete="off" required>
+                <div style="display:flex; gap:0.8rem; margin-top:1rem;">
+                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:var(--primary); color:white; border:none; padding:0.6rem; border-radius:5px; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
+                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#95a5a6; color:white; border:none; padding:0.6rem; border-radius:5px; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
                 </div>
             </form>
-            
-            <p style="
-                font-size: 0.8rem;
-                color: #666;
-                margin-top: 1.5rem;
-                text-align: center;
-            ">
-                <i class="fas fa-info-circle"></i> Solicite a senha ao corretor
-            </p>
+            <p style="font-size:0.7rem; color:#666; margin-top:1rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
         </div>
     </div>
 
-    <button class="admin-toggle">
-        <i class="fas fa-user-cog"></i>
-    </button>
-
-    <!-- ========== BOTÃO VOLTAR AO TOPO ========== -->
-    <button id="backToTopBtn">
-        <i class="fas fa-chevron-up"></i>
-    </button>
+    <button class="admin-toggle"><i class="fas fa-user-cog"></i></button>
+    <button id="backToTopBtn"><i class="fas fa-chevron-up"></i></button>
 
     <script>
-    // Botão Voltar ao Topo - Versão Liquid Glass (CSS no main.css)
+    // Botao Voltar ao Topo
     (function() {
         const backToTopBtn = document.getElementById('backToTopBtn');
         if (!backToTopBtn) return;
-        
-        // Mostrar/esconder botão baseado no scroll
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
                 backToTopBtn.style.display = 'flex';
                 backToTopBtn.style.opacity = '0.85';
             } else {
                 backToTopBtn.style.opacity = '0';
-                setTimeout(() => {
-                    if (window.scrollY <= 300) {
-                        backToTopBtn.style.display = 'none';
-                    }
-                }, 300);
+                setTimeout(() => { if (window.scrollY <= 300) backToTopBtn.style.display = 'none'; }, 300);
             }
         });
+        backToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
+        console.log('Botao Voltar ao Topo inicializado');
+    })();
+
+    // Sistema de Abas
+    document.addEventListener('DOMContentLoaded', function() {
+        const tabs = document.querySelectorAll('.admin-tab');
+        const contents = document.querySelectorAll('.admin-tab-content');
         
-        // Rolar suavemente para o topo
-        backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-tab');
+                tabs.forEach(t => t.classList.remove('active'));
+                contents.forEach(c => c.classList.remove('active'));
+                this.classList.add('active');
+                document.getElementById(targetId).classList.add('active');
             });
         });
-        
-        // Efeitos hover adicionais (CSS já cuida do visual, mas mantemos consistência)
-        backToTopBtn.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-2px)';
-        });
-        
-        backToTopBtn.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-        
-        console.log('✅ Botão Voltar ao Topo (Liquid Glass) inicializado');
-    })();
+    });
     </script>
 
     <!-- ========== SUPABASE E UTILITÁRIOS (CORE) ========== -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/modules/supabase.js" defer></script>
-    
-    <!-- ========== CORE COMPARTILHADO (PRIMEIRO) ========== -->
     <script src="js/modules/core/SharedCore.js" defer></script>
-        
-    <!-- ========== SISTEMA DE LOADING REUTILIZÁVEL (PRIMEIRO) ========== -->
     <script src="js/modules/utils/loading-manager.js" defer></script>
-
-    <!-- ========== SISTEMA UNIFICADO DE FILTROS ========== -->
     <script src="js/modules/utils/FilterManager.js" defer></script>
-        
-    <!-- ========== MÓDULOS PRINCIPAIS (DEFER) ========== -->
     <script src="js/modules/properties.js" defer></script>
     <script src="js/modules/gallery.js" defer></script>
-
-    <!-- ========== MÓDULOS PDF (DEFER) ========== -->
     <script src="js/modules/reader/pdf-unified.js" defer></script>
-
-    <!-- ========== SISTEMA DE MÍDIA UNIFICADO (DEFER) ========== -->
     <script src="js/modules/media/media-unified.js" defer></script>
-
-    <!-- ========== ADMIN (DEPENDE DO SISTEMA DE MÍDIA E LOADING) ========== -->
     <script src="js/modules/admin.js" defer></script>
 
     <!-- ========== CARREGAMENTO CONDICIONAL DE MÓDULOS DE SUPORTE ========== -->
@@ -633,85 +373,33 @@
                 loadSupportModules();
             }
         }, 100);
-        
-        setTimeout(() => {
-            if (!window.SYSTEM_CONFIG) {
-                console.error('❌ [SUPORTE] SYSTEM_CONFIG não encontrado.');
-            }
-        }, 3000);
-        
+        setTimeout(() => { if (!window.SYSTEM_CONFIG) console.error('SYSTEM_CONFIG nao encontrado.'); }, 3000);
         function loadSupportModules() {
             const config = window.SYSTEM_CONFIG;
-            
-            if (!config) {
-                console.error('❌ [SUPORTE] Configuração não disponível');
-                return;
-            }
-            
-            if (!config.shouldLoadSupport()) {
-                console.log('🚀 [SUPORTE] Modo produção - sem módulos de suporte');
-                return;
-            }
-            
-            if (window.supportModulesLoaded) {
-                console.log('⚡ [SUPORTE] Módulos já carregados');
-                return;
-            }
-            
-            console.log('🔧 [SUPORTE] Carregando módulos do repositório:', config.supportBaseUrl);
+            if (!config || !config.shouldLoadSupport()) { console.log('Modo producao'); return; }
+            if (window.supportModulesLoaded) return;
             window.supportModulesLoaded = true;
-            
             let loadedCount = 0;
             const totalModules = config.supportModules.length;
-            
             config.supportModules.forEach(modulePath => {
-                const fullUrl = config.getSupportUrl(modulePath);
-                
                 const script = document.createElement('script');
-                script.src = fullUrl;
+                script.src = config.getSupportUrl(modulePath);
                 script.defer = true;
-                
-                script.onload = () => {
-                    loadedCount++;
-                    console.log(`✅ [SUPORTE] ${modulePath} (${loadedCount}/${totalModules})`);
-                    
-                    if (loadedCount === totalModules) {
-                        console.log('🎉 [SUPORTE] TODOS os módulos carregados!');
-                        setTimeout(() => {
-                            if (typeof window.runSupportChecks === 'function') window.runSupportChecks();
-                            else if (typeof window.verifySystemFunctions === 'function') window.verifySystemFunctions();
-                        }, 1000);
-                    }
-                };
-                
-                script.onerror = () => {
-                    console.error(`❌ [SUPORTE] Falha: ${modulePath}`);
-                    console.error(`   URL: ${fullUrl}`);
-                };
-                
+                script.onload = () => { loadedCount++; if (loadedCount === totalModules) console.log('Todos os modulos carregados'); };
+                script.onerror = () => console.error('Falha:', modulePath);
                 document.head.appendChild(script);
             });
-            
-            console.log(`📦 [SUPORTE] Total: ${totalModules} módulos`);
         }
     })();
     </script>
         
-    <!-- ========== INICIALIZAÇÃO DO SISTEMA ========== -->
     <script>
     document.addEventListener('DOMContentLoaded', async function() {
-        console.log('🏠 Site completamente carregado!');
-        
+        console.log('Site completamente carregado!');
         setTimeout(async () => {
-            if (typeof window.initializeProperties === 'function') {
-                await window.initializeProperties();
-            }
-            
-            if (typeof window.setupFilters === 'function') {
-                window.setupFilters();
-            }
-            
-            console.log('✅ Sistema Weber Lessa inicializado');
+            if (typeof window.initializeProperties === 'function') await window.initializeProperties();
+            if (typeof window.setupFilters === 'function') window.setupFilters();
+            console.log('Sistema Weber Lessa inicializado');
         }, 1000);
     });
     </script>
