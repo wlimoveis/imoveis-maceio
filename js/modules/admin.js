@@ -1,4 +1,4 @@
-console.log('✅ admin.js carregado - Versão com Cancelar Corrigido');
+console.log('✅ admin.js carregado');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -23,8 +23,6 @@ window.toggleAdminPanel = function() {
 };
 
 window.resetAdminFormCompletely = function(showNotification = true) {
-    console.log('🔄 resetAdminFormCompletely chamado');
-    
     if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(null);
     else window.editingPropertyId = null;
     
@@ -53,39 +51,26 @@ window.resetAdminFormCompletely = function(showNotification = true) {
         submitBtn.style.background = '#27ae60';
     }
     
-    // CORREÇÃO: Esconder botão cancelar
     const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) {
-        cancelBtn.style.display = 'none';
-        console.log('✅ Botão Cancelar escondido');
-    }
+    if (cancelBtn) cancelBtn.style.display = 'none';
     
     if (showNotification && typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Formulário limpo para novo imóvel', 'info');
     return true;
 };
 
-// ========== FUNÇÃO CANCEL EDIT CORRIGIDA (COM LOGS) ==========
 window.cancelEdit = function() {
-    console.log('🔧 cancelEdit chamado. editingPropertyId:', window.editingPropertyId);
-    
     if (window.editingPropertyId) {
         if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
             window.resetAdminFormCompletely(true);
-            console.log('✅ Edição cancelada com sucesso');
             return true;
-        } else {
-            console.log('❌ Usuário cancelou a operação');
         }
     } else {
-        console.log('ℹ️ Nenhuma edição em andamento, apenas limpando formulário');
         window.resetAdminFormCompletely(false);
     }
     return false;
 };
 
 window.editProperty = function(id) {
-    console.log('✏️ editProperty chamado para ID:', id);
-    
     const property = window.properties?.find(p => p.id === id);
     if (!property) {
         if (typeof window.showAdminNotification === 'function') window.showAdminNotification('❌ Imóvel não encontrado!', 'error', 3000);
@@ -126,14 +111,8 @@ window.editProperty = function(id) {
         submitBtn.style.background = '#3498db';
     }
     
-    // CORREÇÃO: Mostrar botão cancelar
     const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) {
-        cancelBtn.style.display = 'inline-block';
-        console.log('✅ Botão Cancelar agora visível');
-    } else {
-        console.error('❌ Botão Cancelar não encontrado no DOM!');
-    }
+    if (cancelBtn) cancelBtn.style.display = 'inline-block';
     
     if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(property.id);
     else window.editingPropertyId = property.id;
@@ -322,72 +301,33 @@ window.setupForm = function() {
     });
 };
 
-// ========== SETUP ADMIN UI CORRIGIDO (VERSÃO FINAL) ==========
 window.setupAdminUI = function() {
-    console.log('🔧 setupAdminUI iniciado');
-    
     const panel = document.getElementById('adminPanel');
     if (panel) panel.style.display = 'none';
     
-    // Configurar botão toggle do admin
     const adminBtn = document.querySelector('.admin-toggle');
     if (adminBtn) {
         const newBtn = adminBtn.cloneNode(true);
         adminBtn.parentNode.replaceChild(newBtn, adminBtn);
-        document.querySelector('.admin-toggle').onclick = function(e) { 
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            window.toggleAdminPanel(); 
-        };
-        console.log('✅ Botão Admin Toggle configurado');
+        document.querySelector('.admin-toggle').onclick = e => { e.preventDefault(); e.stopPropagation(); window.toggleAdminPanel(); };
     }
     
-    // CORREÇÃO DEFINITIVA: Configurar botão cancelar
     const cancelBtn = document.getElementById('cancelEditBtn');
     if (cancelBtn) {
-        console.log('🔍 Botão Cancelar encontrado no DOM');
-        
-        // Remover qualquer evento anterior clonando o elemento
-        const newCancelBtn = cancelBtn.cloneNode(true);
-        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
-        
-        // Pegar o novo elemento e adicionar evento
-        const freshCancelBtn = document.getElementById('cancelEditBtn');
-        freshCancelBtn.onclick = function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            console.log('🛑 Botão Cancelar clicado - executando cancelEdit()');
-            window.cancelEdit();
-        };
-        
-        // Garantir que comece escondido
-        freshCancelBtn.style.display = 'none';
-        console.log('✅ Botão Cancelar configurado com sucesso!');
-    } else {
-        console.error('❌ Botão Cancelar (id="cancelEditBtn") não encontrado no DOM!');
-        console.log('⚠️ Verifique se o index.html contém: <button type="button" id="cancelEditBtn">');
+        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
+        const freshBtn = document.getElementById('cancelEditBtn');
+        freshBtn.onclick = e => { e.preventDefault(); e.stopPropagation(); window.cancelEdit(); };
+        freshBtn.style.display = 'none';
     }
-    
     if (typeof window.setupForm === 'function') setTimeout(window.setupForm, 100);
 };
 
-// Inicialização
 function initializeAdmin() {
-    console.log('🚀 initializeAdmin iniciado');
-    try { 
-        const stored = JSON.parse(localStorage.getItem('properties') || '[]'); 
-        if (!window.properties && stored.length) window.properties = stored; 
-    } catch (e) { 
-        console.error('Erro ao carregar do localStorage:', e); 
-    }
+    try { const stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
+    catch (e) { console.error('Erro ao carregar do localStorage:', e); }
     window.setupAdminUI();
-    setTimeout(() => { 
-        if (typeof window.setupLocationAutocomplete === 'function') window.setupLocationAutocomplete(); 
-    }, 500);
+    setTimeout(() => { if (typeof window.setupLocationAutocomplete === 'function') window.setupLocationAutocomplete(); }, 500);
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeAdmin);
-} else {
-    initializeAdmin();
-}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
+else initializeAdmin();
