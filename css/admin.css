@@ -1,5 +1,5 @@
 /* css/admin.css - Estilos do Painel Administrativo */
-/* VERSÃO ULTRA COMPACTA - COM PREVIEWS AJUSTADOS */
+/* VERSÃO COM PREVIEWS HORIZONTAIS SEM BARRA DE ROLAGEM */
 
 /* ========== PAINEL ADMIN ========== */
 .admin-panel {
@@ -16,7 +16,7 @@
     font-size: 0.8rem;
 }
 
-/* Scroll suave */
+/* Scroll suave do painel */
 .admin-panel::-webkit-scrollbar {
     width: 4px;
 }
@@ -90,7 +90,7 @@
     margin-top: 0.15rem;
 }
 
-/* ========== ÁREAS DE UPLOAD - EXTREMAMENTE COMPACTAS ========== */
+/* ========== ÁREAS DE UPLOAD ========== */
 .upload-area {
     border: 1px dashed #ccc;
     border-radius: 5px;
@@ -125,19 +125,18 @@
     color: #888;
 }
 
-/* ========== PREVIEWS - ALTURA AJUSTADA ========== */
+/* ========== PREVIEWS - HORIZONTAL WRAP SEM BARRA ========== */
 .preview-area {
     display: flex;
-    gap: 8px;
     flex-wrap: wrap;
-    margin: 0.3rem 0;
-    min-height: 70px;
-    max-height: 120px;
-    overflow-y: visible;
-    overflow-x: auto;
-    padding: 0.4rem;
+    gap: 10px;
+    margin: 0.5rem 0;
+    padding: 0.8rem;
+    min-height: auto;
+    max-height: none;
+    overflow: visible;
     background: #fff;
-    border-radius: 6px;
+    border-radius: 8px;
     border: 1px solid #eee;
 }
 
@@ -147,23 +146,28 @@
 #uploadPreview > div,
 #pdfUploadPreview > div {
     flex-shrink: 0;
-    width: 80px;
-    height: 80px;
+    width: 85px;
+    height: 85px;
+    position: relative;
+    transition: transform 0.2s ease;
 }
 
-/* Scroll horizontal suave para previews */
+.preview-area .media-preview-item-complete:hover,
+.preview-area .pdf-preview-item-complete:hover,
+#uploadPreview > div:hover,
+#pdfUploadPreview > div:hover {
+    transform: scale(1.05);
+}
+
+/* Remove qualquer scroll */
+.preview-area {
+    overflow: visible !important;
+    overflow-x: visible !important;
+    overflow-y: visible !important;
+}
+
 .preview-area::-webkit-scrollbar {
-    height: 4px;
-}
-
-.preview-area::-webkit-scrollbar-track {
-    background: #e0e0e0;
-    border-radius: 2px;
-}
-
-.preview-area::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 2px;
+    display: none;
 }
 
 /* ========== CHECKBOX ========== */
@@ -325,92 +329,6 @@
     z-index: 9 !important;
 }
 
-/* ========== RESPONSIVIDADE ========== */
-@media (max-width: 700px) {
-    .form-row {
-        grid-template-columns: 1fr;
-        gap: 0.4rem;
-    }
-    
-    .admin-panel {
-        padding: 0.5rem;
-        max-height: calc(100vh - 0.5rem);
-    }
-    
-    .preview-area {
-        max-height: 100px;
-        gap: 6px;
-    }
-    
-    .preview-area .media-preview-item-complete,
-    .preview-area .pdf-preview-item-complete,
-    #uploadPreview > div,
-    #pdfUploadPreview > div {
-        width: 70px;
-        height: 70px;
-    }
-    
-    #propertyList {
-        max-height: 150px;
-    }
-}
-
-@media (max-width: 480px) {
-    .admin-panel {
-        padding: 0.4rem;
-    }
-    
-    .preview-area {
-        max-height: 90px;
-    }
-    
-    .preview-area .media-preview-item-complete,
-    .preview-area .pdf-preview-item-complete,
-    #uploadPreview > div,
-    #pdfUploadPreview > div {
-        width: 60px;
-        height: 60px;
-    }
-}
-
-@media (max-height: 750px) {
-    .admin-panel {
-        max-height: calc(100vh - 0.5rem);
-    }
-    
-    .preview-area {
-        max-height: 90px;
-    }
-    
-    .preview-area .media-preview-item-complete,
-    .preview-area .pdf-preview-item-complete,
-    #uploadPreview > div,
-    #pdfUploadPreview > div {
-        width: 65px;
-        height: 65px;
-    }
-    
-    #propertyList {
-        max-height: 120px;
-    }
-}
-
-/* ========== ANIMAÇÕES ========== */
-@keyframes modalFadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-.pdf-modal {
-    animation: modalFadeIn 0.2s ease;
-}
-
-/* ========== DRAG & DROP ========== */
-.dragging {
-    opacity: 0.5;
-    transform: scale(0.95);
-}
-
 /* ========== ESTILOS PARA MODAL PDF ========== */
 .pdf-modal {
     display: none;
@@ -504,4 +422,94 @@
 
 .admin-location-suggestions div:hover {
     background: #e8f4fd;
+}
+
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 700px) {
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0.4rem;
+    }
+    
+    .admin-panel {
+        padding: 0.5rem;
+        max-height: calc(100vh - 0.5rem);
+    }
+    
+    .preview-area {
+        gap: 8px;
+        padding: 0.6rem;
+    }
+    
+    .preview-area .media-preview-item-complete,
+    .preview-area .pdf-preview-item-complete,
+    #uploadPreview > div,
+    #pdfUploadPreview > div {
+        width: 75px;
+        height: 75px;
+    }
+    
+    #propertyList {
+        max-height: 150px;
+    }
+}
+
+@media (max-width: 480px) {
+    .admin-panel {
+        padding: 0.4rem;
+    }
+    
+    .preview-area {
+        gap: 6px;
+        padding: 0.5rem;
+    }
+    
+    .preview-area .media-preview-item-complete,
+    .preview-area .pdf-preview-item-complete,
+    #uploadPreview > div,
+    #pdfUploadPreview > div {
+        width: 65px;
+        height: 65px;
+    }
+}
+
+@media (max-height: 750px) {
+    .admin-panel {
+        max-height: calc(100vh - 0.5rem);
+    }
+    
+    #propertyList {
+        max-height: 120px;
+    }
+}
+
+/* ========== ANIMAÇÕES ========== */
+@keyframes modalFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+.pdf-modal {
+    animation: modalFadeIn 0.2s ease;
+}
+
+.pdf-modal-content {
+    animation: modalSlideIn 0.2s ease;
+}
+
+/* ========== DRAG & DROP ========== */
+.dragging {
+    opacity: 0.5;
+    transform: scale(0.95);
 }
