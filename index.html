@@ -203,26 +203,6 @@
                 max-height: 45vh;
             }
         }
-        
-        /* Badge superior */
-        .admin-badge {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.7rem;
-            border-radius: 50%;
-            cursor: pointer;
-            z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-        .admin-badge:hover {
-            transform: scale(1.05);
-        }
     </style>
 </head>
 <body>
@@ -256,7 +236,7 @@
                         <div class="specialty-compact">
                             <i class="fas fa-home"></i>
                             <span class="specialty-title-compact">CORRETOR & CONSULTOR</span>
-                            <span class="specialty-subtitle-compact">IMOBILIÁRIO | JURÍDICO</span>
+                            <span class="specialty-subtitle-compact">IMOBILIARIO | JURIDICO</span>
                         </div>
                     </div>
                 </div>
@@ -275,8 +255,8 @@
                         <i class="fas fa-map-marker-alt"></i>
                         <div class="address-text-compact">
                             <span class="address-line-1">Empresarial Sizi & Neusa</span>
-                            <span class="address-line-2">Praça São Vicente, 09</span>
-                            <span class="address-line-3">Centro, Maceió-AL</span>
+                            <span class="address-line-2">Praca Sao Vicente, 09</span>
+                            <span class="address-line-3">Centro, Maceio-AL</span>
                         </div>
                     </div>
                 </div>
@@ -307,9 +287,9 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Encontre seu imóvel dos sonhos em Maceió</h1>
-        <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliário alagoano</p>
-        <a href="#properties" class="cta-button"><i class="fas fa-home"></i> Ver Imóveis</a>
+        <h1>Encontre seu imovel dos sonhos em Maceio</h1>
+        <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliario alagoano</p>
+        <a href="#properties" class="cta-button"><i class="fas fa-home"></i> Ver Imoveis</a>
     </section>
 
     <!-- Servicos Section -->
@@ -470,7 +450,8 @@
         </div>
     </div>
 
-    <button class="admin-badge" id="adminToggleBtn"><i class="fas fa-user-cog"></i></button>
+    <!-- Botoes -->
+    <button class="admin-toggle" id="adminToggleBtn"><i class="fas fa-user-cog"></i></button>
     <button id="backToTopBtn"><i class="fas fa-chevron-up"></i></button>
 
     <script>
@@ -490,7 +471,7 @@
         backToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     })();
 
-    // Sistema de Abas e Painel Admin
+    // Sistema de Abas e Painel Admin - COM VALIDACAO DE SENHA
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
@@ -505,27 +486,49 @@
             });
         });
         
-        // Controle do painel
+        // Elementos do painel
         const panel = document.getElementById('adminPanel');
         const overlay = document.getElementById('adminOverlay');
         const toggleBtn = document.getElementById('adminToggleBtn');
         const closeBtn = document.getElementById('adminCloseBtn');
         
-        function openPanel() {
-            panel.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closePanel() {
-            panel.classList.remove('active');
-            overlay.classList.remove('active');
+        // Funcao para fechar o painel
+        window.closeAdminPanel = function() {
+            if (panel) panel.classList.remove('active');
+            if (overlay) overlay.classList.remove('active');
             document.body.style.overflow = '';
-        }
+        };
         
-        if (toggleBtn) toggleBtn.onclick = () => openPanel();
-        if (closeBtn) closeBtn.onclick = () => closePanel();
-        if (overlay) overlay.onclick = () => closePanel();
+        // Funcao para abrir o painel com validacao de senha
+        window.openAdminPanelWithPassword = function() {
+            // Primeiro tenta usar a funcao global do admin.js (toggleAdminPanel)
+            if (typeof window.toggleAdminPanel === 'function') {
+                window.toggleAdminPanel();
+            } else {
+                // Fallback caso admin.js nao esteja carregado
+                const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
+                if (password === "wl654") {
+                    if (panel) panel.classList.add('active');
+                    if (overlay) overlay.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                    if (typeof window.loadPropertyList === 'function') {
+                        setTimeout(window.loadPropertyList, 300);
+                    }
+                    if (typeof window.resetAdminFormCompletely === 'function') {
+                        window.resetAdminFormCompletely(false);
+                    }
+                } else if (password !== null && password !== "") {
+                    alert('Senha incorreta!');
+                }
+            }
+        };
+        
+        // Configurar eventos
+        if (toggleBtn) toggleBtn.onclick = () => window.openAdminPanelWithPassword();
+        if (closeBtn) closeBtn.onclick = () => window.closeAdminPanel();
+        if (overlay) overlay.onclick = () => window.closeAdminPanel();
+        
+        console.log('✅ Sistema de abas e painel admin inicializado');
     });
     </script>
 
@@ -541,7 +544,7 @@
     <script src="js/modules/media/media-unified.js" defer></script>
     <script src="js/modules/admin.js" defer></script>
 
-    <!-- Carregamento Suporte -->
+    <!-- Carregamento Suporte Condicional -->
     <script>
     (() => {
         const waitForConfig = setInterval(() => {
