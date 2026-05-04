@@ -58,7 +58,10 @@ window.resetAdminFormCompletely = function(showNotification = true) {
     return true;
 };
 
+// ========== FUNÇÃO CANCEL EDIT CORRIGIDA ==========
 window.cancelEdit = function() {
+    console.log('🔧 cancelEdit chamado. editingPropertyId:', window.editingPropertyId);
+    
     if (window.editingPropertyId) {
         if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
             window.resetAdminFormCompletely(true);
@@ -301,6 +304,7 @@ window.setupForm = function() {
     });
 };
 
+// ========== SETUP ADMIN UI CORRIGIDO ==========
 window.setupAdminUI = function() {
     const panel = document.getElementById('adminPanel');
     if (panel) panel.style.display = 'none';
@@ -309,16 +313,34 @@ window.setupAdminUI = function() {
     if (adminBtn) {
         const newBtn = adminBtn.cloneNode(true);
         adminBtn.parentNode.replaceChild(newBtn, adminBtn);
-        document.querySelector('.admin-toggle').onclick = e => { e.preventDefault(); e.stopPropagation(); window.toggleAdminPanel(); };
+        document.querySelector('.admin-toggle').onclick = function(e) { 
+            e.preventDefault(); 
+            e.stopPropagation(); 
+            window.toggleAdminPanel(); 
+        };
     }
     
+    // CORREÇÃO: Garantir que o botão cancelar tenha o evento corretamente
     const cancelBtn = document.getElementById('cancelEditBtn');
     if (cancelBtn) {
-        cancelBtn.replaceWith(cancelBtn.cloneNode(true));
-        const freshBtn = document.getElementById('cancelEditBtn');
-        freshBtn.onclick = e => { e.preventDefault(); e.stopPropagation(); window.cancelEdit(); };
-        freshBtn.style.display = 'none';
+        // Remover eventos antigos clonando
+        const newCancelBtn = cancelBtn.cloneNode(true);
+        cancelBtn.parentNode.replaceChild(newCancelBtn, cancelBtn);
+        
+        // Adicionar evento correto
+        const freshCancelBtn = document.getElementById('cancelEditBtn');
+        freshCancelBtn.onclick = function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🛑 Botão Cancelar clicado');
+            window.cancelEdit();
+        };
+        freshCancelBtn.style.display = 'none';
+        console.log('✅ Botão Cancelar configurado');
+    } else {
+        console.warn('⚠️ Botão Cancelar não encontrado no DOM');
     }
+    
     if (typeof window.setupForm === 'function') setTimeout(window.setupForm, 100);
 };
 
