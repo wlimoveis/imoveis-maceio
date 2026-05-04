@@ -36,7 +36,7 @@
     border-left: 4px solid var(--primary);
 }
 
-/* ÍCONE DO PDF - PADRÃO DESEJADO */
+/* PDF ICON */
 .pdf-access {
     position: absolute;
     bottom: 2px;
@@ -65,7 +65,7 @@
     color: #1a5276;
 }
 
-/* INDICADOR DE VÍDEO CONSISTENTE */
+/* VIDEO INDICATOR */
 .video-indicator {
     position: absolute !important;
     top: 40px !important;
@@ -89,7 +89,7 @@
     font-size: 12px !important;
 }
 
-/* ========== ANIMAÇÃO DO MODAL PDF ========== */
+/* MODAL ANIMATIONS */
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -118,7 +118,6 @@
     animation: modalSlideIn 0.3s ease;
 }
 
-/* Animações para o modal de seleção de PDFs */
 #pdfSelectionModal {
     animation: modalFadeIn 0.25s ease;
 }
@@ -127,7 +126,6 @@
     animation: modalSlideIn 0.25s ease;
 }
 
-/* Efeito de hover no botão de fechar */
 #closeSelectionModalBtn {
     transition: all 0.2s ease;
 }
@@ -137,7 +135,7 @@
     background: #c0392b !important;
 }
 
-/* ========== EXCLUSÃO DE FOTOS ========== */
+/* IMAGE PREVIEW */
 .image-preview-container {
     position: relative;
     display: inline-block;
@@ -169,7 +167,6 @@
     transform: scale(1.1);
 }
 
-/* CONTADOR DE FOTOS */
 .image-count {
     position: absolute;
     bottom: 1px;
@@ -192,7 +189,7 @@
     border: 0.5px solid rgba(255,255,255,0.15);
 }
 
-/* ========== UPLOAD E PREVIEW ========== */
+/* UPLOAD SECTIONS */
 #existingImagesSection .image-preview-container,
 #existingPdfsSection .image-preview-container {
     border: 2px solid var(--success);
@@ -245,7 +242,7 @@
     margin-bottom: 1rem;
 }
 
-/* Estilos específicos do formulário admin */
+/* FORM STYLES */
 #propertyForm input,
 #propertyForm textarea,
 #propertyForm select {
@@ -299,8 +296,7 @@
     background: #7f8c8d;
 }
 
-/* ========== CORREÇÃO DEFINITIVA DO BOTÃO "CANCELAR EDIÇÃO" ========== */
-/* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - ETAPA 16.1 */
+/* CANCEL BUTTON FIX */
 #cancelEditBtn {
     cursor: pointer !important;
     pointer-events: auto !important;
@@ -320,8 +316,6 @@
     pointer-events: none !important;
 }
 
-/* ========== GARANTIR VISIBILIDADE E CLICABILIDADE DO BOTÃO CANCELAR ========== */
-/* 🔧 ADICIONADO POR CORREÇÃO DO BOTÃO CANCELAR */
 #cancelEditBtn {
     display: inline-block !important;
     visibility: visible !important;
@@ -334,7 +328,6 @@
     pointer-events: none !important;
 }
 
-/* Feedback visual para estado de cancelamento */
 #cancelEditBtn.cancelling {
     animation: pulseCancel 0.5s ease;
 }
@@ -345,7 +338,7 @@
     100% { transform: scale(1); }
 }
 
-/* Área de upload */
+/* UPLOAD AREAS */
 #uploadArea,
 #pdfUploadArea {
     border: 2px dashed #ddd;
@@ -373,7 +366,7 @@
     min-height: 60px;
 }
 
-/* Botões do admin */
+/* ADMIN BUTTONS */
 .admin-panel button:not(.delete-image-btn):not(.pdf-access):not(.gallery-modal-btn):not(.gallery-modal-close) {
     background: var(--accent);
     color: white;
@@ -401,25 +394,20 @@
     background: #c0392b !important;
 }
 
-/* ========== ESTILOS RESPONSIVOS PARA PDFs EM MOBILE ========== */
-
-/* Modal de PDF - Responsivo */
+/* RESPONSIVE PDF STYLES */
 .pdf-modal {
     animation: fadeIn 0.3s ease;
 }
 
-/* Container interno - Mobile First */
 .pdf-modal > div {
     transition: all 0.3s ease;
 }
 
-/* Itens da lista - Responsivos */
 .pdf-list-item {
     word-break: break-word;
     hyphens: auto;
 }
 
-/* Nome do arquivo com ellipsis */
 .pdf-list-item strong {
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -428,7 +416,6 @@
     text-overflow: ellipsis;
 }
 
-/* Botões responsivos */
 .view-pdf-btn {
     transition: transform 0.2s ease, background-color 0.2s ease;
 }
@@ -437,9 +424,7 @@
     transform: scale(0.95);
 }
 
-/* Media Queries para diferentes tamanhos de tela */
 @media (max-width: 480px) {
-    /* Smartphones muito pequenos */
     .pdf-modal > div {
         padding: 1rem !important;
         margin: 10px !important;
@@ -467,7 +452,6 @@
 }
 
 @media (max-width: 768px) and (min-width: 481px) {
-    /* Tablets pequenos e smartphones grandes */
     .pdf-modal > div {
         padding: 1.5rem !important;
         max-width: 90% !important;
@@ -483,7 +467,6 @@
 }
 
 @media (max-width: 1024px) {
-    /* Tablets e telas menores */
     .pdf-modal {
         padding: 15px !important;
     }
@@ -493,11 +476,9 @@
     }
 }
 
-/* Melhorias de acessibilidade em mobile */
 @media (hover: none) and (pointer: coarse) {
-    /* Para dispositivos touch */
     .view-pdf-btn {
-        min-height: 44px; /* Tamanho mínimo para toque */
+        min-height: 44px;
         min-width: 44px;
     }
     
@@ -511,19 +492,17 @@
     }
 }
 
-/* Animações */
 @keyframes fadeIn {
     from { opacity: 0; transform: translateY(20px); }
     to { opacity: 1; transform: translateY(0); }
 }
 
-/* Scroll suave no modal */
 .pdf-modal > div {
     scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
+    -webkit-overflow-scrolling: touch;
 }
 
-/* ========== MODAL DE SELEÇÃO DE PDFs ========== */
+/* PDF SELECTION MODAL */
 .pdf-list-item:hover {
     transform: translateY(-3px);
     box-shadow: 0 5px 15px rgba(0,0,0,0.15);
@@ -533,7 +512,6 @@
     transform: translateY(-1px);
 }
 
-/* Animações para o modal de seleção */
 @keyframes slideIn {
     from {
         opacity: 0;
@@ -549,7 +527,6 @@
     animation: slideIn 0.3s ease;
 }
 
-/* Responsividade para a lista de PDFs */
 @media (max-width: 768px) {
     .pdf-list-item {
         flex-direction: column;
@@ -567,8 +544,7 @@
     }
 }
 
-/* ========== DRAG & DROP REORDER - ESTILOS APRIMORADOS ========== */
-/* Melhorar visualização durante drag */
+/* DRAG AND DROP */
 .dragging {
     opacity: 0.5 !important;
     transform: rotate(5deg) scale(0.95) !important;
@@ -591,7 +567,6 @@
     z-index: 1001;
 }
 
-/* Feedback visual para área de drop */
 .drop-target {
     border: 3px dashed var(--accent) !important;
     background: rgba(52, 152, 219, 0.15) !important;
@@ -599,7 +574,7 @@
 }
 
 .drop-target::before {
-    content: "↓";
+    content: "\2193";
     position: absolute;
     top: -15px;
     left: 50%;
@@ -610,21 +585,18 @@
     z-index: 10;
 }
 
-/* Container ativo durante drag */
 .drag-active {
     background: rgba(52, 152, 219, 0.05) !important;
     border: 2px dashed var(--accent) !important;
     min-height: 120px !important;
 }
 
-/* Melhorar visualização das miniaturas */
 .media-preview-item:hover, .pdf-preview-container:hover {
     transform: translateY(-3px) scale(1.03) !important;
     box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
     transition: all 0.3s ease !important;
 }
 
-/* Indicador de ordem mais visível */
 .order-indicator {
     position: absolute !important;
     top: 25px !important;
@@ -644,7 +616,6 @@
     border: 1px solid white !important;
 }
 
-/* Tooltip para mostrar nome completo */
 .media-preview-item:hover::after,
 .pdf-preview-container:hover::after {
     content: attr(title);
@@ -662,13 +633,12 @@
     pointer-events: none;
 }
 
-/* Melhor contraste para ícones */
 .fa-arrows-alt {
     color: white !important;
     text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
 }
 
-/* Responsividade para mobile */
+/* MOBILE RESPONSIVENESS */
 @media (max-width: 768px) {
     .admin-panel {
         padding: 1rem;
@@ -718,8 +688,7 @@
     }
 }
 
-/* ========== ESTILOS DE VALIDAÇÃO PARA CAMPO DE SENHA PDF ========== */
-/* Adicionado por correção do aviso "[DOM] Password field is not contained in a form" */
+/* PASSWORD VALIDATION */
 #pdfPassword[aria-invalid="true"] {
     border-color: #e74c3c !important;
     background-color: #ffeaea !important;
@@ -741,7 +710,6 @@
     position: relative;
 }
 
-/* Indicador visual de campo obrigatório */
 #pdfPasswordForm:after {
     content: "*";
     color: #e74c3c;
@@ -751,34 +719,27 @@
     font-size: 1.2rem;
 }
 
-/* Melhorar acessibilidade */
 #pdfPassword:focus-visible {
     outline: 3px solid var(--primary);
     outline-offset: 2px;
 }
 
-/* Feedback visual para campo correto */
 #pdfPassword:valid:not(:placeholder-shown) {
     border-color: var(--success) !important;
     background-color: #e8f8ef !important;
 }
 
-/* ========== CSS DE EMERGÊNCIA PARA AUTOCOMPLETE - VERSÃO CORRIGIDA ========== */
-/* Garantir que as sugestões sejam VISÍVEIS a qualquer custo */
-
-/* Container pai do campo de localização DEVE ser relative */
+/* LOCATION AUTOCOMPLETE */
 #propLocation {
     position: relative !important;
     z-index: 100 !important;
 }
 
-/* Garantir que o formulário não esconda o dropdown */
 #propertyForm,
 .admin-panel {
     overflow: visible !important;
 }
 
-/* Container de sugestões - posicionamento absoluto relativo ao campo */
 .location-suggestions,
 div[class*="location-suggestions"] {
     position: absolute !important;
@@ -798,9 +759,9 @@ div[class*="location-suggestions"] {
     visibility: visible !important;
     opacity: 1 !important;
     margin-top: 4px !important;
+    animation: fadeInUp 0.2s ease;
 }
 
-/* Itens de sugestão */
 .location-suggestions-item,
 div[class*="location-suggestions-item"] {
     padding: 12px 16px !important;
@@ -809,78 +770,24 @@ div[class*="location-suggestions-item"] {
     font-size: 0.95rem !important;
     color: #222222 !important;
     background: white !important;
-    font-family: inherit !important;
     transition: all 0.2s ease !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
 }
 
 .location-suggestions-item:last-child {
     border-bottom: none !important;
 }
 
-.location-suggestions-item:hover,
-div[class*="location-suggestions-item"]:hover {
+.location-suggestions-item:hover {
     background: #e8f0fe !important;
     color: #1a5276 !important;
 }
 
-/* Destaque para o texto pesquisado */
-.location-suggestions-item strong,
-div[class*="location-suggestions-item"] strong {
+.location-suggestions-item strong {
     color: #1a5276 !important;
     background: #d4e6f1 !important;
     padding: 2px 4px !important;
     border-radius: 4px !important;
     font-weight: 700 !important;
-}
-
-/* Garantir que containers pai não escondam as sugestões */
-#adminPanel,
-.admin-panel,
-#propertyForm,
-[style*="overflow"] {
-    overflow: visible !important;
-}
-
-/* Estilo para a dica de preenchimento */
-.location-hint {
-    display: block !important;
-    color: #2c3e50 !important;
-    font-size: 0.7rem !important;
-    margin-top: 5px !important;
-    padding: 4px 8px !important;
-    background: #f0f7ff !important;
-    border-radius: 4px !important;
-    border-left: 3px solid #3498db !important;
-}
-
-/* Debug visual - borda vermelha para identificar o container */
-.location-suggestions {
-    outline: 2px solid red !important;
-}
-
-/* ========== ESTILOS PARA AUTOCOMPLETE DE BAIRROS ========== */
-/* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - PASSO 5 */
-.location-suggestions {
-    animation: fadeInUp 0.2s ease;
-}
-
-.location-suggestions-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: background 0.2s ease;
-}
-
-.location-suggestions-item:hover {
-    background: #f0f7ff !important;
-}
-
-.location-suggestions-item strong {
-    color: #1a5276;
-    font-weight: 700;
 }
 
 @keyframes fadeInUp {
@@ -894,22 +801,13 @@ div[class*="location-suggestions-item"] strong {
     }
 }
 
-/* Dica de preenchimento */
-.location-hint {
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* ========== ESTILOS PARA PREVIEW DE IMAGENS NO ADMIN ========== */
-
-/* Container da lista de propriedades */
+/* PROPERTY LIST */
 #propertyList {
     scrollbar-width: thin;
     scrollbar-color: var(--primary) #e0e0e0;
+    max-height: 650px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
 }
 
 #propertyList::-webkit-scrollbar {
@@ -926,44 +824,9 @@ div[class*="location-suggestions-item"] strong {
     border-radius: 3px;
 }
 
-/* Efeito de hover nos itens da lista */
-.property-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background: #ffffff !important;
-}
-
-/* Responsividade para mobile */
-@media (max-width: 768px) {
-    .property-item {
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-    
-    .property-item > div:first-child {
-        width: 100% !important;
-        height: 150px !important;
-    }
-    
-    .property-item > div:first-child img,
-    .property-item > div:first-child div {
-        width: 100%;
-        height: 100%;
-    }
-    
-    .property-item > div:last-child {
-        width: 100%;
-        justify-content: flex-start;
-    }
-}
-
-/* Badge para vídeo na miniatura (já incluído inline) */
-
-/* ========== ESTILOS PARA PAGINAÇÃO ========== */
-
-/* Botões de paginação - efeitos hover */
 #propertyList button:not(:disabled):hover {
     transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
 #propertyList button:disabled {
@@ -971,7 +834,6 @@ div[class*="location-suggestions-item"] strong {
     opacity: 0.5;
 }
 
-/* Animação suave ao trocar de página */
 #propertyListItems {
     animation: fadeIn 0.3s ease;
 }
@@ -987,7 +849,6 @@ div[class*="location-suggestions-item"] strong {
     }
 }
 
-/* Responsividade para paginação em mobile */
 @media (max-width: 768px) {
     #propertyList > div:first-child + div {
         flex-wrap: wrap;
@@ -1006,41 +867,23 @@ div[class*="location-suggestions-item"] strong {
     }
 }
 
-/* ========== MELHORIAS PARA PAGINAÇÃO COM 4/8/12/16 ========== */
-
-/* Ajuste de altura máxima da lista para as novas opções */
-#propertyList {
-    max-height: 650px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-}
-
-/* Transição suave ao trocar itens por página */
-#propertyListItems {
-    animation: fadeIn 0.25s ease;
-}
-
-/* Indicador visual da quantidade selecionada */
 select:focus {
     outline: none;
     border-color: var(--gold);
     box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
 }
 
-/* Responsividade para as novas opções */
 @media (max-width: 768px) {
     select {
         font-size: 0.7rem;
         padding: 0.25rem 0.4rem;
     }
     
-    /* Para 4 itens por página em mobile, exibir mais informações */
     .property-item {
         padding: 0.8rem;
     }
 }
 
-/* Indicador de carregamento ao trocar página */
 .pagination-loading {
     position: relative;
     pointer-events: none;
@@ -1048,7 +891,7 @@ select:focus {
 }
 
 .pagination-loading::after {
-    content: "🔄";
+    content: "\1F504";
     position: absolute;
     top: 50%;
     left: 50%;
