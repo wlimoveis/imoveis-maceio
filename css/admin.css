@@ -1,15 +1,135 @@
 /* css/admin.css - Estilos do Painel Administrativo */
+/* VERSÃO OTIMIZADA - Layout Responsivo Proporcional */
 
 /* ========== ESTILOS DO PAINEL ADMIN ========== */
 .admin-panel {
     background: #f8f9fa;
     padding: 2rem;
     margin: 2rem auto;
-    max-width: 1000px;
+    max-width: min(1200px, 90vw);
+    width: 100%;
     border-radius: 10px;
     display: none;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-height: 85vh;
+    overflow-y: auto;
 }
 
+/* Customização da barra de rolagem do painel */
+.admin-panel::-webkit-scrollbar {
+    width: 6px;
+}
+
+.admin-panel::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+.admin-panel::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+/* Container do formulário principal */
+#propertyForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+}
+
+/* Grid responsivo para grupos de campos (compatível com style inline existente) */
+#propertyForm > div[style*="grid-template-columns"] {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)) !important;
+    gap: 1rem;
+}
+
+/* Melhorias nos campos do formulário */
+#propertyForm input,
+#propertyForm textarea,
+#propertyForm select {
+    padding: 0.8rem 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+#propertyForm input:focus,
+#propertyForm textarea:focus,
+#propertyForm select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+}
+
+#propertyForm textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* ========== ÁREAS DE UPLOAD ========== */
+#uploadArea,
+#pdfUploadArea {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    text-align: center;
+    margin: 0.5rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+#uploadArea:hover,
+#pdfUploadArea:hover {
+    border-color: var(--primary);
+    background: #f0f8ff;
+}
+
+/* Previews de mídia */
+#uploadPreview,
+#pdfUploadPreview {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 1rem 0;
+    min-height: 80px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    background: #fff;
+    border-radius: 8px;
+    border: 1px solid #eee;
+}
+
+/* Container dos botões de ação (compatível com estrutura existente) */
+#propertyForm > div:last-of-type {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+}
+
+#propertyForm button[type="submit"],
+#cancelEditBtn {
+    flex: 1;
+    min-width: 180px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+#propertyForm button[type="submit"]:hover,
+#cancelEditBtn:hover {
+    transform: translateY(-2px);
+}
+
+/* Botão admin toggle */
 .admin-toggle {
     position: fixed;
     bottom: 20px;
@@ -23,8 +143,15 @@
     z-index: 1000;
     box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     font-size: 1.2rem;
+    transition: all 0.3s ease;
 }
 
+.admin-toggle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+/* Itens da lista de propriedades */
 .property-item {
     background: #f5f5f5;
     padding: 1rem;
@@ -34,9 +161,15 @@
     justify-content: space-between;
     align-items: center;
     border-left: 4px solid var(--primary);
+    transition: all 0.3s ease;
 }
 
-/* ÍCONE DO PDF - PADRÃO DESEJADO */
+.property-item:hover {
+    background: #ffffff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ========== ÍCONE DO PDF ========== */
 .pdf-access {
     position: absolute;
     bottom: 2px;
@@ -65,7 +198,7 @@
     color: #1a5276;
 }
 
-/* INDICADOR DE VÍDEO CONSISTENTE */
+/* ========== INDICADOR DE VÍDEO ========== */
 .video-indicator {
     position: absolute !important;
     top: 40px !important;
@@ -89,7 +222,42 @@
     font-size: 12px !important;
 }
 
-/* ========== ANIMAÇÃO DO MODAL PDF ========== */
+/* ========== BOTÃO CANCELAR EDIÇÃO - CORREÇÃO ========== */
+#cancelEditBtn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    background: #95a5a6;
+    color: white;
+    border: none;
+    transition: all 0.3s ease !important;
+}
+
+#cancelEditBtn:hover {
+    background: #7f8c8d !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3) !important;
+}
+
+#cancelEditBtn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+#cancelEditBtn {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+#cancelEditBtn * {
+    pointer-events: none !important;
+}
+
+/* ========== ANIMAÇÕES ========== */
 @keyframes modalSlideIn {
     from {
         opacity: 0;
@@ -102,12 +270,18 @@
 }
 
 @keyframes modalFadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes pulseCancel {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); box-shadow: 0 0 0 5px rgba(149, 165, 166, 0.3); }
+    100% { transform: scale(1); }
+}
+
+#cancelEditBtn.cancelling {
+    animation: pulseCancel 0.5s ease;
 }
 
 .pdf-modal {
@@ -118,23 +292,274 @@
     animation: modalSlideIn 0.3s ease;
 }
 
-/* Animações para o modal de seleção de PDFs */
-#pdfSelectionModal {
-    animation: modalFadeIn 0.25s ease;
+/* ========== RESPONSIVIDADE ========== */
+@media (max-width: 768px) {
+    .admin-panel {
+        padding: 1.2rem;
+        margin: 1rem auto;
+        max-width: 95vw;
+        max-height: 90vh;
+    }
+    
+    #propertyForm > div[style*="grid-template-columns"] {
+        grid-template-columns: 1fr !important;
+        gap: 0.8rem;
+    }
+    
+    #uploadArea,
+    #pdfUploadArea {
+        padding: 1rem;
+    }
+    
+    #propertyForm button[type="submit"],
+    #cancelEditBtn {
+        min-width: 100%;
+    }
+    
+    #propertyForm > div:last-of-type {
+        flex-direction: column;
+    }
+    
+    .property-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .admin-toggle {
+        bottom: 70px;
+        right: 20px;
+        padding: 0.8rem;
+        font-size: 1rem;
+    }
 }
 
-#pdfSelectionModal > div {
-    animation: modalSlideIn 0.25s ease;
+@media (max-width: 480px) {
+    .admin-panel {
+        padding: 1rem;
+    }
+    
+    #uploadPreview,
+    #pdfUploadPreview {
+        max-height: 150px;
+    }
 }
 
-/* Efeito de hover no botão de fechar */
-#closeSelectionModalBtn {
-    transition: all 0.2s ease;
+@media (min-width: 1400px) {
+    .admin-panel {
+        max-width: 1100px;
+    }
 }
 
-#closeSelectionModalBtn:hover {
-    transform: scale(1.1) rotate(90deg);
-    background: #c0392b !important;
+@media (max-height: 500px) and (orientation: landscape) {
+    .admin-panel {
+        max-height: 85vh;
+    }
+    
+    #uploadPreview,
+    #pdfUploadPreview {
+        max-height: 100px;
+    }
+}
+
+/* ========== ESTILOS DE VALIDAÇÃO PARA CAMPO DE SENHA PDF ========== */
+#pdfPassword[aria-invalid="true"] {
+    border-color: #e74c3c !important;
+    background-color: #ffeaea !important;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+#pdfPassword:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#pdfPasswordForm {
+    position: relative;
+}
+
+#pdfPasswordForm:after {
+    content: "*";
+    color: #e74c3c;
+    position: absolute;
+    top: 1rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+#pdfPassword:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#pdfPassword:valid:not(:placeholder-shown) {
+    border-color: var(--success) !important;
+    background-color: #e8f8ef !important;
+}
+
+/* ========== AUTOCOMPLETE DE LOCALIZAÇÃO ========== */
+#propLocation {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+#propertyForm,
+.admin-panel {
+    overflow: visible !important;
+}
+
+.location-suggestions,
+div[class*="location-suggestions"] {
+    position: absolute !important;
+    top: 100% !important;
+    left: 0 !important;
+    right: auto !important;
+    background: white !important;
+    border: 3px solid #1a5276 !important;
+    border-radius: 8px !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
+    max-height: 300px !important;
+    overflow-y: auto !important;
+    z-index: 9999999 !important;
+    width: 100% !important;
+    min-width: 250px !important;
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    margin-top: 4px !important;
+    animation: fadeInUp 0.2s ease;
+}
+
+.location-suggestions-item,
+div[class*="location-suggestions-item"] {
+    padding: 12px 16px !important;
+    cursor: pointer !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+    font-size: 0.95rem !important;
+    color: #222222 !important;
+    background: white !important;
+    transition: all 0.2s ease !important;
+}
+
+.location-suggestions-item:last-child {
+    border-bottom: none !important;
+}
+
+.location-suggestions-item:hover {
+    background: #e8f0fe !important;
+    color: #1a5276 !important;
+}
+
+.location-suggestions-item strong {
+    color: #1a5276 !important;
+    background: #d4e6f1 !important;
+    padding: 2px 4px !important;
+    border-radius: 4px !important;
+    font-weight: 700 !important;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ========== PAGINAÇÃO ========== */
+#propertyList {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #e0e0e0;
+    max-height: 650px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+#propertyList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#propertyList::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+#propertyList::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+#propertyList button:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+#propertyList button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#propertyListItems {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    #propertyList > div:first-child + div {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    #propertyList button, 
+    #propertyList span {
+        padding: 0.3rem 0.5rem !important;
+        font-size: 0.7rem !important;
+    }
+    
+    select[onchange*="adminItemsPerPage"] {
+        margin-left: 0 !important;
+        margin-top: 0.5rem;
+    }
+}
+
+/* ========== DRAG & DROP ========== */
+.dragging {
+    opacity: 0.5 !important;
+    transform: rotate(5deg) scale(0.95) !important;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
+    z-index: 1000 !important;
+}
+
+.drag-active {
+    background: rgba(52, 152, 219, 0.05) !important;
+    border: 2px dashed var(--accent) !important;
+    min-height: 120px !important;
+}
+
+/* Preview de mídia */
+.media-preview-item:hover, .pdf-preview-container:hover {
+    transform: translateY(-3px) scale(1.03) !important;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
+    transition: all 0.3s ease !important;
 }
 
 /* ========== EXCLUSÃO DE FOTOS ========== */
@@ -169,7 +594,6 @@
     transform: scale(1.1);
 }
 
-/* CONTADOR DE FOTOS */
 .image-count {
     position: absolute;
     bottom: 1px;
@@ -190,871 +614,4 @@
     justify-content: center;
     line-height: 1;
     border: 0.5px solid rgba(255,255,255,0.15);
-}
-
-/* ========== UPLOAD E PREVIEW ========== */
-#existingImagesSection .image-preview-container,
-#existingPdfsSection .image-preview-container {
-    border: 2px solid var(--success);
-}
-
-#existingImagesSection .delete-image-btn,
-#existingPdfsSection .delete-image-btn {
-    background: #e74c3c;
-}
-
-#newImagesSection .image-preview-container {
-    border: 2px dashed #3498db;
-}
-
-#newImagesSection .delete-image-btn,
-#newPdfsSection .delete-image-btn {
-    background: #3498db;
-}
-
-#newImagesSection .delete-image-btn:hover,
-#newPdfsSection .delete-image-btn:hover {
-    background: #2980b9;
-}
-
-#newPdfsSection .pdf-file-item {
-    border: 2px dashed #3498db;
-    background: #f8faff;
-}
-
-#existingImagesSection,
-#existingPdfsSection {
-    margin-bottom: 2rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 2px solid #eee;
-}
-
-#newImagesSection,
-#newPdfsSection {
-    margin-top: 1rem;
-    padding-top: 1.5rem;
-}
-
-#existingImagesSection > div,
-#newImagesSection > div,
-#existingPdfsSection > div,
-#newPdfsSection > div {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 1rem;
-}
-
-/* Estilos específicos do formulário admin */
-#propertyForm input,
-#propertyForm textarea,
-#propertyForm select {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    width: 100%;
-    font-size: 1rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-#propertyForm input:focus,
-#propertyForm textarea:focus,
-#propertyForm select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
-}
-
-#propertyForm button[type="submit"] {
-    background: var(--success);
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1.1rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    width: 100%;
-}
-
-#propertyForm button[type="submit"]:hover {
-    background: #219653;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(33, 150, 83, 0.3);
-}
-
-#cancelEditBtn {
-    background: #95a5a6;
-    color: white;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: all 0.3s ease;
-}
-
-#cancelEditBtn:hover {
-    background: #7f8c8d;
-}
-
-/* ========== CORREÇÃO DEFINITIVA DO BOTÃO "CANCELAR EDIÇÃO" ========== */
-/* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - ETAPA 16.1 */
-#cancelEditBtn {
-    cursor: pointer !important;
-    pointer-events: auto !important;
-    opacity: 1 !important;
-    transition: all 0.3s ease !important;
-}
-
-#cancelEditBtn:hover {
-    background: #7f8c8d !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3) !important;
-}
-
-#cancelEditBtn:disabled {
-    opacity: 0.5 !important;
-    cursor: not-allowed !important;
-    pointer-events: none !important;
-}
-
-/* ========== GARANTIR VISIBILIDADE E CLICABILIDADE DO BOTÃO CANCELAR ========== */
-/* 🔧 ADICIONADO POR CORREÇÃO DO BOTÃO CANCELAR */
-#cancelEditBtn {
-    display: inline-block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: relative !important;
-    z-index: 1000 !important;
-}
-
-#cancelEditBtn * {
-    pointer-events: none !important;
-}
-
-/* Feedback visual para estado de cancelamento */
-#cancelEditBtn.cancelling {
-    animation: pulseCancel 0.5s ease;
-}
-
-@keyframes pulseCancel {
-    0% { transform: scale(1); }
-    50% { transform: scale(0.95); box-shadow: 0 0 0 5px rgba(149, 165, 166, 0.3); }
-    100% { transform: scale(1); }
-}
-
-/* Área de upload */
-#uploadArea,
-#pdfUploadArea {
-    border: 2px dashed #ddd;
-    border-radius: 10px;
-    padding: 2rem;
-    text-align: center;
-    margin: 1rem 0;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background: #fafafa;
-}
-
-#uploadArea:hover,
-#pdfUploadArea:hover {
-    border-color: var(--primary);
-    background: #f0f8ff;
-}
-
-#uploadPreview,
-#pdfUploadPreview {
-    display: flex;
-    gap: 10px;
-    flex-wrap: wrap;
-    margin: 1rem 0;
-    min-height: 60px;
-}
-
-/* Botões do admin */
-.admin-panel button:not(.delete-image-btn):not(.pdf-access):not(.gallery-modal-btn):not(.gallery-modal-close) {
-    background: var(--accent);
-    color: white;
-    border: none;
-    padding: 0.5rem 1rem;
-    border-radius: 3px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    font-size: 0.9rem;
-    transition: all 0.3s ease;
-}
-
-.admin-panel button:not(.delete-image-btn):not(.pdf-access):not(.gallery-modal-btn):not(.gallery-modal-close):hover {
-    background: #2980b9;
-    transform: translateY(-2px);
-}
-
-.admin-panel button[style*="background: #e74c3c"] {
-    background: #e74c3c !important;
-}
-
-.admin-panel button[style*="background: #e74c3c"]:hover {
-    background: #c0392b !important;
-}
-
-/* ========== ESTILOS RESPONSIVOS PARA PDFs EM MOBILE ========== */
-
-/* Modal de PDF - Responsivo */
-.pdf-modal {
-    animation: fadeIn 0.3s ease;
-}
-
-/* Container interno - Mobile First */
-.pdf-modal > div {
-    transition: all 0.3s ease;
-}
-
-/* Itens da lista - Responsivos */
-.pdf-list-item {
-    word-break: break-word;
-    hyphens: auto;
-}
-
-/* Nome do arquivo com ellipsis */
-.pdf-list-item strong {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Botões responsivos */
-.view-pdf-btn {
-    transition: transform 0.2s ease, background-color 0.2s ease;
-}
-
-.view-pdf-btn:active {
-    transform: scale(0.95);
-}
-
-/* Media Queries para diferentes tamanhos de tela */
-@media (max-width: 480px) {
-    /* Smartphones muito pequenos */
-    .pdf-modal > div {
-        padding: 1rem !important;
-        margin: 10px !important;
-        width: 98% !important;
-    }
-    
-    .pdf-list-item {
-        padding: 0.7rem !important;
-        flex-direction: column;
-        align-items: flex-start !important;
-        gap: 0.8rem !important;
-    }
-    
-    .view-pdf-btn {
-        width: 100% !important;
-        justify-content: center !important;
-    }
-    
-    .pdf-list-item strong {
-        max-width: 100% !important;
-        white-space: normal !important;
-        -webkit-line-clamp: 3;
-        line-clamp: 3;
-    }
-}
-
-@media (max-width: 768px) and (min-width: 481px) {
-    /* Tablets pequenos e smartphones grandes */
-    .pdf-modal > div {
-        padding: 1.5rem !important;
-        max-width: 90% !important;
-    }
-    
-    .pdf-list-item {
-        flex-wrap: wrap;
-    }
-    
-    .pdf-list-item strong {
-        max-width: 250px !important;
-    }
-}
-
-@media (max-width: 1024px) {
-    /* Tablets e telas menores */
-    .pdf-modal {
-        padding: 15px !important;
-    }
-    
-    .view-pdf-btn span:last-child {
-        display: inline !important;
-    }
-}
-
-/* Melhorias de acessibilidade em mobile */
-@media (hover: none) and (pointer: coarse) {
-    /* Para dispositivos touch */
-    .view-pdf-btn {
-        min-height: 44px; /* Tamanho mínimo para toque */
-        min-width: 44px;
-    }
-    
-    .pdf-list-item {
-        min-height: 60px;
-    }
-    
-    #closeSelectionModalBtn {
-        min-width: 44px;
-        min-height: 44px;
-    }
-}
-
-/* Animações */
-@keyframes fadeIn {
-    from { opacity: 0; transform: translateY(20px); }
-    to { opacity: 1; transform: translateY(0); }
-}
-
-/* Scroll suave no modal */
-.pdf-modal > div {
-    scroll-behavior: smooth;
-    -webkit-overflow-scrolling: touch; /* Scroll suave no iOS */
-}
-
-/* ========== MODAL DE SELEÇÃO DE PDFs ========== */
-.pdf-list-item:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.15);
-}
-
-.pdf-list-item:active {
-    transform: translateY(-1px);
-}
-
-/* Animações para o modal de seleção */
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateY(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-#pdfSelectionModal > div {
-    animation: slideIn 0.3s ease;
-}
-
-/* Responsividade para a lista de PDFs */
-@media (max-width: 768px) {
-    .pdf-list-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .pdf-list-item > div:last-child {
-        align-self: flex-end;
-    }
-    
-    #pdfSelectionModal > div {
-        width: 95%;
-        padding: 1.5rem;
-    }
-}
-
-/* ========== DRAG & DROP REORDER - ESTILOS APRIMORADOS ========== */
-/* Melhorar visualização durante drag */
-.dragging {
-    opacity: 0.5 !important;
-    transform: rotate(5deg) scale(0.95) !important;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3) !important;
-    z-index: 1000 !important;
-}
-
-.dragging::after {
-    content: "Soltar aqui para reordenar";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: var(--primary);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-    z-index: 1001;
-}
-
-/* Feedback visual para área de drop */
-.drop-target {
-    border: 3px dashed var(--accent) !important;
-    background: rgba(52, 152, 219, 0.15) !important;
-    position: relative;
-}
-
-.drop-target::before {
-    content: "↓";
-    position: absolute;
-    top: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    color: var(--accent);
-    font-size: 1.2rem;
-    font-weight: bold;
-    z-index: 10;
-}
-
-/* Container ativo durante drag */
-.drag-active {
-    background: rgba(52, 152, 219, 0.05) !important;
-    border: 2px dashed var(--accent) !important;
-    min-height: 120px !important;
-}
-
-/* Melhorar visualização das miniaturas */
-.media-preview-item:hover, .pdf-preview-container:hover {
-    transform: translateY(-3px) scale(1.03) !important;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.15) !important;
-    transition: all 0.3s ease !important;
-}
-
-/* Indicador de ordem mais visível */
-.order-indicator {
-    position: absolute !important;
-    top: 25px !important;
-    right: 2px !important;
-    background: var(--primary) !important;
-    color: white !important;
-    font-size: 0.6rem !important;
-    width: 18px !important;
-    height: 18px !important;
-    border-radius: 50% !important;
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    font-weight: bold !important;
-    z-index: 5 !important;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.3) !important;
-    border: 1px solid white !important;
-}
-
-/* Tooltip para mostrar nome completo */
-.media-preview-item:hover::after,
-.pdf-preview-container:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: -30px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0,0,0,0.8);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.7rem;
-    white-space: nowrap;
-    z-index: 1000;
-    pointer-events: none;
-}
-
-/* Melhor contraste para ícones */
-.fa-arrows-alt {
-    color: white !important;
-    text-shadow: 1px 1px 2px rgba(0,0,0,0.5) !important;
-}
-
-/* Responsividade para mobile */
-@media (max-width: 768px) {
-    .admin-panel {
-        padding: 1rem;
-        margin: 1rem;
-    }
-    
-    #propertyForm {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-    
-    #propertyForm > div {
-        grid-template-columns: 1fr !important;
-    }
-    
-    .property-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 1rem;
-    }
-    
-    .property-item > div:last-child {
-        display: flex;
-        gap: 0.5rem;
-        width: 100%;
-    }
-    
-    .admin-toggle {
-        bottom: 70px;
-        right: 20px;
-        padding: 0.8rem;
-        font-size: 1rem;
-    }
-    
-    .media-preview-item, .pdf-preview-container {
-        width: 100px !important;
-        height: 100px !important;
-    }
-    
-    .order-indicator {
-        top: 20px !important;
-        right: 1px !important;
-        width: 16px !important;
-        height: 16px !important;
-        font-size: 0.5rem !important;
-    }
-}
-
-/* ========== ESTILOS DE VALIDAÇÃO PARA CAMPO DE SENHA PDF ========== */
-/* Adicionado por correção do aviso "[DOM] Password field is not contained in a form" */
-#pdfPassword[aria-invalid="true"] {
-    border-color: #e74c3c !important;
-    background-color: #ffeaea !important;
-    animation: shake 0.5s ease;
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-#pdfPassword:focus {
-    outline: 2px solid var(--primary);
-    outline-offset: 2px;
-}
-
-#pdfPasswordForm {
-    position: relative;
-}
-
-/* Indicador visual de campo obrigatório */
-#pdfPasswordForm:after {
-    content: "*";
-    color: #e74c3c;
-    position: absolute;
-    top: 1rem;
-    right: 0.5rem;
-    font-size: 1.2rem;
-}
-
-/* Melhorar acessibilidade */
-#pdfPassword:focus-visible {
-    outline: 3px solid var(--primary);
-    outline-offset: 2px;
-}
-
-/* Feedback visual para campo correto */
-#pdfPassword:valid:not(:placeholder-shown) {
-    border-color: var(--success) !important;
-    background-color: #e8f8ef !important;
-}
-
-/* ========== CSS DE EMERGÊNCIA PARA AUTOCOMPLETE - VERSÃO CORRIGIDA ========== */
-/* Garantir que as sugestões sejam VISÍVEIS a qualquer custo */
-
-/* Container pai do campo de localização DEVE ser relative */
-#propLocation {
-    position: relative !important;
-    z-index: 100 !important;
-}
-
-/* Garantir que o formulário não esconda o dropdown */
-#propertyForm,
-.admin-panel {
-    overflow: visible !important;
-}
-
-/* Container de sugestões - posicionamento absoluto relativo ao campo */
-.location-suggestions,
-div[class*="location-suggestions"] {
-    position: absolute !important;
-    top: 100% !important;
-    left: 0 !important;
-    right: auto !important;
-    background: white !important;
-    border: 3px solid #1a5276 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.3) !important;
-    max-height: 300px !important;
-    overflow-y: auto !important;
-    z-index: 9999999 !important;
-    width: 100% !important;
-    min-width: 250px !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    margin-top: 4px !important;
-}
-
-/* Itens de sugestão */
-.location-suggestions-item,
-div[class*="location-suggestions-item"] {
-    padding: 12px 16px !important;
-    cursor: pointer !important;
-    border-bottom: 1px solid #e0e0e0 !important;
-    font-size: 0.95rem !important;
-    color: #222222 !important;
-    background: white !important;
-    font-family: inherit !important;
-    transition: all 0.2s ease !important;
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-}
-
-.location-suggestions-item:last-child {
-    border-bottom: none !important;
-}
-
-.location-suggestions-item:hover,
-div[class*="location-suggestions-item"]:hover {
-    background: #e8f0fe !important;
-    color: #1a5276 !important;
-}
-
-/* Destaque para o texto pesquisado */
-.location-suggestions-item strong,
-div[class*="location-suggestions-item"] strong {
-    color: #1a5276 !important;
-    background: #d4e6f1 !important;
-    padding: 2px 4px !important;
-    border-radius: 4px !important;
-    font-weight: 700 !important;
-}
-
-/* Garantir que containers pai não escondam as sugestões */
-#adminPanel,
-.admin-panel,
-#propertyForm,
-[style*="overflow"] {
-    overflow: visible !important;
-}
-
-/* Estilo para a dica de preenchimento */
-.location-hint {
-    display: block !important;
-    color: #2c3e50 !important;
-    font-size: 0.7rem !important;
-    margin-top: 5px !important;
-    padding: 4px 8px !important;
-    background: #f0f7ff !important;
-    border-radius: 4px !important;
-    border-left: 3px solid #3498db !important;
-}
-
-/* Debug visual - borda vermelha para identificar o container */
-.location-suggestions {
-    outline: 2px solid red !important;
-}
-
-/* ========== ESTILOS PARA AUTOCOMPLETE DE BAIRROS ========== */
-/* ADICIONADO POR RECOMENDAÇÃO DE MELHORIA - PASSO 5 */
-.location-suggestions {
-    animation: fadeInUp 0.2s ease;
-}
-
-.location-suggestions-item {
-    padding: 8px 12px;
-    cursor: pointer;
-    border-bottom: 1px solid #eee;
-    transition: background 0.2s ease;
-}
-
-.location-suggestions-item:hover {
-    background: #f0f7ff !important;
-}
-
-.location-suggestions-item strong {
-    color: #1a5276;
-    font-weight: 700;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Dica de preenchimento */
-.location-hint {
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-/* ========== ESTILOS PARA PREVIEW DE IMAGENS NO ADMIN ========== */
-
-/* Container da lista de propriedades */
-#propertyList {
-    scrollbar-width: thin;
-    scrollbar-color: var(--primary) #e0e0e0;
-}
-
-#propertyList::-webkit-scrollbar {
-    width: 6px;
-}
-
-#propertyList::-webkit-scrollbar-track {
-    background: #e0e0e0;
-    border-radius: 3px;
-}
-
-#propertyList::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 3px;
-}
-
-/* Efeito de hover nos itens da lista */
-.property-item:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    background: #ffffff !important;
-}
-
-/* Responsividade para mobile */
-@media (max-width: 768px) {
-    .property-item {
-        flex-direction: column;
-        align-items: flex-start !important;
-    }
-    
-    .property-item > div:first-child {
-        width: 100% !important;
-        height: 150px !important;
-    }
-    
-    .property-item > div:first-child img,
-    .property-item > div:first-child div {
-        width: 100%;
-        height: 100%;
-    }
-    
-    .property-item > div:last-child {
-        width: 100%;
-        justify-content: flex-start;
-    }
-}
-
-/* Badge para vídeo na miniatura (já incluído inline) */
-
-/* ========== ESTILOS PARA PAGINAÇÃO ========== */
-
-/* Botões de paginação - efeitos hover */
-#propertyList button:not(:disabled):hover {
-    transform: translateY(-2px);
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-}
-
-#propertyList button:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-}
-
-/* Animação suave ao trocar de página */
-#propertyListItems {
-    animation: fadeIn 0.3s ease;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* Responsividade para paginação em mobile */
-@media (max-width: 768px) {
-    #propertyList > div:first-child + div {
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    #propertyList button, 
-    #propertyList span {
-        padding: 0.3rem 0.5rem !important;
-        font-size: 0.7rem !important;
-    }
-    
-    select[onchange*="adminItemsPerPage"] {
-        margin-left: 0 !important;
-        margin-top: 0.5rem;
-    }
-}
-
-/* ========== MELHORIAS PARA PAGINAÇÃO COM 4/8/12/16 ========== */
-
-/* Ajuste de altura máxima da lista para as novas opções */
-#propertyList {
-    max-height: 650px;
-    overflow-y: auto;
-    scroll-behavior: smooth;
-}
-
-/* Transição suave ao trocar itens por página */
-#propertyListItems {
-    animation: fadeIn 0.25s ease;
-}
-
-/* Indicador visual da quantidade selecionada */
-select:focus {
-    outline: none;
-    border-color: var(--gold);
-    box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
-}
-
-/* Responsividade para as novas opções */
-@media (max-width: 768px) {
-    select {
-        font-size: 0.7rem;
-        padding: 0.25rem 0.4rem;
-    }
-    
-    /* Para 4 itens por página em mobile, exibir mais informações */
-    .property-item {
-        padding: 0.8rem;
-    }
-}
-
-/* Indicador de carregamento ao trocar página */
-.pagination-loading {
-    position: relative;
-    pointer-events: none;
-    opacity: 0.6;
-}
-
-.pagination-loading::after {
-    content: "🔄";
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.5rem;
-    background: rgba(255,255,255,0.9);
-    padding: 1rem;
-    border-radius: 50%;
 }
