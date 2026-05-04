@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WEBER LESSA CORRETOR & CONSULTORIA DE IMÓVEIS - CRECI: 654/AL</title>
 
     <!-- Font Awesome -->
@@ -15,14 +15,13 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* Estilos adicionais para as abas e ajuste de altura */
+        /* Estilos para as abas do admin */
         .admin-tabs {
             display: flex;
             gap: 0.5rem;
             margin-bottom: 1rem;
             border-bottom: 2px solid #e0e0e0;
             padding-bottom: 0;
-            flex-shrink: 0;
         }
         .admin-tab {
             padding: 0.6rem 1.2rem;
@@ -45,55 +44,9 @@
         }
         .admin-tab-content {
             display: none;
-            height: 100%;
-            overflow-y: auto;
         }
         .admin-tab-content.active {
             display: block;
-        }
-        
-        /* PAINEL ADMIN - ALTURA EXATA DA TELA */
-        .admin-panel {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #f8f9fa;
-            padding: 1rem;
-            max-width: min(1000px, 95vw);
-            width: 95%;
-            max-height: 85vh;
-            height: auto;
-            border-radius: 12px;
-            display: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            overflow: hidden;
-            z-index: 10000;
-            flex-direction: column;
-        }
-        
-        .admin-panel.active {
-            display: flex;
-        }
-        
-        /* Container do conteudo com scroll apenas se necessario */
-        .admin-panel-body {
-            flex: 1;
-            overflow-y: auto;
-            padding-right: 0.5rem;
-            margin-top: 0.5rem;
-        }
-        
-        .admin-panel-body::-webkit-scrollbar {
-            width: 4px;
-        }
-        .admin-panel-body::-webkit-scrollbar-track {
-            background: #e0e0e0;
-            border-radius: 2px;
-        }
-        .admin-panel-body::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
         }
         
         /* Formulario compacto */
@@ -117,10 +70,6 @@
         .form-compact #pdfUploadArea {
             padding: 0.5rem;
         }
-        .form-compact .form-actions button {
-            padding: 0.4rem 0.8rem;
-            font-size: 0.85rem;
-        }
         .form-compact #uploadPreview,
         .form-compact #pdfUploadPreview {
             min-height: 40px;
@@ -130,78 +79,18 @@
         
         /* Container do gerenciamento */
         .manage-container {
-            max-height: 55vh;
+            max-height: 400px;
             overflow-y: auto;
         }
-        
-        /* Botao fechar do painel */
-        .admin-close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            background: #e74c3c;
-            color: white;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            cursor: pointer;
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
+
+        /* Animacao de destaque */
+        @keyframes highlightPulse {
+            0% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0.4); }
+            70% { box-shadow: 0 0 0 10px rgba(26, 82, 118, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0); }
         }
-        .admin-close:hover {
-            background: #c0392b;
-        }
-        
-        /* Overlay escuro */
-        .admin-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 9999;
-            display: none;
-        }
-        .admin-overlay.active {
-            display: block;
-        }
-        
-        /* Header do painel */
-        .admin-panel h3 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.1rem;
-            flex-shrink: 0;
-        }
-        
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .admin-panel {
-                width: 98%;
-                max-height: 90vh;
-                padding: 0.8rem;
-            }
-            .admin-tab {
-                padding: 0.4rem 0.8rem;
-                font-size: 0.75rem;
-            }
-            .form-compact #propertyForm input,
-            .form-compact #propertyForm select {
-                padding: 0.3rem 0.4rem;
-            }
-        }
-        
-        @media (max-height: 700px) {
-            .admin-panel {
-                max-height: 92vh;
-            }
-            .manage-container {
-                max-height: 45vh;
-            }
+        .admin-panel-highlight {
+            animation: highlightPulse 0.8s ease;
         }
     </style>
 </head>
@@ -362,77 +251,72 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- Overlay e Painel Admin -->
-    <div id="adminOverlay" class="admin-overlay"></div>
-    
-    <div class="admin-panel" id="adminPanel">
-        <button class="admin-close" id="adminCloseBtn">&times;</button>
-        <h3 style="text-align: center; color: var(--primary);"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
+    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS ========== -->
+    <section class="admin-panel" id="adminPanel">
+        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="form-tab"><i class="fas fa-edit"></i> Cadastrar/Editar</button>
+            <button class="admin-tab active" data-tab="form-tab"><i class="fas fa-edit"></i> Cadastrar/Editar Imovel</button>
             <button class="admin-tab" data-tab="manage-tab"><i class="fas fa-list"></i> Gerenciar Imoveis</button>
         </div>
         
-        <div class="admin-panel-body">
-            <!-- Aba 1: Formulario -->
-            <div id="form-tab" class="admin-tab-content active form-compact">
-                <div style="background: white; padding: 1rem; border-radius: 10px;">
-                    <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imovel</h4>
-                    <form id="propertyForm">
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
-                            <div><label><strong>Titulo *</strong></label><input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required></div>
-                            <div><label><strong>Preco *</strong></label><input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required></div>
-                        </div>
-                        <div style="margin-bottom: 0.6rem;"><label><strong>Localizacao *</strong></label><input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceio-AL" required></div>
-                        <div style="margin-bottom: 0.6rem;"><label><strong>Descricao</strong></label><textarea id="propDescription" placeholder="Descreva o imovel..." rows="2"></textarea></div>
-                        <div style="margin-bottom: 0.6rem;"><label><strong>Caracteristicas</strong></label><input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina"><small>Separe por virgulas</small></div>
+        <!-- Aba 1: Formulario -->
+        <div id="form-tab" class="admin-tab-content active form-compact">
+            <div style="background: white; padding: 1rem; border-radius: 10px;">
+                <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imovel</h4>
+                <form id="propertyForm">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
+                        <div><label><strong>Titulo *</strong></label><input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required></div>
+                        <div><label><strong>Preco *</strong></label><input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required></div>
+                    </div>
+                    <div style="margin-bottom: 0.6rem;"><label><strong>Localizacao *</strong></label><input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceio-AL" required></div>
+                    <div style="margin-bottom: 0.6rem;"><label><strong>Descricao</strong></label><textarea id="propDescription" placeholder="Descreva o imovel..." rows="2"></textarea></div>
+                    <div style="margin-bottom: 0.6rem;"><label><strong>Caracteristicas</strong></label><input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina"><small>Separe por virgulas</small></div>
 
-                        <div style="margin-bottom: 0.8rem;">
-                            <label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
-                            <div id="pdfUploadArea" class="upload-area" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
-                                <i class="fas fa-cloud-upload-alt"></i> Arraste ou clique para adicionar PDFs
-                                <small style="display:block;">Max: 5 arquivos • 10MB</small>
-                            </div>
-                            <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display:none;">
-                            <div id="pdfUploadPreview" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:0.3rem;"></div>
+                    <div style="margin-bottom: 0.8rem;">
+                        <label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
+                        <div id="pdfUploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
+                            <i class="fas fa-cloud-upload-alt"></i> Arraste ou clique para adicionar PDFs
+                            <small style="display:block;">Max: 5 arquivos • 10MB</small>
                         </div>
-                        
-                        <div style="margin-bottom: 0.8rem;">
-                            <label><strong>Fotos e Videos</strong></label>
-                            <div id="uploadArea" class="upload-area" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
-                                <i class="fas fa-cloud-upload-alt"></i> Clique ou arraste fotos e videos
-                                <small style="display:block;">Fotos (JPG, PNG) • Videos (MP4) • Max: 10 arquivos • 5MB</small>
-                            </div>
-                            <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
-                            <div id="uploadPreview" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:0.3rem;"></div>
+                        <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display:none;">
+                        <div id="pdfUploadPreview" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:0.3rem;"></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.8rem;">
+                        <label><strong>Fotos e Videos</strong></label>
+                        <div id="uploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
+                            <i class="fas fa-cloud-upload-alt"></i> Clique ou arraste fotos e videos
+                            <small style="display:block;">Fotos (JPG, PNG) • Videos (MP4) • Max: 10 arquivos • 5MB</small>
                         </div>
-                        
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
-                            <div><label><strong>Tipo</strong></label><select id="propType"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="rural">Rural</option></select></div>
-                            <div><label><strong>Destaque</strong></label><select id="propBadge"><option value="Novo">Novo</option><option value="Destaque">Destaque</option><option value="Luxo">Luxo</option><option value="MCMV">Minha Casa Minha Vida</option><option value="Fazenda">Fazenda</option><option value="Chacara">Chacara</option></select></div>
-                        </div>
-                        
-                        <div style="margin-bottom: 0.8rem;"><label style="display:flex; align-items:center; gap:0.5rem;"><input type="checkbox" id="propHasVideo"> <span><strong>Este imovel tem video?</strong></span></label></div>
-                        
-                        <div style="display: flex; gap: 0.6rem;">
-                            <button type="submit" style="background:var(--success); color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imovel</button>
-                            <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#95a5a6; color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-            
-            <!-- Aba 2: Gerenciamento -->
-            <div id="manage-tab" class="admin-tab-content">
-                <div style="background: white; padding: 1rem; border-radius: 10px;">
-                    <h4 style="margin-top: 0;">Gerenciar Imoveis Existentes</h4>
-                    <p><small>Total de imoveis: <span id="propertyCount">0</span></small></p>
-                    <div id="propertyList" class="manage-container"></div>
-                </div>
+                        <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
+                        <div id="uploadPreview" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:0.3rem;"></div>
+                    </div>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-bottom: 0.6rem;">
+                        <div><label><strong>Tipo</strong></label><select id="propType"><option value="residencial">Residencial</option><option value="comercial">Comercial</option><option value="rural">Rural</option></select></div>
+                        <div><label><strong>Destaque</strong></label><select id="propBadge"><option value="Novo">Novo</option><option value="Destaque">Destaque</option><option value="Luxo">Luxo</option><option value="MCMV">Minha Casa Minha Vida</option><option value="Fazenda">Fazenda</option><option value="Chacara">Chacara</option></select></div>
+                    </div>
+                    
+                    <div style="margin-bottom: 0.8rem;"><label style="display:flex; align-items:center; gap:0.5rem;"><input type="checkbox" id="propHasVideo"> <span><strong>Este imovel tem video?</strong></span></label></div>
+                    
+                    <div style="display: flex; gap: 0.6rem;">
+                        <button type="submit" style="background:var(--success); color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imovel</button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#95a5a6; color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
+                    </div>
+                </form>
             </div>
         </div>
-    </div>
+        
+        <!-- Aba 2: Gerenciamento -->
+        <div id="manage-tab" class="admin-tab-content">
+            <div style="background: white; padding: 1rem; border-radius: 10px;">
+                <h4 style="margin-top: 0;">Gerenciar Imoveis Existentes</h4>
+                <p><small>Total de imoveis: <span id="propertyCount">0</span></small></p>
+                <div id="propertyList" class="manage-container"></div>
+            </div>
+        </div>
+    </section>
 
     <!-- Modal PDF -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
@@ -471,7 +355,7 @@
         backToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     })();
 
-    // Sistema de Abas e Painel Admin - COM VALIDACAO DE SENHA
+    // Sistema de Abas
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
@@ -486,49 +370,37 @@
             });
         });
         
-        // Elementos do painel
-        const panel = document.getElementById('adminPanel');
-        const overlay = document.getElementById('adminOverlay');
+        // Comportamento do botao admin - rolagem suave ate o painel
         const toggleBtn = document.getElementById('adminToggleBtn');
-        const closeBtn = document.getElementById('adminCloseBtn');
+        const adminPanel = document.getElementById('adminPanel');
         
-        // Funcao para fechar o painel
-        window.closeAdminPanel = function() {
-            if (panel) panel.classList.remove('active');
-            if (overlay) overlay.classList.remove('active');
-            document.body.style.overflow = '';
-        };
-        
-        // Funcao para abrir o painel com validacao de senha
-        window.openAdminPanelWithPassword = function() {
-            // Primeiro tenta usar a funcao global do admin.js (toggleAdminPanel)
-            if (typeof window.toggleAdminPanel === 'function') {
-                window.toggleAdminPanel();
-            } else {
-                // Fallback caso admin.js nao esteja carregado
-                const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
-                if (password === "wl654") {
-                    if (panel) panel.classList.add('active');
-                    if (overlay) overlay.classList.add('active');
-                    document.body.style.overflow = 'hidden';
-                    if (typeof window.loadPropertyList === 'function') {
-                        setTimeout(window.loadPropertyList, 300);
+        if (toggleBtn) {
+            toggleBtn.onclick = function() {
+                // Chama a funcao global do admin.js que pede a senha
+                if (typeof window.toggleAdminPanel === 'function') {
+                    window.toggleAdminPanel();
+                } else {
+                    // Fallback
+                    const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
+                    if (password === "wl654") {
+                        if (adminPanel) {
+                            adminPanel.style.display = 'block';
+                            setTimeout(() => {
+                                adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                adminPanel.classList.add('admin-panel-highlight');
+                                setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
+                            }, 100);
+                            if (typeof window.loadPropertyList === 'function') setTimeout(window.loadPropertyList, 300);
+                            if (typeof window.resetAdminFormCompletely === 'function') window.resetAdminFormCompletely(false);
+                        }
+                    } else if (password !== null && password !== "") {
+                        alert('Senha incorreta!');
                     }
-                    if (typeof window.resetAdminFormCompletely === 'function') {
-                        window.resetAdminFormCompletely(false);
-                    }
-                } else if (password !== null && password !== "") {
-                    alert('Senha incorreta!');
                 }
-            }
-        };
+            };
+        }
         
-        // Configurar eventos
-        if (toggleBtn) toggleBtn.onclick = () => window.openAdminPanelWithPassword();
-        if (closeBtn) closeBtn.onclick = () => window.closeAdminPanel();
-        if (overlay) overlay.onclick = () => window.closeAdminPanel();
-        
-        console.log('✅ Sistema de abas e painel admin inicializado');
+        console.log('✅ Sistema de abas inicializado');
     });
     </script>
 
