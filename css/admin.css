@@ -1,5 +1,5 @@
 /* css/admin.css - Estilos do Painel Administrativo */
-/* VERSÃO COM PREVIEWS HORIZONTAIS SEM BARRA DE ROLAGEM */
+/* VERSÃO COM PREVIEWS HORIZONTAIS FORÇADOS SEM BARRA */
 
 /* ========== PAINEL ADMIN ========== */
 .admin-panel {
@@ -125,19 +125,22 @@
     color: #888;
 }
 
-/* ========== PREVIEWS - HORIZONTAL WRAP SEM BARRA ========== */
+/* ========== PREVIEWS - LAYOUT HORIZONTAL FORÇADO SEM BARRA ========== */
 .preview-area {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 10px;
     margin: 0.5rem 0;
     padding: 0.8rem;
     min-height: auto;
-    max-height: none;
-    overflow: visible;
+    overflow-x: visible;
+    overflow-y: visible;
     background: #fff;
     border-radius: 8px;
     border: 1px solid #eee;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* Itens de preview individuais */
@@ -145,7 +148,7 @@
 .preview-area .pdf-preview-item-complete,
 #uploadPreview > div,
 #pdfUploadPreview > div {
-    flex-shrink: 0;
+    flex: 0 0 auto;
     width: 85px;
     height: 85px;
     position: relative;
@@ -159,7 +162,7 @@
     transform: scale(1.05);
 }
 
-/* Remove qualquer scroll */
+/* Remove QUALQUER barra de rolagem */
 .preview-area {
     overflow: visible !important;
     overflow-x: visible !important;
@@ -167,7 +170,9 @@
 }
 
 .preview-area::-webkit-scrollbar {
-    display: none;
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
 }
 
 /* ========== CHECKBOX ========== */
