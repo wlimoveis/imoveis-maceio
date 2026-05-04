@@ -12,9 +12,7 @@
     <link rel="stylesheet" href="css/header.css">
     <link rel="stylesheet" href="css/admin.css">
     <link rel="stylesheet" href="css/main.css">
-    <link rel="stylesheet" href="css/gallery.css">  <!-- ÚLTIMO = MAIOR PRIORIDADE -->
-
-   
+    <link rel="stylesheet" href="css/gallery.css">
 </head>
 <body>
     <!-- Header -->
@@ -305,172 +303,124 @@
         </div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRAÇÃO ATUALIZADO ========== -->
+    <!-- ========== PAINEL DE ADMINISTRAÇÃO OTIMIZADO (UMA TELA) ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1.5rem;">
-            <i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa
-        </h3>
+        <h3><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
-        <div style="background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <h4 id="formTitle">Adicionar Novo Imóvel</h4>
-            <form id="propertyForm">
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label><strong>Título do Imóvel *</strong></label>
-                        <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                    </div>
-                    <div>
-                        <label><strong>Preço *</strong></label>
-                        <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                    </div>
+        <form id="propertyForm">
+            <!-- LINHA 1: Título e Preço -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label><strong>Título do Imóvel *</strong></label>
+                    <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required>
                 </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Localização *</strong></label>
-                    <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
+                <div class="form-group">
+                    <label><strong>Preço *</strong></label>
+                    <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required>
                 </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Descrição</strong></label>
-                    <textarea id="propDescription" placeholder="Descreva o imóvel..." style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%; height: 100px;"></textarea>
-                </div>
-                
-                <div style="margin-bottom: 1rem;">
-                    <label><strong>Características (separadas por vírgula)</strong></label>
-                    <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Varanda" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                    <small style="color: #666;">Separe por vírgulas</small>
-                </div>
-
-                <!-- ========== SEÇÃO UPLOAD DE PDFs OTIMIZADA ========== -->
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #333;">
-                        <i class="fas fa-file-pdf"></i> Documentos PDF
-                    </label>
-                    
-                    <div id="pdfUploadArea" style="
-                        border: 2px dashed #95a5a6; 
-                        border-radius: 8px; 
-                        padding: 1.2rem; 
-                        text-align: center; 
-                        margin: 0.5rem 0; 
-                        cursor: pointer; 
-                        transition: all 0.3s ease; 
-                        background: #fafafa;
-                    ">
-                        <div style="font-size: 2.5rem; color: #95a5a6; margin-bottom: 0.5rem; opacity: 0.7;">
-                            <i class="fas fa-cloud-upload-alt"></i>
-                        </div>
-                        <p style="margin: 0.3rem 0; font-size: 0.9rem; color: #555; font-weight: 500;">
-                            Arraste ou clique para adicionar PDFs
-                        </p>
-                        <p style="margin: 0; font-size: 0.75rem; color: #888;">
-                            Máximo: 5 arquivos • 10MB cada
-                        </p>
-                    </div>
-                    
-                    <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display: none;">
-                    
-                    <!-- ÁREA DE PREVIEW COMPACTA -->
-                    <div id="pdfUploadPreview" style="margin: 0.8rem 0; min-height: 40px;">
-                        <!-- PDFs serão renderizados aqui automaticamente -->
-                    </div>
-                </div>
-                
-                <!-- ========== SEÇÃO UPLOAD DE FOTOS/VIDEOS ========== -->
-                <div style="margin-bottom: 1.5rem;">
-                    <label><strong>Fotos e Vídeos do Imóvel</strong></label>
-                    
-                    <div id="uploadArea" style="border: 2px dashed #ddd; border-radius: 10px; padding: 2rem; text-align: center; margin: 1rem 0; cursor: pointer; transition: all 0.3s ease; background: #fafafa;">
-                        <i class="fas fa-cloud-upload-alt" style="font-size: 2.5rem; color: #ccc; margin-bottom: 1rem;"></i>
-                        <p style="margin: 0.5rem 0; font-size: 1.1rem; color: #555;">Clique ou arraste fotos e vídeos aqui</p>
-                        <p style="margin: 0; font-size: 0.9rem; color: #888;">
-                            <i class="fas fa-image"></i> Fotos (JPG, PNG) • 
-                            <i class="fas fa-video"></i> Vídeos (MP4)
-                        </p>
-                        <p style="margin: 0.5rem 0 0; font-size: 0.8rem; color: #999;">Máximo: 10 arquivos • 5MB cada</p>
-                    </div>
-                    
-                    <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
-                    
-                    <div id="uploadPreview" style="display: flex; gap: 10px; flex-wrap: wrap; margin: 1rem 0; min-height: 60px;"></div>
-                </div>
-                
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
-                    <div>
-                        <label><strong>Tipo do Imóvel</strong></label>
-                        <select id="propType" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                            <option value="residencial">Residencial</option>
-                            <option value="comercial">Comercial</option>
-                            <option value="rural">Rural</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label><strong>Destaque</strong></label>
-                        <select id="propBadge" style="padding: 0.8rem; border: 1px solid #ddd; border-radius: 5px; width: 100%;">
-                            <option value="Novo">Novo</option>
-                            <option value="Destaque">Destaque</option>
-                            <option value="Luxo">Luxo</option>
-                            <option value="MCMV">Minha Casa Minha Vida</option>
-                            <option value="Fazenda">Fazenda</option>
-                            <option value="Chácara">Chácara</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div style="margin-bottom: 1.5rem;">
-                    <label style="display: flex; align-items: center; gap: 0.5rem;">
-                        <input type="checkbox" id="propHasVideo"> 
-                        <span><strong>Este imóvel tem vídeo?</strong></span>
-                    </label>
-                </div>
-                
-                <div style="display: flex; gap: 1rem;">
-                    <button type="submit" style="background: var(--success); color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; flex: 1; font-size: 1.1rem;">
-                        <i class="fas fa-plus"></i> Adicionar Imóvel ao Site
-                    </button>
-                    <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background: #95a5a6; color: white; padding: 1rem 2rem; border: none; border-radius: 5px; cursor: pointer; display: none;">
-                        <i class="fas fa-times"></i> Cancelar Edição
-                    </button>
-                </div>
-            </form>
-            
-            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #eee;">
-                <h4>Gerenciar Imóveis Existentes</h4>
-                <p><small>Total de imóveis: <span id="propertyCount">0</span></small></p>
-                <div id="propertyList"></div>
             </div>
+            
+            <!-- LINHA 2: Localização -->
+            <div class="form-group full-width">
+                <label><strong>Localização *</strong></label>
+                <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceió-AL" required>
+            </div>
+            
+            <!-- LINHA 3: Descrição -->
+            <div class="form-group full-width">
+                <label><strong>Descrição</strong></label>
+                <textarea id="propDescription" placeholder="Descreva o imóvel..." rows="2"></textarea>
+            </div>
+            
+            <!-- LINHA 4: Características -->
+            <div class="form-group full-width">
+                <label><strong>Características (separadas por vírgula)</strong></label>
+                <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Varanda">
+                <small>Separe por vírgulas</small>
+            </div>
+
+            <!-- LINHA 5: Documentos PDF -->
+            <div class="form-group full-width">
+                <label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
+                <div id="pdfUploadArea" class="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Arraste ou clique para adicionar PDFs</p>
+                    <small>Máximo: 5 arquivos • 10MB cada</small>
+                </div>
+                <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display: none;">
+                <div id="pdfUploadPreview" class="preview-area"></div>
+            </div>
+            
+            <!-- LINHA 6: Fotos e Vídeos -->
+            <div class="form-group full-width">
+                <label><strong>Fotos e Vídeos do Imóvel</strong></label>
+                <div id="uploadArea" class="upload-area">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                    <p>Clique ou arraste fotos e vídeos aqui</p>
+                    <small>Fotos (JPG, PNG) • Vídeos (MP4) • Máximo: 10 arquivos • 5MB cada</small>
+                </div>
+                <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display: none;">
+                <div id="uploadPreview" class="preview-area"></div>
+            </div>
+            
+            <!-- LINHA 7: Tipo e Destaque -->
+            <div class="form-row">
+                <div class="form-group">
+                    <label><strong>Tipo do Imóvel</strong></label>
+                    <select id="propType">
+                        <option value="residencial">Residencial</option>
+                        <option value="comercial">Comercial</option>
+                        <option value="rural">Rural</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label><strong>Destaque</strong></label>
+                    <select id="propBadge">
+                        <option value="Novo">Novo</option>
+                        <option value="Destaque">Destaque</option>
+                        <option value="Luxo">Luxo</option>
+                        <option value="MCMV">Minha Casa Minha Vida</option>
+                        <option value="Fazenda">Fazenda</option>
+                        <option value="Chácara">Chácara</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- LINHA 8: Vídeo Checkbox -->
+            <div class="form-group full-width">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="propHasVideo"> 
+                    <span><strong>Este imóvel tem vídeo?</strong></span>
+                </label>
+            </div>
+            
+            <!-- LINHA 9: Botões -->
+            <div class="form-actions">
+                <button type="submit" id="submitBtn">
+                    <i class="fas fa-plus"></i> Adicionar Imóvel ao Site
+                </button>
+                <button type="button" id="cancelEditBtn" style="display: none;">
+                    <i class="fas fa-times"></i> Cancelar Edição
+                </button>
+            </div>
+        </form>
+        
+        <div class="admin-list-header">
+            <h4>Gerenciar Imóveis Existentes</h4>
+            <p><small>Total de imóveis: <span id="propertyCount">0</span></small></p>
+            <div id="propertyList"></div>
         </div>
     </section>
     
     <!-- ========== MODAL PARA DOCUMENTOS PDF ========== -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
-        <div class="pdf-modal-content" style="
-            background: white;
-            border-radius: 10px;
-            padding: 2rem;
-            max-width: 400px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-        ">
-            <h3 id="pdfModalTitle" style="
-                color: var(--primary);
-                margin: 0 0 1rem 0;
-                padding-right: 30px;
-                font-size: 1.4rem;
-            ">
+        <div class="pdf-modal-content">
+            <h3 id="pdfModalTitle">
                 <i class="fas fa-file-pdf"></i> Documentos do Imóvel
             </h3>
             
-            <form id="pdfPasswordForm" style="margin: 0;">
-                <div id="pdfPreview" style="
-                    margin: 1rem 0;
-                    padding: 1rem;
-                    background: #f8f9fa;
-                    border-radius: 5px;
-                    font-size: 0.9rem;
-                    color: #666;
-                ">
+            <form id="pdfPasswordForm">
+                <div id="pdfPreview">
                     <p>Digite a senha para visualizar os documentos</p>
                 </div>
                 
@@ -478,70 +428,21 @@
                        id="pdfPassword" 
                        name="pdfPassword"
                        placeholder="Digite a senha para acessar"
-                       style="
-                           width: 100%;
-                           padding: 0.9rem;
-                           border: 2px solid #ddd;
-                           border-radius: 5px;
-                           margin: 1rem 0;
-                           font-size: 1rem;
-                           display: block !important;
-                           visibility: visible !important;
-                           opacity: 1 !important;
-                           background: white !important;
-                           color: #333 !important;
-                       "
                        autocomplete="off"
-                       required
-                       aria-label="Senha para acessar documentos PDF">
+                       required>
                 
-                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
-                    <button type="submit"
-                            id="pdfAccessBtn"
-                            style="
-                                background: var(--primary);
-                                color: white;
-                                padding: 0.9rem 1.5rem;
-                                border: none;
-                                border-radius: 5px;
-                                cursor: pointer;
-                                flex: 1;
-                                font-size: 1rem;
-                                font-weight: 600;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                            ">
+                <div class="pdf-modal-buttons">
+                    <button type="submit" id="pdfAccessBtn">
                         <i class="fas fa-lock-open"></i> Acessar
                     </button>
                     
-                    <button type="button"
-                            id="pdfCloseBtn"
-                            style="
-                                background: #95a5a6;
-                                color: white;
-                                padding: 0.9rem 1.5rem;
-                                border: none;
-                                border-radius: 5px;
-                                cursor: pointer;
-                                font-size: 1rem;
-                                display: flex;
-                                align-items: center;
-                                justify-content: center;
-                                gap: 0.5rem;
-                            ">
+                    <button type="button" id="pdfCloseBtn">
                         <i class="fas fa-times"></i> Fechar
                     </button>
                 </div>
             </form>
             
-            <p style="
-                font-size: 0.8rem;
-                color: #666;
-                margin-top: 1.5rem;
-                text-align: center;
-            ">
+            <p class="pdf-modal-hint">
                 <i class="fas fa-info-circle"></i> Solicite a senha ao corretor
             </p>
         </div>
@@ -562,7 +463,6 @@
         const backToTopBtn = document.getElementById('backToTopBtn');
         if (!backToTopBtn) return;
         
-        // Mostrar/esconder botão baseado no scroll
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
                 backToTopBtn.style.display = 'flex';
@@ -577,15 +477,10 @@
             }
         });
         
-        // Rolar suavemente para o topo
         backToTopBtn.addEventListener('click', function() {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
         
-        // Efeitos hover adicionais (CSS já cuida do visual, mas mantemos consistência)
         backToTopBtn.addEventListener('mouseenter', function() {
             this.style.transform = 'translateY(-2px)';
         });
