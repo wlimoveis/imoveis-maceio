@@ -1,5 +1,5 @@
 /* css/admin.css - Estilos do Painel Administrativo */
-/* VERSÃO COM PREVIEWS HORIZONTAIS COM LARGURA TOTAL */
+/* VERSÃO CORRIGIDA - SEM SOBREPOSIÇÃO */
 
 /* ========== PAINEL ADMIN ========== */
 .admin-panel {
@@ -13,7 +13,7 @@
     box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
     max-height: calc(100vh - 1rem);
     overflow-y: auto;
-    overflow-x: visible !important;
+    overflow-x: visible;
     font-size: 0.8rem;
 }
 
@@ -56,6 +56,7 @@
     width: 100%;
     box-sizing: border-box;
     overflow: visible !important;
+    clear: both;
 }
 
 /* ========== CAMPOS ULTRA COMPACTOS ========== */
@@ -130,59 +131,60 @@
     color: #888;
 }
 
-/* ========== PREVIEWS - LAYOUT HORIZONTAL COM LARGURA TOTAL ========== */
+/* ========== PREVIEWS - CORREÇÃO DE SOBREPOSIÇÃO ========== */
 .preview-area {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    gap: 10px;
-    margin: 0.5rem 0;
-    padding: 0.8rem;
-    background: #fff;
-    border-radius: 8px;
-    border: 1px solid #eee;
-    width: 100%;
-    box-sizing: border-box;
-    min-width: 100%;
-    overflow-x: visible;
-    overflow-y: visible;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    gap: 12px !important;
+    margin: 0.5rem 0 !important;
+    padding: 0.8rem !important;
+    background: #fff !important;
+    border-radius: 8px !important;
+    border: 1px solid #e0e0e0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    overflow: visible !important;
+    clear: both !important;
 }
 
-/* Itens de preview individuais */
+/* Itens de preview - evitar sobreposição */
 .preview-area .media-preview-item-complete,
 .preview-area .pdf-preview-item-complete,
 #uploadPreview > div,
 #pdfUploadPreview > div {
-    flex: 0 0 auto;
-    width: 85px;
-    height: 85px;
-    position: relative;
-    transition: transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #f8f9fa;
-    border-radius: 6px;
-    overflow: hidden;
+    flex: 0 0 auto !important;
+    width: 85px !important;
+    height: 85px !important;
+    position: relative !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #f8f9fa !important;
+    border-radius: 6px !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    z-index: 1 !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
 }
 
-.preview-area .media-preview-item-complete:hover,
-.preview-area .pdf-preview-item-complete:hover,
-#uploadPreview > div:hover,
-#pdfUploadPreview > div:hover {
-    transform: scale(1.05);
-}
-
-/* Garantir que as imagens ocupem todo o espaço */
+/* Garantir que as imagens não sobreponham outras */
 .preview-area img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    border-radius: 6px !important;
+    display: block !important;
 }
 
 .preview-area .fa-file-pdf {
-    font-size: 2rem;
-    color: #e74c3c;
+    font-size: 2rem !important;
+    color: #e74c3c !important;
 }
 
 /* Remove QUALQUER barra de rolagem */
@@ -196,6 +198,17 @@
     display: none !important;
     width: 0 !important;
     height: 0 !important;
+}
+
+/* Botão de remover sobreposto */
+.preview-area button.delete-image-btn {
+    position: absolute !important;
+    top: -6px !important;
+    right: -6px !important;
+    width: 20px !important;
+    height: 20px !important;
+    font-size: 10px !important;
+    z-index: 10 !important;
 }
 
 /* ========== CHECKBOX ========== */
@@ -465,16 +478,16 @@
     }
     
     .preview-area {
-        gap: 8px;
-        padding: 0.6rem;
+        gap: 8px !important;
+        padding: 0.6rem !important;
     }
     
     .preview-area .media-preview-item-complete,
     .preview-area .pdf-preview-item-complete,
     #uploadPreview > div,
     #pdfUploadPreview > div {
-        width: 75px;
-        height: 75px;
+        width: 75px !important;
+        height: 75px !important;
     }
     
     #propertyList {
@@ -488,16 +501,16 @@
     }
     
     .preview-area {
-        gap: 6px;
-        padding: 0.5rem;
+        gap: 6px !important;
+        padding: 0.5rem !important;
     }
     
     .preview-area .media-preview-item-complete,
     .preview-area .pdf-preview-item-complete,
     #uploadPreview > div,
     #pdfUploadPreview > div {
-        width: 65px;
-        height: 65px;
+        width: 65px !important;
+        height: 65px !important;
     }
 }
 
