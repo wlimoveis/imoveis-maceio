@@ -1,5 +1,5 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ LAYOUT HORIZONTAL COM SCROLL E ITENS MENORES
+// ✅ LAYOUT HORIZONTAL SIMPLIFICADO - SEM CONTAINERS INTERNOS CONFLITANTES
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM ITENS MENORES (55x55) ==========
+    // ========== RENDER SIMPLIFICADO - SEM CONTAINERS INTERNOS CONFLITANTES ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -482,7 +482,8 @@ const MediaSystem = {
             return;
         }
         
-        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
+        // ESTRUTURA SIMPLIFICADA - SEM DIVS ANINHADAS DESNECESSARIAS
+        var html = '';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
@@ -492,28 +493,32 @@ const MediaSystem = {
             var isNew = item.isNew;
             var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
-            var statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
-            if (isMarked) { borderColor = '#e74c3c'; statusText = 'Excluir'; }
+            var statusText = isNew ? 'N' : (isExisting ? 'E' : '');
+            if (isMarked) { borderColor = '#e74c3c'; statusText = 'X'; }
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
             var shortName = displayName.length > 10 ? displayName.substring(0,8)+'..' : displayName;
             
-            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:55px;height:55px;flex:0 0 auto;border-radius:5px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
-            html += '<div style="width:100%;height:40px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
+            // ITEM DIRETO - SEM CONTAINER ADICIONAL
+            html += '<div class="media-preview-item" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;">';
+            html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">';
             if (imageUrl) {
-                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
+                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1rem;color:#999;\\\\"></i>\';">';
+            } else {
+                html += '<i class="fas fa-image" style="font-size:1rem;color:#999;"></i>';
             }
-            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:0.8rem;"></i><span style="font-size:0.45rem;">' + escapeHtmlFn(shortName) + '</span></div>';
             html += '</div>';
-            html += '<div style="padding:1px;font-size:0.45rem;text-align:center;background:white;line-height:1.2;">' + statusText + '</div>';
-            html += '<div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.5);color:white;width:14px;height:14px;border-radius:0 0 3px 0;display:flex;align-items:center;justify-content:center;font-size:0.45rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<div style="position:absolute;bottom:1px;right:1px;background:rgba(0,0,0,0.6);color:white;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;">' + (index+1) + '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;background:' + (isMarked ? '#c0392b' : '#e74c3c') + ';color:white;border:none;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:8px;font-weight:bold;z-index:10;">' + (isMarked ? '↺' : '×') + '</button>';
+            html += '<div style="font-size:0.4rem;padding:1px;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;">×</button>';
             html += '</div>';
         }
         
-        html += '</div>';
         container.innerHTML = html;
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+        container.style.flexWrap = 'nowrap';
+        container.style.overflowX = 'auto';
+        container.style.gap = '4px';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
@@ -533,7 +538,8 @@ const MediaSystem = {
             return;
         }
         
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
+        // ESTRUTURA SIMPLIFICADA PARA PDFs
+        var html = '';
         
         for (var idx = 0; idx < allPdfs.length; idx++) {
             var pdf = allPdfs[idx];
@@ -541,65 +547,25 @@ const MediaSystem = {
             var isMarked = pdf.markedForDeletion;
             var isExisting = pdf.isExisting;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            var statusText = isMarked ? 'X' : (isExisting ? 'E' : 'N');
             var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'..' : pdf.name;
             
-            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;flex:0 0 auto;cursor:grab;width:55px;height:55px;">';
-            html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:5px;padding:0.2rem;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;">';
-            html += '<div style="position:absolute;top:-3px;left:-3px;background:rgba(0,0,0,0.5);color:white;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.45rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<i class="fas fa-file-pdf" style="font-size:1.3rem;color:' + borderColor + ';"></i>';
-            html += '<p style="font-size:0.45rem;margin:2px 0 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50px;">' + escapeHtmlFn(shortName) + '</p>';
-            html += '<small style="color:#666;font-size:0.4rem;">' + statusText + '</small>';
+            html += '<div class="pdf-preview-item" data-id="' + pdf.id + '" data-type="pdf" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;">';
+            html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;">';
+            html += '<i class="fas fa-file-pdf" style="font-size:1.3rem;color:#e74c3c;"></i>';
             html += '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;background:' + borderColor + ';color:white;border:none;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:8px;font-weight:bold;">×</button>';
+            html += '<div style="font-size:0.4rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
+            html += '<div style="font-size:0.35rem;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;">×</button>';
             html += '</div>';
         }
         
-        html += '</div>';
         container.innerHTML = html;
-        
-        if (container.scrollWidth > container.clientWidth) {
-            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
-        }
-    },
-
-    renderPdfPreviewComplete: function() {
-        var container = document.getElementById('pdfUploadPreview');
-        if (!container) return;
-        var self = this;
-        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
-        
-        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
-        
-        if (allPdfs.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:0.8rem;font-size:0.8rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1.2rem;margin-bottom:0.3rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>';
-            return;
-        }
-        
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
-        
-        for (var idx = 0; idx < allPdfs.length; idx++) {
-            var pdf = allPdfs[idx];
-            var index = idx;
-            var isMarked = pdf.markedForDeletion;
-            var isExisting = pdf.isExisting;
-            var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
-            var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
-            
-            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;flex:0 0 auto;cursor:grab;">';
-            html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:5px;padding:0.3rem;width:60px;text-align:center;">';
-            html += '<div style="position:absolute;top:-4px;left:-4px;background:rgba(0,0,0,0.5);color:white;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.5rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<i class="fas fa-file-pdf" style="font-size:1.5rem;color:' + borderColor + ';"></i>';
-            html += '<p style="font-size:0.55rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</p>';
-            html += '<small style="color:#666;font-size:0.5rem;">' + statusText + '</small>';
-            html += '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-6px;right:-6px;background:' + borderColor + ';color:white;border:none;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:9px;font-weight:bold;">×</button>';
-            html += '</div>';
-        }
-        
-        html += '</div>';
-        container.innerHTML = html;
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+        container.style.flexWrap = 'nowrap';
+        container.style.overflowX = 'auto';
+        container.style.gap = '4px';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
@@ -617,54 +583,28 @@ const MediaSystem = {
             container.setAttribute('data-drag-drop', 'true');
             
             container.addEventListener('dragstart', function(e) {
-                var draggable = e.target.closest('.draggable-item');
+                var draggable = e.target.closest('[data-id]');
                 if (!draggable) return;
                 e.dataTransfer.setData('text/plain', JSON.stringify({ id: draggable.dataset.id, type: draggable.dataset.type || 'media' }));
                 e.dataTransfer.effectAllowed = 'move';
-                draggable.classList.add('dragging');
                 draggable.style.opacity = '0.5';
             });
             
-            container.addEventListener('dragend', function() {
-                var dragging = document.querySelectorAll('.dragging');
-                for (var i = 0; i < dragging.length; i++) {
-                    dragging[i].classList.remove('dragging');
-                    dragging[i].style.opacity = '';
-                }
+            container.addEventListener('dragend', function(e) {
+                var draggable = e.target.closest('[data-id]');
+                if (draggable) draggable.style.opacity = '';
             });
             
             container.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
-                var dropTarget = e.target.closest('.draggable-item');
-                if (dropTarget && !dropTarget.classList.contains('drag-over')) {
-                    var dragOver = document.querySelectorAll('.drag-over');
-                    for (var i = 0; i < dragOver.length; i++) {
-                        dragOver[i].classList.remove('drag-over');
-                        dragOver[i].style.borderColor = '';
-                    }
-                    dropTarget.classList.add('drag-over');
-                    dropTarget.style.borderColor = '#f39c12';
-                    dropTarget.style.borderWidth = '2px';
-                    dropTarget.style.borderStyle = 'dashed';
-                }
-            });
-            
-            container.addEventListener('dragleave', function(e) {
-                var dropTarget = e.target.closest('.draggable-item');
-                if (dropTarget) { dropTarget.classList.remove('drag-over'); dropTarget.style.borderColor = ''; }
             });
             
             container.addEventListener('drop', function(e) {
                 e.preventDefault();
-                var dragOver = document.querySelectorAll('.drag-over');
-                for (var i = 0; i < dragOver.length; i++) {
-                    dragOver[i].classList.remove('drag-over');
-                    dragOver[i].style.borderColor = '';
-                }
                 var dragData;
                 try { dragData = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err) { return; }
-                var dropTarget = e.target.closest('.draggable-item');
+                var dropTarget = e.target.closest('[data-id]');
                 if (!dropTarget) return;
                 var targetId = dropTarget.dataset.id;
                 var targetType = dropTarget.dataset.type || 'media';
@@ -773,6 +713,6 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado');
-    console.log('🎯 LAYOUT HORIZONTAL COM SCROLL ATIVADO - Itens 70x70px');
+    console.log('✅ MediaSystem Core carregado - Versao simplificada');
+    console.log('🎯 ESTRUTURA SIMPLIFICADA - Sem containers internos conflitantes');
 }, 1000);
