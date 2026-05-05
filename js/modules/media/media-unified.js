@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ LAYOUT HORIZONTAL COM DRAG & DROP E ÍCONE DE ARRASTE
+// ✅ Com ícone de arraste, botão deletar melhorado, status em negrito e preview de vídeo
 
-console.log('🔄 media-unified.js - Core System (drag & drop com ícone de arraste)');
+console.log('🔄 media-unified.js - Core System (drag & drop com melhorias visuais)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - COM DRAG & DROP E ÍCONE DE ARRASTE ==========
+    // ========== RENDER COMPLETO - COM DRAG & DROP E MELHORIAS VISUAIS ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -492,33 +492,39 @@ const MediaSystem = {
             var isNew = item.isNew;
             var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
-            var statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
-            if (isMarked) { borderColor = '#e74c3c'; statusText = 'Excluir'; }
+            var statusText = isNew ? 'NOVO' : (isExisting ? 'EXISTENTE' : '');
+            if (isMarked) { borderColor = '#e74c3c'; statusText = 'EXCLUIR'; }
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
             var shortName = displayName.length > 10 ? displayName.substring(0,8)+'...' : displayName;
             
             html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
             
-            // Área da imagem/vídeo
+            // Área da imagem/vídeo (com suporte a preview de vídeo)
             html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">';
             if (imageUrl) {
-                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1rem;color:#999;\\\\"></i>\';">';
+                if (isVideo) {
+                    // Preview de vídeo
+                    html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted></video>';
+                } else {
+                    // Preview de imagem
+                    html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1rem;color:#999;\\\\"></i>\';">';
+                }
             } else {
                 html += '<i class="fas fa-image" style="font-size:1rem;color:#999;"></i>';
             }
             html += '</div>';
             
-            // Status e número
-            html += '<div style="font-size:0.45rem;padding:1px;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
+            // Status em NEGRITO e maior
+            html += '<div style="font-size:0.55rem;font-weight:bold;padding:2px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZ DE MALTA) - canto superior esquerdo
+            // ÍCONE DE ARRASTE (CRUZ DE MALTA)
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR (X) - canto superior direito
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;z-index:10;">×</button>';
+            // Botão DELETAR (X) - QUADRADO VERMELHO com X grande e negrito
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c;color:white;border:2px solid #c0392b;border-radius:3px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
             
             html += '</div>';
         }
@@ -557,7 +563,7 @@ const MediaSystem = {
             var isMarked = pdf.markedForDeletion;
             var isExisting = pdf.isExisting;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
             var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'...' : pdf.name;
             
             html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
@@ -568,16 +574,18 @@ const MediaSystem = {
             html += '</div>';
             
             // Nome do arquivo
-            html += '<div style="font-size:0.4rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
-            html += '<div style="font-size:0.35rem;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
+            html += '<div style="font-size:0.5rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZ DE MALTA) - canto superior esquerdo
+            // Status em NEGRITO e maior
+            html += '<div style="font-size:0.55rem;font-weight:bold;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
+            
+            // ÍCONE DE ARRASTE (CRUZ DE MALTA)
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR (X) - canto superior direito
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;z-index:10;">×</button>';
+            // Botão DELETAR (X) - QUADRADO VERMELHO com X grande e negrito
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c;color:white;border:2px solid #c0392b;border-radius:3px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
             
             html += '</div>';
         }
@@ -765,7 +773,8 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Com drag & drop e ícone de arraste');
-    console.log('🎯 Ícone de arraste (cruzeta) no canto superior esquerdo');
-    console.log('🎯 Botão deletar (X) no canto superior direito');
+    console.log('✅ MediaSystem Core carregado - Com melhorias visuais');
+    console.log('🎯 Botão deletar: quadrado vermelho com X grande e negrito');
+    console.log('🎯 Status: fonte maior e em negrito');
+    console.log('🎯 Preview de vídeo: ativado');
 }, 1000);
