@@ -4,6 +4,7 @@
 // ✅ UI completa delegada para Support System (em debug)
 // ✅ Funções escapeHtml e isVideoUrl centralizadas no SharedCore
 // ✅ Debounce aplicado em addFiles e addPdfs para otimização de performance
+// ✅ LAYOUT HORIZONTAL com scroll para previews
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -186,8 +187,6 @@ const MediaSystem = {
     },
 
     // ========== FUNÇÕES AUXILIARES (USAM SHAREDCORE) ==========
-    // isVideoUrl REMOVIDA - usar window.SharedCore.isVideoUrl ou window.isVideoUrl
-    // escapeHtml REMOVIDA - usar window.SharedCore.escapeHtml ou window.escapeHtml
 
     // ========== ADICIONAR ARQUIVOS ==========
     addFiles: function(fileList) {
@@ -491,7 +490,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO COM DRAG & DROP (PRODUÇÃO) ==========
+    // ========== RENDER COMPLETO COM DRAG & DROP (PRODUÇÃO) - LAYOUT HORIZONTAL ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -505,7 +504,8 @@ const MediaSystem = {
             return;
         }
         
-        var html = '<div class="media-sortable-container" style="display:flex;flex-wrap:wrap;gap:10px;">';
+        // LAYOUT HORIZONTAL: flex-wrap nowrap com overflow-x auto
+        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;">';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
@@ -521,10 +521,10 @@ const MediaSystem = {
             var displayName = item.name || 'Arquivo';
             var shortName = displayName.length > 15 ? displayName.substring(0,12)+'...' : displayName;
             
-            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:100px;height:100px;border-radius:8px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
+            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:100px;height:100px;flex:0 0 auto;border-radius:8px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
             html += '<div style="width:100%;height:70px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
             if (imageUrl) {
-                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
+                html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:contain;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
             }
             html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1.5rem;"></i><span style="font-size:0.6rem;">' + escapeHtmlFn(shortName) + '</span></div>';
             html += '</div>';
@@ -552,7 +552,8 @@ const MediaSystem = {
             return;
         }
         
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-wrap:wrap;gap:0.5rem;">';
+        // LAYOUT HORIZONTAL: flex-wrap nowrap com overflow-x auto
+        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;">';
         
         for (var idx = 0; idx < allPdfs.length; idx++) {
             var pdf = allPdfs[idx];
@@ -563,10 +564,10 @@ const MediaSystem = {
             var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
             var shortName = pdf.name.length > 15 ? pdf.name.substring(0,12)+'...' : pdf.name;
             
-            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;cursor:grab;">';
+            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;flex:0 0 auto;cursor:grab;">';
             html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:6px;padding:0.5rem;width:80px;text-align:center;">';
             html += '<div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<i class="fas fa-file-pdf" style="font-size:1.2rem;color:' + borderColor + ';"></i>';
+            html += '<i class="fas fa-file-pdf" style="font-size:2rem;color:' + borderColor + ';"></i>';
             html += '<p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</p>';
             html += '<small style="color:#666;font-size:0.6rem;">' + statusText + '</small>';
             html += '</div>';
@@ -751,6 +752,7 @@ setTimeout(function() {
     console.log('📦 Modo: ' + (isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'));
     console.log('🔧 Funções escapeHtml e isVideoUrl centralizadas no SharedCore');
     console.log('⚡ Debounce aplicado em addFiles e addPdfs para otimização de performance');
+    console.log('🎯 LAYOUT HORIZONTAL - scroll horizontal para previews');
 }, 1000);
 
 console.log('✅ media-unified.js CORE - ' + (window.location.search.indexOf('debug=true') !== -1 ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
