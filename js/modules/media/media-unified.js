@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ LAYOUT HORIZONTAL SIMPLIFICADO - SEM CONTAINERS INTERNOS CONFLITANTES
+// ✅ LAYOUT HORIZONTAL COM DRAG & DROP E ÍCONE DE ARRASTE
 
-console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
+console.log('🔄 media-unified.js - Core System (drag & drop com ícone de arraste)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER SIMPLIFICADO - SEM CONTAINERS INTERNOS CONFLITANTES ==========
+    // ========== RENDER COMPLETO - COM DRAG & DROP E ÍCONE DE ARRASTE ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -482,7 +482,6 @@ const MediaSystem = {
             return;
         }
         
-        // ESTRUTURA SIMPLIFICADA - SEM DIVS ANINHADAS DESNECESSARIAS
         var html = '';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
@@ -493,14 +492,15 @@ const MediaSystem = {
             var isNew = item.isNew;
             var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
-            var statusText = isNew ? 'N' : (isExisting ? 'E' : '');
-            if (isMarked) { borderColor = '#e74c3c'; statusText = 'X'; }
+            var statusText = isNew ? 'Novo' : (isExisting ? 'Existente' : '');
+            if (isMarked) { borderColor = '#e74c3c'; statusText = 'Excluir'; }
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
-            var shortName = displayName.length > 10 ? displayName.substring(0,8)+'..' : displayName;
+            var shortName = displayName.length > 10 ? displayName.substring(0,8)+'...' : displayName;
             
-            // ITEM DIRETO - SEM CONTAINER ADICIONAL
-            html += '<div class="media-preview-item" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;">';
+            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            
+            // Área da imagem/vídeo
             html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">';
             if (imageUrl) {
                 html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1rem;color:#999;\\\\"></i>\';">';
@@ -508,8 +508,18 @@ const MediaSystem = {
                 html += '<i class="fas fa-image" style="font-size:1rem;color:#999;"></i>';
             }
             html += '</div>';
-            html += '<div style="font-size:0.4rem;padding:1px;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;">×</button>';
+            
+            // Status e número
+            html += '<div style="font-size:0.45rem;padding:1px;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
+            
+            // ÍCONE DE ARRASTE (CRUZ DE MALTA) - canto superior esquerdo
+            html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            html += '</div>';
+            
+            // Botão DELETAR (X) - canto superior direito
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;z-index:10;">×</button>';
+            
             html += '</div>';
         }
         
@@ -519,6 +529,7 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '4px';
+        container.style.padding = '4px 0';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
@@ -538,7 +549,6 @@ const MediaSystem = {
             return;
         }
         
-        // ESTRUTURA SIMPLIFICADA PARA PDFs
         var html = '';
         
         for (var idx = 0; idx < allPdfs.length; idx++) {
@@ -547,16 +557,28 @@ const MediaSystem = {
             var isMarked = pdf.markedForDeletion;
             var isExisting = pdf.isExisting;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'X' : (isExisting ? 'E' : 'N');
-            var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'..' : pdf.name;
+            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'...' : pdf.name;
             
-            html += '<div class="pdf-preview-item" data-id="' + pdf.id + '" data-type="pdf" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:pointer;flex-shrink:0;">';
+            html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            
+            // Área do ícone PDF
             html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;">';
             html += '<i class="fas fa-file-pdf" style="font-size:1.3rem;color:#e74c3c;"></i>';
             html += '</div>';
+            
+            // Nome do arquivo
             html += '<div style="font-size:0.4rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '<div style="font-size:0.35rem;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;">×</button>';
+            
+            // ÍCONE DE ARRASTE (CRUZ DE MALTA) - canto superior esquerdo
+            html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            html += '</div>';
+            
+            // Botão DELETAR (X) - canto superior direito
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:50%;cursor:pointer;font-size:8px;display:flex;align-items:center;justify-content:center;z-index:10;">×</button>';
+            
             html += '</div>';
         }
         
@@ -566,6 +588,7 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '4px';
+        container.style.padding = '4px 0';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
@@ -575,6 +598,8 @@ const MediaSystem = {
     setupCompleteDragAndDrop: function() {
         var containers = ['uploadPreview', 'pdfUploadPreview'];
         var self = this;
+        var draggedItemId = null;
+        var draggedItemType = null;
         
         for (var c = 0; c < containers.length; c++) {
             var containerId = containers[c];
@@ -582,36 +607,61 @@ const MediaSystem = {
             if (!container || container.hasAttribute('data-drag-drop')) continue;
             container.setAttribute('data-drag-drop', 'true');
             
+            // Drag start - capturar o item sendo arrastado
             container.addEventListener('dragstart', function(e) {
-                var draggable = e.target.closest('[data-id]');
-                if (!draggable) return;
-                e.dataTransfer.setData('text/plain', JSON.stringify({ id: draggable.dataset.id, type: draggable.dataset.type || 'media' }));
+                var target = e.target.closest('[draggable="true"]');
+                if (!target) {
+                    e.preventDefault();
+                    return false;
+                }
+                draggedItemId = target.dataset.id;
+                draggedItemType = target.dataset.type;
+                e.dataTransfer.setData('text/plain', JSON.stringify({ id: draggedItemId, type: draggedItemType }));
                 e.dataTransfer.effectAllowed = 'move';
-                draggable.style.opacity = '0.5';
+                target.style.opacity = '0.5';
+                return true;
             });
             
+            // Drag end - restaurar opacidade
             container.addEventListener('dragend', function(e) {
-                var draggable = e.target.closest('[data-id]');
-                if (draggable) draggable.style.opacity = '';
+                var target = e.target.closest('[draggable="true"]');
+                if (target) target.style.opacity = '';
+                draggedItemId = null;
+                draggedItemType = null;
             });
             
+            // Dragover - permitir soltar
             container.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
             });
             
+            // Drop - reordenar os itens
             container.addEventListener('drop', function(e) {
                 e.preventDefault();
-                var dragData;
-                try { dragData = JSON.parse(e.dataTransfer.getData('text/plain')); } catch(err) { return; }
-                var dropTarget = e.target.closest('[data-id]');
+                e.stopPropagation();
+                
+                var dropTarget = e.target.closest('[draggable="true"]');
                 if (!dropTarget) return;
+                
                 var targetId = dropTarget.dataset.id;
-                var targetType = dropTarget.dataset.type || 'media';
-                if (dragData.id === targetId || dragData.type !== targetType) return;
-                if (dragData.type === 'media') { self.reorderMediaItemsComplete(dragData.id, targetId); }
-                else if (dragData.type === 'pdf') { self.reorderPdfItemsComplete(dragData.id, targetId); }
-                setTimeout(function() { self.renderMediaPreviewComplete(); self.renderPdfPreviewComplete(); self.setupCompleteDragAndDrop(); }, 50);
+                var targetType = dropTarget.dataset.type;
+                
+                if (!draggedItemId || draggedItemId === targetId || draggedItemType !== targetType) return;
+                
+                // Reordenar baseado no tipo
+                if (draggedItemType === 'media') {
+                    self.reorderMediaItemsComplete(draggedItemId, targetId);
+                } else if (draggedItemType === 'pdf') {
+                    self.reorderPdfItemsComplete(draggedItemId, targetId);
+                }
+                
+                // Recriar a UI
+                setTimeout(function() {
+                    self.renderMediaPreviewComplete();
+                    self.renderPdfPreviewComplete();
+                    self.setupCompleteDragAndDrop();
+                }, 50);
             });
         }
     },
@@ -634,6 +684,7 @@ const MediaSystem = {
         }
         this.state.existing = newExisting;
         this.state.files = newFiles;
+        console.log('📦 Media reordenado: ' + draggedId + ' → posição ' + targetIndex);
     },
 
     reorderPdfItemsComplete: function(draggedId, targetId) {
@@ -654,6 +705,7 @@ const MediaSystem = {
         }
         this.state.existingPdfs = newExistingPdfs;
         this.state.pdfs = newPdfs;
+        console.log('📄 PDF reordenado: ' + draggedId + ' → posição ' + targetIndex);
     },
 
     extractFileName: function(url) {
@@ -713,6 +765,7 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Versao simplificada');
-    console.log('🎯 ESTRUTURA SIMPLIFICADA - Sem containers internos conflitantes');
+    console.log('✅ MediaSystem Core carregado - Com drag & drop e ícone de arraste');
+    console.log('🎯 Ícone de arraste (cruzeta) no canto superior esquerdo');
+    console.log('🎯 Botão deletar (X) no canto superior direito');
 }, 1000);
