@@ -478,7 +478,7 @@ const MediaSystem = {
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
         if (allFiles.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>';
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;"><i class="fas fa-images" style="font-size:1rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>';
             return;
         }
         
