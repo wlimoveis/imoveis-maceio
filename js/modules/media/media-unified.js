@@ -1,5 +1,5 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ LAYOUT HORIZONTAL COM SCROLL
+// ✅ LAYOUT HORIZONTAL COM SCROLL E ITENS MENORES
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM ITENS MENORES ==========
+    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM SCROLL E ITENS MENORES ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -560,51 +560,6 @@ const MediaSystem = {
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
-        }
-    },
-
-    renderPdfPreviewComplete: function() {
-        var container = document.getElementById('pdfUploadPreview');
-        if (!container) return;
-        var self = this;
-        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
-        
-        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
-        
-        if (allPdfs.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;font-size:0.9rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>';
-            return;
-        }
-        
-        // LAYOUT HORIZONTAL COM SCROLL
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
-        
-        for (var idx = 0; idx < allPdfs.length; idx++) {
-            var pdf = allPdfs[idx];
-            var index = idx;
-            var isMarked = pdf.markedForDeletion;
-            var isExisting = pdf.isExisting;
-            var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
-            var shortName = pdf.name.length > 15 ? pdf.name.substring(0,12)+'...' : pdf.name;
-            
-            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;flex:0 0 auto;cursor:grab;">';
-            html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:6px;padding:0.5rem;width:80px;text-align:center;">';
-            html += '<div style="position:absolute;top:-5px;left:-5px;background:rgba(0,0,0,0.5);color:white;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.6rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<i class="fas fa-file-pdf" style="font-size:2rem;color:' + borderColor + ';"></i>';
-            html += '<p style="font-size:0.65rem;margin:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</p>';
-            html += '<small style="color:#666;font-size:0.6rem;">' + statusText + '</small>';
-            html += '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-8px;right:-8px;background:' + borderColor + ';color:white;border:none;width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:10px;font-weight:bold;">×</button>';
-            html += '</div>';
-        }
-        
-        html += '</div>';
-        container.innerHTML = html;
-        
-        if (container.scrollWidth > container.clientWidth) {
-            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
-            container.style.overflowX = 'auto';
         }
     },
 
@@ -776,5 +731,5 @@ setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
     console.log('✅ MediaSystem Core carregado');
-    console.log('🎯 LAYOUT HORIZONTAL COM SCROLL ATIVADO');
+    console.log('🎯 LAYOUT HORIZONTAL COM SCROLL ATIVADO - Itens 70x70px');
 }, 1000);
