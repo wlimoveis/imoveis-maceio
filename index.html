@@ -92,6 +92,11 @@
         .admin-panel-highlight {
             animation: highlightPulse 0.8s ease;
         }
+        
+        /* Garantir que o painel admin comece escondido */
+        .admin-panel {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -251,16 +256,18 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS (GERENCIAR EM PRIMEIRO) ========== -->
+    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS ========== -->
     <section class="admin-panel" id="adminPanel">
         <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
+            <!-- PRIMEIRO BOTAO: GERENCIAR IMOVEIS (ATIVO) -->
             <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-list"></i> Gerenciar Imoveis</button>
+            <!-- SEGUNDO BOTAO: CADASTRAR/EDITAR -->
             <button class="admin-tab" data-tab="form-tab"><i class="fas fa-edit"></i> Cadastrar/Editar Imovel</button>
         </div>
         
-        <!-- Aba 1: Gerenciamento (PRIMEIRA/ATIVA) -->
+        <!-- Aba 1: GERENCIAR (CONTEUDO ATIVO AO ABRIR) -->
         <div id="manage-tab" class="admin-tab-content active">
             <div style="background: white; padding: 1rem; border-radius: 10px;">
                 <h4 style="margin-top: 0;">Gerenciar Imoveis Existentes</h4>
@@ -269,7 +276,7 @@
             </div>
         </div>
         
-        <!-- Aba 2: Formulario -->
+        <!-- Aba 2: CADASTRAR/EDITAR (CONTEUDO SECUNDARIO) -->
         <div id="form-tab" class="admin-tab-content form-compact">
             <div style="background: white; padding: 1rem; border-radius: 10px;">
                 <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imovel</h4>
