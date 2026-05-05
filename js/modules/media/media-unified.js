@@ -1,5 +1,5 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ LAYOUT HORIZONTAL FORÇADO
+// ✅ LAYOUT HORIZONTAL COM SCROLL
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL FORÇADO ==========
+    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM SCROLL ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -478,12 +478,12 @@ const MediaSystem = {
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
         if (allFiles.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;"><i class="fas fa-images" style="font-size:1rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>';
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:2rem;"><i class="fas fa-images" style="font-size:2rem;margin-bottom:1rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.8rem;">Arraste ou clique para adicionar</small></div>';
             return;
         }
         
-        // CORRIGIDO: flex-wrap: nowrap para layout horizontal
-        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:1px;overflow-x:auto;overflow-y:hidden;padding-bottom:1px;max-width:100%;">';
+        // LAYOUT HORIZONTAL COM SCROLL
+        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
@@ -515,6 +515,11 @@ const MediaSystem = {
         
         html += '</div>';
         container.innerHTML = html;
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
+            container.style.overflowX = 'auto';
+        }
     },
 
     renderPdfPreviewComplete: function() {
@@ -530,8 +535,8 @@ const MediaSystem = {
             return;
         }
         
-        // CORRIGIDO: flex-wrap: nowrap para layout horizontal
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:8px;max-width:100%;">';
+        // LAYOUT HORIZONTAL COM SCROLL
+        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
         
         for (var idx = 0; idx < allPdfs.length; idx++) {
             var pdf = allPdfs[idx];
@@ -555,6 +560,11 @@ const MediaSystem = {
         
         html += '</div>';
         container.innerHTML = html;
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
+            container.style.overflowX = 'auto';
+        }
     },
 
     setupCompleteDragAndDrop: function() {
@@ -725,5 +735,5 @@ setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
     console.log('✅ MediaSystem Core carregado');
-    console.log('🎯 LAYOUT HORIZONTAL ATIVADO - flex-wrap: nowrap');
+    console.log('🎯 LAYOUT HORIZONTAL COM SCROLL ATIVADO');
 }, 1000);
