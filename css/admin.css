@@ -357,18 +357,40 @@
     background: #f0f8ff;
 }
 
-/* ========== PREVIEW DE ARQUIVOS - AJUSTE DE CONTEINER ========== */
+/* ========== PREVIEW DE ARQUIVOS - LAYOUT HORIZONTAL ========== */
 #uploadPreview,
 #pdfUploadPreview {
     display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     gap: 12px;
-    flex-wrap: wrap;
     margin: 0.8rem 0;
-    min-height: 80px;
+    min-height: 120px;
     padding: 0.8rem;
     background: #f8f9fa;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+}
+
+/* Scrollbar customizada para o container horizontal */
+#uploadPreview::-webkit-scrollbar,
+#pdfUploadPreview::-webkit-scrollbar {
+    height: 6px;
+}
+
+#uploadPreview::-webkit-scrollbar-track,
+#pdfUploadPreview::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+#uploadPreview::-webkit-scrollbar-thumb,
+#pdfUploadPreview::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
 }
 
 /* Container de cada item de preview */
@@ -377,7 +399,7 @@
     position: relative;
     width: 100px;
     height: 100px;
-    flex-shrink: 0;
+    flex: 0 0 auto;
     background: #fff;
     border-radius: 8px;
     overflow: hidden;
