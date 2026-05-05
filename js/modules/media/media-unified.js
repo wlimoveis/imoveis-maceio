@@ -1,7 +1,8 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Com numeração individual, cruzeta para todos, PDFs identificados
+// ✅ Botão deletar melhorado (quadrado menor, X maior)
+// ✅ Cruzeta/malta funcionando em PDFs
 
-console.log('🔄 media-unified.js - Core System (numeração individual, drag & drop universal)');
+console.log('🔄 media-unified.js - Core System (botão deletar otimizado, cruzeta em PDFs)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -468,7 +469,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - COM NUMERAÇÃO E CRUZETA ==========
+    // ========== RENDER FOTOS/VIDEOS - COM BOTÃO DELETAR OTIMIZADO ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -496,7 +497,6 @@ const MediaSystem = {
             if (isMarked) { borderColor = '#e74c3c'; statusText = 'EXCLUIR'; }
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
-            var shortName = displayName.length > 10 ? displayName.substring(0,8)+'...' : displayName;
             
             html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
             
@@ -521,11 +521,11 @@ const MediaSystem = {
             
             // ÍCONE DE ARRASTE (CRUZETA/MALTA) - canto superior esquerdo
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão deletar
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>';
+            // Botão DELETAR - quadrado menor, X maior
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>';
             
             html += '</div>';
         }
@@ -543,7 +543,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - COM NUMERAÇÃO E CRUZETA ==========
+    // ========== RENDER PDFs - COM BOTÃO DELETAR OTIMIZADO E CRUZETA ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -578,19 +578,19 @@ const MediaSystem = {
             html += '<i class="fas fa-file-pdf" style="font-size:1.5rem;color:#e74c3c;"></i>';
             html += '</div>';
             
-            // Nome do arquivo (identificação)
+            // Nome do arquivo
             html += '<div style="font-size:0.45rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
             
             // Status
             html += '<div style="font-size:0.45rem;font-weight:bold;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZETA/MALTA) - canto superior esquerdo
+            // ÍCONE DE ARRASTE (CRUZETA/MALTA) - canto superior esquerdo (CORRIGIDO)
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão deletar
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;width:16px;height:16px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;">✕</button>';
+            // Botão DELETAR - quadrado menor, X maior
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>';
             
             html += '</div>';
         }
@@ -621,7 +621,7 @@ const MediaSystem = {
             if (!container || container.hasAttribute('data-drag-drop')) continue;
             container.setAttribute('data-drag-drop', 'true');
             
-            // Drag start - capturar o item sendo arrastado com efeito de sombra
+            // Drag start
             container.addEventListener('dragstart', function(e) {
                 var target = e.target.closest('[draggable="true"]');
                 if (!target) {
@@ -632,7 +632,6 @@ const MediaSystem = {
                 draggedItemType = target.dataset.type;
                 draggedElement = target;
                 
-                // Efeito visual de sombra durante o arraste
                 target.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
                 target.style.transform = 'scale(1.02)';
                 target.style.zIndex = '999';
@@ -643,7 +642,7 @@ const MediaSystem = {
                 return true;
             });
             
-            // Drag end - restaurar estilo
+            // Drag end
             container.addEventListener('dragend', function(e) {
                 if (draggedElement) {
                     draggedElement.style.boxShadow = '';
@@ -656,7 +655,7 @@ const MediaSystem = {
                 draggedItemType = null;
             });
             
-            // Dragover - permitir soltar com feedback visual
+            // Dragover
             container.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
@@ -676,12 +675,11 @@ const MediaSystem = {
                 }
             });
             
-            // Drop - reordenar os itens
+            // Drop
             container.addEventListener('drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
                 
-                // Limpar feedback visual
                 var allItems = container.querySelectorAll('[draggable="true"]');
                 allItems.forEach(function(item) {
                     item.style.border = '';
@@ -696,14 +694,12 @@ const MediaSystem = {
                 
                 if (!draggedItemId || draggedItemId === targetId || draggedItemType !== targetType) return;
                 
-                // Reordenar baseado no tipo
                 if (draggedItemType === 'media') {
                     self.reorderMediaItemsComplete(draggedItemId, targetId);
                 } else if (draggedItemType === 'pdf') {
                     self.reorderPdfItemsComplete(draggedItemId, targetId);
                 }
                 
-                // Recriar a UI
                 setTimeout(function() {
                     self.renderMediaPreviewComplete();
                     self.renderPdfPreviewComplete();
@@ -812,8 +808,8 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Versão final');
+    console.log('✅ MediaSystem Core carregado - Versão otimizada');
+    console.log('🎯 Botão deletar: quadrado menor (14x14), X maior (11px)');
+    console.log('🎯 Cruzeta/malta: presente em TODOS os arquivos (fotos, vídeos e PDFs)');
     console.log('🎯 Numeração: círculo preto com número branco');
-    console.log('🎯 Cruzeta/malta: presente em TODOS os arquivos');
-    console.log('🎯 Drag & drop: com efeito de sombra');
 }, 1000);
