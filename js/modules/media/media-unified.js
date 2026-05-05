@@ -483,7 +483,7 @@ const MediaSystem = {
         }
         
         // CORRIGIDO: flex-wrap: nowrap para layout horizontal
-        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:5px;overflow-x:auto;overflow-y:hidden;padding-bottom:12px;max-width:100%;">';
+        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:20px;overflow-x:auto;overflow-y:hidden;padding-bottom:22px;max-width:100%;">';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
