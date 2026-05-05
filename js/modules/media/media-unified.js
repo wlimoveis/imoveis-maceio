@@ -1,10 +1,5 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Contém lógica ESSENCIAL de upload/delete/estado
-// ✅ FALLBACK COMPLETO com DRAG & DROP para produção
-// ✅ UI completa delegada para Support System (em debug)
-// ✅ Funções escapeHtml e isVideoUrl centralizadas no SharedCore
-// ✅ Debounce aplicado em addFiles e addPdfs para otimização de performance
-// ✅ LAYOUT HORIZONTAL com scroll para previews
+// ✅ LAYOUT HORIZONTAL FORÇADO
 
 console.log('🔄 media-unified.js - Core System (fallback completo com drag & drop)');
 
@@ -18,12 +13,11 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     };
 }
 
-// Função debounce centralizada (fallback caso SharedCore não esteja disponível)
+// Função debounce centralizada
 const getDebounceFunction = function() {
     if (window.SharedCore && typeof window.SharedCore.debounce === 'function') {
         return window.SharedCore.debounce;
     }
-    // Fallback inline
     return function(func, wait) {
         let timeout;
         return function executedFunction(...args) {
@@ -38,7 +32,6 @@ const getDebounceFunction = function() {
 };
 
 const MediaSystem = {
-    // ========== CONFIGURAÇÃO ==========
     config: {
         currentSystem: 'vendas',
         buckets: { vendas: 'properties', aluguel: 'rentals' },
@@ -50,29 +43,23 @@ const MediaSystem = {
         }
     },
 
-    // ========== ESTADO ==========
     state: {
         files: [], existing: [], pdfs: [], existingPdfs: [],
         isUploading: false, currentPropertyId: null, lastUploadResult: null,
-        _debouncedUpdateUI: null  // Cache da função debounced
+        _debouncedUpdateUI: null
     },
 
-    // ========== INICIALIZAÇÃO ==========
-    init(systemName) {
+    init: function(systemName) {
         var system = systemName || 'vendas';
         console.log('🔧 Inicializando sistema de mídia para: ' + system);
         this.config.currentSystem = system;
         this.resetState();
         this.setupEventListeners();
-        
-        // Inicializar função debounced para updateUI
         const debounce = getDebounceFunction();
         this.state._debouncedUpdateUI = debounce(() => this.updateUI(), 100);
-        
         return this;
     },
 
-    // ========== EVENT LISTENERS ==========
     setupEventListeners: function() {
         var uploadArea = document.getElementById('uploadArea');
         var fileInput = document.getElementById('fileInput');
@@ -141,7 +128,6 @@ const MediaSystem = {
         }
     },
 
-    // ========== CARREGAR ARQUIVOS EXISTENTES ==========
     loadExisting: function(property) {
         if (!property) return this;
         console.log('📥 Carregando mídia existente para imóvel ' + property.id);
@@ -186,9 +172,6 @@ const MediaSystem = {
         return this;
     },
 
-    // ========== FUNÇÕES AUXILIARES (USAM SHAREDCORE) ==========
-
-    // ========== ADICIONAR ARQUIVOS ==========
     addFiles: function(fileList) {
         if (!fileList || fileList.length === 0) return 0;
         var addedCount = 0;
@@ -216,7 +199,6 @@ const MediaSystem = {
             });
             addedCount++;
         }
-        // ✅ APLICADO DEBOUNCE para evitar múltiplas atualizações de UI rápidas
         if (this.state._debouncedUpdateUI) {
             this.state._debouncedUpdateUI();
         } else {
@@ -244,7 +226,6 @@ const MediaSystem = {
             });
             addedCount++;
         }
-        // ✅ APLICADO DEBOUNCE para evitar múltiplas atualizações de UI rápidas
         if (this.state._debouncedUpdateUI) {
             this.state._debouncedUpdateUI();
         } else {
@@ -253,7 +234,6 @@ const MediaSystem = {
         return addedCount;
     },
 
-    // ========== UPLOAD ==========
     uploadSingleFile: function(file, propertyId, type) {
         var self = this;
         var t = type || 'media';
@@ -360,7 +340,6 @@ const MediaSystem = {
         })();
     },
 
-    // ========== EXCLUSÃO ==========
     deleteFileFromStorage: function(fileUrl) {
         var self = this;
         if (!fileUrl) return Promise.resolve({ success: false, error: 'No URL provided' });
@@ -474,7 +453,6 @@ const MediaSystem = {
         return { images: imageUrls.join(','), pdfs: pdfUrls.join(',') };
     },
 
-    // ========== UI DELEGATION ==========
     updateUI: function() {
         var self = this;
         if (this._updateTimeout) clearTimeout(this._updateTimeout);
@@ -490,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO COM DRAG & DROP (PRODUÇÃO) - LAYOUT HORIZONTAL ==========
+    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL FORÇADO ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -504,8 +482,8 @@ const MediaSystem = {
             return;
         }
         
-        // LAYOUT HORIZONTAL: flex-wrap nowrap com overflow-x auto
-        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;">';
+        // CORRIGIDO: flex-wrap: nowrap para layout horizontal
+        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:8px;max-width:100%;">';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
@@ -552,8 +530,8 @@ const MediaSystem = {
             return;
         }
         
-        // LAYOUT HORIZONTAL: flex-wrap nowrap com overflow-x auto
-        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:10px;">';
+        // CORRIGIDO: flex-wrap: nowrap para layout horizontal
+        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;overflow-x:auto;overflow-y:hidden;padding-bottom:8px;max-width:100%;">';
         
         for (var idx = 0; idx < allPdfs.length; idx++) {
             var pdf = allPdfs[idx];
@@ -579,7 +557,6 @@ const MediaSystem = {
         container.innerHTML = html;
     },
 
-    // ========== DRAG & DROP COMPLETO (PRODUÇÃO) ==========
     setupCompleteDragAndDrop: function() {
         var containers = ['uploadPreview', 'pdfUploadPreview'];
         var self = this;
@@ -690,7 +667,6 @@ const MediaSystem = {
         this.state.pdfs = newPdfs;
     },
 
-    // ========== UTILIDADES ==========
     extractFileName: function(url) {
         if (!url) return 'arquivo';
         try {
@@ -748,11 +724,6 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Lógica essencial + Fallback completo com drag & drop');
-    console.log('📦 Modo: ' + (isDebug ? 'DEBUG (UI via Support System)' : 'PRODUÇÃO (fallback completo com drag & drop)'));
-    console.log('🔧 Funções escapeHtml e isVideoUrl centralizadas no SharedCore');
-    console.log('⚡ Debounce aplicado em addFiles e addPdfs para otimização de performance');
-    console.log('🎯 LAYOUT HORIZONTAL - scroll horizontal para previews');
+    console.log('✅ MediaSystem Core carregado');
+    console.log('🎯 LAYOUT HORIZONTAL ATIVADO - flex-wrap: nowrap');
 }, 1000);
-
-console.log('✅ media-unified.js CORE - ' + (window.location.search.indexOf('debug=true') !== -1 ? 'Modo DEBUG (UI via Support System)' : 'Modo PRODUÇÃO (fallback completo com drag & drop)'));
