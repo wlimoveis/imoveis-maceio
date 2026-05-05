@@ -468,7 +468,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM SCROLL E ITENS MENORES ==========
+    // ========== RENDER COMPLETO - LAYOUT HORIZONTAL COM ITENS MENORES (55x55) ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -478,11 +478,11 @@ const MediaSystem = {
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
         if (allFiles.length === 0) {
-            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1.5rem;"><i class="fas fa-images" style="font-size:1.5rem;margin-bottom:0.5rem;opacity:0.5;"></i><p style="margin:0;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.7rem;">Arraste ou clique para adicionar</small></div>';
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:1rem;"><i class="fas fa-images" style="font-size:1.2rem;margin-bottom:0.3rem;opacity:0.5;"></i><p style="margin:0;font-size:0.7rem;">Nenhuma foto ou vídeo adicionada</p><small style="font-size:0.6rem;">Arraste ou clique para adicionar</small></div>';
             return;
         }
         
-        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:8px;overflow-x:auto;overflow-y:hidden;padding-bottom:6px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
+        var html = '<div class="media-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
         
         for (var idx = 0; idx < allFiles.length; idx++) {
             var item = allFiles[idx];
@@ -496,19 +496,19 @@ const MediaSystem = {
             if (isMarked) { borderColor = '#e74c3c'; statusText = 'Excluir'; }
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
-            var shortName = displayName.length > 12 ? displayName.substring(0,10)+'...' : displayName;
+            var shortName = displayName.length > 10 ? displayName.substring(0,8)+'..' : displayName;
             
-            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:70px;height:70px;flex:0 0 auto;border-radius:6px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
-            html += '<div style="width:100%;height:50px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
+            html += '<div class="media-preview-item-complete draggable-item" draggable="true" data-id="' + item.id + '" data-type="media" title="' + escapeHtmlFn(displayName) + '" style="position:relative;width:55px;height:55px;flex:0 0 auto;border-radius:5px;overflow:hidden;border:2px solid ' + borderColor + ';background:#f0f0f0;cursor:grab;">';
+            html += '<div style="width:100%;height:40px;overflow:hidden;background:#2c3e50;display:flex;align-items:center;justify-content:center;">';
             if (imageUrl) {
                 html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\';">';
             }
-            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:1rem;"></i><span style="font-size:0.5rem;">' + escapeHtmlFn(shortName) + '</span></div>';
+            html += '<div style="display:' + (imageUrl ? 'none' : 'flex') + ';flex-direction:column;align-items:center;color:white;"><i class="fas fa-image" style="font-size:0.8rem;"></i><span style="font-size:0.45rem;">' + escapeHtmlFn(shortName) + '</span></div>';
             html += '</div>';
-            html += '<div style="padding:2px;font-size:0.55rem;text-align:center;background:white;">' + statusText + '</div>';
-            html += '<div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.5);color:white;width:16px;height:16px;border-radius:0 0 4px 0;display:flex;align-items:center;justify-content:center;font-size:0.5rem;"><i class="fas fa-arrows-alt"></i></div>';
-            html += '<div style="position:absolute;bottom:1px;right:1px;background:rgba(0,0,0,0.7);color:white;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;">' + (index+1) + '</div>';
-            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-4px;right:-4px;background:' + (isMarked ? '#c0392b' : '#e74c3c') + ';color:white;border:none;width:18px;height:18px;border-radius:50%;cursor:pointer;font-size:9px;font-weight:bold;z-index:10;">' + (isMarked ? '↺' : '×') + '</button>';
+            html += '<div style="padding:1px;font-size:0.45rem;text-align:center;background:white;line-height:1.2;">' + statusText + '</div>';
+            html += '<div style="position:absolute;top:0;left:0;background:rgba(0,0,0,0.5);color:white;width:14px;height:14px;border-radius:0 0 3px 0;display:flex;align-items:center;justify-content:center;font-size:0.45rem;"><i class="fas fa-arrows-alt"></i></div>';
+            html += '<div style="position:absolute;bottom:1px;right:1px;background:rgba(0,0,0,0.6);color:white;width:12px;height:12px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;">' + (index+1) + '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-3px;right:-3px;background:' + (isMarked ? '#c0392b' : '#e74c3c') + ';color:white;border:none;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:8px;font-weight:bold;z-index:10;">' + (isMarked ? '↺' : '×') + '</button>';
             html += '</div>';
         }
         
@@ -517,6 +517,49 @@ const MediaSystem = {
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
+        }
+    },
+
+    renderPdfPreviewComplete: function() {
+        var container = document.getElementById('pdfUploadPreview');
+        if (!container) return;
+        var self = this;
+        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
+        
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
+        
+        if (allPdfs.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:0.6rem;font-size:0.7rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1rem;margin-bottom:0.2rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>';
+            return;
+        }
+        
+        var html = '<div class="pdf-sortable-container" style="display:flex;flex-direction:row;flex-wrap:nowrap;gap:6px;overflow-x:auto;overflow-y:hidden;padding-bottom:4px;scroll-behavior:smooth;-webkit-overflow-scrolling:touch;">';
+        
+        for (var idx = 0; idx < allPdfs.length; idx++) {
+            var pdf = allPdfs[idx];
+            var index = idx;
+            var isMarked = pdf.markedForDeletion;
+            var isExisting = pdf.isExisting;
+            var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
+            var statusText = isMarked ? 'Excluir' : (isExisting ? 'Existente' : 'Novo');
+            var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'..' : pdf.name;
+            
+            html += '<div class="pdf-preview-item-complete draggable-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" style="position:relative;flex:0 0 auto;cursor:grab;width:55px;height:55px;">';
+            html += '<div style="background:#f8f9fa;border:1px solid ' + borderColor + ';border-radius:5px;padding:0.2rem;width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;box-sizing:border-box;">';
+            html += '<div style="position:absolute;top:-3px;left:-3px;background:rgba(0,0,0,0.5);color:white;width:14px;height:14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.45rem;"><i class="fas fa-arrows-alt"></i></div>';
+            html += '<i class="fas fa-file-pdf" style="font-size:1.3rem;color:' + borderColor + ';"></i>';
+            html += '<p style="font-size:0.45rem;margin:2px 0 0 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50px;">' + escapeHtmlFn(shortName) + '</p>';
+            html += '<small style="color:#666;font-size:0.4rem;">' + statusText + '</small>';
+            html += '</div>';
+            html += '<button onclick="MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-3px;right:-3px;background:' + borderColor + ';color:white;border:none;width:16px;height:16px;border-radius:50%;cursor:pointer;font-size:8px;font-weight:bold;">×</button>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+        container.innerHTML = html;
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
         }
     },
 
