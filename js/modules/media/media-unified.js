@@ -1,7 +1,7 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Com ícone de arraste, botão deletar melhorado, status em negrito e preview de vídeo
+// ✅ Com efeito de sombra no drag, PDFs com identificação visual
 
-console.log('🔄 media-unified.js - Core System (drag & drop com melhorias visuais)');
+console.log('🔄 media-unified.js - Core System (efeito de sombra no drag, PDFs identificados)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -164,7 +164,8 @@ const MediaSystem = {
                 name: self.extractFileName(url), 
                 isExisting: true, 
                 markedForDeletion: false, 
-                type: 'application/pdf' 
+                type: 'application/pdf',
+                index: index + 1
             }; });
         }
         
@@ -468,7 +469,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER COMPLETO - COM DRAG & DROP E MELHORIAS VISUAIS ==========
+    // ========== RENDER COMPLETO - COM EFEITO DE SOMBRA NO DRAG E PDFs IDENTIFICADOS ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -498,16 +499,14 @@ const MediaSystem = {
             var displayName = item.name || 'Arquivo';
             var shortName = displayName.length > 10 ? displayName.substring(0,8)+'...' : displayName;
             
-            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
             
-            // Área da imagem/vídeo (com suporte a preview de vídeo)
+            // Área da imagem/vídeo
             html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">';
             if (imageUrl) {
                 if (isVideo) {
-                    // Preview de vídeo
                     html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted></video>';
                 } else {
-                    // Preview de imagem
                     html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1rem;color:#999;\\\\"></i>\';">';
                 }
             } else {
@@ -515,15 +514,15 @@ const MediaSystem = {
             }
             html += '</div>';
             
-            // Status em NEGRITO e maior
+            // Status e número
             html += '<div style="font-size:0.55rem;font-weight:bold;padding:2px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : (index+1)) + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZ DE MALTA)
+            // Ícone de arraste
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR (X) - QUADRADO VERMELHO com X grande e negrito
+            // Botão deletar melhorado
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c;color:white;border:2px solid #c0392b;border-radius:3px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
             
             html += '</div>';
@@ -564,27 +563,32 @@ const MediaSystem = {
             var isExisting = pdf.isExisting;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
-            var shortName = pdf.name.length > 10 ? pdf.name.substring(0,8)+'...' : pdf.name;
+            var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
+            var pdfNumber = (pdf.documentNumber || (index + 1)).toString().padStart(2, '0');
+            var pdfColor = isExisting ? '#27ae60' : '#e67e22';
             
-            html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
+            
+            // Número do documento (identificação visual)
+            html += '<div style="position:absolute;top:0;left:0;background:' + pdfColor + ';color:white;font-size:0.45rem;font-weight:bold;padding:1px 3px;border-radius:0 0 3px 0;z-index:5;">#' + pdfNumber + '</div>';
             
             // Área do ícone PDF
-            html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;">';
+            html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;margin-top:8px;">';
             html += '<i class="fas fa-file-pdf" style="font-size:1.3rem;color:#e74c3c;"></i>';
             html += '</div>';
             
-            // Nome do arquivo
-            html += '<div style="font-size:0.5rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
+            // Nome do arquivo (identificação)
+            html += '<div style="font-size:0.45rem;padding:1px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;" title="' + escapeHtmlFn(pdf.name) + '">📄 ' + escapeHtmlFn(shortName) + '</div>';
             
-            // Status em NEGRITO e maior
-            html += '<div style="font-size:0.55rem;font-weight:bold;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
+            // Status
+            html += '<div style="font-size:0.5rem;font-weight:bold;color:' + pdfColor + ';width:100%;text-align:center;">' + statusText + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZ DE MALTA)
-            html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
+            // Ícone de arraste
+            html += '<div class="drag-handle" style="position:absolute;top:1px;right:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR (X) - QUADRADO VERMELHO com X grande e negrito
+            // Botão deletar
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c;color:white;border:2px solid #c0392b;border-radius:3px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
             
             html += '</div>';
@@ -608,6 +612,7 @@ const MediaSystem = {
         var self = this;
         var draggedItemId = null;
         var draggedItemType = null;
+        var draggedElement = null;
         
         for (var c = 0; c < containers.length; c++) {
             var containerId = containers[c];
@@ -615,7 +620,7 @@ const MediaSystem = {
             if (!container || container.hasAttribute('data-drag-drop')) continue;
             container.setAttribute('data-drag-drop', 'true');
             
-            // Drag start - capturar o item sendo arrastado
+            // Drag start - capturar o item sendo arrastado com efeito de sombra
             container.addEventListener('dragstart', function(e) {
                 var target = e.target.closest('[draggable="true"]');
                 if (!target) {
@@ -624,30 +629,64 @@ const MediaSystem = {
                 }
                 draggedItemId = target.dataset.id;
                 draggedItemType = target.dataset.type;
+                draggedElement = target;
+                
+                // Efeito visual de sombra durante o arraste
+                target.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
+                target.style.transform = 'scale(1.02)';
+                target.style.zIndex = '999';
+                target.style.opacity = '0.8';
+                
                 e.dataTransfer.setData('text/plain', JSON.stringify({ id: draggedItemId, type: draggedItemType }));
                 e.dataTransfer.effectAllowed = 'move';
-                target.style.opacity = '0.5';
                 return true;
             });
             
-            // Drag end - restaurar opacidade
+            // Drag end - restaurar estilo
             container.addEventListener('dragend', function(e) {
-                var target = e.target.closest('[draggable="true"]');
-                if (target) target.style.opacity = '';
+                if (draggedElement) {
+                    draggedElement.style.boxShadow = '';
+                    draggedElement.style.transform = '';
+                    draggedElement.style.zIndex = '';
+                    draggedElement.style.opacity = '';
+                    draggedElement = null;
+                }
                 draggedItemId = null;
                 draggedItemType = null;
             });
             
-            // Dragover - permitir soltar
+            // Dragover - permitir soltar com feedback visual
             container.addEventListener('dragover', function(e) {
                 e.preventDefault();
                 e.dataTransfer.dropEffect = 'move';
+                
+                // Feedback visual no alvo
+                var target = e.target.closest('[draggable="true"]');
+                if (target && target !== draggedElement) {
+                    target.style.border = '2px dashed #f39c12';
+                    target.style.boxShadow = '0 0 0 2px rgba(243, 156, 18, 0.3)';
+                }
+            });
+            
+            container.addEventListener('dragleave', function(e) {
+                var target = e.target.closest('[draggable="true"]');
+                if (target) {
+                    target.style.border = '';
+                    target.style.boxShadow = '';
+                }
             });
             
             // Drop - reordenar os itens
             container.addEventListener('drop', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
+                
+                // Limpar feedback visual
+                var allItems = container.querySelectorAll('[draggable="true"]');
+                allItems.forEach(function(item) {
+                    item.style.border = '';
+                    item.style.boxShadow = '';
+                });
                 
                 var dropTarget = e.target.closest('[draggable="true"]');
                 if (!dropTarget) return;
@@ -773,8 +812,8 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Com melhorias visuais');
-    console.log('🎯 Botão deletar: quadrado vermelho com X grande e negrito');
-    console.log('🎯 Status: fonte maior e em negrito');
-    console.log('🎯 Preview de vídeo: ativado');
+    console.log('✅ MediaSystem Core carregado - Com efeito de sombra no drag');
+    console.log('🎯 Efeito visual: sombra e escala durante arraste');
+    console.log('🎯 PDFs: identificação por número e cor');
+    console.log('🎯 Drag & drop funcionando para todos os arquivos');
 }, 1000);
