@@ -1,9 +1,7 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Preview ocupa 100% do espaço
-// ✅ Botão deletar sobreposto ao preview
-// ✅ Layout otimizado
+// ✅ PREVIEW 100% - SEM ESPAÇOS EXTRAS
 
-console.log('🔄 media-unified.js - Core System (preview 100%, botão sobreposto)');
+console.log('🔄 media-unified.js - Core System (preview 100% sem espaços extras)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -15,7 +13,6 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     };
 }
 
-// Função debounce centralizada
 const getDebounceFunction = function() {
     if (window.SharedCore && typeof window.SharedCore.debounce === 'function') {
         return window.SharedCore.debounce;
@@ -470,7 +467,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - PREVIEW 100% + BOTÃO SOBREPOSTO ==========
+    // ========== RENDER FOTOS/VIDEOS - PREVIEW 100% SEM ESPAÇOS EXTRAS ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -499,37 +496,33 @@ const MediaSystem = {
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
             
-            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            // ESTRUTURA SIMPLIFICADA - SEM DIVS DESNECESSÁRIAS
+            html += '<div draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // PREVIEW OCUPA 100% DO ESPAÇO DISPONÍVEL
-            html += '<div style="flex:1;width:100%;position:relative;overflow:hidden;">';
-            
-            // Conteúdo do preview (imagem/vídeo)
+            // PREVIEW - OCUPA 100% DO ESPAÇO INTERNO
             if (imageUrl) {
                 if (isVideo) {
-                    html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted></video>';
+                    html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;"></video>';
                 } else {
-                    html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1.5rem;color:#999;display:flex;align-items:center;justify-content:center;height:100%;\\\\"></i>\';">';
+                    html += '<img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;" onerror="this.style.display=\'none\';this.parentElement.style.background=\'#f0f0f0\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1.5rem;color:#999;display:flex;align-items:center;justify-content:center;height:100%;\\\\"></i>\' + this.parentElement.innerHTML;">';
                 }
             } else {
-                html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
+                html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // BOTÃO DELETAR - SOBREPOSTO (absolute dentro do preview)
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:2px;right:2px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:3px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
+            // BOTÃO DELETAR - SOBREPOSTO (canto superior direito)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:1px;right:1px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
-            // ÍCONE DE ARRASTE (sobreposto)
-            html += '<div class="drag-handle" style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            // ÍCONE DE ARRASTE (canto superior esquerdo)
+            html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // NÚMERO DE ORDENAÇÃO (sobreposto)
-            html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
+            // NÚMERO DE ORDENAÇÃO (canto inferior direito)
+            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
-            html += '</div>'; // fecha preview container
-            
-            // STATUS (fora do preview, na parte inferior)
-            html += '<div style="font-size:0.45rem;font-weight:bold;padding:2px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : '') + '</div>';
+            // STATUS (fora do preview, na parte inferior do quadrado)
+            html += '<div style="position:absolute;bottom:-14px;left:0;right:0;font-size:0.45rem;font-weight:bold;text-align:center;background:transparent;color:#333;">' + (statusText ? statusText : '') + '</div>';
             
             html += '</div>';
         }
@@ -539,16 +532,16 @@ const MediaSystem = {
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
-        container.style.gap = '4px';
-        container.style.padding = '4px 0';
-        container.style.alignItems = 'stretch';
+        container.style.gap = '2px';
+        container.style.padding = '6px 2px 16px 2px';
+        container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
         }
     },
 
-    // ========== RENDER PDFs - PREVIEW 100% + BOTÃO SOBREPOSTO ==========
+    // ========== RENDER PDFs - PREVIEW 100% SEM ESPAÇOS EXTRAS ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -573,32 +566,28 @@ const MediaSystem = {
             var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
             
-            html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;">';
+            // ESTRUTURA SIMPLIFICADA
+            html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // PREVIEW OCUPA 100% DO ESPAÇO DISPONÍVEL
-            html += '<div style="flex:1;width:100%;position:relative;display:flex;align-items:center;justify-content:center;background:#fef0d9;">';
-            
-            // Ícone PDF
+            // PREVIEW DO PDF
+            html += '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fef0d9;border-radius:3px;">';
             html += '<i class="fas fa-file-pdf" style="font-size:1.8rem;color:#e74c3c;"></i>';
+            html += '<span style="font-size:0.4rem;margin-top:2px;color:#666;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</span>';
+            html += '</div>';
             
-            // Nome do arquivo (pequeno dentro do preview)
-            html += '<div style="position:absolute;bottom:2px;left:0;right:0;font-size:0.4rem;text-align:center;background:rgba(0,0,0,0.5);color:white;padding:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</div>';
-            
-            // BOTÃO DELETAR - SOBREPOSTO
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:2px;right:2px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:3px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
+            // BOTÃO DELETAR
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:1px;right:1px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
             // ÍCONE DE ARRASTE
-            html += '<div class="drag-handle" style="position:absolute;top:2px;left:2px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
             // NÚMERO DE ORDENAÇÃO
-            html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
-            
-            html += '</div>'; // fecha preview container
+            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
             // STATUS
-            html += '<div style="font-size:0.45rem;font-weight:bold;padding:2px 0;text-align:center;background:#fef9e6;width:100%;">' + statusText + '</div>';
+            html += '<div style="position:absolute;bottom:-14px;left:0;right:0;font-size:0.45rem;font-weight:bold;text-align:center;background:transparent;color:#333;">' + statusText + '</div>';
             
             html += '</div>';
         }
@@ -608,9 +597,9 @@ const MediaSystem = {
         container.style.flexDirection = 'row';
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
-        container.style.gap = '4px';
-        container.style.padding = '4px 0';
-        container.style.alignItems = 'stretch';
+        container.style.gap = '2px';
+        container.style.padding = '6px 2px 16px 2px';
+        container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
@@ -640,7 +629,7 @@ const MediaSystem = {
                 draggedItemType = target.dataset.type;
                 draggedElement = target;
                 
-                target.style.boxShadow = '0 8px 16px rgba(0,0,0,0.3)';
+                target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
                 target.style.transform = 'scale(1.02)';
                 target.style.zIndex = '999';
                 target.style.opacity = '0.8';
@@ -669,7 +658,6 @@ const MediaSystem = {
                 var target = e.target.closest('[draggable="true"]');
                 if (target && target !== draggedElement) {
                     target.style.border = '2px dashed #f39c12';
-                    target.style.boxShadow = '0 0 0 2px rgba(243, 156, 18, 0.3)';
                 }
             });
             
@@ -677,7 +665,6 @@ const MediaSystem = {
                 var target = e.target.closest('[draggable="true"]');
                 if (target) {
                     target.style.border = '';
-                    target.style.boxShadow = '';
                 }
             });
             
@@ -688,7 +675,6 @@ const MediaSystem = {
                 var allItems = container.querySelectorAll('[draggable="true"]');
                 allItems.forEach(function(item) {
                     item.style.border = '';
-                    item.style.boxShadow = '';
                 });
                 
                 var dropTarget = e.target.closest('[draggable="true"]');
@@ -732,7 +718,7 @@ const MediaSystem = {
         }
         this.state.existing = newExisting;
         this.state.files = newFiles;
-        console.log('📦 Media reordenado: ' + draggedId + ' → posição ' + targetIndex);
+        console.log('📦 Media reordenado: ' + draggedId);
     },
 
     reorderPdfItemsComplete: function(draggedId, targetId) {
@@ -753,7 +739,7 @@ const MediaSystem = {
         }
         this.state.existingPdfs = newExistingPdfs;
         this.state.pdfs = newPdfs;
-        console.log('📄 PDF reordenado: ' + draggedId + ' → posição ' + targetIndex);
+        console.log('📄 PDF reordenado: ' + draggedId);
     },
 
     extractFileName: function(url) {
@@ -813,5 +799,5 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Preview 100%, botão sobreposto');
+    console.log('✅ MediaSystem Core carregado - Preview 100%, sem espaços extras');
 }, 1000);
