@@ -469,7 +469,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - BOTÃO DELETAR PROPORCIONAL ==========
+    // ========== RENDER FOTOS/VIDEOS - BOTÃO DELETAR SOBREPOSTO ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -498,13 +498,13 @@ const MediaSystem = {
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
             
-            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
+            html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:visible;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
             
             // NÚMERO DE ORDENAÇÃO
             html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
-            // Área da imagem/vídeo
-            html += '<div style="width:100%;height:38px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;">';
+            // Área da imagem/vídeo (preview)
+            html += '<div style="width:100%;height:40px;display:flex;align-items:center;justify-content:center;background:#f0f0f0;overflow:hidden;">';
             if (imageUrl) {
                 if (isVideo) {
                     html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;" preload="metadata" muted></video>';
@@ -517,15 +517,15 @@ const MediaSystem = {
             html += '</div>';
             
             // Status
-            html += '<div style="font-size:0.5rem;font-weight:bold;padding:1px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : '') + '</div>';
+            html += '<div style="font-size:0.5rem;font-weight:bold;padding:2px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : '') + '</div>';
             
             // ÍCONE DE ARRASTE (CRUZETA/MALTA)
-            html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            html += '<div class="drag-handle" style="position:absolute;top:2px;left:2px;width:12px;height:12px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // BOTÃO DELETAR - quadrado ajustado perfeitamente ao X (12x12, X 10px)
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-1px;right:-1px;width:12px;height:12px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;padding:0;margin:0;line-height:1;">✕</button>';
+            // BOTÃO DELETAR - SOBREPOSTO AO PREVIEW (absolute)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:3px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
             
             html += '</div>';
         }
@@ -540,6 +540,71 @@ const MediaSystem = {
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
+        }
+    },
+
+    // ========== RENDER PDFs - BOTÃO DELETAR SOBREPOSTO ==========
+    renderPdfPreviewComplete: function() {
+        var container = document.getElementById('pdfUploadPreview');
+        if (!container) return;
+        var self = this;
+        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
+        
+        var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
+        
+        if (allPdfs.length === 0) {
+            container.innerHTML = '<div style="text-align:center;color:#95a5a6;padding:0.6rem;font-size:0.7rem;"><i class="fas fa-cloud-upload-alt" style="font-size:1rem;margin-bottom:0.2rem;opacity:0.5;"></i><p style="margin:0;">Arraste ou clique para adicionar PDFs</p></div>';
+            return;
+        }
+        
+        var html = '';
+        
+        for (var idx = 0; idx < allPdfs.length; idx++) {
+            var pdf = allPdfs[idx];
+            var index = idx;
+            var isMarked = pdf.markedForDeletion;
+            var isExisting = pdf.isExisting;
+            var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
+            var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
+            var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
+            
+            html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:visible;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
+            
+            // NÚMERO DE ORDENAÇÃO
+            html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
+            
+            // Área do ícone PDF (preview)
+            html += '<div style="width:100%;height:40px;display:flex;align-items:center;justify-content:center;background:#fef0d9;">';
+            html += '<i class="fas fa-file-pdf" style="font-size:1.5rem;color:#e74c3c;"></i>';
+            html += '</div>';
+            
+            // Nome do arquivo
+            html += '<div style="font-size:0.45rem;padding:2px;text-align:center;background:#fef9e6;width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500;" title="' + escapeHtmlFn(pdf.name) + '">' + escapeHtmlFn(shortName) + '</div>';
+            
+            // Status
+            html += '<div style="font-size:0.45rem;font-weight:bold;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
+            
+            // ÍCONE DE ARRASTE (CRUZETA/MALTA)
+            html += '<div class="drag-handle" style="position:absolute;top:2px;left:2px;width:12px;height:12px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
+            html += '</div>';
+            
+            // BOTÃO DELETAR - SOBREPOSTO AO PREVIEW (absolute)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:3px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;box-shadow:0 1px 2px rgba(0,0,0,0.2);">✕</button>';
+            
+            html += '</div>';
+        }
+        
+        container.innerHTML = html;
+        container.style.display = 'flex';
+        container.style.flexDirection = 'row';
+        container.style.flexWrap = 'nowrap';
+        container.style.overflowX = 'auto';
+        container.style.gap = '4px';
+        container.style.padding = '4px 0';
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
         }
     },
 
