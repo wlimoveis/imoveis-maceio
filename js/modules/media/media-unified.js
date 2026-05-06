@@ -471,7 +471,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS ==========
+    // ========== RENDER FOTOS/VIDEOS - ÍCONES ALTO CONTRASTE ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -525,21 +525,21 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // Botão deletar (topo direito)
-            html += '<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,0.2);">';
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="background:transparent;border:none;color:white;font-size:9px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
+            // Botão deletar (topo direito) - BRANCO COM FUNDO VERMELHO
+            html += '<div style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid white;">';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="background:transparent;border:none;color:white;font-size:11px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
             html += '</div>';
             
-            // Ícone de arraste (topo esquerdo)
-            html += '<div style="position:absolute;top:-4px;left:-4px;width:16px;height:16px;background:#000000;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,0.2);">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            // Ícone de arraste (topo esquerdo) - BRANCO COM FUNDO PRETO
+            html += '<div style="position:absolute;top:-3px;left:-3px;width:18px;height:18px;background:#1a1a2e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid #f39c12;">';
+            html += '<i class="fas fa-arrows-alt" style="color:#f39c12;font-size:9px;"></i>';
             html += '</div>';
             
             // Número ordenação
             html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
             
             // STATUS
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;">' + statusText + '</div>';
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - CORRIGIDO ==========
+    // ========== RENDER PDFs - ÍCONES ALTO CONTRASTE ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -607,21 +607,21 @@ const MediaSystem = {
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            // Botão deletar (topo direito)
-            html += '<div style="position:absolute;top:-4px;right:-4px;width:16px;height:16px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,0.2);">';
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="background:transparent;border:none;color:white;font-size:9px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
+            // Botão deletar (topo direito) - BRANCO COM FUNDO VERMELHO
+            html += '<div style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid white;">';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="background:transparent;border:none;color:white;font-size:11px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
             html += '</div>';
             
-            // Ícone de arraste (topo esquerdo) - FUNDO PRETO, VISÍVEL
-            html += '<div style="position:absolute;top:-4px;left:-4px;width:16px;height:16px;background:#000000;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 2px rgba(0,0,0,0.2);">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            // Ícone de arraste (topo esquerdo) - BRANCO COM FUNDO PRETO E BORDA LARANJA
+            html += '<div style="position:absolute;top:-3px;left:-3px;width:18px;height:18px;background:#1a1a2e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid #f39c12;">';
+            html += '<i class="fas fa-arrows-alt" style="color:#f39c12;font-size:9px;"></i>';
             html += '</div>';
             
             // Número ordenação
             html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
             
             // STATUS
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;">' + statusText + '</div>';
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
