@@ -145,7 +145,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - HEADER COMPACTO E PRÓXIMO ========== */
+        /* ========== MOBILE - HEADER COMPLETAMENTE VISÍVEL ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -172,52 +172,55 @@
                 padding: 0 !important;
             }
             
-            /* HEADER - MAIS COMPACTO */
+            /* HEADER - TODOS OS ELEMENTOS VISÍVEIS */
             #propertyList > div:first-child {
-                margin: 0 0 0.3rem 0 !important;
-                padding: 0.3rem 0.5rem !important;
-                display: flex !important;
-                flex-wrap: wrap !important;
-                align-items: center !important;
-                justify-content: space-between !important;
-                gap: 0.3rem !important;
+                margin: 0 0 0.5rem 0 !important;
+                padding: 0.5rem !important;
+                display: block !important;
                 background: #e8f4fd;
-                border-radius: 6px;
+                border-radius: 8px;
             }
             
-            /* Estatísticas lado esquerdo */
+            /* Primeira linha - estatísticas */
             #propertyList > div:first-child > div:first-child {
                 display: flex !important;
                 flex-wrap: wrap !important;
-                gap: 0.3rem !important;
+                gap: 0.5rem !important;
                 align-items: center !important;
-                margin: 0 !important;
-                padding: 0 !important;
+                margin-bottom: 0.5rem !important;
             }
             
-            /* Cada item de estatística */
-            #propertyList > div:first-child > div:first-child > div,
-            #propertyList > div:first-child > div:first-child span {
-                margin: 0 !important;
-                padding: 0 !important;
+            /* Cada estatística individualmente */
+            #propertyList > div:first-child > div:first-child > div {
+                display: inline-flex !important;
+                align-items: center !important;
+                gap: 0.3rem !important;
+                background: white !important;
+                padding: 0.2rem 0.5rem !important;
+                border-radius: 15px !important;
                 font-size: 0.7rem !important;
                 white-space: nowrap !important;
             }
             
-            /* Separador entre estatísticas */
+            /* Remove o separador "|" */
             #propertyList > div:first-child > div:first-child > span {
                 display: none !important;
             }
             
-            /* Botão Zerar TODAS */
+            /* Segunda linha - botão Zerar TODAS */
             #propertyList > div:first-child button {
-                padding: 0.2rem 0.5rem !important;
-                font-size: 0.65rem !important;
+                display: inline-block !important;
+                width: auto !important;
+                padding: 0.3rem 0.8rem !important;
+                font-size: 0.7rem !important;
                 margin: 0 !important;
-                white-space: nowrap !important;
+                background: #e74c3c !important;
+                color: white !important;
+                border: none !important;
+                border-radius: 20px !important;
             }
             
-            /* Remove elementos de título desnecessários */
+            /* Remove elementos extras */
             #propertyList > div:first-child strong {
                 margin: 0 !important;
                 padding: 0 !important;
