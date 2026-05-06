@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>WEBER LESSA CORRETOR & CONSULTORIA DE IMÓVEIS - CRECI: 654/AL</title>
 
     <!-- Font Awesome -->
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* ========== ABAS ESTILO SKEUOMORPHISM - FUNDO NEUTRO INATIVA ========== */
+        /* ========== ABAS ESTILO SKEUOMORPHISM ========== */
         .admin-tabs {
             display: flex;
             gap: 2px;
@@ -28,7 +28,6 @@
             box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Estilo base da aba - INATIVA (FUNDO NEUTRO/OPACO) */
         .admin-tab {
             padding: 0.7rem 1.5rem;
             background: #b8b8b8;
@@ -41,11 +40,7 @@
             font-size: 0.85rem;
             position: relative;
             margin-right: 0px;
-            box-shadow: 
-                -2px -2px 5px rgba(0,0,0,0.15),
-                2px 2px 5px rgba(255,255,255,0.5),
-                inset 1px 1px 0 rgba(255,255,255,0.4),
-                inset -1px -1px 0 rgba(0,0,0,0.05);
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.15), 2px 2px 5px rgba(255,255,255,0.5), inset 1px 1px 0 rgba(255,255,255,0.4), inset -1px -1px 0 rgba(0,0,0,0.05);
             transform: translateY(2px);
             z-index: 1;
             text-shadow: 0 1px 0 rgba(255,255,255,0.5);
@@ -56,34 +51,21 @@
             background: #c8c8c8;
             color: #1a1a1a;
             transform: translateY(0px);
-            box-shadow: 
-                -3px -3px 6px rgba(0,0,0,0.2),
-                3px 3px 6px rgba(255,255,255,0.6),
-                inset 1px 1px 0 rgba(255,255,255,0.5),
-                inset -1px -1px 0 rgba(0,0,0,0.08);
+            box-shadow: -3px -3px 6px rgba(0,0,0,0.2), 3px 3px 6px rgba(255,255,255,0.6), inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.08);
         }
 
         .admin-tab.active {
             background: linear-gradient(145deg, #1a5276 0%, #0e3d5c 100%);
             color: #ffffff;
             border: none;
-            box-shadow: 
-                inset 0 4px 8px rgba(0,0,0,0.4),
-                inset 0 -1px 0 rgba(255,255,255,0.15),
-                0 1px 0 rgba(255,255,255,0.2);
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.15), 0 1px 0 rgba(255,255,255,0.2);
             transform: translateY(4px);
             z-index: 3;
             text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
 
-        .admin-tab:first-child {
-            border-radius: 16px 12px 0 0;
-            margin-left: 0;
-        }
-
-        .admin-tab:last-child {
-            margin-right: 0;
-        }
+        .admin-tab:first-child { border-radius: 16px 12px 0 0; margin-left: 0; }
+        .admin-tab:last-child { margin-right: 0; }
 
         .admin-tab i {
             margin-right: 8px;
@@ -92,19 +74,9 @@
             filter: drop-shadow(0 1px 0 rgba(255,255,255,0.4));
         }
 
-        .admin-tab.active i {
-            color: #ffd700;
-            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
-        }
-
-        .admin-tab:not(.active) i {
-            color: #4a4a4a;
-            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5));
-        }
-
-        .admin-tab:not(.active):hover i {
-            color: #1a5276;
-        }
+        .admin-tab.active i { color: #ffd700; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
+        .admin-tab:not(.active) i { color: #4a4a4a; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5)); }
+        .admin-tab:not(.active):hover i { color: #1a5276; }
 
         .admin-tab-content {
             display: none;
@@ -119,38 +91,16 @@
             z-index: 2;
         }
 
-        .admin-tab-content.active {
-            display: block;
-        }
+        .admin-tab-content.active { display: block; }
 
-        .form-compact #propertyForm {
-            gap: 0.5rem;
-        }
-        .form-compact #propertyForm > div {
-            margin-bottom: 0 !important;
-        }
-        .form-compact #propertyForm input,
-        .form-compact #propertyForm select {
-            padding: 0.4rem 0.5rem;
-            font-size: 0.85rem;
-        }
-        .form-compact #propertyForm textarea {
-            min-height: 50px;
-            padding: 0.4rem 0.5rem;
-            font-size: 0.85rem;
-        }
-        .form-compact #uploadArea,
-        .form-compact #pdfUploadArea {
-            padding: 0.5rem;
-        }
-        .form-compact #uploadPreview,
-        .form-compact #pdfUploadPreview {
-            min-height: 40px;
-            max-height: 80px;
-            overflow-y: auto;
-        }
+        .form-compact #propertyForm { gap: 0.5rem; }
+        .form-compact #propertyForm > div { margin-bottom: 0 !important; }
+        .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+        .form-compact #propertyForm textarea { min-height: 50px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+        .form-compact #uploadArea, .form-compact #pdfUploadArea { padding: 0.5rem; }
+        .form-compact #uploadPreview, .form-compact #pdfUploadPreview { min-height: 40px; max-height: 80px; overflow-y: auto; }
         
-        /* ========== GERENCIAR IMOVEIS - ESTILOS MOBILE CORRIGIDOS ========== */
+        /* ========== LISTA DE PROPRIEDADES - SEM ESPAÇOS ========== */
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
@@ -159,7 +109,17 @@
         #propertyList {
             display: flex;
             flex-direction: column;
+            margin: 0;
+            padding: 0;
             gap: 0;
+        }
+
+        #propertyList > div:first-child {
+            margin: 0 !important;
+            padding: 0.5rem !important;
+            background: #e8f4fd;
+            border-radius: 8px;
+            margin-bottom: 0 !important;
         }
 
         .property-item {
@@ -175,24 +135,17 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .property-item:last-child {
-            border-bottom: none;
-        }
+        .property-item:last-child { border-bottom: none; }
 
         @keyframes highlightPulse {
             0% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(26, 82, 118, 0); }
             100% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0); }
         }
-        .admin-panel-highlight {
-            animation: highlightPulse 0.8s ease;
-        }
-        
-        .admin-panel {
-            display: none;
-        }
+        .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
+        .admin-panel { display: none; }
 
-        /* Responsivo para mobile */
+        /* ========== MOBILE - REMOVE TODOS OS ESPAÇOS ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -200,62 +153,71 @@
                 flex-wrap: wrap;
                 border-radius: 10px 10px 0 0;
             }
-            
             .admin-tab {
                 padding: 0.4rem 1rem;
                 font-size: 0.7rem;
                 border-radius: 10px 10px 0 0;
             }
-            
-            .admin-tab-content {
-                padding: 1rem;
-                border-radius: 0 12px 12px 12px;
-            }
-            
-            .admin-tab i {
-                margin-right: 5px;
-                font-size: 0.75rem;
-            }
+            .admin-tab-content { padding: 1rem; border-radius: 0 12px 12px 12px; }
+            .admin-tab i { margin-right: 5px; font-size: 0.75rem; }
 
-            /* CORREÇÃO: Remove linhas brancas entre itens no mobile */
             .manage-container {
                 max-height: none;
                 overflow-y: visible;
             }
             
             #propertyList {
-                gap: 0;
+                gap: 0 !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+            
+            #propertyList > div:first-child {
+                margin: 0 0 0.3rem 0 !important;
+                padding: 0.4rem !important;
+                flex-wrap: wrap;
+                gap: 0.3rem;
+            }
+            
+            #propertyList > div:first-child > div { margin: 0 !important; padding: 0 !important; }
+            
+            #propertyList > div:first-child button {
+                padding: 0.2rem 0.5rem !important;
+                font-size: 0.65rem !important;
+                margin: 0 !important;
             }
             
             .property-item {
                 padding: 0.6rem;
-                margin: 0;
+                margin: 0 !important;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.5rem;
+                gap: 0.4rem;
                 border-bottom: 1px solid #e0e0e0;
             }
             
-            .property-item:last-child {
-                border-bottom: none;
-            }
+            .property-item:last-child { border-bottom: none; }
             
             .property-item > div {
-                margin: 0;
-                padding: 0;
+                margin: 0 !important;
+                padding: 0 !important;
+                width: 100%;
             }
             
             .property-item > div:last-child {
                 display: flex;
-                gap: 0.5rem;
+                gap: 0.4rem;
                 width: 100%;
-                margin-top: 0.3rem;
+                margin-top: 0.2rem !important;
             }
             
             .property-item button {
-                padding: 0.3rem 0.6rem;
-                font-size: 0.7rem;
+                padding: 0.3rem 0.5rem;
+                font-size: 0.65rem;
+                margin: 0;
             }
+            
+            .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
         }
 
         .admin-tab:focus-visible {
@@ -273,9 +235,7 @@
                 <div class="brand-section">
                     <div class="logo">
                         <span class="logo-wl">WL</span>
-                        <div class="logo-badge">
-                            <i class="fas fa-key"></i>
-                        </div>
+                        <div class="logo-badge"><i class="fas fa-key"></i></div>
                     </div>
                     <div class="brand-info">
                         <div class="brand-name-compact">
@@ -283,33 +243,16 @@
                             <span class="last-name-compact">LESSA</span>
                         </div>
                         <div class="creci-info-compact">
-                            <div class="creci-badge-compact">
-                                <i class="fas fa-shield-alt"></i>
-                                <span class="creci-label-compact">CRECI</span>
-                                <span class="creci-number-compact">654/AL</span>
-                            </div>
-                            <div class="certified-badge-compact">
-                                <i class="fas fa-award"></i>
-                                <span>CRECI CERTIFICADO</span>
-                            </div>
+                            <div class="creci-badge-compact"><i class="fas fa-shield-alt"></i><span class="creci-label-compact">CRECI</span><span class="creci-number-compact">654/AL</span></div>
+                            <div class="certified-badge-compact"><i class="fas fa-award"></i><span>CRECI CERTIFICADO</span></div>
                         </div>
-                        <div class="specialty-compact">
-                            <i class="fas fa-home"></i>
-                            <span class="specialty-title-compact">CORRETOR & CONSULTOR</span>
-                            <span class="specialty-subtitle-compact">IMOBILIARIO | JURIDICO</span>
-                        </div>
+                        <div class="specialty-compact"><i class="fas fa-home"></i><span class="specialty-title-compact">CORRETOR & CONSULTOR</span><span class="specialty-subtitle-compact">IMOBILIARIO | JURIDICO</span></div>
                     </div>
                 </div>
                 <div class="contact-section">
                     <div class="phone-whatsapp-compact">
-                        <div class="phone-icons-compact">
-                            <i class="fas fa-mobile-alt"></i>
-                            <i class="fab fa-whatsapp"></i>
-                        </div>
-                        <div class="phone-number-compact">
-                            <span class="phone-prefix-compact">(82)</span>
-                            <span class="phone-main-compact">9.9604-4513</span>
-                        </div>
+                        <div class="phone-icons-compact"><i class="fas fa-mobile-alt"></i><i class="fab fa-whatsapp"></i></div>
+                        <div class="phone-number-compact"><span class="phone-prefix-compact">(82)</span><span class="phone-main-compact">9.9604-4513</span></div>
                     </div>
                     <div class="address-compact">
                         <i class="fas fa-map-marker-alt"></i>
@@ -324,14 +267,8 @@
             <div class="mobile-header-ultimate">
                 <div class="mobile-row-1">
                     <div class="mobile-logo-mini"><span>WL</span></div>
-                    <div class="mobile-name-mini">
-                        <span class="mobile-first-name-mini">WEBER</span>
-                        <span class="mobile-last-name-mini">LESSA</span>
-                    </div>
-                    <div class="mobile-phone-mini">
-                        <i class="fas fa-mobile-alt"></i>
-                        <i class="fab fa-whatsapp"></i>
-                    </div>
+                    <div class="mobile-name-mini"><span class="mobile-first-name-mini">WEBER</span><span class="mobile-last-name-mini">LESSA</span></div>
+                    <div class="mobile-phone-mini"><i class="fas fa-mobile-alt"></i><i class="fab fa-whatsapp"></i></div>
                 </div>
                 <div class="mobile-row-2">
                     <div class="mobile-creci-mini"><i class="fas fa-shield-alt"></i><span>CRECI 654/AL</span></div>
@@ -345,19 +282,14 @@
         </div>
     </header>
 
-    <!-- Hero Section -->
     <section class="hero">
         <h1>Encontre seu imovel dos sonhos em Maceio</h1>
         <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliario alagoano</p>
         <a href="#properties" class="cta-button"><i class="fas fa-home"></i> Ver Imoveis</a>
     </section>
 
-    <!-- Servicos Section -->
     <section class="services">
-        <div class="section-title">
-            <h2>Nossos Servicos Especializados</h2>
-            <p>Oferecemos solucoes completas para suas necessidades imobiliarias</p>
-        </div>
+        <div class="section-title"><h2>Nossos Servicos Especializados</h2><p>Oferecemos solucoes completas para suas necessidades imobiliarias</p></div>
         <div class="services-grid">
             <div class="service-card"><div class="service-icon"><i class="fas fa-users"></i></div><h3>Equipe de Corretagem</h3><p>Venda de lotes, imoveis residenciais, comerciais, sitios, incorporacoes, consultoria, avaliacao de imoveis, chacaras e fazendas com equipe qualificada.</p></div>
             <div class="service-card"><div class="service-icon"><i class="fas fa-building"></i></div><h3>Incorporacao Imobiliaria</h3><p>Desenvolvemos empreendimentos de alto padrao com qualidade e inovacao.</p></div>
@@ -368,26 +300,12 @@
         </div>
     </section>
 
-    <!-- Imoveis Section -->
     <section class="properties" id="properties">
-        <div class="section-title">
-            <h2>Imoveis em Destaque</h2>
-            <p>Confira nossas melhores oportunidades em Maceio e regiao</p>
-        </div>
-        <div class="filters">
-            <h3>Filtrar por:</h3>
-            <div class="filter-options">
-                <button class="filter-btn active" data-tooltip="Ver todos os imoveis">Todos</button>
-                <button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button>
-                <button class="filter-btn" data-tooltip="Lojas, salas e galpoes">Comercial</button>
-                <button class="filter-btn" data-tooltip="Sitios, chacaras e fazendas">Rural</button>
-                <button class="filter-btn" data-tooltip="Programa Minha Casa Minha Vida">Minha Casa Minha Vida</button>
-            </div>
-        </div>
+        <div class="section-title"><h2>Imoveis em Destaque</h2><p>Confira nossas melhores oportunidades em Maceio e regiao</p></div>
+        <div class="filters"><h3>Filtrar por:</h3><div class="filter-options"><button class="filter-btn active" data-tooltip="Ver todos os imoveis">Todos</button><button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button><button class="filter-btn" data-tooltip="Lojas, salas e galpoes">Comercial</button><button class="filter-btn" data-tooltip="Sitios, chacaras e fazendas">Rural</button><button class="filter-btn" data-tooltip="Programa Minha Casa Minha Vida">Minha Casa Minha Vida</button></div></div>
         <div class="property-grid" id="properties-container"></div>
     </section>
 
-    <!-- Sobre Section -->
     <section class="about">
         <div class="about-content">
             <div class="about-text">
@@ -411,7 +329,6 @@
         </div>
     </section>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section"><h3>Weber Lessa</h3><p>Corretor & Consultor com tradicao e qualidade no mercado imobiliario de Maceio desde 1995.</p><div class="social-icons"><a href="#" class="social-icon"><i class="fab fa-whatsapp"></i></a><a href="#" class="social-icon"><i class="fab fa-instagram"></i></a><a href="#" class="social-icon"><i class="fab fa-facebook-f"></i></a></div></div>
@@ -427,12 +344,8 @@
         <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="manage-tab">
-                <i class="fas fa-table-list"></i> Gerenciar
-            </button>
-            <button class="admin-tab" data-tab="form-tab">
-                <i class="fas fa-file-circle-plus"></i> Cadastrar/Editar
-            </button>
+            <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-table-list"></i> Gerenciar</button>
+            <button class="admin-tab" data-tab="form-tab"><i class="fas fa-file-circle-plus"></i> Cadastrar/Editar</button>
         </div>
         
         <div id="manage-tab" class="admin-tab-content active">
@@ -455,8 +368,7 @@
                     <div style="margin-bottom: 0.6rem;"><label><strong>Descricao</strong></label><textarea id="propDescription" placeholder="Descreva o imovel..." rows="2"></textarea></div>
                     <div style="margin-bottom: 0.6rem;"><label><strong>Caracteristicas</strong></label><input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina"><small>Separe por virgulas</small></div>
 
-                    <div style="margin-bottom: 0.8rem;">
-                        <label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
+                    <div style="margin-bottom: 0.8rem;"><label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
                         <div id="pdfUploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
                             <i class="fas fa-cloud-upload-alt"></i> Arraste ou clique para adicionar PDFs
                             <small style="display:block;">Max: 5 arquivos • 10MB</small>
@@ -465,8 +377,7 @@
                         <div id="pdfUploadPreview" style="display:flex; gap:6px; flex-wrap:wrap; margin-top:0.3rem;"></div>
                     </div>
                     
-                    <div style="margin-bottom: 0.8rem;">
-                        <label><strong>Fotos e Videos</strong></label>
+                    <div style="margin-bottom: 0.8rem;"><label><strong>Fotos e Videos</strong></label>
                         <div id="uploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
                             <i class="fas fa-cloud-upload-alt"></i> Clique ou arraste fotos e videos
                             <small style="display:block;">Fotos (JPG, PNG) • Videos (MP4) • Max: 10 arquivos • 5MB</small>
@@ -529,7 +440,6 @@
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
-        
         tabs.forEach(tab => {
             tab.addEventListener('click', function() {
                 const targetId = this.getAttribute('data-tab');
@@ -542,7 +452,6 @@
         
         const toggleBtn = document.getElementById('adminToggleBtn');
         const adminPanel = document.getElementById('adminPanel');
-        
         if (toggleBtn) {
             toggleBtn.onclick = function() {
                 if (typeof window.toggleAdminPanel === 'function') {
@@ -566,12 +475,9 @@
                 }
             };
         }
-        
-        console.log('✅ Sistema de abas inicializado');
     });
     </script>
 
-    <!-- Scripts Core -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/modules/supabase.js" defer></script>
     <script src="js/modules/core/SharedCore.js" defer></script>
