@@ -469,7 +469,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - COM BOTÃO DELETAR OTIMIZADO ==========
+    // ========== RENDER FOTOS/VIDEOS - BOTÃO DELETAR PROPORCIONAL ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -500,7 +500,7 @@ const MediaSystem = {
             
             html += '<div class="media-preview-item" draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
             
-            // NÚMERO DE ORDENAÇÃO (círculo preto com número branco)
+            // NÚMERO DE ORDENAÇÃO
             html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
             // Área da imagem/vídeo
@@ -519,13 +519,13 @@ const MediaSystem = {
             // Status
             html += '<div style="font-size:0.5rem;font-weight:bold;padding:1px 0;text-align:center;background:white;width:100%;">' + (statusText ? statusText : '') + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZETA/MALTA) - canto superior esquerdo
+            // ÍCONE DE ARRASTE (CRUZETA/MALTA)
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR - quadrado menor, X maior
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>';
+            // BOTÃO DELETAR - quadrado ajustado perfeitamente ao X (12x12, X 10px)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:-1px;right:-1px;width:12px;height:12px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;padding:0;margin:0;line-height:1;">✕</button>';
             
             html += '</div>';
         }
@@ -543,7 +543,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - COM BOTÃO DELETAR OTIMIZADO E CRUZETA ==========
+    // ========== RENDER PDFs - BOTÃO DELETAR PROPORCIONAL ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -570,7 +570,7 @@ const MediaSystem = {
             
             html += '<div class="pdf-preview-item" draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-flex;flex-direction:column;align-items:center;justify-content:center;width:55px;height:55px;margin:0 3px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;overflow:hidden;position:relative;cursor:grab;flex-shrink:0;transition:all 0.2s ease;">';
             
-            // NÚMERO DE ORDENAÇÃO (círculo preto com número branco)
+            // NÚMERO DE ORDENAÇÃO
             html += '<div style="position:absolute;bottom:2px;right:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
             // Área do ícone PDF
@@ -584,13 +584,13 @@ const MediaSystem = {
             // Status
             html += '<div style="font-size:0.45rem;font-weight:bold;color:#666;width:100%;text-align:center;">' + statusText + '</div>';
             
-            // ÍCONE DE ARRASTE (CRUZETA/MALTA) - canto superior esquerdo (CORRIGIDO)
+            // ÍCONE DE ARRASTE (CRUZETA/MALTA)
             html += '<div class="drag-handle" style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:5;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Botão DELETAR - quadrado menor, X maior
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-2px;right:-2px;width:14px;height:14px;background:#e74c3c;color:white;border:1px solid #c0392b;border-radius:2px;cursor:pointer;font-size:11px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;line-height:1;">✕</button>';
+            // BOTÃO DELETAR - quadrado ajustado perfeitamente ao X (12x12, X 10px)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:-1px;right:-1px;width:12px;height:12px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:10;padding:0;margin:0;line-height:1;">✕</button>';
             
             html += '</div>';
         }
