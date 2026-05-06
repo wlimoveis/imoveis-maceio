@@ -470,7 +470,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - COM STATUS CORRETO ==========
+    // ========== RENDER FOTOS/VIDEOS - COM STATUS VISÍVEL ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -495,15 +495,18 @@ const MediaSystem = {
             var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
             
-            // CORREÇÃO DO STATUS: "NOVO" para arquivos não salvos, "GRAVADO" para existentes
             var statusText = '';
+            var statusColor = '#666';
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
+                statusColor = '#e74c3c';
             } else if (isNew) {
                 statusText = 'NOVO';
+                statusColor = '#27ae60';
             } else if (isExisting) {
                 statusText = 'GRAVADO';
+                statusColor = '#3498db';
             }
             
             var imageUrl = item.uploadedUrl || item.url || item.preview;
@@ -511,6 +514,7 @@ const MediaSystem = {
             
             html += '<div draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
+            // Preview
             if (imageUrl) {
                 if (isVideo) {
                     html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;"></video>';
@@ -521,21 +525,21 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // Botão deletar
+            // Botão deletar (topo direito)
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
-            // Ícone arraste
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            // Ícone arraste (topo esquerdo)
+            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:20;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // Número ordenação
-            html += '<div style="position:absolute;bottom:0px;right:0px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
-            
-            // STATUS (abaixo do quadrado) - VISÍVEL E LEGÍVEL
-            html += '<div style="position:absolute;bottom:-16px;left:0;right:0;font-size:0.5rem;font-weight:bold;text-align:center;background:transparent;color:' + (statusText === 'NOVO' ? '#27ae60' : (statusText === 'GRAVADO' ? '#3498db' : '#e74c3c')) + ';">' + statusText + '</div>';
+            // Número ordenação (canto inferior direito - DENTRO do preview)
+            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
             
             html += '</div>';
+            
+            // STATUS - FORA do quadrado, abaixo, com z-index alto
+            html += '<div style="display:block;width:55px;text-align:center;font-size:0.5rem;font-weight:bold;color:' + statusColor + ';margin-top:2px;margin-bottom:4px;background:transparent;position:relative;z-index:30;">' + statusText + '</div>';
         }
         
         container.innerHTML = html;
@@ -544,7 +548,7 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '2px';
-        container.style.padding = '6px 2px 20px 2px';
+        container.style.padding = '4px 2px 4px 2px';
         container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
@@ -552,7 +556,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - COM STATUS CORRETO ==========
+    // ========== RENDER PDFs - COM STATUS VISÍVEL ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -576,15 +580,18 @@ const MediaSystem = {
             var isNew = pdf.isNew;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             
-            // CORREÇÃO DO STATUS DOS PDFs
             var statusText = '';
+            var statusColor = '#666';
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
+                statusColor = '#e74c3c';
             } else if (isNew) {
                 statusText = 'NOVO';
+                statusColor = '#27ae60';
             } else if (isExisting) {
                 statusText = 'GRAVADO';
+                statusColor = '#3498db';
             }
             
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
@@ -602,17 +609,17 @@ const MediaSystem = {
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
             // Ícone arraste
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
+            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:20;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
             // Número ordenação
-            html += '<div style="position:absolute;bottom:0px;right:0px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
-            
-            // STATUS (abaixo do quadrado)
-            html += '<div style="position:absolute;bottom:-16px;left:0;right:0;font-size:0.5rem;font-weight:bold;text-align:center;background:transparent;color:' + (statusText === 'NOVO' ? '#27ae60' : (statusText === 'GRAVADO' ? '#3498db' : '#e74c3c')) + ';">' + statusText + '</div>';
+            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
             
             html += '</div>';
+            
+            // STATUS - FORA do quadrado, abaixo
+            html += '<div style="display:block;width:55px;text-align:center;font-size:0.5rem;font-weight:bold;color:' + statusColor + ';margin-top:2px;margin-bottom:4px;background:transparent;">' + statusText + '</div>';
         }
         
         container.innerHTML = html;
@@ -621,7 +628,7 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '2px';
-        container.style.padding = '6px 2px 20px 2px';
+        container.style.padding = '4px 2px 4px 2px';
         container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
