@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - CORES FORTES ==========
+    // ========== RENDER PDFs - STATUS COM ALTO CONTRASTE ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -583,17 +583,21 @@ const MediaSystem = {
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             
             var statusText = '';
-            var statusColor = '#666';
+            var statusColor = '';
+            var statusBgColor = '';
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
-                statusColor = '#e74c3c';
+                statusBgColor = '#e74c3c';  // Vermelho
+                statusColor = 'white';
             } else if (isNew) {
                 statusText = 'NOVO';
-                statusColor = '#27ae60';
+                statusBgColor = '#27ae60';  // Verde
+                statusColor = 'white';
             } else if (isExisting) {
                 statusText = 'GRAVADO';
-                statusColor = '#3498db';
+                statusBgColor = '#2980b9';  // Azul forte
+                statusColor = 'white';
             }
             
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
@@ -607,12 +611,12 @@ const MediaSystem = {
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            // BOTÃO DELETAR (X) - VERMELHO COM X BRANCO
+            // Botão deletar (topo direito)
             html += '<div style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="background:transparent !important;border:none !important;color:white !important;font-size:12px !important;font-weight:bold !important;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:0;margin:0;">✕</button>';
             html += '</div>';
             
-            // ÍCONE ARRASTE - FUNDO ESCURO COM ÍCONE BRANCO
+            // Ícone arraste (topo esquerdo)
             html += '<div style="position:absolute;top:-4px;left:-4px;width:18px;height:18px;background:#2c3e50 !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
             html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
@@ -620,8 +624,8 @@ const MediaSystem = {
             // Número ordenação
             html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
             
-            // STATUS
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.2);">' + statusText + '</div>';
+            // STATUS - CORRIGIDO COM ALTO CONTRASTE
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:3px 6px;background:' + statusBgColor + ' !important;color:' + statusColor + ' !important;border-radius:3px;font-size:0.55rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.3);text-shadow:none;">' + statusText + '</div>';
             
             html += '</div>';
         }
