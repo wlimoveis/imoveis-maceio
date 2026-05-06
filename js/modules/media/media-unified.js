@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - NUMERAÇÃO E STATUS VISÍVEIS ==========
+    // ========== RENDER PDFs - CONTAINER DO NÚMERO REDUZIDO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -585,14 +585,14 @@ const MediaSystem = {
             var statusText = '';
             var statusBgColor = '';
             if (isMarked) {
-                statusText = 'EXCLUIR';
+                statusText = 'EXC';
                 borderColor = '#e74c3c';
                 statusBgColor = '#e74c3c';
             } else if (isNew) {
-                statusText = 'NOVO';
+                statusText = 'NOV';
                 statusBgColor = '#27ae60';
             } else if (isExisting) {
-                statusText = 'GRAVADO';
+                statusText = 'GRA';
                 statusBgColor = '#2980b9';
             }
             
@@ -618,11 +618,11 @@ const MediaSystem = {
             html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
-            // NÚMERO DE ORDENAÇÃO (canto inferior esquerdo) - FORTE E VISÍVEL
-            html += '<div style="position:absolute;bottom:2px;left:2px;min-width:18px;height:18px;background:#000000 !important;color:#ffffff !important;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:9px !important;font-weight:bold !important;z-index:95;padding:0 4px;box-shadow:0 1px 2px rgba(0,0,0,0.5);border:1px solid rgba(255,255,255,0.3);">' + numero + '</div>';
+            // NÚMERO DE ORDENAÇÃO - CONTAINER REDUZIDO
+            html += '<div style="position:absolute;bottom:2px;left:2px;min-width:14px;height:14px;background:#000000 !important;color:#ffffff !important;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px !important;font-weight:bold !important;z-index:95;padding:0 2px;box-shadow:0 1px 1px rgba(0,0,0,0.3);">' + numero + '</div>';
             
-            // STATUS (canto inferior direito) - TAMANHO REDUZIDO
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusBgColor + ' !important;color:white !important;border-radius:3px;font-size:0.45rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.3);">' + statusText + '</div>';
+            // STATUS - TAMANHO BEM PEQUENO
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:1px 3px;background:' + statusBgColor + ' !important;color:white !important;border-radius:2px;font-size:0.4rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
