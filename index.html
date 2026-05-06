@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* ========== ABAS ESTILO EXCEL - CINZA METÁLICO ========== */
+        /* ========== ABAS ESTILO EXCEL - COM EFEITO DE SOMBRA ========== */
         .admin-tabs {
             display: flex;
             gap: 4px;
@@ -26,7 +26,7 @@
             border-bottom: 1px solid #a0a0a0;
         }
 
-        /* Estilo base da aba - CINZA METÁLICO (inativa) */
+        /* Estilo base da aba - CINZA METÁLICO (inativa) - COM SOMBRA EXTERNA */
         .admin-tab {
             padding: 0.6rem 1.5rem;
             background: linear-gradient(135deg, #9c9c9c 0%, #7a7a7a 100%);
@@ -40,27 +40,30 @@
             font-size: 0.85rem;
             position: relative;
             margin-right: 3px;
-            box-shadow: -1px -1px 2px rgba(0,0,0,0.15), 1px 1px 3px rgba(0,0,0,0.15);
+            /* SOMBRA EXTERNA - ABA SOBRESSAI (INATIVA) */
+            box-shadow: -2px -2px 5px rgba(0,0,0,0.2), 2px 2px 4px rgba(0,0,0,0.15);
             transform: translateY(0px);
             z-index: 1;
             text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
 
-        /* Efeito hover na aba inativa - clareia o metálico */
+        /* Efeito hover na aba inativa - intensifica a sombra externa */
         .admin-tab:not(.active):hover {
             background: linear-gradient(135deg, #b0b0b0 0%, #909090 100%);
             color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: -2px -2px 3px rgba(0,0,0,0.1), 2px 2px 4px rgba(0,0,0,0.15);
+            transform: translateY(-2px);
+            /* SOMBRA EXTERNA MAIS INTENSA NO HOVER */
+            box-shadow: -3px -3px 6px rgba(0,0,0,0.25), 3px 3px 5px rgba(0,0,0,0.2);
         }
 
-        /* ABA ATIVA - EFEITO DE AFUNDAMENTO (azul) */
+        /* ABA ATIVA - EFEITO DE AFUNDAMENTO COM SOMBRA INTERNA */
         .admin-tab.active {
             background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
             color: white;
             border: 1px solid #0c2d48;
             border-bottom: 1px solid #1a5276;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.25), 0 1px 0 rgba(255,255,255,0.2);
+            /* SOMBRA INTERNA - ABA AFUNDADA (ATIVA) */
+            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(255,255,255,0.1);
             transform: translateY(1px);
             z-index: 3;
             position: relative;
@@ -84,12 +87,12 @@
             transition: all 0.2s ease;
         }
 
-        /* Aba ativa - ícone BRANCO (alto contraste) */
+        /* Aba ativa - ícone BRANCO */
         .admin-tab.active i {
             color: #ffffff;
         }
 
-        /* Aba inativa - ícone BRANCO (sobre cinza metálico) */
+        /* Aba inativa - ícone BRANCO */
         .admin-tab:not(.active) i {
             color: #f0f0f0;
         }
@@ -99,7 +102,7 @@
             color: #ffffff;
         }
 
-        /* Container do conteúdo das abas */
+        /* Container do conteúdo das abas - COM SOMBRA SUTIL */
         .admin-tab-content {
             display: none;
             padding: 1.5rem;
@@ -358,7 +361,7 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS ESTILO FICHARIO ========== -->
+    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS ESTILO EXCEL ========== -->
     <section class="admin-panel" id="adminPanel">
         <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
@@ -513,7 +516,7 @@
             };
         }
         
-        console.log('✅ Sistema de abas estilo excel inicializado');
+        console.log('✅ Sistema de abas estilo excel com efeito de sombra inicializado');
     });
     </script>
 
