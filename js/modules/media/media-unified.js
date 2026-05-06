@@ -471,7 +471,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - CORES FORTES ==========
+    // ========== RENDER FOTOS/VIDEOS - STATUS COM FONTE REDUZIDA ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -497,7 +497,7 @@ const MediaSystem = {
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
             
             var statusText = '';
-            var statusColor = '#666';
+            var statusColor = '';
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
@@ -525,21 +525,21 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // BOTÃO DELETAR (X) - VERMELHO COM X BRANCO
+            // Botão deletar (X) - VERMELHO COM X BRANCO
             html += '<div style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="background:transparent !important;border:none !important;color:white !important;font-size:12px !important;font-weight:bold !important;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:0;margin:0;">✕</button>';
             html += '</div>';
             
-            // ÍCONE ARRASTE - FUNDO ESCURO COM ÍCONE BRANCO
+            // Ícone arraste - FUNDO ESCURO COM ÍCONE BRANCO
             html += '<div style="position:absolute;top:-4px;left:-4px;width:18px;height:18px;background:#2c3e50 !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
             html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
             // Número ordenação
-            html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
+            html += '<div style="position:absolute;bottom:2px;left:2px;min-width:14px;height:14px;background:#000000 !important;color:#ffffff !important;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px !important;font-weight:bold !important;z-index:95;padding:0 2px;box-shadow:0 1px 1px rgba(0,0,0,0.3);">' + (index+1) + '</div>';
             
-            // STATUS
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.35rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
+            // STATUS - FONTE REDUZIDA
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.4rem !important;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
