@@ -1,9 +1,9 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Preview 100% para fotos/vídeos
-// ✅ Preview para PDFs
-// ✅ Ícone de arraste visível em todos os arquivos
-// ✅ Botão deletar otimizado
-// ✅ Status dentro do preview (canto inferior direito)
+// ✅ Preview 100% para fotos/vídeos/PDFs
+// ✅ Ícone de arraste visível (topo esquerdo)
+// ✅ Botão deletar (topo direito)
+// ✅ Número (canto inferior esquerdo)
+// ✅ Status (canto inferior direito)
 
 console.log('🔄 media-unified.js - Core System (versão final)');
 
@@ -527,8 +527,8 @@ const MediaSystem = {
             
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:30;padding:0;margin:0;">✕</button>';
             
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
+            html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
             html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
@@ -602,8 +602,9 @@ const MediaSystem = {
             
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:30;padding:0;margin:0;">✕</button>';
             
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
+            // Ícone de arraste com fundo escuro e ícone branco
+            html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
             html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
@@ -823,5 +824,5 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Versão final com ícone arraste visível');
+    console.log('✅ MediaSystem Core carregado - Versão final');
 }, 1000);
