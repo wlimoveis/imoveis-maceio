@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - STATUS COM ALTO CONTRASTE ==========
+    // ========== RENDER PDFs - NUMERAÇÃO VISÍVEL ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -583,25 +583,22 @@ const MediaSystem = {
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             
             var statusText = '';
-            var statusColor = '';
             var statusBgColor = '';
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
-                statusBgColor = '#e74c3c';  // Vermelho
-                statusColor = 'white';
+                statusBgColor = '#e74c3c';
             } else if (isNew) {
                 statusText = 'NOVO';
-                statusBgColor = '#27ae60';  // Verde
-                statusColor = 'white';
+                statusBgColor = '#27ae60';
             } else if (isExisting) {
                 statusText = 'GRAVADO';
-                statusBgColor = '#2980b9';  // Azul forte
-                statusColor = 'white';
+                statusBgColor = '#2980b9';
             }
             
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
             var fullName = pdf.name;
+            var numero = (index + 1).toString();
             
             html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(fullName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
@@ -621,11 +618,11 @@ const MediaSystem = {
             html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
-            // Número ordenação
-            html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
+            // NÚMERO DE ORDENAÇÃO - CORRIGIDO (canto inferior esquerdo)
+            html += '<div style="position:absolute;bottom:2px;left:2px;min-width:16px;height:16px;background:#1a1a2e !important;color:white !important;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px !important;font-weight:bold !important;z-index:90;padding:0 3px;box-shadow:0 1px 2px rgba(0,0,0,0.3);">' + numero + '</div>';
             
-            // STATUS - CORRIGIDO COM ALTO CONTRASTE
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:3px 6px;background:' + statusBgColor + ' !important;color:' + statusColor + ' !important;border-radius:3px;font-size:0.55rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.3);text-shadow:none;">' + statusText + '</div>';
+            // STATUS (canto inferior direito)
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:3px 6px;background:' + statusBgColor + ' !important;color:white !important;border-radius:3px;font-size:0.55rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 2px rgba(0,0,0,0.3);">' + statusText + '</div>';
             
             html += '</div>';
         }
