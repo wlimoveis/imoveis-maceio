@@ -470,7 +470,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - COM STATUS VISÍVEL ==========
+    // ========== RENDER FOTOS/VIDEOS - STATUS DENTRO DO ROSTO ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -500,7 +500,7 @@ const MediaSystem = {
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
-                statusColor = '#e74c3c';
+                statusColor = '#fff';
             } else if (isNew) {
                 statusText = 'NOVO';
                 statusColor = '#27ae60';
@@ -533,13 +533,13 @@ const MediaSystem = {
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // Número ordenação (canto inferior direito - DENTRO do preview)
-            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
+            // Número ordenação (canto inferior esquerdo)
+            html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
+            
+            // STATUS (canto inferior direito - DENTRO do preview)
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:2px;font-size:0.45rem;font-weight:bold;z-index:25;white-space:nowrap;">' + statusText + '</div>';
             
             html += '</div>';
-            
-            // STATUS - FORA do quadrado, abaixo, com z-index alto
-            html += '<div style="display:block;width:55px;text-align:center;font-size:0.5rem;font-weight:bold;color:' + statusColor + ';margin-top:2px;margin-bottom:4px;background:transparent;position:relative;z-index:30;">' + statusText + '</div>';
         }
         
         container.innerHTML = html;
@@ -556,7 +556,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - COM STATUS VISÍVEL ==========
+    // ========== RENDER PDFs - STATUS DENTRO DO ROSTO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -605,21 +605,21 @@ const MediaSystem = {
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            // Botão deletar
+            // Botão deletar (topo direito)
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
-            // Ícone arraste
+            // Ícone arraste (topo esquerdo)
             html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:20;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // Número ordenação
-            html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
+            // Número ordenação (canto inferior esquerdo)
+            html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
+            
+            // STATUS (canto inferior direito - DENTRO do preview)
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:2px;font-size:0.45rem;font-weight:bold;z-index:25;white-space:nowrap;">' + statusText + '</div>';
             
             html += '</div>';
-            
-            // STATUS - FORA do quadrado, abaixo
-            html += '<div style="display:block;width:55px;text-align:center;font-size:0.5rem;font-weight:bold;color:' + statusColor + ';margin-top:2px;margin-bottom:4px;background:transparent;">' + statusText + '</div>';
         }
         
         container.innerHTML = html;
