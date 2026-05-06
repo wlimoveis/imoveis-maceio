@@ -539,7 +539,7 @@ const MediaSystem = {
             html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:90;">' + (index+1) + '</div>';
             
             // STATUS
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.35rem;font-weight:bold;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
