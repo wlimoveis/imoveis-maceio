@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - STATUS COM FONTE AJUSTADA ==========
+    // ========== RENDER PDFs - STATUS COMPLETO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -585,14 +585,14 @@ const MediaSystem = {
             var statusText = '';
             var statusBgColor = '';
             if (isMarked) {
-                statusText = 'EXC';
+                statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
                 statusBgColor = '#e74c3c';
             } else if (isNew) {
-                statusText = 'NOV';
+                statusText = 'NOVO';
                 statusBgColor = '#27ae60';
             } else if (isExisting) {
-                statusText = 'GRA';
+                statusText = 'GRAVADO';
                 statusBgColor = '#2980b9';
             }
             
@@ -618,11 +618,11 @@ const MediaSystem = {
             html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
-            // NÚMERO DE ORDENAÇÃO - CONTAINER REDUZIDO
+            // NÚMERO DE ORDENAÇÃO
             html += '<div style="position:absolute;bottom:2px;left:2px;min-width:14px;height:14px;background:#000000 !important;color:#ffffff !important;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px !important;font-weight:bold !important;z-index:95;padding:0 2px;box-shadow:0 1px 1px rgba(0,0,0,0.3);">' + numero + '</div>';
             
-            // STATUS - FONTE AJUSTADA (0.45rem)
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:1px 3px;background:' + statusBgColor + ' !important;color:white !important;border-radius:2px;font-size:0.45rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
+            // STATUS COMPLETO - FONTE BEM PEQUENA PARA CABER
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:1px 3px;background:' + statusBgColor + ' !important;color:white !important;border-radius:2px;font-size:0.4rem !important;font-weight:bold !important;z-index:90;white-space:nowrap;box-shadow:0 1px 1px rgba(0,0,0,0.2);">' + statusText + '</div>';
             
             html += '</div>';
         }
