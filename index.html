@@ -120,6 +120,11 @@
             background: #e8f4fd;
             border-radius: 8px;
             margin-bottom: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
         }
 
         .property-item {
@@ -145,7 +150,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - HEADER COMPLETAMENTE VISÍVEL ========== */
+        /* ========== MOBILE - HEADER COMPACTO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -172,55 +177,48 @@
                 padding: 0 !important;
             }
             
-            /* HEADER - TODOS OS ELEMENTOS VISÍVEIS */
             #propertyList > div:first-child {
                 margin: 0 0 0.5rem 0 !important;
                 padding: 0.5rem !important;
-                display: block !important;
                 background: #e8f4fd;
                 border-radius: 8px;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 0.3rem !important;
             }
             
-            /* Primeira linha - estatísticas */
             #propertyList > div:first-child > div:first-child {
                 display: flex !important;
                 flex-wrap: wrap !important;
-                gap: 0.5rem !important;
+                gap: 0.3rem !important;
                 align-items: center !important;
-                margin-bottom: 0.5rem !important;
             }
             
-            /* Cada estatística individualmente */
             #propertyList > div:first-child > div:first-child > div {
                 display: inline-flex !important;
                 align-items: center !important;
-                gap: 0.3rem !important;
-                background: white !important;
-                padding: 0.2rem 0.5rem !important;
-                border-radius: 15px !important;
+                gap: 0.2rem !important;
                 font-size: 0.7rem !important;
                 white-space: nowrap !important;
             }
             
-            /* Remove o separador "|" */
             #propertyList > div:first-child > div:first-child > span {
                 display: none !important;
             }
             
-            /* Segunda linha - botão Zerar TODAS */
             #propertyList > div:first-child button {
-                display: inline-block !important;
-                width: auto !important;
-                padding: 0.3rem 0.8rem !important;
-                font-size: 0.7rem !important;
+                padding: 0.2rem 0.6rem !important;
+                font-size: 0.65rem !important;
                 margin: 0 !important;
-                background: #e74c3c !important;
+                background: #e67e22 !important;
                 color: white !important;
                 border: none !important;
-                border-radius: 20px !important;
+                border-radius: 4px !important;
+                white-space: nowrap !important;
             }
             
-            /* Remove elementos extras */
             #propertyList > div:first-child strong {
                 margin: 0 !important;
                 padding: 0 !important;
