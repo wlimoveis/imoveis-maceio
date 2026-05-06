@@ -1,7 +1,10 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
-// ✅ Preview 100% sem erros
+// ✅ Preview 100% para fotos/vídeos
+// ✅ Preview para PDFs via Google Docs Viewer
+// ✅ Ícone de arraste em todos os arquivos
+// ✅ Botão deletar otimizado
 
-console.log('🔄 media-unified.js - Core System (versão estável)');
+console.log('🔄 media-unified.js - Core System (com preview de PDFs)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -498,12 +501,11 @@ const MediaSystem = {
             
             html += '<div draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // Preview da imagem/vídeo - SEM onerror problemático
+            // Preview da imagem/vídeo
             if (imageUrl) {
                 if (isVideo) {
                     html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;"></video>';
                 } else {
-                    // Usando div fallback em vez de innerHTML problemático
                     html += '<div style="width:100%;height:100%;"><img src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;" onerror="this.style.display=\'none\';this.parentElement.style.background=\'#f0f0f0\';this.parentElement.innerHTML=\'<i class=\\\\"fas fa-image\\\\" style=\\\\"font-size:1.5rem;color:#999;display:flex;align-items:center;justify-content:center;height:100%;\\\\"></i>\'"></div>';
                 }
             } else {
@@ -535,9 +537,13 @@ const MediaSystem = {
         container.style.gap = '2px';
         container.style.padding = '6px 2px 16px 2px';
         container.style.alignItems = 'flex-start';
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel: ' + allFiles.length + ' itens');
+        }
     },
 
-    // ========== RENDER PDFs - VERSÃO ESTÁVEL ==========
+    // ========== RENDER PDFs - COM PREVIEW E ÍCONE ARRASTE ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -561,27 +567,38 @@ const MediaSystem = {
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
+            var pdfUrl = pdf.uploadedUrl || pdf.url;
             
-            html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fef9e6;position:relative;cursor:grab;box-sizing:border-box;">';
+            html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // Preview PDF
-            html += '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fef0d9;border-radius:3px;">';
-            html += '<i class="fas fa-file-pdf" style="font-size:1.8rem;color:#e74c3c;"></i>';
-            html += '<span style="font-size:0.45rem;margin-top:2px;color:#666;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + escapeHtmlFn(shortName) + '</span>';
+            // PREVIEW DO PDF - Usando iframe para mostrar o conteúdo
+            html += '<div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:3px;background:#f5f5f5;">';
+            
+            if (pdfUrl && pdfUrl.startsWith('http')) {
+                // Preview via Google Docs Viewer
+                var viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(pdfUrl) + '&embedded=true';
+                html += '<iframe src="' + viewerUrl + '" style="width:100%;height:100%;border:none;" sandbox="allow-same-origin allow-scripts"></iframe>';
+            } else {
+                // Fallback: mostrar ícone PDF com nome do arquivo
+                html += '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fef0d9;">';
+                html += '<i class="fas fa-file-pdf" style="font-size:1.6rem;color:#e74c3c;"></i>';
+                html += '<span style="font-size:0.4rem;margin-top:2px;color:#666;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;">' + escapeHtmlFn(shortName) + '</span>';
+                html += '</div>';
+            }
             html += '</div>';
             
-            // Botão deletar
+            // Botão deletar (canto superior direito)
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:1px;right:1px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:2px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
-            // Ícone arraste
+            // Ícone de arraste (cruzeta/malta) - canto superior esquerdo
             html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
             html += '</div>';
             
-            // Número ordenação
+            // Número de ordenação (canto inferior direito)
             html += '<div style="position:absolute;bottom:1px;right:1px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
-            // Status
+            // Status (abaixo do quadrado)
             html += '<div style="position:absolute;bottom:-14px;left:0;right:0;font-size:0.5rem;font-weight:bold;text-align:center;background:transparent;color:#666;">' + statusText + '</div>';
             
             html += '</div>';
@@ -595,6 +612,10 @@ const MediaSystem = {
         container.style.gap = '2px';
         container.style.padding = '6px 2px 16px 2px';
         container.style.alignItems = 'flex-start';
+        
+        if (container.scrollWidth > container.clientWidth) {
+            console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
+        }
     },
 
     setupCompleteDragAndDrop: function() {
@@ -712,6 +733,7 @@ const MediaSystem = {
         }
         this.state.existing = newExisting;
         this.state.files = newFiles;
+        console.log('📦 Media reordenado: ' + draggedId);
     },
 
     reorderPdfItemsComplete: function(draggedId, targetId) {
@@ -732,6 +754,7 @@ const MediaSystem = {
         }
         this.state.existingPdfs = newExistingPdfs;
         this.state.pdfs = newPdfs;
+        console.log('📄 PDF reordenado: ' + draggedId);
     },
 
     extractFileName: function(url) {
@@ -791,5 +814,5 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Versão estável sem erros');
+    console.log('✅ MediaSystem Core carregado - Com preview de PDFs e ícone de arraste');
 }, 1000);
