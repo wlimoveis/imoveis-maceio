@@ -1,10 +1,11 @@
 // js/modules/media/media-unified.js - CORE SYSTEM COMPLETO
 // ✅ Preview 100% para fotos/vídeos
-// ✅ Preview 100% para PDFs
-// ✅ Ícone de arraste em todos os arquivos
+// ✅ Preview para PDFs
+// ✅ Ícone de arraste visível em todos os arquivos
 // ✅ Botão deletar otimizado
+// ✅ Status dentro do preview (canto inferior direito)
 
-console.log('🔄 media-unified.js - Core System (preview 100% para todos os arquivos)');
+console.log('🔄 media-unified.js - Core System (versão final)');
 
 // ========== SUPABASE CONSTANTS ==========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
@@ -470,7 +471,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - STATUS DENTRO DO ROSTO ==========
+    // ========== RENDER FOTOS/VIDEOS ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -500,7 +501,7 @@ const MediaSystem = {
             if (isMarked) {
                 statusText = 'EXCLUIR';
                 borderColor = '#e74c3c';
-                statusColor = '#fff';
+                statusColor = '#e74c3c';
             } else if (isNew) {
                 statusText = 'NOVO';
                 statusColor = '#27ae60';
@@ -514,7 +515,6 @@ const MediaSystem = {
             
             html += '<div draggable="true" data-id="' + item.id + '" data-type="media" data-index="' + index + '" title="' + escapeHtmlFn(displayName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // Preview
             if (imageUrl) {
                 if (isVideo) {
                     html += '<video src="' + imageUrl + '" style="width:100%;height:100%;object-fit:cover;border-radius:3px;"></video>';
@@ -525,18 +525,14 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // Botão deletar (topo direito)
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:30;padding:0;margin:0;">✕</button>';
             
-            // Ícone arraste (topo esquerdo)
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:20;">';
+            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // Número ordenação (canto inferior esquerdo)
             html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
             
-            // STATUS (canto inferior direito - DENTRO do preview)
             html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:2px;font-size:0.45rem;font-weight:bold;z-index:25;white-space:nowrap;">' + statusText + '</div>';
             
             html += '</div>';
@@ -556,7 +552,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - STATUS DENTRO DO ROSTO ==========
+    // ========== RENDER PDFs - ÍCONE ARRASTE VISÍVEL ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -599,24 +595,19 @@ const MediaSystem = {
             
             html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(fullName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // Preview do PDF
             html += '<div style="width:100%;height:100%;position:relative;background:#fef0d9;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;box-sizing:border-box;">';
             html += '<i class="fas fa-file-pdf" style="font-size:1.6rem;color:#e74c3c;display:block;margin:0 auto;"></i>';
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            // Botão deletar (topo direito)
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:30;padding:0;margin:0;">✕</button>';
             
-            // Ícone arraste (topo esquerdo)
-            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:20;">';
+            html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.5);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
-            // Número ordenação (canto inferior esquerdo)
             html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
             
-            // STATUS (canto inferior direito - DENTRO do preview)
             html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:2px;font-size:0.45rem;font-weight:bold;z-index:25;white-space:nowrap;">' + statusText + '</div>';
             
             html += '</div>';
@@ -635,7 +626,7 @@ const MediaSystem = {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
         }
     },
-    
+
     setupCompleteDragAndDrop: function() {
         var containers = ['uploadPreview', 'pdfUploadPreview'];
         var self = this;
@@ -832,5 +823,5 @@ window.MediaSystem = MediaSystem;
 setTimeout(function() {
     window.MediaSystem.init('vendas');
     var isDebug = window.location.search.indexOf('debug=true') !== -1;
-    console.log('✅ MediaSystem Core carregado - Preview 100% para todos os arquivos');
+    console.log('✅ MediaSystem Core carregado - Versão final com ícone arraste visível');
 }, 1000);
