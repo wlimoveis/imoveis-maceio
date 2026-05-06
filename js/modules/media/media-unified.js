@@ -470,7 +470,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS ==========
+    // ========== RENDER FOTOS/VIDEOS - COM STATUS CORRETO ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -494,8 +494,18 @@ const MediaSystem = {
             var isNew = item.isNew;
             var isVideo = item.isVideo === true || (item.type && item.type.startsWith('video/')) || (item.name && item.name.toLowerCase().match(/\.(mp4|mov|webm|avi)$/));
             var borderColor = isVideo ? '#9b59b6' : '#3498db';
-            var statusText = isNew ? 'NOVO' : (isExisting ? 'EXISTENTE' : '');
-            if (isMarked) { borderColor = '#e74c3c'; statusText = 'EXCLUIR'; }
+            
+            // CORREÇÃO DO STATUS: "NOVO" para arquivos não salvos, "GRAVADO" para existentes
+            var statusText = '';
+            if (isMarked) {
+                statusText = 'EXCLUIR';
+                borderColor = '#e74c3c';
+            } else if (isNew) {
+                statusText = 'NOVO';
+            } else if (isExisting) {
+                statusText = 'GRAVADO';
+            }
+            
             var imageUrl = item.uploadedUrl || item.url || item.preview;
             var displayName = item.name || 'Arquivo';
             
@@ -511,15 +521,19 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
+            // Botão deletar
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
+            // Ícone arraste
             html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
+            // Número ordenação
             html += '<div style="position:absolute;bottom:0px;right:0px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
-            html += '<div style="position:absolute;bottom:-14px;left:0;right:0;font-size:0.45rem;font-weight:bold;text-align:center;background:transparent;color:#333;">' + (statusText ? statusText : '') + '</div>';
+            // STATUS (abaixo do quadrado) - VISÍVEL E LEGÍVEL
+            html += '<div style="position:absolute;bottom:-16px;left:0;right:0;font-size:0.5rem;font-weight:bold;text-align:center;background:transparent;color:' + (statusText === 'NOVO' ? '#27ae60' : (statusText === 'GRAVADO' ? '#3498db' : '#e74c3c')) + ';">' + statusText + '</div>';
             
             html += '</div>';
         }
@@ -530,7 +544,7 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '2px';
-        container.style.padding = '6px 2px 16px 2px';
+        container.style.padding = '6px 2px 20px 2px';
         container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
@@ -538,7 +552,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - PREVIEW 100% ==========
+    // ========== RENDER PDFs - COM STATUS CORRETO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -559,30 +573,44 @@ const MediaSystem = {
             var index = idx;
             var isMarked = pdf.markedForDeletion;
             var isExisting = pdf.isExisting;
+            var isNew = pdf.isNew;
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
-            var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
+            
+            // CORREÇÃO DO STATUS DOS PDFs
+            var statusText = '';
+            if (isMarked) {
+                statusText = 'EXCLUIR';
+                borderColor = '#e74c3c';
+            } else if (isNew) {
+                statusText = 'NOVO';
+            } else if (isExisting) {
+                statusText = 'GRAVADO';
+            }
+            
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
             var fullName = pdf.name;
             
             html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(fullName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // PREVIEW DO PDF - OCUPA 100% DO ESPAÇO
+            // Preview do PDF
             html += '<div style="width:100%;height:100%;position:relative;background:#fef0d9;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;box-sizing:border-box;">';
-            
             html += '<i class="fas fa-file-pdf" style="font-size:1.6rem;color:#e74c3c;display:block;margin:0 auto;"></i>';
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
-            
             html += '</div>';
             
+            // Botão deletar
             html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:20;padding:0;margin:0;">✕</button>';
             
+            // Ícone arraste
             html += '<div style="position:absolute;top:0px;left:0px;width:14px;height:14px;background:rgba(0,0,0,0.4);border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:10;">';
             html += '<i class="fas fa-arrows-alt" style="color:white;font-size:7px;"></i>';
             html += '</div>';
             
+            // Número ordenação
             html += '<div style="position:absolute;bottom:0px;right:0px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px 0 2px 0;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:15;">' + (index+1) + '</div>';
             
-            html += '<div style="position:absolute;bottom:-14px;left:0;right:0;font-size:0.45rem;font-weight:bold;text-align:center;background:transparent;color:#666;">' + statusText + '</div>';
+            // STATUS (abaixo do quadrado)
+            html += '<div style="position:absolute;bottom:-16px;left:0;right:0;font-size:0.5rem;font-weight:bold;text-align:center;background:transparent;color:' + (statusText === 'NOVO' ? '#27ae60' : (statusText === 'GRAVADO' ? '#3498db' : '#e74c3c')) + ';">' + statusText + '</div>';
             
             html += '</div>';
         }
@@ -593,14 +621,14 @@ const MediaSystem = {
         container.style.flexWrap = 'nowrap';
         container.style.overflowX = 'auto';
         container.style.gap = '2px';
-        container.style.padding = '6px 2px 16px 2px';
+        container.style.padding = '6px 2px 20px 2px';
         container.style.alignItems = 'flex-start';
         
         if (container.scrollWidth > container.clientWidth) {
             console.log('📜 Scroll horizontal disponivel para PDFs: ' + allPdfs.length + ' itens');
         }
     },
-
+    
     setupCompleteDragAndDrop: function() {
         var containers = ['uploadPreview', 'pdfUploadPreview'];
         var self = this;
