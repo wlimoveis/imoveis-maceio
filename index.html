@@ -41,7 +41,6 @@
             font-size: 0.85rem;
             position: relative;
             margin-right: 0px;
-            /* Sombra suave para relevo */
             box-shadow: 
                 -2px -2px 5px rgba(0,0,0,0.15),
                 2px 2px 5px rgba(255,255,255,0.5),
@@ -53,7 +52,6 @@
             letter-spacing: 0.3px;
         }
 
-        /* Efeito hover na aba inativa - leve realce */
         .admin-tab:not(.active):hover {
             background: #c8c8c8;
             color: #1a1a1a;
@@ -65,12 +63,10 @@
                 inset -1px -1px 0 rgba(0,0,0,0.08);
         }
 
-        /* ABA ATIVA - EFEITO AFUNDADO (COR AZUL MANTIDA) */
         .admin-tab.active {
             background: linear-gradient(145deg, #1a5276 0%, #0e3d5c 100%);
             color: #ffffff;
             border: none;
-            /* Sombra interna para afundamento + brilho sutil */
             box-shadow: 
                 inset 0 4px 8px rgba(0,0,0,0.4),
                 inset 0 -1px 0 rgba(255,255,255,0.15),
@@ -80,18 +76,15 @@
             text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
 
-        /* Primeira aba - borda esquerda mais arredondada */
         .admin-tab:first-child {
             border-radius: 16px 12px 0 0;
             margin-left: 0;
         }
 
-        /* Última aba */
         .admin-tab:last-child {
             margin-right: 0;
         }
 
-        /* Ícones */
         .admin-tab i {
             margin-right: 8px;
             font-size: 0.95rem;
@@ -113,7 +106,6 @@
             color: #1a5276;
         }
 
-        /* Container do conteúdo */
         .admin-tab-content {
             display: none;
             padding: 1.5rem;
@@ -121,9 +113,7 @@
             border: 1px solid #b0b0b0;
             border-top: none;
             border-radius: 0 16px 16px 16px;
-            box-shadow: 
-                0 8px 20px rgba(0,0,0,0.15),
-                inset 0 1px 0 rgba(255,255,255,0.8);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.8);
             margin-top: 0;
             position: relative;
             z-index: 2;
@@ -133,7 +123,6 @@
             display: block;
         }
 
-        /* Formulario compacto */
         .form-compact #propertyForm {
             gap: 0.5rem;
         }
@@ -161,13 +150,35 @@
             overflow-y: auto;
         }
         
-        /* Container do gerenciamento */
+        /* ========== GERENCIAR IMOVEIS - ESTILOS MOBILE CORRIGIDOS ========== */
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
         }
 
-        /* Animacao de destaque */
+        #propertyList {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+
+        .property-item {
+            background: #f5f5f5;
+            padding: 0.8rem;
+            margin: 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid var(--primary);
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .property-item:last-child {
+            border-bottom: none;
+        }
+
         @keyframes highlightPulse {
             0% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0.4); }
             70% { box-shadow: 0 0 0 10px rgba(26, 82, 118, 0); }
@@ -177,7 +188,6 @@
             animation: highlightPulse 0.8s ease;
         }
         
-        /* Garantir que o painel admin comece escondido */
         .admin-panel {
             display: none;
         }
@@ -206,9 +216,48 @@
                 margin-right: 5px;
                 font-size: 0.75rem;
             }
+
+            /* CORREÇÃO: Remove linhas brancas entre itens no mobile */
+            .manage-container {
+                max-height: none;
+                overflow-y: visible;
+            }
+            
+            #propertyList {
+                gap: 0;
+            }
+            
+            .property-item {
+                padding: 0.6rem;
+                margin: 0;
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .property-item:last-child {
+                border-bottom: none;
+            }
+            
+            .property-item > div {
+                margin: 0;
+                padding: 0;
+            }
+            
+            .property-item > div:last-child {
+                display: flex;
+                gap: 0.5rem;
+                width: 100%;
+                margin-top: 0.3rem;
+            }
+            
+            .property-item button {
+                padding: 0.3rem 0.6rem;
+                font-size: 0.7rem;
+            }
         }
 
-        /* Efeito de foco para acessibilidade */
         .admin-tab:focus-visible {
             outline: 3px solid var(--primary);
             outline-offset: 2px;
@@ -373,22 +422,19 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS SKEUOMORPHISM ========== -->
+    <!-- ========== PAINEL DE ADMINISTRACAO ========== -->
     <section class="admin-panel" id="adminPanel">
         <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
-            <!-- PRIMEIRO BOTAO: GERENCIAR IMOVEIS (ATIVO) - ÍCONE MODERNO -->
             <button class="admin-tab active" data-tab="manage-tab">
                 <i class="fas fa-table-list"></i> Gerenciar
             </button>
-            <!-- SEGUNDO BOTAO: CADASTRAR/EDITAR - ÍCONE MODERNO -->
             <button class="admin-tab" data-tab="form-tab">
                 <i class="fas fa-file-circle-plus"></i> Cadastrar/Editar
             </button>
         </div>
         
-        <!-- Aba 1: GERENCIAR (CONTEUDO ATIVO AO ABRIR) -->
         <div id="manage-tab" class="admin-tab-content active">
             <div style="background: white; padding: 0.5rem 0;">
                 <h4 style="margin-top: 0;">Gerenciar Imoveis Existentes</h4>
@@ -397,7 +443,6 @@
             </div>
         </div>
         
-        <!-- Aba 2: CADASTRAR/EDITAR (CONTEUDO SECUNDARIO) -->
         <div id="form-tab" class="admin-tab-content form-compact">
             <div style="background: white; padding: 0.5rem 0;">
                 <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imovel</h4>
@@ -462,12 +507,10 @@
         </div>
     </div>
 
-    <!-- Botoes -->
     <button class="admin-toggle" id="adminToggleBtn"><i class="fas fa-user-cog"></i></button>
     <button id="backToTopBtn"><i class="fas fa-chevron-up"></i></button>
 
     <script>
-    // Botao Voltar ao Topo
     (function() {
         const backToTopBtn = document.getElementById('backToTopBtn');
         if (!backToTopBtn) return;
@@ -483,7 +526,6 @@
         backToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
     })();
 
-    // Sistema de Abas
     document.addEventListener('DOMContentLoaded', function() {
         const tabs = document.querySelectorAll('.admin-tab');
         const contents = document.querySelectorAll('.admin-tab-content');
@@ -498,17 +540,14 @@
             });
         });
         
-        // Comportamento do botao admin - rolagem suave ate o painel
         const toggleBtn = document.getElementById('adminToggleBtn');
         const adminPanel = document.getElementById('adminPanel');
         
         if (toggleBtn) {
             toggleBtn.onclick = function() {
-                // Chama a funcao global do admin.js que pede a senha
                 if (typeof window.toggleAdminPanel === 'function') {
                     window.toggleAdminPanel();
                 } else {
-                    // Fallback
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
@@ -528,7 +567,7 @@
             };
         }
         
-        console.log('✅ Sistema de abas skeuomorphism - abas próximas');
+        console.log('✅ Sistema de abas inicializado');
     });
     </script>
 
@@ -544,7 +583,6 @@
     <script src="js/modules/media/media-unified.js" defer></script>
     <script src="js/modules/admin.js" defer></script>
 
-    <!-- Carregamento Suporte Condicional -->
     <script>
     (() => {
         const waitForConfig = setInterval(() => {
