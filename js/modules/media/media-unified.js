@@ -552,7 +552,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - ÍCONE ARRASTE VISÍVEL ==========
+    // ========== RENDER PDFs - ÍCONE ARRASTE COM FUNDO ESCURO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -595,21 +595,25 @@ const MediaSystem = {
             
             html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(fullName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
+            // Preview do PDF (fundo)
             html += '<div style="width:100%;height:100%;position:relative;background:#fef0d9;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:3px;box-sizing:border-box;">';
             html += '<i class="fas fa-file-pdf" style="font-size:1.6rem;color:#e74c3c;display:block;margin:0 auto;"></i>';
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:14px;height:14px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:9px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:30;padding:0;margin:0;">✕</button>';
+            // Botão deletar (topo direito)
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="position:absolute;top:0px;right:0px;width:16px;height:16px;background:#e74c3c;color:white;border:none;border-radius:0 2px 0 2px;cursor:pointer;font-size:10px;font-weight:bold;display:flex;align-items:center;justify-content:center;z-index:40;padding:0;margin:0;">✕</button>';
             
-            // Ícone de arraste com fundo escuro e ícone branco
-            html += '<div style="position:absolute;top:1px;left:1px;width:14px;height:14px;background:rgba(0,0,0,0.7);border-radius:2px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:35;">';
-            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:8px;"></i>';
+            // Ícone de arraste (topo esquerdo) - COM FUNDO PRETO E ÍCONE BRANCO
+            html += '<div style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#000000;border-radius:3px;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:50;box-shadow:0 1px 2px rgba(0,0,0,0.2);">';
+            html += '<i class="fas fa-arrows-alt" style="color:white;font-size:9px;"></i>';
             html += '</div>';
             
-            html += '<div style="position:absolute;bottom:2px;left:2px;width:14px;height:14px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:7px;font-weight:bold;z-index:25;">' + (index+1) + '</div>';
+            // Número ordenação (canto inferior esquerdo)
+            html += '<div style="position:absolute;bottom:2px;left:2px;width:16px;height:16px;background:#1a1a2e;color:white;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:bold;z-index:30;">' + (index+1) + '</div>';
             
-            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 4px;background:' + statusColor + ';color:white;border-radius:2px;font-size:0.45rem;font-weight:bold;z-index:25;white-space:nowrap;">' + statusText + '</div>';
+            // STATUS (canto inferior direito)
+            html += '<div style="position:absolute;bottom:2px;right:2px;padding:2px 5px;background:' + statusColor + ';color:white;border-radius:3px;font-size:0.5rem;font-weight:bold;z-index:30;white-space:nowrap;">' + statusText + '</div>';
             
             html += '</div>';
         }
