@@ -100,7 +100,7 @@
         .form-compact #uploadArea, .form-compact #pdfUploadArea { padding: 0.5rem; }
         .form-compact #uploadPreview, .form-compact #pdfUploadPreview { min-height: 40px; max-height: 80px; overflow-y: auto; }
         
-        /* ========== LISTA DE PROPRIEDADES - SEM ESPAÇOS ========== */
+        /* ========== LISTA DE PROPRIEDADES ========== */
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
@@ -115,11 +115,11 @@
         }
 
         #propertyList > div:first-child {
-            margin: 0 !important;
-            padding: 0.5rem !important;
+            margin: 0;
+            padding: 0.5rem;
             background: #e8f4fd;
             border-radius: 8px;
-            margin-bottom: 0 !important;
+            margin-bottom: 0.5rem;
         }
 
         .property-item {
@@ -145,7 +145,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - REMOVE TODOS OS ESPAÇOS ========== */
+        /* ========== MOBILE - HEADER COMPACTO E PRÓXIMO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -172,19 +172,55 @@
                 padding: 0 !important;
             }
             
+            /* HEADER - MAIS COMPACTO */
             #propertyList > div:first-child {
                 margin: 0 0 0.3rem 0 !important;
-                padding: 0.4rem !important;
-                flex-wrap: wrap;
-                gap: 0.3rem;
+                padding: 0.3rem 0.5rem !important;
+                display: flex !important;
+                flex-wrap: wrap !important;
+                align-items: center !important;
+                justify-content: space-between !important;
+                gap: 0.3rem !important;
+                background: #e8f4fd;
+                border-radius: 6px;
             }
             
-            #propertyList > div:first-child > div { margin: 0 !important; padding: 0 !important; }
+            /* Estatísticas lado esquerdo */
+            #propertyList > div:first-child > div:first-child {
+                display: flex !important;
+                flex-wrap: wrap !important;
+                gap: 0.3rem !important;
+                align-items: center !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
             
+            /* Cada item de estatística */
+            #propertyList > div:first-child > div:first-child > div,
+            #propertyList > div:first-child > div:first-child span {
+                margin: 0 !important;
+                padding: 0 !important;
+                font-size: 0.7rem !important;
+                white-space: nowrap !important;
+            }
+            
+            /* Separador entre estatísticas */
+            #propertyList > div:first-child > div:first-child > span {
+                display: none !important;
+            }
+            
+            /* Botão Zerar TODAS */
             #propertyList > div:first-child button {
                 padding: 0.2rem 0.5rem !important;
                 font-size: 0.65rem !important;
                 margin: 0 !important;
+                white-space: nowrap !important;
+            }
+            
+            /* Remove elementos de título desnecessários */
+            #propertyList > div:first-child strong {
+                margin: 0 !important;
+                padding: 0 !important;
             }
             
             .property-item {
