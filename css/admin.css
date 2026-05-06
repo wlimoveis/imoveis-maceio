@@ -1027,3 +1027,119 @@ select:focus {
     padding: 1rem;
     border-radius: 50%;
 }
+
+/* ========== ABAS ESTILO FICHÁRIO (FOLDER TABS) ========== */
+.admin-tabs {
+    display: flex;
+    gap: 0px;
+    margin-bottom: 0;
+    border-bottom: none;
+    position: relative;
+    padding-left: 20px;
+}
+
+/* Estilo base da aba */
+.admin-tab {
+    padding: 0.7rem 1.5rem;
+    background: #e8e8e8;
+    border: none;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+    font-weight: 600;
+    color: #555;
+    transition: all 0.2s ease;
+    font-size: 0.85rem;
+    position: relative;
+    margin-right: 4px;
+    box-shadow: -2px -2px 5px rgba(0,0,0,0.05), 2px 0 5px rgba(0,0,0,0.05);
+    z-index: 1;
+}
+
+/* Aba ativa (em uso corrente) - EFEITO DE AFUNDAMENTO */
+.admin-tab.active {
+    background: var(--primary);
+    color: white;
+    position: relative;
+    z-index: 3;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.3);
+    transform: translateY(1px);
+    border: none;
+}
+
+/* Aba inativa - efeito de sobressair */
+.admin-tab:not(.active) {
+    background: #d4d4d4;
+    color: #444;
+    box-shadow: -1px -1px 3px rgba(0,0,0,0.1), 2px 2px 5px rgba(0,0,0,0.1);
+    transform: translateY(0px);
+}
+
+.admin-tab:not(.active):hover {
+    background: #c8c8c8;
+    color: var(--primary);
+    transform: translateY(-1px);
+    transition: all 0.15s ease;
+}
+
+/* Primeira aba - borda esquerda arredondada */
+.admin-tab:first-child {
+    border-radius: 10px 8px 0 0;
+    margin-left: 0;
+}
+
+/* Última aba */
+.admin-tab:last-child {
+    margin-right: 0;
+}
+
+/* Container do conteúdo das abas */
+.admin-tab-content {
+    display: none;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 0 8px 8px 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    margin-top: -1px;
+    position: relative;
+    z-index: 2;
+}
+
+.admin-tab-content.active {
+    display: block;
+}
+
+/* Ajuste responsivo para mobile */
+@media (max-width: 768px) {
+    .admin-tabs {
+        padding-left: 10px;
+        gap: 0px;
+        flex-wrap: wrap;
+    }
+    
+    .admin-tab {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        border-radius: 6px 6px 0 0;
+    }
+    
+    .admin-tab-content {
+        padding: 1rem;
+        border-radius: 0 6px 6px 6px;
+    }
+}
+
+/* Efeito de foco para acessibilidade */
+.admin-tab:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+/* Ícones dentro das abas */
+.admin-tab i {
+    margin-right: 6px;
+    font-size: 0.9rem;
+}
+
+.admin-tab.active i {
+    color: white;
+}
