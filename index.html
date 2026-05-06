@@ -15,106 +15,117 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* ========== ABAS ESTILO EXCEL - COM EFEITO DE SOMBRA ========== */
+        /* ========== ABAS ESTILO SKEUOMORPHISM (PASTAS REAISTAS) ========== */
         .admin-tabs {
             display: flex;
-            gap: 4px;
+            gap: 8px;
             margin-bottom: -1px;
             position: relative;
-            padding-left: 15px;
-            background: transparent;
-            border-bottom: 1px solid #a0a0a0;
+            padding-left: 20px;
+            background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
+            border-bottom: 2px solid #8a8a8a;
+            border-radius: 12px 12px 0 0;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        /* Estilo base da aba - CINZA METÁLICO (inativa) - COM SOMBRA EXTERNA */
+        /* Estilo base da aba - EFEITO SKEUOMORPHISM (inativa) */
         .admin-tab {
-            padding: 0.6rem 1.5rem;
-            background: linear-gradient(135deg, #9c9c9c 0%, #7a7a7a 100%);
-            border: 1px solid #6a6a6a;
-            border-bottom: none;
-            border-radius: 8px 8px 0 0;
+            padding: 0.7rem 1.8rem;
+            background: linear-gradient(145deg, #c8c8c8 0%, #a8a8a8 100%);
+            border: none;
+            border-radius: 12px 12px 0 0;
             cursor: pointer;
-            font-weight: 600;
-            color: #ffffff;
-            transition: all 0.15s ease;
+            font-weight: 700;
+            color: #2c2c2c;
+            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             font-size: 0.85rem;
             position: relative;
-            margin-right: 3px;
-            /* SOMBRA EXTERNA - ABA SOBRESSAI (INATIVA) */
-            box-shadow: -2px -2px 5px rgba(0,0,0,0.2), 2px 2px 4px rgba(0,0,0,0.15);
-            transform: translateY(0px);
+            margin-right: 6px;
+            /* EFEITO 3D REALISTA */
+            box-shadow: 
+                -3px -3px 6px rgba(0,0,0,0.2),
+                3px 3px 6px rgba(255,255,255,0.4),
+                inset 1px 1px 0 rgba(255,255,255,0.6),
+                inset -1px -1px 0 rgba(0,0,0,0.1);
+            transform: translateY(2px);
             z-index: 1;
+            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+            letter-spacing: 0.3px;
+        }
+
+        /* Efeito hover na aba inativa - intensifica o relevo */
+        .admin-tab:not(.active):hover {
+            background: linear-gradient(145deg, #d8d8d8 0%, #b8b8b8 100%);
+            color: #1a1a1a;
+            transform: translateY(0px);
+            box-shadow: 
+                -4px -4px 8px rgba(0,0,0,0.25),
+                4px 4px 8px rgba(255,255,255,0.5),
+                inset 1px 1px 0 rgba(255,255,255,0.7),
+                inset -1px -1px 0 rgba(0,0,0,0.1);
+        }
+
+        /* ABA ATIVA - EFEITO AFUNDADO SKEUOMORPHISM */
+        .admin-tab.active {
+            background: linear-gradient(145deg, #1a5276 0%, #0e3d5c 100%);
+            color: #ffffff;
+            border: none;
+            /* Sombra interna para afundamento + brilho sutil */
+            box-shadow: 
+                inset 0 4px 8px rgba(0,0,0,0.4),
+                inset 0 -1px 0 rgba(255,255,255,0.15),
+                0 1px 0 rgba(255,255,255,0.2);
+            transform: translateY(4px);
+            z-index: 3;
             text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
 
-        /* Efeito hover na aba inativa - intensifica a sombra externa */
-        .admin-tab:not(.active):hover {
-            background: linear-gradient(135deg, #b0b0b0 0%, #909090 100%);
-            color: #ffffff;
-            transform: translateY(-2px);
-            /* SOMBRA EXTERNA MAIS INTENSA NO HOVER */
-            box-shadow: -3px -3px 6px rgba(0,0,0,0.25), 3px 3px 5px rgba(0,0,0,0.2);
-        }
-
-        /* ABA ATIVA - EFEITO DE AFUNDAMENTO COM SOMBRA INTERNA */
-        .admin-tab.active {
-            background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%);
-            color: white;
-            border: 1px solid #0c2d48;
-            border-bottom: 1px solid #1a5276;
-            /* SOMBRA INTERNA - ABA AFUNDADA (ATIVA) */
-            box-shadow: inset 0 2px 6px rgba(0,0,0,0.3), inset 0 -1px 0 rgba(255,255,255,0.1);
-            transform: translateY(1px);
-            z-index: 3;
-            position: relative;
-            text-shadow: 0 1px 0 rgba(0,0,0,0.2);
-        }
-
-        /* Primeira aba */
+        /* Bordas arredondadas específicas */
         .admin-tab:first-child {
+            border-radius: 16px 12px 0 0;
             margin-left: 0;
         }
 
-        /* Última aba */
         .admin-tab:last-child {
             margin-right: 0;
         }
 
-        /* Ícones das abas */
+        /* Ícones com efeito skeuomorphism */
         .admin-tab i {
-            margin-right: 8px;
-            font-size: 0.9rem;
+            margin-right: 10px;
+            font-size: 1rem;
             transition: all 0.2s ease;
+            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.4));
         }
 
-        /* Aba ativa - ícone BRANCO */
         .admin-tab.active i {
-            color: #ffffff;
+            color: #ffd700;
+            filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3));
         }
 
-        /* Aba inativa - ícone BRANCO */
         .admin-tab:not(.active) i {
-            color: #f0f0f0;
+            color: #3a3a3a;
+            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5));
         }
 
-        /* Hover na aba inativa - ícone mais claro */
         .admin-tab:not(.active):hover i {
-            color: #ffffff;
+            color: #1a5276;
         }
 
-        /* Container do conteúdo das abas - COM SOMBRA SUTIL */
+        /* Container do conteúdo - com efeito realista */
         .admin-tab-content {
             display: none;
-            padding: 1.5rem;
-            background: white;
-            border: 1px solid #a0a0a0;
+            padding: 1.8rem;
+            background: linear-gradient(145deg, #ffffff 0%, #f5f5f5 100%);
+            border: 1px solid #b0b0b0;
             border-top: none;
-            border-radius: 0 8px 8px 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            border-radius: 0 16px 16px 16px;
+            box-shadow: 
+                0 8px 20px rgba(0,0,0,0.15),
+                inset 0 1px 0 rgba(255,255,255,0.8);
             margin-top: 0;
             position: relative;
             z-index: 2;
-            background: linear-gradient(to bottom, #ffffff 0%, #fafafa 100%);
         }
 
         .admin-tab-content.active {
@@ -173,34 +184,34 @@
         /* Responsivo para mobile */
         @media (max-width: 768px) {
             .admin-tabs {
-                padding-left: 8px;
-                gap: 2px;
+                padding-left: 12px;
+                gap: 4px;
                 flex-wrap: wrap;
-                border-bottom: 1px solid #a0a0a0;
+                border-radius: 10px 10px 0 0;
             }
             
             .admin-tab {
-                padding: 0.4rem 1rem;
+                padding: 0.5rem 1.2rem;
                 font-size: 0.7rem;
-                border-radius: 6px 6px 0 0;
+                border-radius: 10px 10px 0 0;
             }
             
             .admin-tab-content {
                 padding: 1rem;
-                border-radius: 0 6px 6px 6px;
+                border-radius: 0 12px 12px 12px;
             }
             
             .admin-tab i {
-                margin-right: 5px;
-                font-size: 0.75rem;
+                margin-right: 6px;
+                font-size: 0.8rem;
             }
         }
 
         /* Efeito de foco para acessibilidade */
         .admin-tab:focus-visible {
-            outline: 2px solid var(--primary);
+            outline: 3px solid var(--primary);
             outline-offset: 2px;
-            border-radius: 4px;
+            border-radius: 8px;
         }
     </style>
 </head>
@@ -361,7 +372,7 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
     </footer>
     
-    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS ESTILO EXCEL ========== -->
+    <!-- ========== PAINEL DE ADMINISTRACAO COM ABAS SKEUOMORPHISM ========== -->
     <section class="admin-panel" id="adminPanel">
         <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
@@ -516,7 +527,7 @@
             };
         }
         
-        console.log('✅ Sistema de abas estilo excel com efeito de sombra inicializado');
+        console.log('✅ Sistema de abas skeuomorphism inicializado');
     });
     </script>
 
