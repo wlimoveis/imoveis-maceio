@@ -543,7 +543,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - COM PREVIEW E ÍCONE ARRASTE ==========
+    // ========== RENDER PDFs - COM PREVIEW MELHORADO ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -567,24 +567,23 @@ const MediaSystem = {
             var borderColor = isMarked ? '#e74c3c' : (isExisting ? '#27ae60' : '#3498db');
             var statusText = isMarked ? 'EXCLUIR' : (isExisting ? 'EXISTENTE' : 'NOVO');
             var shortName = pdf.name.length > 12 ? pdf.name.substring(0,10)+'...' : pdf.name;
+            var fullName = pdf.name;
             var pdfUrl = pdf.uploadedUrl || pdf.url;
             
-            html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(pdf.name) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
+            html += '<div draggable="true" data-id="' + pdf.id + '" data-type="pdf" data-index="' + index + '" title="' + escapeHtmlFn(fullName) + '" style="display:inline-block;width:55px;height:55px;margin:0 2px;border:2px solid ' + borderColor + ';border-radius:5px;background:#fff;position:relative;cursor:grab;box-sizing:border-box;">';
             
-            // PREVIEW DO PDF - Usando iframe para mostrar o conteúdo
-            html += '<div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:3px;background:#f5f5f5;">';
+            // PREVIEW DO PDF - Design informativo
+            html += '<div style="width:100%;height:100%;position:relative;overflow:hidden;border-radius:3px;background:#fef0d9;display:flex;flex-direction:column;align-items:center;justify-content:center;">';
             
-            if (pdfUrl && pdfUrl.startsWith('http')) {
-                // Preview via Google Docs Viewer
-                var viewerUrl = 'https://docs.google.com/viewer?url=' + encodeURIComponent(pdfUrl) + '&embedded=true';
-                html += '<iframe src="' + viewerUrl + '" style="width:100%;height:100%;border:none;" sandbox="allow-same-origin allow-scripts"></iframe>';
-            } else {
-                // Fallback: mostrar ícone PDF com nome do arquivo
-                html += '<div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fef0d9;">';
-                html += '<i class="fas fa-file-pdf" style="font-size:1.6rem;color:#e74c3c;"></i>';
-                html += '<span style="font-size:0.4rem;margin-top:2px;color:#666;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;">' + escapeHtmlFn(shortName) + '</span>';
-                html += '</div>';
-            }
+            // Ícone PDF grande
+            html += '<i class="fas fa-file-pdf" style="font-size:1.8rem;color:#e74c3c;margin-top:4px;"></i>';
+            
+            // Nome do arquivo (recortado)
+            html += '<div style="font-size:0.45rem;margin-top:2px;color:#333;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;font-weight:500;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
+            
+            // Indicador de páginas (simulado)
+            html += '<div style="font-size:0.35rem;color:#888;margin-top:1px;"><i class="far fa-file-alt"></i> PDF</div>';
+            
             html += '</div>';
             
             // Botão deletar (canto superior direito)
