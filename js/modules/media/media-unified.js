@@ -471,7 +471,7 @@ const MediaSystem = {
         }, 50);
     },
 
-    // ========== RENDER FOTOS/VIDEOS - ÍCONES ALTO CONTRASTE ==========
+    // ========== RENDER FOTOS/VIDEOS - CORES FORTES ==========
     renderMediaPreviewComplete: function() {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
@@ -525,14 +525,14 @@ const MediaSystem = {
                 html += '<div style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;background:#f0f0f0;border-radius:3px;"><i class="fas fa-image" style="font-size:1.5rem;color:#999;"></i></div>';
             }
             
-            // Botão deletar (topo direito) - BRANCO COM FUNDO VERMELHO
-            html += '<div style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid white;">';
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="background:transparent;border:none;color:white;font-size:11px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
+            // BOTÃO DELETAR (X) - VERMELHO COM X BRANCO
+            html += '<div style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + item.id + '\')" style="background:transparent !important;border:none !important;color:white !important;font-size:12px !important;font-weight:bold !important;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:0;margin:0;">✕</button>';
             html += '</div>';
             
-            // Ícone de arraste (topo esquerdo) - BRANCO COM FUNDO PRETO
-            html += '<div style="position:absolute;top:-3px;left:-3px;width:18px;height:18px;background:#1a1a2e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid #f39c12;">';
-            html += '<i class="fas fa-arrows-alt" style="color:#f39c12;font-size:9px;"></i>';
+            // ÍCONE ARRASTE - FUNDO ESCURO COM ÍCONE BRANCO
+            html += '<div style="position:absolute;top:-4px;left:-4px;width:18px;height:18px;background:#2c3e50 !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
+            html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
             // Número ordenação
@@ -558,7 +558,7 @@ const MediaSystem = {
         }
     },
 
-    // ========== RENDER PDFs - ÍCONES ALTO CONTRASTE ==========
+    // ========== RENDER PDFs - CORES FORTES ==========
     renderPdfPreviewComplete: function() {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
@@ -607,14 +607,14 @@ const MediaSystem = {
             html += '<div style="font-size:0.4rem;margin-top:2px;color:#555;text-align:center;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:0 2px;line-height:1.2;" title="' + escapeHtmlFn(fullName) + '">' + escapeHtmlFn(shortName) + '</div>';
             html += '</div>';
             
-            // Botão deletar (topo direito) - BRANCO COM FUNDO VERMELHO
-            html += '<div style="position:absolute;top:-3px;right:-3px;width:18px;height:18px;background:#e74c3c;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid white;">';
-            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="background:transparent;border:none;color:white;font-size:11px;font-weight:bold;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;">✕</button>';
+            // BOTÃO DELETAR (X) - VERMELHO COM X BRANCO
+            html += '<div style="position:absolute;top:-4px;right:-4px;width:18px;height:18px;background:#e74c3c !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
+            html += '<button onclick="event.stopPropagation(); MediaSystem.removeFile(\'' + pdf.id + '\')" style="background:transparent !important;border:none !important;color:white !important;font-size:12px !important;font-weight:bold !important;cursor:pointer;width:100%;height:100%;display:flex;align-items:center;justify-content:center;padding:0;margin:0;">✕</button>';
             html += '</div>';
             
-            // Ícone de arraste (topo esquerdo) - BRANCO COM FUNDO PRETO E BORDA LARANJA
-            html += '<div style="position:absolute;top:-3px;left:-3px;width:18px;height:18px;background:#1a1a2e;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);border:1px solid #f39c12;">';
-            html += '<i class="fas fa-arrows-alt" style="color:#f39c12;font-size:9px;"></i>';
+            // ÍCONE ARRASTE - FUNDO ESCURO COM ÍCONE BRANCO
+            html += '<div style="position:absolute;top:-4px;left:-4px;width:18px;height:18px;background:#2c3e50 !important;border-radius:50% !important;display:flex;align-items:center;justify-content:center;cursor:grab;z-index:100;box-shadow:0 1px 3px rgba(0,0,0,0.3);">';
+            html += '<i class="fas fa-arrows-alt" style="color:white !important;font-size:10px !important;"></i>';
             html += '</div>';
             
             // Número ordenação
