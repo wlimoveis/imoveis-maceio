@@ -1028,7 +1028,7 @@ select:focus {
     border-radius: 50%;
 }
 
-/* ========== ABAS ESTILO EXCEL (AFUNDAMENTO 3D) ========== */
+/* ========== ABAS ESTILO EXCEL - CINZA METÁLICO ========== */
 .admin-tabs {
     display: flex;
     gap: 4px;
@@ -1036,46 +1036,48 @@ select:focus {
     position: relative;
     padding-left: 15px;
     background: transparent;
-    border-bottom: 1px solid #c0c0c0;
+    border-bottom: 1px solid #a0a0a0;
 }
 
-/* Estilo base da aba - EFEITO SOBRESSAINDO (inativa) */
+/* Estilo base da aba - CINZA METÁLICO (inativa) */
 .admin-tab {
     padding: 0.6rem 1.8rem;
-    background: linear-gradient(to bottom, #e8e8e8 0%, #d0d0d0 100%);
-    border: 1px solid #a0a0a0;
+    background: linear-gradient(to bottom, #b0b0b0 0%, #909090 100%);
+    border: 1px solid #707070;
     border-bottom: none;
     border-radius: 6px 6px 0 0;
     cursor: pointer;
     font-weight: 600;
-    color: #333;
+    color: #1a1a1a;
     transition: all 0.1s ease;
     font-size: 0.85rem;
     position: relative;
     margin-right: 4px;
-    box-shadow: -1px -1px 2px rgba(0,0,0,0.1), 2px 2px 3px rgba(0,0,0,0.1);
+    box-shadow: -1px -1px 2px rgba(0,0,0,0.15), 2px 2px 3px rgba(0,0,0,0.15);
     transform: translateY(0px);
     z-index: 1;
+    text-shadow: 0 1px 0 rgba(255,255,255,0.3);
 }
 
-/* Efeito hover na aba inativa */
+/* Efeito hover na aba inativa - clareia o metálico */
 .admin-tab:not(.active):hover {
-    background: linear-gradient(to bottom, #f0f0f0 0%, #e0e0e0 100%);
-    color: var(--primary);
+    background: linear-gradient(to bottom, #c8c8c8 0%, #a8a8a8 100%);
+    color: #000000;
     transform: translateY(-1px);
     box-shadow: -2px -2px 3px rgba(0,0,0,0.1), 3px 3px 4px rgba(0,0,0,0.1);
 }
 
-/* ABA ATIVA - EFEITO DE AFUNDAMENTO (como no Excel) */
+/* ABA ATIVA - EFEITO DE AFUNDAMENTO (cor atual - azul primário) */
 .admin-tab.active {
-    background: linear-gradient(to bottom, #ffffff 0%, #f5f5f5 100%);
-    color: var(--primary);
-    border: 1px solid #a0a0a0;
-    border-bottom: 1px solid #ffffff;
-    box-shadow: inset 0 2px 5px rgba(0,0,0,0.15), 0 1px 0 rgba(255,255,255,0.5);
+    background: linear-gradient(to bottom, #1a5276 0%, #2980b9 100%);
+    color: white;
+    border: 1px solid #0c2d48;
+    border-bottom: 1px solid #1a5276;
+    box-shadow: inset 0 2px 5px rgba(0,0,0,0.2), 0 1px 0 rgba(255,255,255,0.2);
     transform: translateY(1px);
     z-index: 3;
     position: relative;
+    text-shadow: 0 1px 0 rgba(0,0,0,0.2);
 }
 
 /* Primeira aba */
@@ -1090,17 +1092,22 @@ select:focus {
     transition: all 0.2s ease;
 }
 
-/* Aba ativa - ícone pasta aberta */
+/* Aba ativa - ícone BRANCO (alto contraste) */
 .admin-tab.active i {
-    color: var(--primary);
+    color: #ffffff;
 }
 
-/* Aba inativa - ícone pasta fechada */
+/* Aba inativa - ícone ESCURO (alto contraste sobre cinza metálico) */
 .admin-tab:not(.active) i {
-    color: #666;
+    color: #2c2c2c;
 }
 
-/* Container do conteúdo das abas - PARECE CONTINUAR A ABA */
+/* Hover na aba inativa - ícone escuro */
+.admin-tab:not(.active):hover i {
+    color: #000000;
+}
+
+/* Container do conteúdo das abas */
 .admin-tab-content {
     display: none;
     padding: 1.5rem;
@@ -1125,7 +1132,7 @@ select:focus {
         padding-left: 8px;
         gap: 2px;
         flex-wrap: wrap;
-        border-bottom: 1px solid #c0c0c0;
+        border-bottom: 1px solid #a0a0a0;
     }
     
     .admin-tab {
