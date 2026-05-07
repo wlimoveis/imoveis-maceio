@@ -145,7 +145,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - VERSÃO COMPACTA ========== */
+        /* ========== MOBILE - AJUSTE DAS LATERAIS ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -173,6 +173,18 @@
                 gap: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
+            }
+            
+            /* AJUSTE DAS LATERAIS DO CONTEÚDO */
+            .admin-panel {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+            
+            .admin-panel .manage-container,
+            .admin-panel .form-compact {
+                margin-left: -0.25rem !important;
+                margin-right: -0.25rem !important;
             }
             
             .property-item {
@@ -243,7 +255,7 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - BOTÕES NA MESMA LINHA ===== */
+            /* PAGINAÇÃO */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
