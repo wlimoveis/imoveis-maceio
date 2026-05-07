@@ -145,7 +145,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - BOTÕES NA MESMA LINHA ========== */
+        /* ========== MOBILE - VERSÃO COMPACTA ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -192,7 +192,7 @@
                 width: 100%;
             }
             
-            /* DETALHES DO IMÓVEL - ITENS COMPACTOS NA MESMA LINHA */
+            /* DETALHES DO IMÓVEL */
             .property-item > div:nth-child(2) > div:last-child {
                 display: flex !important;
                 flex-wrap: wrap !important;
@@ -219,7 +219,7 @@
                 display: none !important;
             }
             
-            /* ===== BOTÕES - TODOS NA MESMA LINHA ===== */
+            /* BOTÕES DE AÇÃO */
             .property-item > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
@@ -239,9 +239,63 @@
                 white-space: nowrap !important;
             }
             
-            /* Ajuste específico para o botão "Zerar views" */
             .property-item button:nth-child(2) {
                 padding: 0.3rem 0.4rem !important;
+            }
+            
+            /* ===== PAGINAÇÃO - BOTÕES NA MESMA LINHA ===== */
+            #propertyList > div:last-child {
+                display: flex !important;
+                flex-direction: row !important;
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;
+                align-items: center !important;
+                gap: 0.2rem !important;
+                margin-top: 0.5rem !important;
+                padding: 0.3rem 0 !important;
+                overflow-x: auto !important;
+                -webkit-overflow-scrolling: touch !important;
+            }
+            
+            #propertyList > div:last-child button,
+            #propertyList > div:last-child span {
+                flex: 0 0 auto !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                min-width: 28px !important;
+                height: 28px !important;
+                padding: 0 0.3rem !important;
+                margin: 0 !important;
+                font-size: 0.7rem !important;
+                border-radius: 4px !important;
+                white-space: nowrap !important;
+            }
+            
+            #propertyList > div:last-child {
+                scrollbar-width: thin !important;
+            }
+            
+            #propertyList > div:last-child::-webkit-scrollbar {
+                height: 3px !important;
+            }
+            
+            #propertyList > div:last-child::-webkit-scrollbar-track {
+                background: #e0e0e0 !important;
+                border-radius: 2px !important;
+            }
+            
+            #propertyList > div:last-child::-webkit-scrollbar-thumb {
+                background: var(--primary) !important;
+                border-radius: 2px !important;
+            }
+            
+            #propertyList > div:last-child select {
+                flex: 0 0 auto !important;
+                margin-left: 0.3rem !important;
+                padding: 0.2rem 0.3rem !important;
+                font-size: 0.65rem !important;
+                border-radius: 4px !important;
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
