@@ -94,6 +94,7 @@
                 inset 0 -1px 0 rgba(255,255,255,0.3),
                 0 2px 4px rgba(0,0,0,0.1);
             transition: all 0.2s ease;
+            overflow: visible !important;
         }
 
         .admin-tab-content.active {
@@ -112,6 +113,7 @@
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
+            padding-bottom: 0.5rem !important;
         }
 
         #propertyList {
@@ -145,7 +147,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - AJUSTE DAS LATERAIS ========== */
+        /* ========== MOBILE - AJUSTE DAS LATERAIS E PAGINAÇÃO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -161,12 +163,14 @@
             .admin-tab-content { 
                 padding: 1rem; 
                 border-radius: 0 12px 12px 12px;
+                padding-bottom: 1rem !important;
             }
             .admin-tab i { margin-right: 5px; font-size: 0.75rem; }
 
             .manage-container {
                 max-height: none;
                 overflow-y: visible;
+                padding-bottom: 0.8rem !important;
             }
             
             #propertyList {
@@ -255,18 +259,22 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* PAGINAÇÃO */
+            /* ===== PAGINAÇÃO - ESPAÇO PARA CLIQUE ===== */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
                 flex-wrap: nowrap !important;
                 justify-content: flex-start !important;
                 align-items: center !important;
-                gap: 0.2rem !important;
-                margin-top: 0.5rem !important;
-                padding: 0.3rem 0 !important;
+                gap: 0.3rem !important;
+                margin-top: 0.8rem !important;
+                margin-bottom: 0.5rem !important;
+                padding: 0.5rem 0 !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
+                background: transparent !important;
+                position: relative !important;
+                z-index: 5 !important;
             }
             
             #propertyList > div:last-child button,
@@ -275,39 +283,36 @@
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                min-width: 28px !important;
-                height: 28px !important;
-                padding: 0 0.3rem !important;
+                min-width: 34px !important;
+                height: 34px !important;
+                padding: 0 0.4rem !important;
                 margin: 0 !important;
-                font-size: 0.7rem !important;
-                border-radius: 4px !important;
+                font-size: 0.75rem !important;
+                font-weight: 600 !important;
+                border-radius: 6px !important;
                 white-space: nowrap !important;
+                cursor: pointer !important;
+                background: #f0f0f0 !important;
+                color: #333 !important;
+                border: 1px solid #ddd !important;
+                transition: all 0.2s ease !important;
             }
             
-            #propertyList > div:last-child {
-                scrollbar-width: thin !important;
-            }
-            
-            #propertyList > div:last-child::-webkit-scrollbar {
-                height: 3px !important;
-            }
-            
-            #propertyList > div:last-child::-webkit-scrollbar-track {
-                background: #e0e0e0 !important;
-                border-radius: 2px !important;
-            }
-            
-            #propertyList > div:last-child::-webkit-scrollbar-thumb {
+            #propertyList > div:last-child button[style*="background"] {
                 background: var(--primary) !important;
-                border-radius: 2px !important;
+                color: white !important;
+                border-color: var(--primary) !important;
             }
             
             #propertyList > div:last-child select {
                 flex: 0 0 auto !important;
-                margin-left: 0.3rem !important;
-                padding: 0.2rem 0.3rem !important;
-                font-size: 0.65rem !important;
-                border-radius: 4px !important;
+                margin-left: 0.5rem !important;
+                padding: 0.3rem 0.5rem !important;
+                font-size: 0.7rem !important;
+                border-radius: 6px !important;
+                height: 34px !important;
+                background: white !important;
+                border: 1px solid #ddd !important;
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
