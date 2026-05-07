@@ -137,7 +137,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - SEM LINHAS VAZIAS ========== */
+        /* ========== MOBILE - VERSÃO COMPACTA (SEM LINHAS VAZIAS) ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -166,16 +166,15 @@
             
             #propertyList > div:first-child {
                 margin: 0 0 0.5rem 0 !important;
-                padding: 0.4rem 0.6rem !important;
+                padding: 0.3rem 0.5rem !important;
                 background: #e8f4fd;
-                border-radius: 8px;
+                border-radius: 6px;
                 display: flex !important;
                 flex-direction: row !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
                 justify-content: flex-start !important;
-                gap: 0.5rem !important;
-                line-height: 1 !important;
+                gap: 0.4rem !important;
             }
             
             #propertyList > div:first-child > div:first-child {
@@ -183,22 +182,22 @@
                 flex-direction: row !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
-                gap: 0.5rem !important;
+                gap: 0.4rem !important;
                 margin: 0 !important;
                 padding: 0 !important;
             }
             
-            #propertyList > div:first-child > div:first-child > div,
-            #propertyList > div:first-child > div:first-child > span {
+            #propertyList > div:first-child > div:first-child > div {
                 display: inline-flex !important;
                 align-items: center !important;
                 gap: 0.2rem !important;
                 font-size: 0.7rem !important;
                 color: #333 !important;
-                background: transparent !important;
-                padding: 0 !important;
-                margin: 0 !important;
+                background: white !important;
+                padding: 0.2rem 0.5rem !important;
+                border-radius: 15px !important;
                 white-space: nowrap !important;
+                margin: 0 !important;
             }
             
             #propertyList > div:first-child > div:first-child > span {
@@ -217,7 +216,6 @@
                 border-radius: 4px !important;
                 white-space: nowrap !important;
                 cursor: pointer !important;
-                line-height: 1.2 !important;
             }
             
             #propertyList > div:first-child strong,
