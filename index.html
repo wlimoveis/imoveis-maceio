@@ -15,107 +15,305 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* ========== ABAS ESTILO SKEUOMORPHISM ========== */
+        /* ========== ABAS ESTILO WINDOWS 98 / CLASSIC UI ==========
+           Estilo "orelha de fichário" com efeito 3D e corte vertical,
+           similar ao TabControl do Windows 95/98/NT/2000 */
+        
+        /* Container das abas - estilo barra de ferramentas Windows 98 */
         .admin-tabs {
             display: flex;
-            gap: 2px;
+            gap: 0px;
             margin-bottom: -1px;
             position: relative;
-            padding-left: 15px;
-            background: linear-gradient(135deg, #e8e8e8 0%, #d0d0d0 100%);
-            border-bottom: 2px solid #8a8a8a;
-            border-radius: 12px 12px 0 0;
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 2px 4px rgba(0,0,0,0.1);
+            padding-left: 12px;
+            background: #ece9d8;
+            border-top: 2px solid #ffffff;
+            border-left: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            border-bottom: none;
+            border-radius: 0px;
+            box-shadow: none;
         }
 
+        /* Estilo base da aba - ORELHA DE FICHÁRIO (Windows 98 Classic) */
         .admin-tab {
-            padding: 0.7rem 1.5rem;
-            background: #b8b8b8;
-            border: none;
-            border-radius: 12px 12px 0 0;
-            cursor: pointer;
-            font-weight: 700;
-            color: #3a3a3a;
-            transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            font-size: 0.85rem;
             position: relative;
-            margin-right: 0px;
-            box-shadow: -2px -2px 5px rgba(0,0,0,0.15), 2px 2px 5px rgba(255,255,255,0.5), inset 1px 1px 0 rgba(255,255,255,0.4), inset -1px -1px 0 rgba(0,0,0,0.05);
-            transform: translateY(2px);
-            z-index: 1;
-            text-shadow: 0 1px 0 rgba(255,255,255,0.5);
-            letter-spacing: 0.3px;
-        }
-
-        .admin-tab:not(.active):hover {
-            background: #c8c8c8;
-            color: #1a1a1a;
-            transform: translateY(0px);
-            box-shadow: -3px -3px 6px rgba(0,0,0,0.2), 3px 3px 6px rgba(255,255,255,0.6), inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.08);
-        }
-
-        .admin-tab.active {
-            background: linear-gradient(145deg, #1a5276 0%, #0e3d5c 100%);
-            color: #ffffff;
+            padding: 0.4rem 1.2rem 0.5rem 1.2rem;
+            background: #ece9d8;
             border: none;
-            box-shadow: inset 0 4px 8px rgba(0,0,0,0.4), inset 0 -1px 0 rgba(255,255,255,0.15), 0 1px 0 rgba(255,255,255,0.2);
-            transform: translateY(4px);
-            z-index: 3;
-            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+            font-family: 'Segoe UI', 'Tahoma', 'Microsoft Sans Serif', sans-serif;
+            color: #000000;
+            transition: none;
+            letter-spacing: normal;
+            text-shadow: none;
+            transform: none;
+            margin-right: -2px;
+            z-index: 1;
+            border-left: 1px solid #ffffff;
+            border-top: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            border-bottom: none;
+            box-shadow: none;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        /* Efeito de borda interna para profundidade */
+        .admin-tab::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            right: 1px;
+            bottom: -1px;
+            border-left: 1px solid #ffffff;
+            border-top: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Borda inferior para conectar com o conteúdo */
+        .admin-tab::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ece9d8;
+            z-index: 2;
         }
 
-        .admin-tab:first-child { border-radius: 16px 12px 0 0; margin-left: 0; }
-        .admin-tab:last-child { margin-right: 0; }
+        /* Hover na aba inativa - efeito de realce Windows 98 */
+        .admin-tab:not(.active):hover {
+            background: #f5f3e8;
+            color: #000000;
+            transform: none;
+            box-shadow: none;
+            border-left: 1px solid #ffffff;
+            border-top: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+        }
+        
+        .admin-tab:not(.active):hover::before {
+            border-left: 1px solid #ffffff;
+            border-top: 1px solid #ffffff;
+            border-right: 1px solid #808080;
+        }
 
+        /* ABA ATIVA - Efeito pressionado / afundado */
+        .admin-tab.active {
+            background: #ece9d8;
+            color: #000000;
+            border: none;
+            transform: translateY(1px);
+            z-index: 4;
+            position: relative;
+            text-shadow: none;
+            border-left: 1px solid #808080;
+            border-top: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            border-bottom: none;
+            box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
+            margin-top: 1px;
+            padding-top: 0.4rem;
+            padding-bottom: 0.6rem;
+        }
+        
+        /* Borda da aba ativa - efeito de relevo invertido */
+        .admin-tab.active::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            right: 1px;
+            bottom: -2px;
+            border-left: 1px solid #808080;
+            border-top: 1px solid #808080;
+            border-right: 1px solid #ffffff;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        /* Linha de conexão da aba ativa com o conteúdo */
+        .admin-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: #ece9d8;
+            z-index: 5;
+        }
+
+        /* Primeira aba - borda esquerda diferenciada */
+        .admin-tab:first-child {
+            margin-left: 0;
+            border-left: 1px solid #ffffff;
+        }
+        
+        .admin-tab.active:first-child {
+            border-left: 1px solid #808080;
+        }
+
+        /* Ícones nas abas - estilo Windows 98 */
         .admin-tab i {
-            margin-right: 8px;
-            font-size: 0.95rem;
-            transition: all 0.2s ease;
-            filter: drop-shadow(0 1px 0 rgba(255,255,255,0.4));
+            margin-right: 6px;
+            font-size: 0.75rem;
+            color: #000000;
+            filter: none;
+            text-shadow: none;
         }
 
-        .admin-tab.active i { color: #ffd700; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.3)); }
-        .admin-tab:not(.active) i { color: #4a4a4a; filter: drop-shadow(0 1px 0 rgba(255,255,255,0.5)); }
-        .admin-tab:not(.active):hover i { color: #1a5276; }
+        .admin-tab.active i {
+            color: #000000;
+            filter: none;
+            text-shadow: none;
+        }
+        
+        .admin-tab:not(.active):hover i {
+            color: #000000;
+        }
 
-        /* ========== CONTEÚDO DAS ABAS - EFEITO DE AFUNDAMENTO ========== */
+        /* ========== CONTEÚDO DAS ABAS - ESTILO WINDOWS 98 ========== */
         .admin-tab-content {
             display: none;
-            padding: 1.5rem;
-            background: linear-gradient(145deg, #f0f4f8 0%, #e8ecf0 100%);
-            border: 1px solid #a0a0a0;
+            padding: 1rem;
+            background: #ece9d8;
+            border: 1px solid #808080;
             border-top: none;
-            border-radius: 0 16px 16px 16px;
+            border-radius: 0px;
             margin-top: 0;
             position: relative;
             z-index: 2;
-            box-shadow: 
-                inset 0 4px 8px rgba(0,0,0,0.15),
-                inset 0 -1px 0 rgba(255,255,255,0.3),
-                0 2px 4px rgba(0,0,0,0.1);
-            transition: all 0.2s ease;
+            box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -1px 0 0 rgba(0,0,0,0.1);
+            transition: none;
             overflow: visible !important;
             padding-bottom: 1.5rem !important;
+        }
+        
+        /* Borda tripla para efeito de profundidade no conteúdo */
+        .admin-tab-content::before {
+            content: '';
+            position: absolute;
+            top: 1px;
+            left: 1px;
+            right: 1px;
+            bottom: 1px;
+            border: 1px solid #ffffff;
+            pointer-events: none;
+            z-index: 0;
         }
 
         .admin-tab-content.active {
             display: block;
-            border-left: 3px solid #1a5276;
+            border-left: 1px solid #808080;
+        }
+        
+        /* Fundo do conteúdo - estilo janela Windows 98 */
+        .admin-tab-content > div {
+            background: #ffffff;
+            border: 1px solid #d4d0c8;
+            padding: 0.8rem;
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* Títulos dentro do conteúdo */
+        .admin-tab-content h4 {
+            color: #000000;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.3rem;
+            border-bottom: 1px solid #808080;
+        }
+        
+        /* Campos de formulário estilo Windows 98 */
+        .admin-tab-content input,
+        .admin-tab-content textarea,
+        .admin-tab-content select {
+            background: #ffffff;
+            border: 1px solid #808080;
+            border-top-color: #404040;
+            border-left-color: #404040;
+            padding: 0.3rem 0.5rem;
+            font-family: 'Segoe UI', 'Tahoma', sans-serif;
+            font-size: 0.8rem;
+        }
+        
+        .admin-tab-content input:focus,
+        .admin-tab-content textarea:focus,
+        .admin-tab-content select:focus {
+            border: 1px solid #000000;
+            outline: none;
+        }
+        
+        /* Botões estilo Windows 98 */
+        .admin-tab-content button:not(.delete-image-btn):not(.pdf-access) {
+            background: #ece9d8;
+            border: 1px solid #808080;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+            color: #000000;
+            font-weight: normal;
+            padding: 0.3rem 0.8rem;
+            border-radius: 0px;
+            font-size: 0.75rem;
+        }
+        
+        .admin-tab-content button:not(.delete-image-btn):not(.pdf-access):hover {
+            background: #d4d0c8;
+            border: 1px solid #808080;
+            border-top-color: #ffffff;
+            border-left-color: #ffffff;
+        }
+        
+        .admin-tab-content button:not(.delete-image-btn):not(.pdf-access):active {
+            border-top-color: #808080;
+            border-left-color: #808080;
+            border-bottom-color: #ffffff;
+            border-right-color: #ffffff;
         }
 
-        .form-compact #propertyForm { gap: 0.5rem; }
-        .form-compact #propertyForm > div { margin-bottom: 0 !important; }
-        .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
-        .form-compact #propertyForm textarea { min-height: 50px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
-        .form-compact #uploadArea, .form-compact #pdfUploadArea { padding: 0.5rem; }
-        .form-compact #uploadPreview, .form-compact #pdfUploadPreview { min-height: 40px; max-height: 80px; overflow-y: auto; }
-        
         /* ========== LISTA DE PROPRIEDADES ========== */
         .manage-container {
             max-height: 650px;
             overflow-y: auto;
             padding-bottom: 2rem !important;
             margin-bottom: 0 !important;
+            background: #ffffff;
+            border: 1px solid #808080;
+            border-top-color: #404040;
+            border-left-color: #404040;
+        }
+        
+        /* Scrollbar estilo Windows 98 */
+        .manage-container::-webkit-scrollbar {
+            width: 16px;
+            background: #ece9d8;
+        }
+        
+        .manage-container::-webkit-scrollbar-track {
+            background: #ece9d8;
+            border-left: 1px solid #808080;
+            border-top: 1px solid #808080;
+        }
+        
+        .manage-container::-webkit-scrollbar-thumb {
+            background: #c0c0c0;
+            border: 1px solid #ffffff;
+            border-top-color: #808080;
+            border-left-color: #808080;
+        }
+        
+        .manage-container::-webkit-scrollbar-thumb:hover {
+            background: #d4d0c8;
         }
 
         #propertyList {
@@ -128,16 +326,20 @@
         }
 
         .property-item {
-            background: #f5f5f5;
+            background: #ffffff;
             padding: 0.8rem;
             margin: 0;
-            border-radius: 5px;
+            border-radius: 0px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-left: 4px solid var(--primary);
+            border-left: 4px solid #1a5276;
             transition: all 0.2s ease;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #d4d0c8;
+        }
+        
+        .property-item:hover {
+            background: #f5f3e8;
         }
 
         .property-item:last-child {
@@ -159,15 +361,17 @@
             position: fixed;
             bottom: 15px !important;
             right: 15px !important;
-            background: var(--primary);
+            background: #1a5276;
             color: white;
-            border: none;
+            border: 1px solid #0e3d5c;
+            border-top-color: #2980b9;
+            border-left-color: #2980b9;
             width: 44px !important;
             height: 44px !important;
-            border-radius: 50%;
+            border-radius: 0px;
             cursor: pointer;
             z-index: 1000;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
             font-size: 1.2rem;
             display: flex;
             align-items: center;
@@ -177,28 +381,46 @@
         }
 
         .admin-toggle:hover {
-            transform: scale(1.05);
+            background: #0e3d5c;
             opacity: 1 !important;
+        }
+        
+        .admin-toggle:active {
+            border-top-color: #0e3d5c;
+            border-left-color: #0e3d5c;
+            border-bottom-color: #2980b9;
+            border-right-color: #2980b9;
+            transform: translateY(1px);
         }
 
         /* ========== MOBILE - AJUSTE FINO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
-                padding-left: 10px;
-                gap: 2px;
+                padding-left: 6px;
                 flex-wrap: wrap;
-                border-radius: 10px 10px 0 0;
+                border-bottom: none;
+                background: #ece9d8;
             }
+            
             .admin-tab {
-                padding: 0.4rem 1rem;
-                font-size: 0.7rem;
-                border-radius: 10px 10px 0 0;
+                padding: 0.3rem 0.8rem;
+                font-size: 0.65rem;
+                min-width: 60px;
             }
-            .admin-tab-content { 
-                padding: 1rem; 
-                border-radius: 0 12px 12px 12px;
-                padding-bottom: 1.5rem !important;
+            
+            .admin-tab i {
+                margin-right: 4px;
+                font-size: 0.65rem;
+            }
+            
+            .admin-tab-content {
+                padding: 0.6rem;
+                padding-bottom: 1rem !important;
                 overflow: visible !important;
+            }
+            
+            .admin-tab-content > div {
+                padding: 0.5rem;
             }
 
             .manage-container {
@@ -214,7 +436,6 @@
                 padding-bottom: 1.5rem !important;
             }
             
-            /* AJUSTE DAS LATERAIS DO CONTEÚDO */
             .admin-panel {
                 padding-left: 0.5rem !important;
                 padding-right: 0.5rem !important;
@@ -232,7 +453,7 @@
                 flex-direction: column;
                 align-items: flex-start;
                 gap: 0.4rem;
-                border-bottom: 1px solid #e0e0e0;
+                border-bottom: 1px solid #d4d0c8;
             }
             
             .property-item:last-child { 
@@ -247,7 +468,6 @@
                 width: 100%;
             }
             
-            /* DETALHES DO IMÓVEL */
             .property-item > div:nth-child(2) > div:last-child {
                 display: flex !important;
                 flex-wrap: wrap !important;
@@ -274,7 +494,6 @@
                 display: none !important;
             }
             
-            /* BOTÕES DE AÇÃO */
             .property-item > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
@@ -298,7 +517,7 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - AFASTADA DA BARRA DE ROLAGEM ===== */
+            /* ===== PAGINAÇÃO - ESTILO WINDOWS 98 MOBILE ===== */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
@@ -311,13 +530,13 @@
                 padding: 0.8rem 0.5rem 1rem 0.5rem !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
-                background: transparent !important;
+                background: #ece9d8 !important;
                 position: relative !important;
                 z-index: 5 !important;
-                border-top: 1px solid #e0e0e0 !important;
+                border-top: 1px solid #808080 !important;
             }
             
-            /* Botões de paginação */
+            /* Botões de paginação estilo Windows 98 */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
                 flex: 0 0 auto !important;
@@ -328,24 +547,27 @@
                 height: 36px !important;
                 padding: 0 0.5rem !important;
                 margin: 0 !important;
-                font-size: 0.8rem !important;
-                font-weight: 600 !important;
-                border-radius: 8px !important;
+                font-size: 0.75rem !important;
+                font-weight: normal !important;
+                border-radius: 0px !important;
                 white-space: nowrap !important;
                 cursor: pointer !important;
-                background: #f0f0f0 !important;
-                color: #333 !important;
-                border: 1px solid #ddd !important;
-                transition: all 0.2s ease !important;
+                background: #ece9d8 !important;
+                color: #000000 !important;
+                border: 1px solid #808080 !important;
+                border-top-color: #ffffff !important;
+                border-left-color: #ffffff !important;
+                transition: none !important;
+                font-family: 'Segoe UI', Tahoma, sans-serif !important;
             }
             
             /* Botão ativo */
             #propertyList > div:last-child button.active-page,
             #propertyList > div:last-child button[style*="background: #f39c12"],
             #propertyList > div:last-child button[style*="background: var(--gold)"] {
-                background: var(--gold) !important;
-                color: white !important;
-                border-color: var(--gold) !important;
+                background: #1a5276 !important;
+                color: #ffffff !important;
+                border: 1px solid #0e3d5c !important;
             }
             
             /* Select de itens por página */
@@ -354,15 +576,16 @@
                 margin-left: 0.5rem !important;
                 padding: 0.3rem 0.5rem !important;
                 font-size: 0.7rem !important;
-                border-radius: 6px !important;
+                border-radius: 0px !important;
                 height: 36px !important;
-                background: white !important;
-                border: 1px solid #ddd !important;
+                background: #ffffff !important;
+                border: 1px solid #808080 !important;
+                border-top-color: #404040 !important;
+                border-left-color: #404040 !important;
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
             
-            /* GARANTIR QUE A PAGINAÇÃO FIQUE VISÍVEL */
             #manage-tab {
                 overflow: visible !important;
                 padding-bottom: 2rem !important;
@@ -370,46 +593,34 @@
         }
 
         .admin-tab:focus-visible {
-            outline: 3px solid var(--primary);
+            outline: 2px solid #000000;
             outline-offset: 2px;
-            border-radius: 8px;
         }
         
-        /* ========== CORREÇÃO DA PAGINAÇÃO NO MOBILE - ESPAÇO EXTRA ========== */
-        @media (max-width: 768px) {
-            /* Container principal com padding inferior generoso */
-            .manage-container {
-                max-height: none !important;
-                overflow-y: visible !important;
-                padding-bottom: 2rem !important;
-            }
-            
-            /* Container da lista de propriedades dentro do admin */
-            #propertyList {
-                padding-bottom: 1.5rem !important;
-                margin-bottom: 0 !important;
-            }
-            
-            /* Último elemento da lista (paginação) - espaço garantido */
-            #propertyList > div:last-child {
-                margin-bottom: 0.5rem !important;
-                padding-bottom: 0.8rem !important;
-                position: relative !important;
-                z-index: 20 !important;
-                background: transparent !important;
-            }
-            
-            /* Barra de rolagem do container ajustada */
-            .admin-tab-content {
-                overflow: visible !important;
-            }
-            
-            /* Garantir que o conteúdo da aba não corte a paginação */
-            #manage-tab {
-                overflow: visible !important;
-                padding-bottom: 2rem !important;
-            }
+        /* ========== COMPLEMENTOS ESTILO WINDOWS 98 - PAGINAÇÃO ========== */
+        #propertyList > div:last-child button:active {
+            border-top-color: #808080 !important;
+            border-left-color: #808080 !important;
+            border-bottom-color: #ffffff !important;
+            border-right-color: #ffffff !important;
+            transform: translateY(1px);
         }
+        
+        select {
+            background: #ffffff;
+            border: 1px solid #808080;
+            border-top-color: #404040;
+            border-left-color: #404040;
+            border-radius: 0px;
+            padding: 0.2rem 0.4rem;
+        }
+        
+        .form-compact #propertyForm { gap: 0.5rem; }
+        .form-compact #propertyForm > div { margin-bottom: 0 !important; }
+        .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+        .form-compact #propertyForm textarea { min-height: 50px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
+        .form-compact #uploadArea, .form-compact #pdfUploadArea { padding: 0.5rem; }
+        .form-compact #uploadPreview, .form-compact #pdfUploadPreview { min-height: 40px; max-height: 80px; overflow-y: auto; }
     </style>
 </head>
 <body>
@@ -526,7 +737,7 @@
     
     <!-- ========== PAINEL DE ADMINISTRACAO ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: var(--primary); margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
+        <h3 style="text-align: center; color: #1a5276; margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
             <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-table-list"></i> Gerenciar</button>
@@ -554,7 +765,7 @@
                     <div style="margin-bottom: 0.6rem;"><label><strong>Caracteristicas</strong></label><input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina"><small>Separe por virgulas</small></div>
 
                     <div style="margin-bottom: 0.8rem;"><label><i class="fas fa-file-pdf"></i> Documentos PDF</label>
-                        <div id="pdfUploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
+                        <div id="pdfUploadArea" style="border:1px dashed #808080; border-radius:0px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
                             <i class="fas fa-cloud-upload-alt"></i> Arraste ou clique para adicionar PDFs
                             <small style="display:block;">Max: 5 arquivos • 10MB</small>
                         </div>
@@ -563,7 +774,7 @@
                     </div>
                     
                     <div style="margin-bottom: 0.8rem;"><label><strong>Fotos e Videos</strong></label>
-                        <div id="uploadArea" style="border:1px dashed #ccc; border-radius:6px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
+                        <div id="uploadArea" style="border:1px dashed #808080; border-radius:0px; padding:0.5rem; text-align:center; cursor:pointer; background:#fefefe;">
                             <i class="fas fa-cloud-upload-alt"></i> Clique ou arraste fotos e videos
                             <small style="display:block;">Fotos (JPG, PNG) • Videos (MP4) • Max: 10 arquivos • 5MB</small>
                         </div>
@@ -579,8 +790,8 @@
                     <div style="margin-bottom: 0.8rem;"><label style="display:flex; align-items:center; gap:0.5rem;"><input type="checkbox" id="propHasVideo"> <span><strong>Este imovel tem video?</strong></span></label></div>
                     
                     <div style="display: flex; gap: 0.6rem;">
-                        <button type="submit" style="background:var(--success); color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imovel</button>
-                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#95a5a6; color:white; padding:0.5rem 1rem; border:none; border-radius:5px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
+                        <button type="submit" style="background:#ece9d8; color:#000000; padding:0.5rem 1rem; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imovel</button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#ece9d8; color:#000000; padding:0.5rem 1rem; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -589,14 +800,14 @@
 
     <!-- Modal PDF -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
-        <div class="pdf-modal-content" style="background:white; border-radius:10px; padding:1.2rem; max-width:380px; width:90%; text-align:center;">
-            <h3 id="pdfModalTitle" style="color:var(--primary); margin:0 0 0.8rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imovel</h3>
+        <div class="pdf-modal-content" style="background:#ece9d8; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:1.2rem; max-width:380px; width:90%; text-align:center;">
+            <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.8rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imovel</h3>
             <form id="pdfPasswordForm">
-                <div id="pdfPreview" style="margin:0.8rem 0; padding:0.5rem; background:#f8f9fa; border-radius:5px;"><p>Digite a senha para visualizar</p></div>
-                <input type="password" id="pdfPassword" placeholder="Senha" style="width:100%; padding:0.5rem; border:1px solid #ddd; border-radius:5px;" autocomplete="off" required>
+                <div id="pdfPreview" style="margin:0.8rem 0; padding:0.5rem; background:#ffffff; border:1px solid #808080; border-radius:0px;"><p>Digite a senha para visualizar</p></div>
+                <input type="password" id="pdfPassword" placeholder="Senha" style="width:100%; padding:0.5rem; border:1px solid #808080; border-top-color:#404040; border-left-color:#404040; border-radius:0px;" autocomplete="off" required>
                 <div style="display:flex; gap:0.6rem; margin-top:0.8rem;">
-                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:var(--primary); color:white; border:none; padding:0.5rem; border-radius:5px; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
-                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#95a5a6; color:white; border:none; padding:0.5rem; border-radius:5px; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
+                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.5rem; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
+                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.5rem; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
                 </div>
             </form>
             <p style="font-size:0.65rem; color:#666; margin-top:0.8rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
@@ -610,6 +821,7 @@
     (function() {
         const backToTopBtn = document.getElementById('backToTopBtn');
         if (!backToTopBtn) return;
+        backToTopBtn.style.cssText = 'position:fixed; bottom:80px; right:15px; background:#1a5276; color:white; border:1px solid #0e3d5c; border-top-color:#2980b9; border-left-color:#2980b9; width:40px; height:40px; border-radius:0px; cursor:pointer; z-index:999; display:none; align-items:center; justify-content:center; font-size:1rem; transition:all 0.3s ease;';
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
                 backToTopBtn.style.display = 'flex';
