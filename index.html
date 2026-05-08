@@ -115,7 +115,7 @@
             max-height: 400px;
             overflow-y: auto;
             padding-bottom: 0.2rem !important;
-            margin-bottom: 0 !important;
+            margin-bottom: 10px !important;
         }
 
         #propertyList {
@@ -153,7 +153,34 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - AJUSTE FINO PAGINAÇÃO ========== */
+        /* ========== BOTÃO ADMIN TOGGLE ========== */
+        .admin-toggle {
+            position: fixed;
+            bottom: 15px !important;
+            right: 15px !important;
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 44px !important;
+            height: 44px !important;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0.9 !important;
+            transition: all 0.3s ease;
+        }
+
+        .admin-toggle:hover {
+            transform: scale(1.05);
+            opacity: 1 !important;
+        }
+
+        /* ========== MOBILE - AJUSTE FINO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -268,17 +295,17 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - AFASTADO DA BARRA DE ROLAGEM ===== */
+            /* ===== PAGINAÇÃO - COMPACTA ===== */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                justify-content: flex-start !important;
+                flex-wrap: wrap !important;
+                justify-content: center !important;
                 align-items: center !important;
                 gap: 0.3rem !important;
                 margin-top: 0.3rem !important;
-                margin-bottom: 0 !important;
-                padding: 0.4rem 0 0.8rem 0 !important;
+                margin-bottom: 0.8rem !important;
+                padding: 0.4rem 0.5rem 0.8rem 0.5rem !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 background: transparent !important;
@@ -286,20 +313,20 @@
                 z-index: 5 !important;
             }
             
-            /* Botões de paginação - maiores para clique */
+            /* Botões de paginação */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
                 flex: 0 0 auto !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                min-width: 38px !important;
-                height: 38px !important;
-                padding: 0 0.5rem !important;
+                min-width: 34px !important;
+                height: 34px !important;
+                padding: 0 0.4rem !important;
                 margin: 0 !important;
-                font-size: 0.8rem !important;
+                font-size: 0.75rem !important;
                 font-weight: 600 !important;
-                border-radius: 8px !important;
+                border-radius: 6px !important;
                 white-space: nowrap !important;
                 cursor: pointer !important;
                 background: #f0f0f0 !important;
@@ -310,20 +337,21 @@
             
             /* Botão ativo */
             #propertyList > div:last-child button.active-page,
-            #propertyList > div:last-child button[style*="background: #1a5276"] {
-                background: var(--primary) !important;
+            #propertyList > div:last-child button[style*="background: #f39c12"],
+            #propertyList > div:last-child button[style*="background: var(--gold)"] {
+                background: var(--gold) !important;
                 color: white !important;
-                border-color: var(--primary) !important;
+                border-color: var(--gold) !important;
             }
             
             /* Select de itens por página */
             #propertyList > div:last-child select {
                 flex: 0 0 auto !important;
-                margin-left: 0.5rem !important;
-                padding: 0.3rem 0.5rem !important;
-                font-size: 0.7rem !important;
+                margin-left: 0.3rem !important;
+                padding: 0.2rem 0.4rem !important;
+                font-size: 0.65rem !important;
                 border-radius: 6px !important;
-                height: 38px !important;
+                height: 34px !important;
                 background: white !important;
                 border: 1px solid #ddd !important;
             }
