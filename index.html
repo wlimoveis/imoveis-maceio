@@ -95,6 +95,7 @@
                 0 2px 4px rgba(0,0,0,0.1);
             transition: all 0.2s ease;
             overflow: visible !important;
+            padding-bottom: 1rem !important;
         }
 
         .admin-tab-content.active {
@@ -113,7 +114,7 @@
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
-            padding-bottom: 0 !important;
+            padding-bottom: 0.2rem !important;
             margin-bottom: 0 !important;
         }
 
@@ -168,7 +169,7 @@
             .admin-tab-content { 
                 padding: 1rem; 
                 border-radius: 0 12px 12px 12px;
-                padding-bottom: 0.8rem !important;
+                padding-bottom: 1rem !important;
             }
             .admin-tab i { margin-right: 5px; font-size: 0.75rem; }
 
@@ -267,7 +268,7 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - AJUSTE FINO ===== */
+            /* ===== PAGINAÇÃO - AFASTADO DA BARRA DE ROLAGEM ===== */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
@@ -276,8 +277,8 @@
                 align-items: center !important;
                 gap: 0.3rem !important;
                 margin-top: 0.3rem !important;
-                margin-bottom: 0.6rem !important;
-                padding: 0.4rem 0 !important;
+                margin-bottom: 0 !important;
+                padding: 0.4rem 0 0.8rem 0 !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 background: transparent !important;
@@ -285,15 +286,15 @@
                 z-index: 5 !important;
             }
             
-            /* Botões de paginação */
+            /* Botões de paginação - maiores para clique */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
                 flex: 0 0 auto !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                min-width: 36px !important;
-                height: 36px !important;
+                min-width: 38px !important;
+                height: 38px !important;
                 padding: 0 0.5rem !important;
                 margin: 0 !important;
                 font-size: 0.8rem !important;
@@ -307,6 +308,7 @@
                 transition: all 0.2s ease !important;
             }
             
+            /* Botão ativo */
             #propertyList > div:last-child button.active-page,
             #propertyList > div:last-child button[style*="background: #1a5276"] {
                 background: var(--primary) !important;
@@ -314,13 +316,14 @@
                 border-color: var(--primary) !important;
             }
             
+            /* Select de itens por página */
             #propertyList > div:last-child select {
                 flex: 0 0 auto !important;
                 margin-left: 0.5rem !important;
                 padding: 0.3rem 0.5rem !important;
                 font-size: 0.7rem !important;
                 border-radius: 6px !important;
-                height: 36px !important;
+                height: 38px !important;
                 background: white !important;
                 border: 1px solid #ddd !important;
             }
