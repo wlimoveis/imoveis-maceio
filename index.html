@@ -112,10 +112,10 @@
         
         /* ========== LISTA DE PROPRIEDADES ========== */
         .manage-container {
-            max-height: 500px;
+            max-height: 650px;
             overflow-y: auto;
-            padding-bottom: 1rem !important;
-            margin-bottom: 1rem !important;
+            padding-bottom: 2rem !important;
+            margin-bottom: 0 !important;
         }
 
         #propertyList {
@@ -124,6 +124,7 @@
             margin: 0;
             padding: 0;
             gap: 0;
+            padding-bottom: 1.5rem !important;
         }
 
         .property-item {
@@ -197,18 +198,20 @@
                 padding: 1rem; 
                 border-radius: 0 12px 12px 12px;
                 padding-bottom: 1.5rem !important;
+                overflow: visible !important;
             }
-            .admin-tab i { margin-right: 5px; font-size: 0.75rem; }
 
             .manage-container {
-                max-height: none;
-                overflow-y: visible;
+                max-height: none !important;
+                overflow-y: visible !important;
+                padding-bottom: 2rem !important;
             }
             
             #propertyList {
                 gap: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
+                padding-bottom: 1.5rem !important;
             }
             
             /* AJUSTE DAS LATERAIS DO CONTEÚDO */
@@ -303,14 +306,15 @@
                 justify-content: center !important;
                 align-items: center !important;
                 gap: 0.4rem !important;
-                margin-top: 0.5rem !important;
-                margin-bottom: 1.5rem !important;
-                padding: 0.5rem 0.5rem 1rem 0.5rem !important;
+                margin-top: 1rem !important;
+                margin-bottom: 0.5rem !important;
+                padding: 0.8rem 0.5rem 1rem 0.5rem !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 background: transparent !important;
                 position: relative !important;
                 z-index: 5 !important;
+                border-top: 1px solid #e0e0e0 !important;
             }
             
             /* Botões de paginação */
@@ -357,12 +361,54 @@
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
+            
+            /* GARANTIR QUE A PAGINAÇÃO FIQUE VISÍVEL */
+            #manage-tab {
+                overflow: visible !important;
+                padding-bottom: 2rem !important;
+            }
         }
 
         .admin-tab:focus-visible {
             outline: 3px solid var(--primary);
             outline-offset: 2px;
             border-radius: 8px;
+        }
+        
+        /* ========== CORREÇÃO DA PAGINAÇÃO NO MOBILE - ESPAÇO EXTRA ========== */
+        @media (max-width: 768px) {
+            /* Container principal com padding inferior generoso */
+            .manage-container {
+                max-height: none !important;
+                overflow-y: visible !important;
+                padding-bottom: 2rem !important;
+            }
+            
+            /* Container da lista de propriedades dentro do admin */
+            #propertyList {
+                padding-bottom: 1.5rem !important;
+                margin-bottom: 0 !important;
+            }
+            
+            /* Último elemento da lista (paginação) - espaço garantido */
+            #propertyList > div:last-child {
+                margin-bottom: 0.5rem !important;
+                padding-bottom: 0.8rem !important;
+                position: relative !important;
+                z-index: 20 !important;
+                background: transparent !important;
+            }
+            
+            /* Barra de rolagem do container ajustada */
+            .admin-tab-content {
+                overflow: visible !important;
+            }
+            
+            /* Garantir que o conteúdo da aba não corte a paginação */
+            #manage-tab {
+                overflow: visible !important;
+                padding-bottom: 2rem !important;
+            }
         }
     </style>
 </head>
