@@ -281,6 +281,27 @@
             border-right-color: #ffffff;
         }
 
+        /* ========== BOTÃO SUBMIT DO FORMULÁRIO - COR ORIGINAL ========== */
+        #propertyForm button[type="submit"] {
+            background: #27ae60 !important;
+            color: white !important;
+            border: 1px solid #1e8449 !important;
+            border-top-color: #2ecc71 !important;
+            border-left-color: #2ecc71 !important;
+            font-weight: 600 !important;
+        }
+        
+        #propertyForm button[type="submit"]:hover {
+            background: #219653 !important;
+        }
+        
+        #propertyForm button[type="submit"]:active {
+            border-top-color: #1e8449 !important;
+            border-left-color: #1e8449 !important;
+            border-bottom-color: #2ecc71 !important;
+            border-right-color: #2ecc71 !important;
+        }
+
         /* ========== LISTA DE PROPRIEDADES ========== */
         .manage-container {
             max-height: 650px;
@@ -391,6 +412,34 @@
             border-bottom-color: #2980b9;
             border-right-color: #2980b9;
             transform: translateY(1px);
+        }
+
+        /* ========== BOTÃO VOLTAR AO TOPO - FORMATAÇÃO ORIGINAL ========== */
+        #backToTopBtn {
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            background: #1a5276;
+            color: white;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            z-index: 999;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+            opacity: 0.85;
+        }
+
+        #backToTopBtn:hover {
+            background: #0e3d5c;
+            transform: scale(1.05);
+            opacity: 1;
         }
 
         /* ========== MOBILE - AJUSTE FINO ========== */
@@ -589,6 +638,15 @@
             #manage-tab {
                 overflow: visible !important;
                 padding-bottom: 2rem !important;
+            }
+            
+            /* Ajuste do botão voltar ao topo no mobile */
+            #backToTopBtn {
+                bottom: 70px;
+                right: 15px;
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
             }
         }
 
@@ -790,7 +848,7 @@
                     <div style="margin-bottom: 0.8rem;"><label style="display:flex; align-items:center; gap:0.5rem;"><input type="checkbox" id="propHasVideo"> <span><strong>Este imovel tem video?</strong></span></label></div>
                     
                     <div style="display: flex; gap: 0.6rem;">
-                        <button type="submit" style="background:#ece9d8; color:#000000; padding:0.5rem 1rem; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; cursor:pointer; flex:1;"><i class="fas fa-save"></i> Salvar Imovel</button>
+                        <button type="submit" style="background:#27ae60; color:white; padding:0.5rem 1rem; border:1px solid #1e8449; border-top-color:#2ecc71; border-left-color:#2ecc71; border-radius:0px; cursor:pointer; flex:1; font-weight:600;"><i class="fas fa-save"></i> Adicionar Imóvel ao Site</button>
                         <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="background:#ece9d8; color:#000000; padding:0.5rem 1rem; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; cursor:pointer; display:none;"><i class="fas fa-times"></i> Cancelar</button>
                     </div>
                 </form>
@@ -821,7 +879,7 @@
     (function() {
         const backToTopBtn = document.getElementById('backToTopBtn');
         if (!backToTopBtn) return;
-        backToTopBtn.style.cssText = 'position:fixed; bottom:80px; right:15px; background:#1a5276; color:white; border:1px solid #0e3d5c; border-top-color:#2980b9; border-left-color:#2980b9; width:40px; height:40px; border-radius:0px; cursor:pointer; z-index:999; display:none; align-items:center; justify-content:center; font-size:1rem; transition:all 0.3s ease;';
+        
         window.addEventListener('scroll', function() {
             if (window.scrollY > 300) {
                 backToTopBtn.style.display = 'flex';
