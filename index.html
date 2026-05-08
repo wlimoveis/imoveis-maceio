@@ -113,7 +113,8 @@
         .manage-container {
             max-height: 400px;
             overflow-y: auto;
-            padding-bottom: 0.5rem !important;
+            padding-bottom: 0 !important;
+            margin-bottom: 0 !important;
         }
 
         #propertyList {
@@ -137,7 +138,11 @@
             border-bottom: 1px solid #e0e0e0;
         }
 
-        .property-item:last-child { border-bottom: none; }
+        .property-item:last-child {
+            border-bottom: none;
+            margin-bottom: 0 !important;
+            padding-bottom: 0.6rem !important;
+        }
 
         @keyframes highlightPulse {
             0% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0.4); }
@@ -147,7 +152,7 @@
         .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
         .admin-panel { display: none; }
 
-        /* ========== MOBILE - AJUSTE DAS LATERAIS E PAGINAÇÃO ========== */
+        /* ========== MOBILE - AJUSTE FINO PAGINAÇÃO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
                 padding-left: 10px;
@@ -163,14 +168,13 @@
             .admin-tab-content { 
                 padding: 1rem; 
                 border-radius: 0 12px 12px 12px;
-                padding-bottom: 1rem !important;
+                padding-bottom: 0.8rem !important;
             }
             .admin-tab i { margin-right: 5px; font-size: 0.75rem; }
 
             .manage-container {
                 max-height: none;
                 overflow-y: visible;
-                padding-bottom: 0.8rem !important;
             }
             
             #propertyList {
@@ -200,7 +204,11 @@
                 border-bottom: 1px solid #e0e0e0;
             }
             
-            .property-item:last-child { border-bottom: none; }
+            .property-item:last-child { 
+                border-bottom: none;
+                margin-bottom: 0 !important;
+                padding-bottom: 0.4rem !important;
+            }
             
             .property-item > div {
                 margin: 0 !important;
@@ -244,7 +252,7 @@
                 align-items: center !important;
                 gap: 0.3rem !important;
                 width: 100%;
-                margin-top: 0.3rem !important;
+                margin-top: 0.2rem !important;
             }
             
             .property-item button {
@@ -259,7 +267,7 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - ESPAÇO PARA CLIQUE ===== */
+            /* ===== PAGINAÇÃO - AJUSTE FINO ===== */
             #propertyList > div:last-child {
                 display: flex !important;
                 flex-direction: row !important;
@@ -267,9 +275,9 @@
                 justify-content: flex-start !important;
                 align-items: center !important;
                 gap: 0.3rem !important;
-                margin-top: 0.8rem !important;
-                margin-bottom: 0.5rem !important;
-                padding: 0.5rem 0 !important;
+                margin-top: 0.3rem !important;
+                margin-bottom: 0.6rem !important;
+                padding: 0.4rem 0 !important;
                 overflow-x: auto !important;
                 -webkit-overflow-scrolling: touch !important;
                 background: transparent !important;
@@ -277,19 +285,20 @@
                 z-index: 5 !important;
             }
             
+            /* Botões de paginação */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
                 flex: 0 0 auto !important;
                 display: inline-flex !important;
                 align-items: center !important;
                 justify-content: center !important;
-                min-width: 34px !important;
-                height: 34px !important;
-                padding: 0 0.4rem !important;
+                min-width: 36px !important;
+                height: 36px !important;
+                padding: 0 0.5rem !important;
                 margin: 0 !important;
-                font-size: 0.75rem !important;
+                font-size: 0.8rem !important;
                 font-weight: 600 !important;
-                border-radius: 6px !important;
+                border-radius: 8px !important;
                 white-space: nowrap !important;
                 cursor: pointer !important;
                 background: #f0f0f0 !important;
@@ -298,7 +307,8 @@
                 transition: all 0.2s ease !important;
             }
             
-            #propertyList > div:last-child button[style*="background"] {
+            #propertyList > div:last-child button.active-page,
+            #propertyList > div:last-child button[style*="background: #1a5276"] {
                 background: var(--primary) !important;
                 color: white !important;
                 border-color: var(--primary) !important;
@@ -310,7 +320,7 @@
                 padding: 0.3rem 0.5rem !important;
                 font-size: 0.7rem !important;
                 border-radius: 6px !important;
-                height: 34px !important;
+                height: 36px !important;
                 background: white !important;
                 border: 1px solid #ddd !important;
             }
