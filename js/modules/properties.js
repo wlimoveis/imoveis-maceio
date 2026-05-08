@@ -1222,7 +1222,7 @@ window.deleteProperty = async function(id) {
 // ========== FUNÇÃO DE PAGINAÇÃO ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
     const paginationDiv = document.createElement('div');
-    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0; flex-wrap: wrap;';
+    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
     
     // Usar o itemsPerPage passado ou detectar mobile
     const isMobile = window.innerWidth <= 768;
@@ -1334,7 +1334,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     return paginationDiv;
 }
 
-// ========== LOAD PROPERTY LIST (COM 3 ITENS POR PÁGINA NO MOBILE) ==========
+// ========== LOAD PROPERTY LIST (COM 3 ITENS POR PÁGINA NO MOBILE E ESPAÇO PARA PAGINAÇÃO) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1369,9 +1369,11 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         return;
     }
     
-    container.style.maxHeight = '600px';
+    // AUMENTAR O CONTAINER PARA DAR ESPAÇO PARA A PAGINAÇÃO
+    container.style.maxHeight = '650px';
     container.style.overflowY = 'auto';
     container.style.paddingRight = '5px';
+    container.style.paddingBottom = '20px'; // ESPAÇO EXTRA PARA PAGINAÇÃO
     
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
@@ -1483,9 +1485,13 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     container.appendChild(listContainer);
     
+    // WRAPPER DA PAGINAÇÃO COM ESPAÇO EXTRA
     if (totalPages > 1) {
+        const paginationWrapper = document.createElement('div');
+        paginationWrapper.style.cssText = 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
         const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
-        container.appendChild(paginationBottom);
+        paginationWrapper.appendChild(paginationBottom);
+        container.appendChild(paginationWrapper);
     }
     
     console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (${itemsPerPage} por página, total: ${totalItems})`);
