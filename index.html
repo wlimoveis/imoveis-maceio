@@ -61,24 +61,26 @@
             text-align: center;
         }
         
-        /* Ícones das abas - TAMANHO AUMENTADO */
+        /* Ícones das abas - ESTILO: inativo ESCURO, ativo BRANCO/DOURADO */
         .admin-tab i {
             margin-right: 10px;
             font-size: 1rem;
-            color: #000000;
+            color: #555555;
             filter: none;
             text-shadow: none;
             vertical-align: middle;
+            transition: all 0.1s ease;
         }
 
-        .admin-tab.active i {
-            color: #000000;
-            filter: none;
-            text-shadow: none;
-        }
-        
+        /* Hover nos ícones das abas inativas - clareia um pouco */
         .admin-tab:not(.active):hover i {
             color: #1a5276;
+        }
+        
+        /* Aba ativa - ícone BRANCO COM DOURADO (alto contraste) */
+        .admin-tab.active i {
+            color: #ffd700;
+            text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
         
         /* Efeito de borda interna para profundidade */
@@ -580,6 +582,106 @@
             transform: scale(0.95);
         }
 
+        /* ========== DESKTOP - BOTÕES DE PAGINAÇÃO COMPLETOS ========== */
+        /* Container da paginação - Desktop */
+        #propertyList > div:last-child {
+            display: flex !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 0.3rem !important;
+            margin-top: 1rem !important;
+            margin-bottom: 0.5rem !important;
+            padding: 0.6rem 0.5rem !important;
+            background: #ece9d8 !important;
+            border-top: 1px solid #808080 !important;
+        }
+        
+        /* Botões de paginação estilo Windows 98 - Desktop */
+        #propertyList > div:last-child button,
+        #propertyList > div:last-child span {
+            flex: 0 0 auto !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 36px !important;
+            height: 36px !important;
+            padding: 0 0.5rem !important;
+            margin: 0 !important;
+            font-size: 0.8rem !important;
+            font-weight: normal !important;
+            border-radius: 0px !important;
+            white-space: nowrap !important;
+            cursor: pointer !important;
+            background: #ece9d8 !important;
+            color: #000000 !important;
+            border: 1px solid #808080 !important;
+            border-top-color: #ffffff !important;
+            border-left-color: #ffffff !important;
+            transition: none !important;
+            font-family: 'Courier New', monospace !important;
+        }
+        
+        /* Botão ativo - Desktop */
+        #propertyList > div:last-child button.active-page,
+        #propertyList > div:last-child button[style*="background: #f39c12"],
+        #propertyList > div:last-child button[style*="background: var(--gold)"] {
+            background: #1a5276 !important;
+            color: #ffffff !important;
+            border: 1px solid #0e3d5c !important;
+        }
+        
+        /* Select de itens por página - DESKTOP com largura reduzida */
+        #propertyList > div:last-child select {
+            flex: 0 0 auto !important;
+            margin-left: 0.5rem !important;
+            padding: 0.2rem 0.3rem !important;
+            font-size: 0.7rem !important;
+            border-radius: 0px !important;
+            height: 32px !important;
+            width: 95px !important;
+            background: #ffffff !important;
+            border: 1px solid #808080 !important;
+            border-top-color: #404040 !important;
+            border-left-color: #404040 !important;
+            font-family: 'Courier New', monospace !important;
+            cursor: pointer !important;
+        }
+        
+        /* Hover nos botões de paginação */
+        #propertyList > div:last-child button:not(:disabled):hover,
+        #propertyList > div:last-child span:not(.ellipsis):hover {
+            background: #d4d0c8 !important;
+            border: 1px solid #808080 !important;
+            border-top-color: #ffffff !important;
+            border-left-color: #ffffff !important;
+        }
+        
+        /* Efeito de clique nos botões */
+        #propertyList > div:last-child button:active {
+            border-top-color: #808080 !important;
+            border-left-color: #808080 !important;
+            border-bottom-color: #ffffff !important;
+            border-right-color: #ffffff !important;
+            transform: translateY(1px);
+        }
+        
+        /* Estilo para os três pontinhos (ellipsis) */
+        #propertyList > div:last-child span.ellipsis {
+            background: transparent !important;
+            border: none !important;
+            cursor: default !important;
+            min-width: 20px !important;
+            color: #000000 !important;
+            font-weight: bold !important;
+        }
+        
+        #propertyList > div:last-child span.ellipsis:hover {
+            background: transparent !important;
+            border: none !important;
+        }
+
         /* ========== MOBILE - AJUSTE FINO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
@@ -704,77 +806,35 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - ESTILO WINDOWS 98 MOBILE (BOTÕES MAIS PRÓXIMOS) ===== */
+            /* ===== PAGINAÇÃO - ESTILO WINDOWS 98 MOBILE ===== */
             #propertyList > div:last-child {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: wrap !important;
-                justify-content: center !important;
-                align-items: center !important;
                 gap: 0.15rem !important;
                 margin-top: 0.8rem !important;
                 margin-bottom: 0.3rem !important;
                 padding: 0.4rem 0.2rem !important;
-                overflow-x: auto !important;
-                -webkit-overflow-scrolling: touch !important;
-                background: #ece9d8 !important;
-                position: relative !important;
-                z-index: 5 !important;
-                border-top: 1px solid #808080 !important;
             }
             
-            /* Botões de paginação estilo Windows 98 - MAIS PRÓXIMOS */
+            /* Botões de paginação mobile - tamanho reduzido */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
-                flex: 0 0 auto !important;
-                display: inline-flex !important;
-                align-items: center !important;
-                justify-content: center !important;
                 min-width: 30px !important;
                 height: 30px !important;
                 padding: 0 0.25rem !important;
-                margin: 0 !important;
                 font-size: 0.65rem !important;
-                font-weight: normal !important;
-                border-radius: 0px !important;
-                white-space: nowrap !important;
-                cursor: pointer !important;
-                background: #ece9d8 !important;
-                color: #000000 !important;
-                border: 1px solid #808080 !important;
-                border-top-color: #ffffff !important;
-                border-left-color: #ffffff !important;
-                transition: none !important;
-                font-family: 'Courier New', monospace !important;
             }
             
-            /* Botão ativo */
-            #propertyList > div:last-child button.active-page,
-            #propertyList > div:last-child button[style*="background: #f39c12"],
-            #propertyList > div:last-child button[style*="background: var(--gold)"] {
-                background: #1a5276 !important;
-                color: #ffffff !important;
-                border: 1px solid #0e3d5c !important;
-            }
-            
-            /* Select de itens por página */
+            /* Select de itens por página - MOBILE com largura reduzida */
             #propertyList > div:last-child select {
-                flex: 0 0 auto !important;
                 margin-left: 0.2rem !important;
-                padding: 0.2rem 0.25rem !important;
+                padding: 0.15rem 0.2rem !important;
                 font-size: 0.6rem !important;
-                border-radius: 0px !important;
-                height: 30px !important;
-                background: #ffffff !important;
-                border: 1px solid #808080 !important;
-                border-top-color: #404040 !important;
-                border-left-color: #404040 !important;
-                font-family: 'Courier New', monospace !important;
+                height: 28px !important;
+                width: 80px !important;
             }
             
-            /* Esconder botões extras no mobile para ter apenas 6 no total */
-            #propertyList > div:last-child button:nth-child(n+9),
-            #propertyList > div:last-child span:nth-child(n+9) {
+            /* Esconder botões extras no mobile para evitar quebra */
+            #propertyList > div:last-child button:nth-child(n+10),
+            #propertyList > div:last-child span:nth-child(n+10) {
                 display: none !important;
             }
             
@@ -785,7 +845,7 @@
                 padding-bottom: 2rem !important;
             }
             
-            /* Ajuste do botão voltar ao topo no mobile - Liquid Glass transparente */
+            /* Ajuste do botão voltar ao topo no mobile */
             #backToTopBtn {
                 bottom: 70px;
                 right: 15px;
@@ -818,15 +878,6 @@
         .admin-tab:focus-visible {
             outline: 2px solid #000000;
             outline-offset: 2px;
-        }
-        
-        /* ========== COMPLEMENTOS ESTILO WINDOWS 98 - PAGINAÇÃO ========== */
-        #propertyList > div:last-child button:active {
-            border-top-color: #808080 !important;
-            border-left-color: #808080 !important;
-            border-bottom-color: #ffffff !important;
-            border-right-color: #ffffff !important;
-            transform: translateY(1px);
         }
         
         select {
