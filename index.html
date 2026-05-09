@@ -38,12 +38,12 @@
         /* Estilo base da aba - ORELHA DE FICHÁRIO (Windows 98 Classic) */
         .admin-tab {
             position: relative;
-            padding: 0.4rem 1.2rem 0.5rem 1.2rem;
+            padding: 0.5rem 1.5rem 0.6rem 1.5rem;
             background: #ece9d8;
             border: none;
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.8rem;
+            font-weight: 700;
+            font-size: 0.9rem;
             font-family: 'Segoe UI', 'Tahoma', 'Microsoft Sans Serif', sans-serif;
             color: #000000;
             transition: none;
@@ -57,8 +57,28 @@
             border-right: 1px solid #808080;
             border-bottom: none;
             box-shadow: none;
-            min-width: 80px;
+            min-width: 100px;
             text-align: center;
+        }
+        
+        /* Ícones das abas - TAMANHO AUMENTADO */
+        .admin-tab i {
+            margin-right: 10px;
+            font-size: 1rem;
+            color: #000000;
+            filter: none;
+            text-shadow: none;
+            vertical-align: middle;
+        }
+
+        .admin-tab.active i {
+            color: #000000;
+            filter: none;
+            text-shadow: none;
+        }
+        
+        .admin-tab:not(.active):hover i {
+            color: #1a5276;
         }
         
         /* Efeito de borda interna para profundidade */
@@ -120,8 +140,8 @@
             border-bottom: none;
             box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
             margin-top: 1px;
-            padding-top: 0.4rem;
-            padding-bottom: 0.6rem;
+            padding-top: 0.5rem;
+            padding-bottom: 0.7rem;
         }
         
         /* Borda da aba ativa - efeito de relevo invertido */
@@ -159,25 +179,6 @@
         
         .admin-tab.active:first-child {
             border-left: 1px solid #808080;
-        }
-
-        /* Ícones nas abas - estilo Windows 98 */
-        .admin-tab i {
-            margin-right: 6px;
-            font-size: 0.75rem;
-            color: #000000;
-            filter: none;
-            text-shadow: none;
-        }
-
-        .admin-tab.active i {
-            color: #000000;
-            filter: none;
-            text-shadow: none;
-        }
-        
-        .admin-tab:not(.active):hover i {
-            color: #000000;
         }
 
         /* ========== CONTEÚDO DAS ABAS - ESTILO WINDOWS 98 ========== */
@@ -224,16 +225,75 @@
             z-index: 1;
         }
         
-        /* Títulos dentro do conteúdo */
-        .admin-tab-content h4 {
-            color: #000000;
-            font-weight: 600;
-            font-size: 0.9rem;
-            margin-bottom: 0.8rem;
-            padding-bottom: 0.3rem;
-            border-bottom: 1px solid #808080;
+        /* ========== TÍTULOS DAS SEÇÕES COM SEGUNDA CAMADA (C/C++ STYLE) ========== */
+        .section-title-windows {
+            position: relative;
+            margin-top: 0;
+            margin-bottom: 1rem;
+            padding: 0.6rem 0.8rem;
+            background: linear-gradient(135deg, #1a5276 0%, #0e3d5c 100%);
+            color: #ffffff;
+            font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            border: 1px solid #0e3d5c;
+            border-top-color: #2980b9;
+            border-left-color: #2980b9;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.2), inset 1px 1px 0 rgba(255,255,255,0.2);
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
         }
         
+        /* SEGUNDA CAMADA - Efeito de relevo duplo */
+        .section-title-windows::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            right: 2px;
+            bottom: 2px;
+            border: 1px solid rgba(255,255,255,0.15);
+            pointer-events: none;
+            z-index: 1;
+        }
+        
+        /* TERCEIRA CAMADA - Textura adicional */
+        .section-title-windows::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255,255,255,0.03) 0px,
+                rgba(255,255,255,0.03) 2px,
+                transparent 2px,
+                transparent 6px
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .section-title-windows i {
+            margin-right: 10px;
+            font-size: 1rem;
+            color: #ffd700;
+            text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+        }
+        
+        /* Título menor para contadores */
+        .section-title-windows small {
+            font-size: 0.65rem;
+            font-weight: normal;
+            text-transform: none;
+            letter-spacing: normal;
+            color: #ffd700;
+            margin-left: 8px;
+        }
+
         /* ========== FORMULÁRIO ESTILO WINDOWS 98 (C/C++ SKEUOMORPHISM) ========== */
         /* Container de grupo de campos */
         .form-group {
@@ -248,12 +308,17 @@
         .form-group label {
             display: block;
             margin-bottom: 0.2rem;
-            font-weight: 600;
-            font-size: 0.75rem;
+            font-weight: 700;
+            font-size: 0.7rem;
             color: #000000;
             font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+        }
+        
+        .form-group label i {
+            margin-right: 5px;
+            color: #1a5276;
         }
         
         /* Campos de formulário estilo Windows 98 */
@@ -296,6 +361,7 @@
             transition: all 0.1s ease;
             font-family: 'Courier New', monospace;
             font-size: 0.7rem;
+            text-align: center;
         }
         
         #uploadArea:active, #pdfUploadArea:active {
@@ -317,7 +383,7 @@
             border: 2px solid;
             border-color: #2ecc71 #1e8449 #1e8449 #2ecc71;
             font-weight: 700;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             font-family: 'Courier New', 'Consolas', monospace;
             font-size: 0.8rem;
             text-transform: uppercase;
@@ -344,7 +410,7 @@
             border-color: #ffffff #808080 #808080 #ffffff;
             font-family: 'Courier New', 'Consolas', monospace;
             font-size: 0.75rem;
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             cursor: pointer;
         }
         
@@ -450,13 +516,13 @@
             border: 1px solid #0e3d5c;
             border-top-color: #2980b9;
             border-left-color: #2980b9;
-            width: 44px !important;
-            height: 44px !important;
+            width: 48px !important;
+            height: 48px !important;
             border-radius: 0px;
             cursor: pointer;
             z-index: 1000;
             box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -524,14 +590,14 @@
             }
             
             .admin-tab {
-                padding: 0.3rem 0.8rem;
-                font-size: 0.65rem;
-                min-width: 60px;
+                padding: 0.4rem 1rem 0.5rem 1rem;
+                font-size: 0.7rem;
+                min-width: 70px;
             }
             
             .admin-tab i {
-                margin-right: 4px;
-                font-size: 0.65rem;
+                margin-right: 6px;
+                font-size: 0.85rem;
             }
             
             .admin-tab-content {
@@ -736,6 +802,17 @@
                 grid-template-columns: 1fr;
                 gap: 0.4rem;
             }
+            
+            /* Título das seções no mobile */
+            .section-title-windows {
+                font-size: 0.7rem;
+                padding: 0.4rem 0.6rem;
+            }
+            
+            .section-title-windows i {
+                font-size: 0.85rem;
+                margin-right: 6px;
+            }
         }
 
         .admin-tab:focus-visible {
@@ -889,21 +966,26 @@
         <h3 style="text-align: center; color: #1a5276; margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-table-list"></i> Gerenciar</button>
-            <button class="admin-tab" data-tab="form-tab"><i class="fas fa-file-circle-plus"></i> Incluir/Editar</button>
+            <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-database"></i> GERENCIAR</button>
+            <button class="admin-tab" data-tab="form-tab"><i class="fas fa-file-code"></i> INCLUIR/EDITAR</button>
         </div>
         
         <div id="manage-tab" class="admin-tab-content active">
             <div style="background: white; padding: 0.5rem 0;">
-                <h4 style="margin-top: 0;">Gerenciar Imoveis Existentes</h4>
-                <p><small>Total de imoveis: <span id="propertyCount">0</span></small></p>
+                <div class="section-title-windows">
+                    <i class="fas fa-archive"></i> GERENCIAR IMOVEIS EXISTENTES
+                    <small>total: <span id="propertyCount">0</span></small>
+                </div>
                 <div id="propertyList" class="manage-container"></div>
             </div>
         </div>
         
         <div id="form-tab" class="admin-tab-content form-compact">
             <div style="background: white; padding: 0.5rem 0;">
-                <h4 id="formTitle" style="margin-top: 0;">Adicionar Novo Imovel</h4>
+                <div class="section-title-windows">
+                    <i class="fas fa-edit"></i> ADICIONAR NOVO IMOVEL
+                    <small>preencha todos os campos obrigatórios *</small>
+                </div>
                 <form id="propertyForm">
                     <div class="form-row-2cols">
                         <div class="form-group">
