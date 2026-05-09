@@ -3,44 +3,6 @@ console.log('✅ admin.js carregado');
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
 
-// Funcao auxiliar para mudar para a aba de formulario
-function switchToFormTab() {
-    const formTab = document.querySelector('.admin-tab[data-tab="form-tab"]');
-    const manageTab = document.querySelector('.admin-tab[data-tab="manage-tab"]');
-    const formContent = document.getElementById('form-tab');
-    const manageContent = document.getElementById('manage-tab');
-    
-    if (formTab && formContent) {
-        // Remover active de todas as abas e conteudos
-        if (manageTab) manageTab.classList.remove('active');
-        if (manageContent) manageContent.classList.remove('active');
-        
-        // Ativar aba do formulario
-        formTab.classList.add('active');
-        formContent.classList.add('active');
-        
-        console.log('✅ Mudou para aba Cadastrar/Editar Imovel');
-    }
-}
-
-// Funcao auxiliar para mudar para a aba de gerenciamento
-function switchToManageTab() {
-    const manageTab = document.querySelector('.admin-tab[data-tab="manage-tab"]');
-    const formTab = document.querySelector('.admin-tab[data-tab="form-tab"]');
-    const manageContent = document.getElementById('manage-tab');
-    const formContent = document.getElementById('form-tab');
-    
-    if (manageTab && manageContent) {
-        if (formTab) formTab.classList.remove('active');
-        if (formContent) formContent.classList.remove('active');
-        
-        manageTab.classList.add('active');
-        manageContent.classList.add('active');
-        
-        console.log('✅ Mudou para aba Gerenciar Imoveis');
-    }
-}
-
 window.toggleAdminPanel = function() {
     const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
     if (!password) return;
@@ -49,11 +11,7 @@ window.toggleAdminPanel = function() {
     const panel = document.getElementById(ADMIN_CONFIG.panelId);
     if (panel) {
         const isVisible = panel.style.display === 'block';
-        if (!isVisible) {
-            window.resetAdminFormCompletely(false);
-            // Garantir que ao abrir, mostre a aba Gerenciar Imoveis
-            setTimeout(switchToManageTab, 50);
-        }
+        if (!isVisible) window.resetAdminFormCompletely(false);
         panel.style.display = isVisible ? 'none' : 'block';
         if (!isVisible) {
             setTimeout(() => {
@@ -104,8 +62,6 @@ window.cancelEdit = function() {
     if (window.editingPropertyId) {
         if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
             window.resetAdminFormCompletely(true);
-            // Voltar para aba Gerenciar Imoveis apos cancelar
-            setTimeout(switchToManageTab, 100);
             return true;
         }
     } else {
@@ -121,9 +77,6 @@ window.editProperty = function(id) {
         else alert('❌ Imóvel não encontrado!');
         return false;
     }
-    
-    // MUDAR PARA ABA DO FORMULARIO AUTOMATICAMENTE
-    switchToFormTab();
     
     window.resetAdminFormCompletely(false);
     
@@ -168,13 +121,9 @@ window.editProperty = function(id) {
     
     setTimeout(() => {
         const panel = document.getElementById('adminPanel');
-        if (panel && panel.style.display !== 'block') {
+        if (panel) {
             panel.style.display = 'block';
-        }
-        // Rolar para o formulario apos editar
-        const formElement = document.getElementById('propertyForm');
-        if (formElement) {
-            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     }, 150);
     
@@ -246,11 +195,7 @@ window.saveProperty = async function() {
                 if (typeof window.updatePropertyCard === 'function') window.updatePropertyCard(window.editingPropertyId);
                 else if (typeof window.renderProperties === 'function') window.renderProperties(window.currentFilter || 'todos');
             }, 300);
-            setTimeout(() => {
-                window.resetAdminFormCompletely(true);
-                // Apos salvar edicao, voltar para aba Gerenciar Imoveis
-                setTimeout(switchToManageTab, 100);
-            }, 1500);
+            setTimeout(() => window.resetAdminFormCompletely(true), 1500);
         } else {
             const newProperty = { ...propertyData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
             if (typeof window.addNewProperty === 'function') {
@@ -269,9 +214,8 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
+// ========== VERSÃO ORIGINAL FUNCIONAL DO AUTOCOMPLETE ==========
 window.setupLocationAutocomplete = function() {
-    console.log('🔍 Inicializando autocomplete de bairros...');
-    
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
         'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
@@ -279,134 +223,61 @@ window.setupLocationAutocomplete = function() {
         'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
         'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
         'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
-        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL',
-        'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma, Maceió/AL', 'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL',
-        'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 'Murilopes, Maceió/AL'
+        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL'
     ];
 
-    // Aguardar o DOM estar completamente pronto
-    function initialize() {
-        const locationInput = document.getElementById('propLocation');
-        
-        if (!locationInput) {
-            console.warn('⚠️ Campo propLocation não encontrado, tentando novamente em 500ms...');
-            setTimeout(initialize, 500);
-            return false;
-        }
-        
-        if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-            console.log('✅ Autocomplete já inicializado anteriormente');
-            return true;
-        }
-        
-        console.log('📝 Configurando autocomplete no campo:', locationInput);
-        
-        let suggestionsContainer = null;
-        
-        function createSuggestionsContainer() {
-            const container = document.createElement('div');
-            container.className = 'admin-location-suggestions';
-            container.style.cssText = 'position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-top:none !important; max-height:250px !important; overflow-y:auto !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; border-radius:0 0 8px 8px !important;';
-            return container;
-        }
+    const locationInput = document.getElementById('propLocation');
+    if (!locationInput || locationInput.hasAttribute('data-autocomplete-initialized')) return false;
+    
+    let suggestionsContainer = null;
+    function createSuggestionsContainer() {
+        const container = document.createElement('div');
+        container.className = 'admin-location-suggestions';
+        container.style.cssText = `position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-top:none !important; max-height:250px !important; overflow-y:auto !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; border-radius:0 0 8px 8px !important;`;
+        return container;
+    }
 
-        function showSuggestions(searchTerm) {
-            if (!searchTerm || searchTerm.length < 2) { 
-                if (suggestionsContainer) suggestionsContainer.remove(); 
-                return; 
-            }
-            
-            const termLower = searchTerm.toLowerCase();
-            const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
-            
-            if (!matches.length) { 
-                if (suggestionsContainer) suggestionsContainer.remove(); 
-                return; 
-            }
-            
-            // Encontrar container pai com position relative
-            let parentContainer = locationInput.parentElement;
-            while (parentContainer && parentContainer !== document.body && getComputedStyle(parentContainer).position !== 'relative') {
-                parentContainer = parentContainer.parentElement;
-            }
-            if (parentContainer === document.body) parentContainer = locationInput.parentElement;
-            if (getComputedStyle(parentContainer).position !== 'relative') parentContainer.style.position = 'relative';
-            
-            if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
-            if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
-            
-            const inputRect = locationInput.getBoundingClientRect();
-            const parentRect = parentContainer.getBoundingClientRect();
-            suggestionsContainer.style.top = (inputRect.bottom - parentRect.top) + 'px';
-            suggestionsContainer.style.left = (inputRect.left - parentRect.left) + 'px';
-            suggestionsContainer.style.width = locationInput.offsetWidth + 'px';
-            suggestionsContainer.style.display = 'block';
-            suggestionsContainer.innerHTML = '';
-            
-            matches.forEach(bairro => {
-                const div = document.createElement('div');
-                div.style.cssText = 'padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;';
-                const regex = new RegExp('(' + termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
-                div.innerHTML = bairro.replace(regex, '<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>');
-                div.onclick = function(e) { 
-                    e.preventDefault();
-                    e.stopPropagation();
-                    locationInput.value = bairro; 
-                    if (suggestionsContainer) suggestionsContainer.remove(); 
-                    suggestionsContainer = null; 
-                    // Disparar evento para garantir que o formulário reconheça a mudança
-                    locationInput.dispatchEvent(new Event('input', { bubbles: true })); 
-                    locationInput.dispatchEvent(new Event('change', { bubbles: true }));
-                    console.log('📍 Bairro selecionado:', bairro);
-                };
-                div.onmouseenter = function() { div.style.background = '#e8f4fd'; };
-                div.onmouseleave = function() { div.style.background = '#fff'; };
-                suggestionsContainer.appendChild(div);
-            });
-            
-            console.log(`📋 ${matches.length} sugestões exibidas para "${searchTerm}"`);
-        }
+    function showSuggestions(searchTerm) {
+        if (!searchTerm || searchTerm.length < 2) { if (suggestionsContainer) suggestionsContainer.remove(); return; }
+        const termLower = searchTerm.toLowerCase();
+        const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
+        if (!matches.length) { if (suggestionsContainer) suggestionsContainer.remove(); return; }
         
-        function hideSuggestions() { 
-            if (suggestionsContainer) { 
-                suggestionsContainer.remove(); 
-                suggestionsContainer = null; 
-            } 
-        }
+        let parentContainer = locationInput.parentElement;
+        while (parentContainer && parentContainer !== document.body && getComputedStyle(parentContainer).position !== 'relative') parentContainer = parentContainer.parentElement;
+        if (parentContainer === document.body) parentContainer = locationInput.parentElement;
+        if (getComputedStyle(parentContainer).position !== 'relative') parentContainer.style.position = 'relative';
         
-        // Remover event listeners antigos para evitar duplicação
-        const newInput = locationInput.cloneNode(true);
-        locationInput.parentNode.replaceChild(newInput, locationInput);
+        if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
+        if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
         
-        // Configurar os eventos no novo elemento
-        newInput.addEventListener('input', function(e) { 
-            console.log('✏️ Input detectado:', e.target.value);
-            showSuggestions(e.target.value); 
+        const inputRect = locationInput.getBoundingClientRect();
+        const parentRect = parentContainer.getBoundingClientRect();
+        suggestionsContainer.style.top = `${inputRect.bottom - parentRect.top}px`;
+        suggestionsContainer.style.left = `${inputRect.left - parentRect.left}px`;
+        suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
+        suggestionsContainer.style.display = 'block';
+        suggestionsContainer.innerHTML = '';
+        
+        matches.forEach(bairro => {
+            const div = document.createElement('div');
+            div.style.cssText = `padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;`;
+            const regex = new RegExp(`(${termLower})`, 'gi');
+            div.innerHTML = bairro.replace(regex, `<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>`);
+            div.onclick = () => { locationInput.value = bairro; if (suggestionsContainer) suggestionsContainer.remove(); suggestionsContainer = null; locationInput.dispatchEvent(new Event('input', { bubbles: true })); };
+            div.onmouseenter = () => div.style.background = '#e8f4fd';
+            div.onmouseleave = () => div.style.background = '#fff';
+            suggestionsContainer.appendChild(div);
         });
-        newInput.addEventListener('blur', function() { 
-            setTimeout(hideSuggestions, 300); 
-        });
-        newInput.addEventListener('keydown', function(e) { 
-            if (e.key === 'Enter' && suggestionsContainer) { 
-                e.preventDefault(); 
-                const first = suggestionsContainer.querySelector('div'); 
-                if (first) { 
-                    newInput.value = first.textContent; 
-                    hideSuggestions(); 
-                    newInput.dispatchEvent(new Event('change', { bubbles: true }));
-                } 
-            } 
-        });
-        
-        newInput.setAttribute('data-autocomplete-initialized', 'true');
-        newInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
-        
-        console.log('✅ Autocomplete de bairros configurado com sucesso!');
-        return true;
     }
     
-    // Executar inicialização com delay para garantir que o DOM está pronto
-    setTimeout(initialize, 300);
+    function hideSuggestions() { if (suggestionsContainer) { suggestionsContainer.remove(); suggestionsContainer = null; } }
+    
+    locationInput.addEventListener('input', e => showSuggestions(e.target.value));
+    locationInput.addEventListener('blur', () => setTimeout(hideSuggestions, 200));
+    locationInput.addEventListener('keydown', e => { if (e.key === 'Enter' && suggestionsContainer) { e.preventDefault(); const first = suggestionsContainer.querySelector('div'); if (first) { locationInput.value = first.textContent; hideSuggestions(); } } });
+    locationInput.setAttribute('data-autocomplete-initialized', 'true');
+    locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     return true;
 };
 
@@ -419,16 +290,24 @@ window.setupForm = function() {
     document.getElementById('propertyForm').addEventListener('submit', async function(e) {
         e.preventDefault();
         const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn ? submitBtn.innerHTML : '';
+        const originalText = submitBtn?.innerHTML;
         if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...'; }
-        const loading = window.LoadingManager?.show ? window.LoadingManager.show('Salvando Imóvel...', 'Por favor, aguarde...', { variant: 'processing' }) : null;
+        const loading = window.LoadingManager?.show?.('Salvando Imóvel...', 'Por favor, aguarde...', { variant: 'processing' });
         try { await window.saveProperty(); }
-        catch (error) { console.error('❌ Erro no salvamento:', error); if (typeof window.showAdminNotification === 'function') window.showAdminNotification('❌ ' + error.message, 'error', 5000); }
+        catch (error) { console.error('❌ Erro no salvamento:', error); if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ ${error.message}`, 'error', 5000); }
         finally {
-            if (submitBtn) setTimeout(function() { submitBtn.disabled = false; submitBtn.innerHTML = originalText || (window.editingPropertyId ? '<i class="fas fa-save"></i> Salvar Alterações' : '<i class="fas fa-plus"></i> Adicionar Imóvel ao Site'); }, 1000);
-            if (loading && loading.hide) loading.hide();
+            if (submitBtn) setTimeout(() => { submitBtn.disabled = false; submitBtn.innerHTML = originalText || (window.editingPropertyId ? '<i class="fas fa-save"></i> Salvar Alterações' : '<i class="fas fa-plus"></i> Adicionar Imóvel ao Site'); }, 1000);
+            if (loading) loading.hide();
         }
     });
+    
+    // 🔧 CORREÇÃO CRÍTICA: Reconfigurar o autocomplete APÓS a clonagem do formulário
+    setTimeout(() => {
+        if (typeof window.setupLocationAutocomplete === 'function') {
+            window.setupLocationAutocomplete();
+            console.log('✅ Autocomplete reconfigurado após clonagem do formulário');
+        }
+    }, 150);
 };
 
 window.setupAdminUI = function() {
@@ -439,28 +318,25 @@ window.setupAdminUI = function() {
     if (adminBtn) {
         const newBtn = adminBtn.cloneNode(true);
         adminBtn.parentNode.replaceChild(newBtn, adminBtn);
-        document.querySelector('.admin-toggle').onclick = function(e) { e.preventDefault(); e.stopPropagation(); window.toggleAdminPanel(); };
+        document.querySelector('.admin-toggle').onclick = e => { e.preventDefault(); e.stopPropagation(); window.toggleAdminPanel(); };
     }
     
     const cancelBtn = document.getElementById('cancelEditBtn');
     if (cancelBtn) {
         cancelBtn.replaceWith(cancelBtn.cloneNode(true));
         const freshBtn = document.getElementById('cancelEditBtn');
-        freshBtn.onclick = function(e) { e.preventDefault(); e.stopPropagation(); window.cancelEdit(); };
+        freshBtn.onclick = e => { e.preventDefault(); e.stopPropagation(); window.cancelEdit(); };
         freshBtn.style.display = 'none';
     }
     if (typeof window.setupForm === 'function') setTimeout(window.setupForm, 100);
-    
-    // Exportar funcoes de troca de aba globalmente
-    window.switchToManageTab = switchToManageTab;
-    window.switchToFormTab = switchToFormTab;
 };
 
 function initializeAdmin() {
-    try { var stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
+    try { const stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
     catch (e) { console.error('Erro ao carregar do localStorage:', e); }
     window.setupAdminUI();
-    setTimeout(function() { if (typeof window.setupLocationAutocomplete === 'function') window.setupLocationAutocomplete(); }, 500);
+    // Inicialização inicial do autocomplete (será reconfigurada após o setupForm)
+    setTimeout(() => { if (typeof window.setupLocationAutocomplete === 'function') window.setupLocationAutocomplete(); }, 500);
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
