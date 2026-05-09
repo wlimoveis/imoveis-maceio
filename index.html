@@ -1250,27 +1250,30 @@
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
-                            // ===== ALTERAÇÃO: NÃO ROLAR A PÁGINA, APENAS ABRIR INSTANTANEAMENTE =====
+                            // ===== CORREÇÃO: ABRIR INSTANTANEAMENTE SEM ROLAR A PÁGINA =====
+                            // 1. Tornar o painel visível
                             adminPanel.style.display = 'block';
                             
-                            // ===== ENQUADRAMENTO PRECISO NO INÍCIO DA SESSÃO =====
-                            // Pequeno delay para garantir que o DOM foi atualizado
-                            setTimeout(() => {
-                                const panelRect = adminPanel.getBoundingClientRect();
-                                const panelTop = panelRect.top + window.scrollY;
-                                
-                                // Scroll suave mas rápido para o início do painel
-                                window.scrollTo({
-                                    top: panelTop - 10, // Pequena margem superior
-                                    behavior: 'smooth'
-                                });
-                            }, 50);
+                            // 2. NÃO ROLAR A PÁGINA - apenas manter onde está ou ajustar para o topo instantâneo
+                            // Se o painel estiver fora da viewport, trazemos ele para o topo SEM animação
+                            const panelRect = adminPanel.getBoundingClientRect();
+                            if (panelRect.top < 0 || panelRect.top > window.innerHeight) {
+                                // Se estiver fora da tela, vai para o topo instantâneo (sem smooth)
+                                window.scrollTo(0, 0);
+                            }
+                            // Caso contrário, mantém a posição atual - sem rolagem!
                             
+                            // 3. Efeito de destaque visual
                             adminPanel.classList.add('admin-panel-highlight');
                             setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
                             
-                            if (typeof window.loadPropertyList === 'function') setTimeout(window.loadPropertyList, 100);
-                            if (typeof window.resetAdminFormCompletely === 'function') window.resetAdminFormCompletely(false);
+                            // 4. Carregar a lista de propriedades
+                            if (typeof window.loadPropertyList === 'function') {
+                                setTimeout(window.loadPropertyList, 100);
+                            }
+                            if (typeof window.resetAdminFormCompletely === 'function') {
+                                window.resetAdminFormCompletely(false);
+                            }
                         }
                     } else if (password !== null && password !== "") {
                         alert('Senha incorreta!');
