@@ -33,7 +33,7 @@
             box-shadow: none;
         }
 
-        /* Estilo base da aba */
+        /* Estilo base da aba - Desktop */
         .admin-tab {
             position: relative;
             padding: 0.5rem 1.5rem 0.6rem 1.5rem;
@@ -647,53 +647,86 @@
         /* ========== MOBILE - AJUSTE FINO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
-                padding-left: 0px;
-                gap: -2px;
+                padding-left: 8px;
+                gap: 0px;
                 flex-wrap: nowrap;
-                border-bottom: none;
                 background: #ece9d8;
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
             }
             
-            /* SOBREPOSIÇÃO DAS ABAS - UMA SOBRE A OUTRA */
+            /* ===== ABAS COM TAMANHO SOB MEDIDA (BASEADO NO CONTEÚDO) E SOBREPOSIÇÃO DE 1/3 ===== */
             .admin-tab {
                 padding: 0.4rem 0.8rem 0.5rem 0.8rem;
                 font-size: 0.65rem;
                 min-width: auto;
-                flex: 1;
+                width: auto;
+                flex: 0 0 auto;
                 text-align: center;
-                margin-right: -4px;
                 white-space: nowrap;
+                margin-right: -22px;  /* Sobreposição de aproximadamente 1/3 da largura */
+                z-index: 1;
+                background: #d8d4c2;
+                border-right: 1px solid #a09b8a;
             }
             
-            /* Primeira aba - sem margem negativa à esquerda */
+            /* Primeira aba - sem margem negativa à esquerda para manter estrutura */
             .admin-tab:first-child {
                 margin-left: 0;
-                margin-right: -4px;
+                margin-right: -22px;
             }
             
-            /* Última aba */
+            /* Última aba - sem sobreposição à direita */
             .admin-tab:last-child {
                 margin-right: 0;
             }
             
-            /* Aba ativa - sobrepondo as demais */
+            /* Aba inativa - recuada, levemente escurecida e com sobreposição visível */
+            .admin-tab:not(.active) {
+                z-index: 1;
+                opacity: 0.85;
+                background: #cec9b6;
+            }
+            
+            /* Aba ativa - sobrepõe as demais com destaque e profundidade */
             .admin-tab.active {
                 z-index: 10;
                 transform: translateY(1px);
-                margin-right: -4px;
-                margin-left: -2px;
+                background: #ece9d8;
+                margin-right: -20px;
+                margin-left: -20px;
+                padding-left: 1rem;
+                padding-right: 1rem;
+                position: relative;
+                box-shadow: -2px 1px 6px rgba(0,0,0,0.15), 2px 1px 4px rgba(0,0,0,0.1);
             }
             
-            /* Aba inativa - recuada */
-            .admin-tab:not(.active) {
-                z-index: 1;
-                opacity: 0.9;
+            /* Efeito de profundidade - sombra na aba ativa sobrepondo as demais */
+            .admin-tab.active::before {
+                content: '';
+                position: absolute;
+                left: -6px;
+                top: 2px;
+                bottom: 2px;
+                width: 6px;
+                background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+                pointer-events: none;
+            }
+            
+            .admin-tab.active::after {
+                content: '';
+                position: absolute;
+                right: -6px;
+                top: 2px;
+                bottom: 2px;
+                width: 6px;
+                background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+                pointer-events: none;
             }
             
             .admin-tab i {
-                margin-right: 4px;
+                margin-right: 5px;
                 font-size: 0.75rem;
             }
             
@@ -704,6 +737,37 @@
             
             .admin-tab-content > div {
                 padding: 0.4rem;
+            }
+            
+            /* ===== ALINHAMENTO À ESQUERDA DO TÍTULO ===== */
+            .section-title-windows {
+                text-align: left !important;
+                justify-content: flex-start !important;
+                padding: 0.4rem 0.5rem !important;
+                margin-bottom: 0.8rem !important;
+                font-size: 0.6rem !important;
+                display: flex !important;
+                align-items: center !important;
+                gap: 0.3rem !important;
+                flex-wrap: wrap !important;
+            }
+            
+            .section-title-windows i {
+                font-size: 0.7rem !important;
+                margin-right: 5px !important;
+            }
+            
+            .section-title-windows small {
+                font-size: 0.55rem !important;
+                margin-left: auto !important;
+                margin-right: 0 !important;
+                background: rgba(0,0,0,0.2) !important;
+                padding: 0.15rem 0.5rem !important;
+                border-radius: 12px !important;
+            }
+            
+            .section-title-windows small strong {
+                font-size: 0.65rem !important;
             }
 
             .manage-container {
@@ -800,7 +864,7 @@
                 padding: 0.25rem 0.35rem !important;
             }
             
-            /* ===== ESTATÍSTICAS DO HEADER MAIS JUNTAS NO MOBILE ===== */
+            /* ===== ESTATÍSTICAS DO HEADER MAIS JUNTAS ===== */
             #propertyList > div:first-child {
                 padding: 0.25rem 0.3rem !important;
                 margin-bottom: 0.3rem !important;
@@ -819,36 +883,7 @@
                 border-radius: 10px !important;
             }
             
-            /* ===== SEPARAR TÍTULO DO TOTAL ===== */
-            .section-title-windows {
-                margin-bottom: 0.6rem !important;
-                padding: 0.4rem 0.5rem !important;
-                font-size: 0.6rem !important;
-                display: flex !important;
-                justify-content: space-between !important;
-                align-items: center !important;
-                flex-wrap: wrap !important;
-                gap: 0.3rem !important;
-            }
-            
-            .section-title-windows i {
-                font-size: 0.7rem !important;
-                margin-right: 4px !important;
-            }
-            
-            .section-title-windows small {
-                font-size: 0.55rem !important;
-                margin-left: 0 !important;
-                background: rgba(0,0,0,0.2) !important;
-                padding: 0.15rem 0.4rem !important;
-                border-radius: 12px !important;
-            }
-            
-            .section-title-windows small strong {
-                font-size: 0.65rem !important;
-            }
-            
-            /* ===== PAGINAÇÃO MOBILE - BOTÕES ULTRA PRÓXIMOS ===== */
+            /* ===== PAGINAÇÃO MOBILE COMPACTA ===== */
             #propertyList > div:last-child {
                 gap: 0.03rem !important;
                 margin-top: 0.3rem !important;
@@ -872,6 +907,7 @@
                 width: 60px !important;
             }
             
+            /* Limitar número de botões no mobile para não quebrar layout */
             #propertyList > div:last-child button:nth-child(n+9),
             #propertyList > div:last-child span:nth-child(n+9) {
                 display: none !important;
