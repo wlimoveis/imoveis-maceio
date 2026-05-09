@@ -277,7 +277,7 @@
             font-size: 0.8rem;
         }
 
-        /* ========== FORMULÁRIO ========== */
+        /* ========== FORMULÁRIO - CORREÇÃO DO ESPAÇAMENTO ========== */
         .form-group {
             margin-bottom: 0.8rem;
             padding: 0.4rem;
@@ -301,6 +301,26 @@
         .form-group label i {
             margin-right: 5px;
             color: #1a5276;
+        }
+        
+        /* CORREÇÃO: REMOVER ESPAÇO EXTRA ENTRE TÍTULO E PREÇO */
+        .form-row-2cols {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.4rem;
+            margin-bottom: 0.6rem;
+        }
+        
+        .form-row-2cols .form-group {
+            margin-bottom: 0;
+            padding: 0.35rem;
+        }
+        
+        /* Garantir que os campos dentro do grid tenham mesmo espaçamento que os demais */
+        .form-row-2cols input,
+        .form-row-2cols select {
+            width: 100%;
+            box-sizing: border-box;
         }
         
         /* Efeito de afundamento nas bordas dos campos brancos */
@@ -403,17 +423,6 @@
             transform: translateY(1px);
         }
         
-        .form-row-2cols {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.6rem;
-            margin-bottom: 0.6rem;
-        }
-        
-        .form-row-2cols .form-group {
-            margin-bottom: 0;
-        }
-
         /* ========== LISTA DE PROPRIEDADES ========== */
         .manage-container {
             max-height: 650px;
@@ -1119,7 +1128,7 @@
                     
                     <div class="form-group">
                         <label><i class="fas fa-map-marker-alt"></i> LOCALIZACAO *</label>
-                        <input type="text" id="propLocation" placeholder="Ex: Ponta Verde, Maceio-AL" required>
+                        <input type="text" id="propLocation" placeholder="Digite o bairro (ex: Ponta Verde)" required>
                     </div>
                     
                     <div class="form-group">
@@ -1250,24 +1259,25 @@
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
-                            // ===== CORREÇÃO: ABRIR INSTANTANEAMENTE SEM ROLAR A PÁGINA =====
-                            // 1. Tornar o painel visível
+                            // ===== CORREÇÃO FINAL: PAINEL INSTANTÂNEO NO TOPO =====
+                            // 1. Tornar o painel visível IMEDIATAMENTE
                             adminPanel.style.display = 'block';
                             
-                            // 2. NÃO ROLAR A PÁGINA - apenas manter onde está ou ajustar para o topo instantâneo
-                            // Se o painel estiver fora da viewport, trazemos ele para o topo SEM animação
-                            const panelRect = adminPanel.getBoundingClientRect();
-                            if (panelRect.top < 0 || panelRect.top > window.innerHeight) {
-                                // Se estiver fora da tela, vai para o topo instantâneo (sem smooth)
-                                window.scrollTo(0, 0);
-                            }
-                            // Caso contrário, mantém a posição atual - sem rolagem!
+                            // 2. Forçar scroll para o TOPO ABSOLUTO (0) sem animação
+                            window.scrollTo(0, 0);
                             
-                            // 3. Efeito de destaque visual
+                            // 3. Pequena verificação para garantir que o scroll realmente foi para 0
+                            setTimeout(function() {
+                                if (window.scrollY !== 0) {
+                                    window.scrollTo(0, 0);
+                                }
+                            }, 10);
+                            
+                            // 4. Efeito de destaque visual
                             adminPanel.classList.add('admin-panel-highlight');
                             setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
                             
-                            // 4. Carregar a lista de propriedades
+                            // 5. Carregar a lista de propriedades
                             if (typeof window.loadPropertyList === 'function') {
                                 setTimeout(window.loadPropertyList, 100);
                             }
