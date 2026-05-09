@@ -270,6 +270,8 @@ window.saveProperty = async function() {
 };
 
 window.setupLocationAutocomplete = function() {
+    console.log('🔍 Inicializando autocomplete de bairros...');
+    
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
         'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
@@ -277,66 +279,134 @@ window.setupLocationAutocomplete = function() {
         'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
         'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
         'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
-        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL'
+        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL',
+        'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma, Maceió/AL', 'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL',
+        'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 'Murilopes, Maceió/AL'
     ];
 
-    const locationInput = document.getElementById('propLocation');
-    if (!locationInput || locationInput.hasAttribute('data-autocomplete-initialized')) return false;
-    
-    let suggestionsContainer = null;
-    function createSuggestionsContainer() {
-        const container = document.createElement('div');
-        container.className = 'admin-location-suggestions';
-        container.style.cssText = 'position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-top:none !important; max-height:250px !important; overflow-y:auto !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; border-radius:0 0 8px 8px !important;';
-        return container;
-    }
+    // Aguardar o DOM estar completamente pronto
+    function initialize() {
+        const locationInput = document.getElementById('propLocation');
+        
+        if (!locationInput) {
+            console.warn('⚠️ Campo propLocation não encontrado, tentando novamente em 500ms...');
+            setTimeout(initialize, 500);
+            return false;
+        }
+        
+        if (locationInput.hasAttribute('data-autocomplete-initialized')) {
+            console.log('✅ Autocomplete já inicializado anteriormente');
+            return true;
+        }
+        
+        console.log('📝 Configurando autocomplete no campo:', locationInput);
+        
+        let suggestionsContainer = null;
+        
+        function createSuggestionsContainer() {
+            const container = document.createElement('div');
+            container.className = 'admin-location-suggestions';
+            container.style.cssText = 'position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-top:none !important; max-height:250px !important; overflow-y:auto !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; border-radius:0 0 8px 8px !important;';
+            return container;
+        }
 
-    function showSuggestions(searchTerm) {
-        if (!searchTerm || searchTerm.length < 2) { if (suggestionsContainer) suggestionsContainer.remove(); return; }
-        const termLower = searchTerm.toLowerCase();
-        const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
-        if (!matches.length) { if (suggestionsContainer) suggestionsContainer.remove(); return; }
-        
-        let parentContainer = locationInput.parentElement;
-        while (parentContainer && parentContainer !== document.body && getComputedStyle(parentContainer).position !== 'relative') parentContainer = parentContainer.parentElement;
-        if (parentContainer === document.body) parentContainer = locationInput.parentElement;
-        if (getComputedStyle(parentContainer).position !== 'relative') parentContainer.style.position = 'relative';
-        
-        if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
-        if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
-        
-        const inputRect = locationInput.getBoundingClientRect();
-        const parentRect = parentContainer.getBoundingClientRect();
-        suggestionsContainer.style.top = inputRect.bottom - parentRect.top + 'px';
-        suggestionsContainer.style.left = inputRect.left - parentRect.left + 'px';
-        suggestionsContainer.style.width = locationInput.offsetWidth + 'px';
-        suggestionsContainer.style.display = 'block';
-        suggestionsContainer.innerHTML = '';
-        
-        matches.forEach(bairro => {
-            const div = document.createElement('div');
-            div.style.cssText = 'padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;';
-            const regex = new RegExp('(' + termLower + ')', 'gi');
-            div.innerHTML = bairro.replace(regex, '<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>');
-            div.onclick = function() { 
-                locationInput.value = bairro; 
+        function showSuggestions(searchTerm) {
+            if (!searchTerm || searchTerm.length < 2) { 
                 if (suggestionsContainer) suggestionsContainer.remove(); 
+                return; 
+            }
+            
+            const termLower = searchTerm.toLowerCase();
+            const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
+            
+            if (!matches.length) { 
+                if (suggestionsContainer) suggestionsContainer.remove(); 
+                return; 
+            }
+            
+            // Encontrar container pai com position relative
+            let parentContainer = locationInput.parentElement;
+            while (parentContainer && parentContainer !== document.body && getComputedStyle(parentContainer).position !== 'relative') {
+                parentContainer = parentContainer.parentElement;
+            }
+            if (parentContainer === document.body) parentContainer = locationInput.parentElement;
+            if (getComputedStyle(parentContainer).position !== 'relative') parentContainer.style.position = 'relative';
+            
+            if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
+            if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
+            
+            const inputRect = locationInput.getBoundingClientRect();
+            const parentRect = parentContainer.getBoundingClientRect();
+            suggestionsContainer.style.top = (inputRect.bottom - parentRect.top) + 'px';
+            suggestionsContainer.style.left = (inputRect.left - parentRect.left) + 'px';
+            suggestionsContainer.style.width = locationInput.offsetWidth + 'px';
+            suggestionsContainer.style.display = 'block';
+            suggestionsContainer.innerHTML = '';
+            
+            matches.forEach(bairro => {
+                const div = document.createElement('div');
+                div.style.cssText = 'padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;';
+                const regex = new RegExp('(' + termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + ')', 'gi');
+                div.innerHTML = bairro.replace(regex, '<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>');
+                div.onclick = function(e) { 
+                    e.preventDefault();
+                    e.stopPropagation();
+                    locationInput.value = bairro; 
+                    if (suggestionsContainer) suggestionsContainer.remove(); 
+                    suggestionsContainer = null; 
+                    // Disparar evento para garantir que o formulário reconheça a mudança
+                    locationInput.dispatchEvent(new Event('input', { bubbles: true })); 
+                    locationInput.dispatchEvent(new Event('change', { bubbles: true }));
+                    console.log('📍 Bairro selecionado:', bairro);
+                };
+                div.onmouseenter = function() { div.style.background = '#e8f4fd'; };
+                div.onmouseleave = function() { div.style.background = '#fff'; };
+                suggestionsContainer.appendChild(div);
+            });
+            
+            console.log(`📋 ${matches.length} sugestões exibidas para "${searchTerm}"`);
+        }
+        
+        function hideSuggestions() { 
+            if (suggestionsContainer) { 
+                suggestionsContainer.remove(); 
                 suggestionsContainer = null; 
-                locationInput.dispatchEvent(new Event('input', { bubbles: true })); 
-            };
-            div.onmouseenter = function() { div.style.background = '#e8f4fd'; };
-            div.onmouseleave = function() { div.style.background = '#fff'; };
-            suggestionsContainer.appendChild(div);
+            } 
+        }
+        
+        // Remover event listeners antigos para evitar duplicação
+        const newInput = locationInput.cloneNode(true);
+        locationInput.parentNode.replaceChild(newInput, locationInput);
+        
+        // Configurar os eventos no novo elemento
+        newInput.addEventListener('input', function(e) { 
+            console.log('✏️ Input detectado:', e.target.value);
+            showSuggestions(e.target.value); 
         });
+        newInput.addEventListener('blur', function() { 
+            setTimeout(hideSuggestions, 300); 
+        });
+        newInput.addEventListener('keydown', function(e) { 
+            if (e.key === 'Enter' && suggestionsContainer) { 
+                e.preventDefault(); 
+                const first = suggestionsContainer.querySelector('div'); 
+                if (first) { 
+                    newInput.value = first.textContent; 
+                    hideSuggestions(); 
+                    newInput.dispatchEvent(new Event('change', { bubbles: true }));
+                } 
+            } 
+        });
+        
+        newInput.setAttribute('data-autocomplete-initialized', 'true');
+        newInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
+        
+        console.log('✅ Autocomplete de bairros configurado com sucesso!');
+        return true;
     }
     
-    function hideSuggestions() { if (suggestionsContainer) { suggestionsContainer.remove(); suggestionsContainer = null; } }
-    
-    locationInput.addEventListener('input', function(e) { showSuggestions(e.target.value); });
-    locationInput.addEventListener('blur', function() { setTimeout(hideSuggestions, 200); });
-    locationInput.addEventListener('keydown', function(e) { if (e.key === 'Enter' && suggestionsContainer) { e.preventDefault(); var first = suggestionsContainer.querySelector('div'); if (first) { locationInput.value = first.textContent; hideSuggestions(); } } });
-    locationInput.setAttribute('data-autocomplete-initialized', 'true');
-    locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
+    // Executar inicialização com delay para garantir que o DOM está pronto
+    setTimeout(initialize, 300);
     return true;
 };
 
