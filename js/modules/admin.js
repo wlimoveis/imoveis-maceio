@@ -44,7 +44,6 @@ window.toggleAdminPanel = function() {
         const isVisible = panel.style.display === 'block';
         if (!isVisible) {
             window.resetAdminFormCompletely(false);
-            // Garantir que ao abrir, mostre a aba GERENCIAR
             setTimeout(switchToManageTab, 50);
         }
         panel.style.display = isVisible ? 'none' : 'block';
@@ -97,7 +96,6 @@ window.cancelEdit = function() {
     if (window.editingPropertyId) {
         if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
             window.resetAdminFormCompletely(true);
-            // Voltar para aba GERENCIAR após cancelar
             setTimeout(switchToManageTab, 100);
             return true;
         }
@@ -115,7 +113,6 @@ window.editProperty = function(id) {
         return false;
     }
     
-    // 🔧 TROCAR PARA ABA DO FORMULÁRIO AUTOMATICAMENTE
     switchToFormTab();
     
     window.resetAdminFormCompletely(false);
@@ -164,7 +161,6 @@ window.editProperty = function(id) {
         if (panel && panel.style.display !== 'block') {
             panel.style.display = 'block';
         }
-        // Rolar para o formulário
         const formElement = document.getElementById('propertyForm');
         if (formElement) {
             formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -241,7 +237,6 @@ window.saveProperty = async function() {
             }, 300);
             setTimeout(() => {
                 window.resetAdminFormCompletely(true);
-                // Após salvar edição, voltar para aba GERENCIAR
                 setTimeout(switchToManageTab, 100);
             }, 1500);
         } else {
@@ -262,7 +257,7 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== VERSÃO ORIGINAL FUNCIONAL DO AUTOCOMPLETE ==========
+// ========== VERSÃO ORIGINAL FUNCIONAL DO AUTOCOMPLETE (com retry mechanism) ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
     
@@ -281,14 +276,17 @@ window.setupLocationAutocomplete = function() {
         console.warn('⚠️ Campo propLocation não encontrado');
         return false;
     }
+    
+    // Se já inicializado, pular
     if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        console.log('ℹ️ Autocomplete já inicializado');
+        console.log('ℹ️ Autocomplete já inicializado neste campo');
         return true;
     }
     
     console.log('📝 Configurando autocomplete no campo:', locationInput);
     
     let suggestionsContainer = null;
+    
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
@@ -329,13 +327,16 @@ window.setupLocationAutocomplete = function() {
         matches.forEach(bairro => {
             const div = document.createElement('div');
             div.style.cssText = `padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;`;
-            const regex = new RegExp(`(${termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+            // Escapar caracteres especiais na regex
+            const escapedTerm = termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`(${escapedTerm})`, 'gi');
             div.innerHTML = bairro.replace(regex, `<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>`);
             div.onclick = () => { 
                 locationInput.value = bairro; 
                 if (suggestionsContainer) suggestionsContainer.remove(); 
                 suggestionsContainer = null; 
-                locationInput.dispatchEvent(new Event('input', { bubbles: true })); 
+                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
+                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
                 console.log('📍 Bairro selecionado:', bairro);
             };
             div.onmouseenter = () => div.style.background = '#e8f4fd';
@@ -352,28 +353,53 @@ window.setupLocationAutocomplete = function() {
         } 
     }
     
-    // Remover event listeners antigos para evitar duplicação
+    // Remover event listeners antigos (se houver) e adicionar novos
+    // Clonar para evitar duplicação de eventos
     const newInput = locationInput.cloneNode(true);
     locationInput.parentNode.replaceChild(newInput, locationInput);
     
-    newInput.addEventListener('input', e => showSuggestions(e.target.value));
-    newInput.addEventListener('blur', () => setTimeout(hideSuggestions, 200));
-    newInput.addEventListener('keydown', e => { 
+    newInput.addEventListener('input', function(e) { 
+        console.log('✏️ Input detectado:', e.target.value);
+        showSuggestions(e.target.value); 
+    });
+    newInput.addEventListener('blur', function() { 
+        setTimeout(hideSuggestions, 200); 
+    });
+    newInput.addEventListener('keydown', function(e) { 
         if (e.key === 'Enter' && suggestionsContainer) { 
             e.preventDefault(); 
             const first = suggestionsContainer.querySelector('div'); 
             if (first) { 
                 newInput.value = first.textContent; 
                 hideSuggestions(); 
+                newInput.dispatchEvent(new Event('change', { bubbles: true }));
             } 
         } 
     });
+    
     newInput.setAttribute('data-autocomplete-initialized', 'true');
     newInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
     console.log('✅ Autocomplete configurado com sucesso!');
     return true;
 };
+
+// Função com retry mechanism para garantir que o autocomplete seja configurado
+function ensureAutocomplete(retries = 10, delay = 500) {
+    console.log(`🔄 Tentando configurar autocomplete (${retries} tentativas restantes)...`);
+    
+    if (window.setupLocationAutocomplete && window.setupLocationAutocomplete()) {
+        console.log('✅ Autocomplete configurado com sucesso!');
+        return true;
+    }
+    
+    if (retries > 0) {
+        setTimeout(() => ensureAutocomplete(retries - 1, delay), delay);
+    } else {
+        console.error('❌ Falha ao configurar autocomplete após múltiplas tentativas');
+    }
+    return false;
+}
 
 window.setupForm = function() {
     const form = document.getElementById('propertyForm');
@@ -395,12 +421,9 @@ window.setupForm = function() {
         }
     });
     
-    // 🔧 RECONFIGURAR AUTOCOMPLETE APÓS CLONAGEM
+    // 🔧 RECONFIGURAR AUTOCOMPLETE APÓS CLONAGEM (com retry)
     setTimeout(() => {
-        if (typeof window.setupLocationAutocomplete === 'function') {
-            window.setupLocationAutocomplete();
-            console.log('✅ Autocomplete reconfigurado após clonagem do formulário');
-        }
+        ensureAutocomplete(10, 500);
     }, 200);
 };
 
@@ -429,8 +452,10 @@ function initializeAdmin() {
     try { const stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
     catch (e) { console.error('Erro ao carregar do localStorage:', e); }
     window.setupAdminUI();
-    // Inicialização inicial do autocomplete
-    setTimeout(() => { if (typeof window.setupLocationAutocomplete === 'function') window.setupLocationAutocomplete(); }, 600);
+    // Inicialização inicial do autocomplete com retry
+    setTimeout(() => {
+        ensureAutocomplete(10, 500);
+    }, 600);
 }
 
 // Exportar funções de troca de aba globalmente
