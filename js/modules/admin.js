@@ -257,7 +257,7 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE COM CORREÇÃO DO DROPDOWN ==========
+// ========== AUTOCOMPLETE COM CORREÇÃO DO DROPDOWN (USANDO POSITION FIXED) ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
     
@@ -277,7 +277,6 @@ window.setupLocationAutocomplete = function() {
         return false;
     }
     
-    // Se já inicializado, pular
     if (locationInput.hasAttribute('data-autocomplete-initialized')) {
         console.log('ℹ️ Autocomplete já inicializado neste campo');
         return true;
@@ -290,11 +289,9 @@ window.setupLocationAutocomplete = function() {
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
-        container.style.cssText = `position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-radius:0 0 8px 8px !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; max-height:250px !important; overflow-y:auto !important;`;
         return container;
     }
 
-    // ========== FUNÇÃO SHOWSUGGESTIONS CORRIGIDA ==========
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) { 
             if (suggestionsContainer) suggestionsContainer.remove(); 
@@ -307,30 +304,28 @@ window.setupLocationAutocomplete = function() {
             return; 
         }
         
-        // 🔧 CORREÇÃO: Garantir que locationInput existe e é um elemento
         if (!locationInput || !(locationInput instanceof Element)) {
             console.warn('⚠️ locationInput inválido em showSuggestions');
             return;
         }
         
-        // Usar o body como container principal
-        const parentContainer = document.body;
-        
-        // Garantir position relative no body
-        if (getComputedStyle(parentContainer).position !== 'relative') {
-            parentContainer.style.position = 'relative';
+        // Criar container se não existir
+        if (!suggestionsContainer) {
+            suggestionsContainer = createSuggestionsContainer();
         }
         
-        if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
-        if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
+        // Garantir que o container está no body
+        if (suggestionsContainer.parentElement !== document.body) {
+            document.body.appendChild(suggestionsContainer);
+        }
         
-        // Calcular posição relativa ao viewport
+        // 🔧 CORREÇÃO CRÍTICA: Usar position fixed em vez de absolute
+        // Isso evita problemas com scroll e posicionamento incorreto
         const inputRect = locationInput.getBoundingClientRect();
-        const scrollTop = window.scrollY || document.documentElement.scrollTop;
         
-        // Aplicar estilos de posicionamento
-        suggestionsContainer.style.position = 'absolute';
-        suggestionsContainer.style.top = `${inputRect.bottom + scrollTop}px`;
+        // Aplicar estilos de posicionamento FIXED
+        suggestionsContainer.style.position = 'fixed';
+        suggestionsContainer.style.top = `${inputRect.bottom + 5}px`;  // +5px de margem
         suggestionsContainer.style.left = `${inputRect.left}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
@@ -342,6 +337,7 @@ window.setupLocationAutocomplete = function() {
         suggestionsContainer.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
         suggestionsContainer.style.maxHeight = '250px';
         suggestionsContainer.style.overflowY = 'auto';
+        suggestionsContainer.style.boxSizing = 'border-box';
         suggestionsContainer.innerHTML = '';
         
         matches.forEach(bairro => {
@@ -363,7 +359,7 @@ window.setupLocationAutocomplete = function() {
             div.onmouseleave = () => div.style.background = '#fff';
             suggestionsContainer.appendChild(div);
         });
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em y=${inputRect.bottom + scrollTop}px`);
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em y=${inputRect.bottom + 5}px (fixed)`);
     }
     
     function hideSuggestions() { 
@@ -373,8 +369,7 @@ window.setupLocationAutocomplete = function() {
         } 
     }
     
-    // Remover event listeners antigos (se houver) e adicionar novos
-    // Clonar para evitar duplicação de eventos
+    // Remover event listeners antigos e adicionar novos
     const newInput = locationInput.cloneNode(true);
     locationInput.parentNode.replaceChild(newInput, locationInput);
     
@@ -397,6 +392,20 @@ window.setupLocationAutocomplete = function() {
         } 
     });
     
+    // Adicionar evento de scroll para fechar o dropdown quando a página rolar
+    window.addEventListener('scroll', function() {
+        if (suggestionsContainer) {
+            hideSuggestions();
+        }
+    }, { passive: true });
+    
+    // Adicionar evento de resize para fechar o dropdown quando a janela for redimensionada
+    window.addEventListener('resize', function() {
+        if (suggestionsContainer) {
+            hideSuggestions();
+        }
+    });
+    
     newInput.setAttribute('data-autocomplete-initialized', 'true');
     newInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
@@ -404,7 +413,6 @@ window.setupLocationAutocomplete = function() {
     return true;
 };
 
-// Função com retry mechanism para garantir que o autocomplete seja configurado
 function ensureAutocomplete(retries = 10, delay = 500) {
     console.log(`🔄 Tentando configurar autocomplete (${retries} tentativas restantes)...`);
     
@@ -441,7 +449,6 @@ window.setupForm = function() {
         }
     });
     
-    // 🔧 RECONFIGURAR AUTOCOMPLETE APÓS CLONAGEM (com retry)
     setTimeout(() => {
         ensureAutocomplete(10, 500);
     }, 200);
@@ -472,13 +479,11 @@ function initializeAdmin() {
     try { const stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
     catch (e) { console.error('Erro ao carregar do localStorage:', e); }
     window.setupAdminUI();
-    // Inicialização inicial do autocomplete com retry
     setTimeout(() => {
         ensureAutocomplete(10, 500);
     }, 600);
 }
 
-// Exportar funções de troca de aba globalmente
 window.switchToManageTab = switchToManageTab;
 window.switchToFormTab = switchToFormTab;
 
