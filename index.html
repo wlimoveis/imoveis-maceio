@@ -15,11 +15,9 @@
     <link rel="stylesheet" href="css/gallery.css">
 
     <style>
-        /* ========== ABAS ESTILO WINDOWS 98 / CLASSIC UI ==========
-           Estilo "orelha de fichário" com efeito 3D e corte vertical,
-           similar ao TabControl do Windows 95/98/NT/2000 */
+        /* ========== ABAS ESTILO WINDOWS 98 / CLASSIC UI ========== */
         
-        /* Container das abas - estilo barra de ferramentas Windows 98 */
+        /* Container das abas */
         .admin-tabs {
             display: flex;
             gap: 0px;
@@ -35,7 +33,7 @@
             box-shadow: none;
         }
 
-        /* Estilo base da aba - ORELHA DE FICHÁRIO (Windows 98 Classic) */
+        /* Estilo base da aba */
         .admin-tab {
             position: relative;
             padding: 0.5rem 1.5rem 0.6rem 1.5rem;
@@ -61,7 +59,7 @@
             text-align: center;
         }
         
-        /* Ícones das abas - ESTILO: inativo ESCURO, ativo BRANCO/DOURADO */
+        /* Ícones das abas - inativo escuro, ativo dourado */
         .admin-tab i {
             margin-right: 10px;
             font-size: 1rem;
@@ -72,18 +70,15 @@
             transition: all 0.1s ease;
         }
 
-        /* Hover nos ícones das abas inativas - clareia um pouco */
         .admin-tab:not(.active):hover i {
             color: #1a5276;
         }
         
-        /* Aba ativa - ícone BRANCO COM DOURADO (alto contraste) */
         .admin-tab.active i {
             color: #ffd700;
             text-shadow: 0 1px 1px rgba(0,0,0,0.3);
         }
         
-        /* Efeito de borda interna para profundidade */
         .admin-tab::before {
             content: '';
             position: absolute;
@@ -98,7 +93,6 @@
             z-index: -1;
         }
         
-        /* Borda inferior para conectar com o conteúdo */
         .admin-tab::after {
             content: '';
             position: absolute;
@@ -110,24 +104,13 @@
             z-index: 2;
         }
 
-        /* Hover na aba inativa - efeito de realce Windows 98 */
         .admin-tab:not(.active):hover {
             background: #f5f3e8;
             color: #000000;
             transform: none;
             box-shadow: none;
-            border-left: 1px solid #ffffff;
-            border-top: 1px solid #ffffff;
-            border-right: 1px solid #808080;
         }
         
-        .admin-tab:not(.active):hover::before {
-            border-left: 1px solid #ffffff;
-            border-top: 1px solid #ffffff;
-            border-right: 1px solid #808080;
-        }
-
-        /* ABA ATIVA - Efeito pressionado / afundado */
         .admin-tab.active {
             background: #ece9d8;
             color: #000000;
@@ -146,7 +129,6 @@
             padding-bottom: 0.7rem;
         }
         
-        /* Borda da aba ativa - efeito de relevo invertido */
         .admin-tab.active::before {
             content: '';
             position: absolute;
@@ -161,7 +143,6 @@
             z-index: -1;
         }
         
-        /* Linha de conexão da aba ativa com o conteúdo */
         .admin-tab.active::after {
             content: '';
             position: absolute;
@@ -173,7 +154,6 @@
             z-index: 5;
         }
 
-        /* Primeira aba - borda esquerda diferenciada */
         .admin-tab:first-child {
             margin-left: 0;
             border-left: 1px solid #ffffff;
@@ -183,7 +163,7 @@
             border-left: 1px solid #808080;
         }
 
-        /* ========== CONTEÚDO DAS ABAS - ESTILO WINDOWS 98 ========== */
+        /* ========== CONTEÚDO DAS ABAS ========== */
         .admin-tab-content {
             display: none;
             padding: 1rem;
@@ -200,7 +180,6 @@
             padding-bottom: 1.5rem !important;
         }
         
-        /* Borda tripla para efeito de profundidade no conteúdo */
         .admin-tab-content::before {
             content: '';
             position: absolute;
@@ -218,7 +197,6 @@
             border-left: 1px solid #808080;
         }
         
-        /* Fundo do conteúdo - estilo janela Windows 98 */
         .admin-tab-content > div {
             background: #ffffff;
             border: 1px solid #d4d0c8;
@@ -227,7 +205,7 @@
             z-index: 1;
         }
         
-        /* ========== TÍTULOS DAS SEÇÕES COM SEGUNDA CAMADA (C/C++ STYLE) ========== */
+        /* ========== TÍTULOS DAS SEÇÕES ========== */
         .section-title-windows {
             position: relative;
             margin-top: 0;
@@ -247,7 +225,6 @@
             text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
         }
         
-        /* SEGUNDA CAMADA - Efeito de relevo duplo */
         .section-title-windows::before {
             content: '';
             position: absolute;
@@ -260,7 +237,6 @@
             z-index: 1;
         }
         
-        /* TERCEIRA CAMADA - Textura adicional */
         .section-title-windows::after {
             content: '';
             position: absolute;
@@ -286,7 +262,6 @@
             text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
         }
         
-        /* Título menor para contadores */
         .section-title-windows small {
             font-size: 0.65rem;
             font-weight: normal;
@@ -296,8 +271,7 @@
             margin-left: 8px;
         }
 
-        /* ========== FORMULÁRIO ESTILO WINDOWS 98 (C/C++ SKEUOMORPHISM) ========== */
-        /* Container de grupo de campos */
+        /* ========== FORMULÁRIO ========== */
         .form-group {
             margin-bottom: 0.8rem;
             padding: 0.4rem;
@@ -323,7 +297,6 @@
             color: #1a5276;
         }
         
-        /* Campos de formulário estilo Windows 98 */
         .admin-tab-content input,
         .admin-tab-content textarea,
         .admin-tab-content select {
@@ -345,7 +318,6 @@
             background: #fffff0;
         }
         
-        /* Checkbox estilo Windows 98 */
         .admin-tab-content input[type="checkbox"] {
             width: auto;
             margin-right: 0.5rem;
@@ -353,7 +325,6 @@
             vertical-align: middle;
         }
         
-        /* Áreas de upload estilo Windows 98 */
         #uploadArea, #pdfUploadArea {
             border: 2px solid;
             border-color: #404040 #ffffff #ffffff #404040;
@@ -370,7 +341,6 @@
             border-color: #ffffff #404040 #404040 #ffffff;
         }
         
-        /* Preview containers */
         #uploadPreview, #pdfUploadPreview {
             background: #ffffff;
             border: 1px solid #808080;
@@ -378,7 +348,6 @@
             min-height: 60px;
         }
         
-        /* Botão Submit estilo Windows 98 com cor verde */
         #propertyForm button[type="submit"] {
             background: #27ae60;
             color: white;
@@ -404,7 +373,6 @@
             transform: translateY(1px);
         }
         
-        /* Botão Cancelar estilo Windows 98 */
         #cancelEditBtn {
             background: #ece9d8;
             color: #000000;
@@ -421,7 +389,6 @@
             transform: translateY(1px);
         }
         
-        /* Campos de grid 2 colunas */
         .form-row-2cols {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -445,7 +412,6 @@
             border-left-color: #404040;
         }
         
-        /* Scrollbar estilo Windows 98 */
         .manage-container::-webkit-scrollbar {
             width: 16px;
             background: #ece9d8;
@@ -545,7 +511,7 @@
             transform: translateY(1px);
         }
 
-        /* ========== BOTÃO VOLTAR AO TOPO - LIQUID GLASS TRANSPARENTE ========== */
+        /* ========== BOTÃO VOLTAR AO TOPO ========== */
         #backToTopBtn {
             position: fixed;
             bottom: 80px;
@@ -582,8 +548,7 @@
             transform: scale(0.95);
         }
 
-        /* ========== DESKTOP - BOTÕES DE PAGINAÇÃO COMPLETOS ========== */
-        /* Container da paginação - Desktop */
+        /* ========== DESKTOP - PAGINAÇÃO ========== */
         #propertyList > div:last-child {
             display: flex !important;
             flex-direction: row !important;
@@ -598,7 +563,6 @@
             border-top: 1px solid #808080 !important;
         }
         
-        /* Botões de paginação estilo Windows 98 - Desktop */
         #propertyList > div:last-child button,
         #propertyList > div:last-child span {
             flex: 0 0 auto !important;
@@ -623,7 +587,6 @@
             font-family: 'Courier New', monospace !important;
         }
         
-        /* Botão ativo - Desktop */
         #propertyList > div:last-child button.active-page,
         #propertyList > div:last-child button[style*="background: #f39c12"],
         #propertyList > div:last-child button[style*="background: var(--gold)"] {
@@ -632,7 +595,6 @@
             border: 1px solid #0e3d5c !important;
         }
         
-        /* Select de itens por página - DESKTOP com largura reduzida */
         #propertyList > div:last-child select {
             flex: 0 0 auto !important;
             margin-left: 0.5rem !important;
@@ -649,16 +611,11 @@
             cursor: pointer !important;
         }
         
-        /* Hover nos botões de paginação */
         #propertyList > div:last-child button:not(:disabled):hover,
         #propertyList > div:last-child span:not(.ellipsis):hover {
             background: #d4d0c8 !important;
-            border: 1px solid #808080 !important;
-            border-top-color: #ffffff !important;
-            border-left-color: #ffffff !important;
         }
         
-        /* Efeito de clique nos botões */
         #propertyList > div:last-child button:active {
             border-top-color: #808080 !important;
             border-left-color: #808080 !important;
@@ -667,7 +624,6 @@
             transform: translateY(1px);
         }
         
-        /* Estilo para os três pontinhos (ellipsis) */
         #propertyList > div:last-child span.ellipsis {
             background: transparent !important;
             border: none !important;
@@ -806,36 +762,38 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO - ESTILO WINDOWS 98 MOBILE ===== */
+            /* ===== PAGINAÇÃO MOBILE - BOTÕES MAIS PRÓXIMOS ===== */
             #propertyList > div:last-child {
-                gap: 0.15rem !important;
-                margin-top: 0.8rem !important;
-                margin-bottom: 0.3rem !important;
-                padding: 0.4rem 0.2rem !important;
+                gap: 0.1rem !important;
+                margin-top: 0.5rem !important;
+                margin-bottom: 0.2rem !important;
+                padding: 0.3rem 0.15rem !important;
             }
             
-            /* Botões de paginação mobile - tamanho reduzido */
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
-                min-width: 30px !important;
-                height: 30px !important;
-                padding: 0 0.25rem !important;
-                font-size: 0.65rem !important;
-            }
-            
-            /* Select de itens por página - MOBILE com largura reduzida */
-            #propertyList > div:last-child select {
-                margin-left: 0.2rem !important;
-                padding: 0.15rem 0.2rem !important;
-                font-size: 0.6rem !important;
+                min-width: 28px !important;
                 height: 28px !important;
-                width: 80px !important;
+                padding: 0 0.2rem !important;
+                font-size: 0.6rem !important;
             }
             
-            /* Esconder botões extras no mobile para evitar quebra */
+            #propertyList > div:last-child select {
+                margin-left: 0.15rem !important;
+                padding: 0.1rem 0.15rem !important;
+                font-size: 0.55rem !important;
+                height: 26px !important;
+                width: 70px !important;
+            }
+            
             #propertyList > div:last-child button:nth-child(n+10),
             #propertyList > div:last-child span:nth-child(n+10) {
                 display: none !important;
+            }
+            
+            #propertyList > div:last-child span.ellipsis {
+                min-width: 12px !important;
+                padding: 0 0.1rem !important;
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
@@ -845,7 +803,6 @@
                 padding-bottom: 2rem !important;
             }
             
-            /* Ajuste do botão voltar ao topo no mobile */
             #backToTopBtn {
                 bottom: 70px;
                 right: 15px;
@@ -857,13 +814,11 @@
                 -webkit-backdrop-filter: blur(10px);
             }
             
-            /* Ajuste do formulário mobile */
             .form-row-2cols {
                 grid-template-columns: 1fr;
                 gap: 0.4rem;
             }
             
-            /* Título das seções no mobile */
             .section-title-windows {
                 font-size: 0.7rem;
                 padding: 0.4rem 0.6rem;
@@ -894,7 +849,6 @@
         .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
         .form-compact #propertyForm textarea { min-height: 50px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
         
-        /* Espaçamento dos grupos do formulário */
         #propertyForm > div {
             margin-bottom: 0.6rem;
         }
