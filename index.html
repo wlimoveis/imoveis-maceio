@@ -277,10 +277,10 @@
             font-size: 0.8rem;
         }
 
-        /* ========== FORMULÁRIO - CORREÇÃO DO ESPAÇAMENTO ========== */
+        /* ========== FORMULÁRIO - CORREÇÃO DEFINITIVA DO ESPAÇAMENTO ========== */
         .form-group {
-            margin-bottom: 0.8rem;
-            padding: 0.4rem;
+            margin-bottom: 0.6rem;
+            padding: 0.3rem;
             border: 1px solid #808080;
             border-top-color: #ffffff;
             border-left-color: #ffffff;
@@ -289,9 +289,9 @@
         
         .form-group label {
             display: block;
-            margin-bottom: 0.2rem;
+            margin-bottom: 0.15rem;
             font-weight: 700;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             color: #000000;
             font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
             text-transform: uppercase;
@@ -299,28 +299,30 @@
         }
         
         .form-group label i {
-            margin-right: 5px;
+            margin-right: 4px;
             color: #1a5276;
         }
         
-        /* CORREÇÃO: REMOVER ESPAÇO EXTRA ENTRE TÍTULO E PREÇO */
+        /* CORREÇÃO DEFINITIVA: REMOVER TODO ESPAÇO EXTRA ENTRE TÍTULO E PREÇO */
         .form-row-2cols {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.4rem;
-            margin-bottom: 0.6rem;
+            gap: 0.15rem;
+            margin-bottom: 0;
         }
         
         .form-row-2cols .form-group {
             margin-bottom: 0;
-            padding: 0.35rem;
+            padding: 0.25rem;
         }
         
-        /* Garantir que os campos dentro do grid tenham mesmo espaçamento que os demais */
-        .form-row-2cols input,
-        .form-row-2cols select {
-            width: 100%;
-            box-sizing: border-box;
+        /* Garantir que os inputs fiquem justapostos */
+        .form-row-2cols .form-group:first-child {
+            margin-right: 0;
+        }
+        
+        .form-row-2cols .form-group:last-child {
+            margin-left: 0;
         }
         
         /* Efeito de afundamento nas bordas dos campos brancos */
@@ -330,7 +332,7 @@
             background: #ffffff;
             border: 2px solid;
             border-color: #404040 #ffffff #ffffff #404040;
-            padding: 0.4rem 0.5rem;
+            padding: 0.35rem 0.45rem;
             font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
             font-size: 0.8rem;
             width: 100%;
@@ -388,9 +390,9 @@
             border: 2px solid;
             border-color: #2ecc71 #1e8449 #1e8449 #2ecc71;
             font-weight: 700;
-            padding: 0.6rem 1.2rem;
+            padding: 0.5rem 1rem;
             font-family: 'Courier New', 'Consolas', monospace;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 1px;
             cursor: pointer;
@@ -413,8 +415,8 @@
             border: 2px solid;
             border-color: #ffffff #808080 #808080 #ffffff;
             font-family: 'Courier New', 'Consolas', monospace;
-            font-size: 0.75rem;
-            padding: 0.6rem 1.2rem;
+            font-size: 0.7rem;
+            padding: 0.5rem 1rem;
             cursor: pointer;
         }
         
@@ -673,16 +675,15 @@
                 justify-content: flex-start;
             }
             
-            /* ===== ABAS COM TAMANHO SOB MEDIDA E SOBREPOSIÇÃO ===== */
             .admin-tab {
-                padding: 0.4rem 0.8rem 0.5rem 0.8rem;
-                font-size: 0.65rem;
+                padding: 0.35rem 0.7rem 0.45rem 0.7rem;
+                font-size: 0.6rem;
                 min-width: auto;
                 width: auto;
                 flex: 0 0 auto;
                 text-align: center;
                 white-space: nowrap;
-                margin-right: -22px;
+                margin-right: -18px;
                 z-index: 1;
                 background: #d8d4c2;
                 border-right: 1px solid #a09b8a;
@@ -690,7 +691,7 @@
             
             .admin-tab:first-child {
                 margin-left: 0;
-                margin-right: -22px;
+                margin-right: -18px;
             }
             
             .admin-tab:last-child {
@@ -707,10 +708,10 @@
                 z-index: 10;
                 transform: translateY(1px);
                 background: #ece9d8;
-                margin-right: -20px;
-                margin-left: -20px;
-                padding-left: 1rem;
-                padding-right: 1rem;
+                margin-right: -16px;
+                margin-left: -16px;
+                padding-left: 0.8rem;
+                padding-right: 0.8rem;
                 position: relative;
                 box-shadow: -2px 1px 6px rgba(0,0,0,0.15), 2px 1px 4px rgba(0,0,0,0.1);
             }
@@ -718,10 +719,10 @@
             .admin-tab.active::before {
                 content: '';
                 position: absolute;
-                left: -6px;
+                left: -4px;
                 top: 2px;
                 bottom: 2px;
-                width: 6px;
+                width: 4px;
                 background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
                 pointer-events: none;
             }
@@ -729,227 +730,129 @@
             .admin-tab.active::after {
                 content: '';
                 position: absolute;
-                right: -6px;
+                right: -4px;
                 top: 2px;
                 bottom: 2px;
-                width: 6px;
+                width: 4px;
                 background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
                 pointer-events: none;
             }
             
             .admin-tab i {
-                margin-right: 5px;
-                font-size: 0.75rem;
+                margin-right: 4px;
+                font-size: 0.7rem;
             }
             
             .admin-tab-content {
-                padding: 0.5rem;
-                padding-bottom: 0.8rem !important;
+                padding: 0.4rem;
+                padding-bottom: 0.6rem !important;
             }
             
             .admin-tab-content > div {
-                padding: 0.4rem;
+                padding: 0.3rem;
             }
             
-            /* ===== ALINHAMENTO À ESQUERDA DO TÍTULO ===== */
             .section-title-windows {
                 text-align: left !important;
                 justify-content: flex-start !important;
-                padding: 0.4rem 0.5rem !important;
-                margin-bottom: 0.8rem !important;
-                font-size: 0.6rem !important;
+                padding: 0.3rem 0.4rem !important;
+                margin-bottom: 0.6rem !important;
+                font-size: 0.55rem !important;
                 display: flex !important;
                 align-items: center !important;
-                gap: 0.3rem !important;
+                gap: 0.2rem !important;
                 flex-wrap: wrap !important;
             }
             
             .section-title-windows i {
-                font-size: 0.7rem !important;
-                margin-right: 5px !important;
+                font-size: 0.65rem !important;
+                margin-right: 4px !important;
             }
             
             .section-title-windows small {
-                font-size: 0.55rem !important;
+                font-size: 0.5rem !important;
                 margin-left: auto !important;
                 margin-right: 0 !important;
                 background: rgba(0,0,0,0.2) !important;
-                padding: 0.15rem 0.5rem !important;
-                border-radius: 12px !important;
+                padding: 0.1rem 0.4rem !important;
+                border-radius: 10px !important;
             }
             
-            .section-title-windows small strong {
-                font-size: 0.65rem !important;
-            }
-
             .manage-container {
                 max-height: none !important;
                 overflow-y: visible !important;
-                padding-bottom: 1.5rem !important;
+                padding-bottom: 1rem !important;
             }
             
             #propertyList {
                 gap: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                padding-bottom: 1rem !important;
-            }
-            
-            .admin-panel {
-                padding-left: 0.3rem !important;
-                padding-right: 0.3rem !important;
-            }
-            
-            .admin-panel .manage-container,
-            .admin-panel .form-compact {
-                margin-left: -0.15rem !important;
-                margin-right: -0.15rem !important;
+                padding-bottom: 0.8rem !important;
             }
             
             .property-item {
-                padding: 0.5rem;
+                padding: 0.4rem;
                 margin: 0 !important;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.3rem;
+                gap: 0.2rem;
                 border-bottom: 1px solid #d4d0c8;
             }
             
             .property-item:last-child { 
                 border-bottom: none;
                 margin-bottom: 0 !important;
-                padding-bottom: 0.3rem !important;
+                padding-bottom: 0.25rem !important;
             }
             
-            .property-item > div {
-                margin: 0 !important;
-                padding: 0 !important;
-                width: 100%;
+            .property-item > div:first-child {
+                width: 50px;
+                height: 50px;
             }
             
-            .property-item > div:nth-child(2) > div:last-child {
-                display: flex !important;
-                flex-wrap: wrap !important;
-                align-items: center !important;
-                gap: 0.2rem !important;
-                margin-top: 0.2rem !important;
-                padding: 0 !important;
-            }
-            
-            .property-item > div:nth-child(2) > div:last-child span {
-                display: inline-flex !important;
-                align-items: center !important;
-                gap: 0.15rem !important;
-                font-size: 0.6rem !important;
-                color: #555 !important;
-                background: #eef2f5 !important;
-                padding: 0.15rem 0.4rem !important;
-                border-radius: 12px !important;
-                margin: 0 !important;
-                white-space: nowrap !important;
-            }
-            
-            .property-item > div:nth-child(2) > div:last-child br {
-                display: none !important;
-            }
-            
-            .property-item > div:last-child {
-                display: flex !important;
-                flex-direction: row !important;
-                flex-wrap: nowrap !important;
-                justify-content: flex-start !important;
-                align-items: center !important;
-                gap: 0.25rem !important;
-                width: 100%;
-                margin-top: 0.15rem !important;
-            }
-            
-            .property-item button {
-                flex: 0 0 auto !important;
-                padding: 0.25rem 0.4rem !important;
-                font-size: 0.6rem !important;
-                margin: 0 !important;
-                white-space: nowrap !important;
-            }
-            
-            .property-item button:nth-child(2) {
-                padding: 0.25rem 0.35rem !important;
-            }
-            
-            /* ===== ESTATÍSTICAS DO HEADER MAIS JUNTAS ===== */
             #propertyList > div:first-child {
-                padding: 0.25rem 0.3rem !important;
-                margin-bottom: 0.3rem !important;
-                gap: 0.2rem !important;
-            }
-            
-            #propertyList > div:first-child > div:first-child {
-                gap: 0.2rem !important;
-                flex-wrap: wrap !important;
+                padding: 0.2rem 0.25rem !important;
+                margin-bottom: 0.25rem !important;
+                gap: 0.15rem !important;
             }
             
             #propertyList > div:first-child span {
-                font-size: 0.6rem !important;
-                padding: 0.15rem 0.35rem !important;
-                background: #eef2f5 !important;
-                border-radius: 10px !important;
+                font-size: 0.55rem !important;
+                padding: 0.1rem 0.3rem !important;
             }
             
-            /* ===== PAGINAÇÃO MOBILE COMPACTA ===== */
             #propertyList > div:last-child {
-                gap: 0.03rem !important;
-                margin-top: 0.3rem !important;
-                margin-bottom: 0.05rem !important;
-                padding: 0.15rem 0.08rem !important;
+                gap: 0.02rem !important;
+                margin-top: 0.25rem !important;
+                margin-bottom: 0.03rem !important;
+                padding: 0.1rem 0.05rem !important;
             }
             
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
-                min-width: 24px !important;
-                height: 24px !important;
-                padding: 0 0.1rem !important;
-                font-size: 0.5rem !important;
+                min-width: 22px !important;
+                height: 22px !important;
+                padding: 0 0.08rem !important;
+                font-size: 0.45rem !important;
             }
             
             #propertyList > div:last-child select {
-                margin-left: 0.08rem !important;
-                padding: 0.08rem 0.08rem !important;
-                font-size: 0.45rem !important;
-                height: 22px !important;
-                width: 60px !important;
-            }
-            
-            #propertyList > div:last-child button:nth-child(n+9),
-            #propertyList > div:last-child span:nth-child(n+9) {
-                display: none !important;
-            }
-            
-            #propertyList > div:last-child span.ellipsis {
-                min-width: 8px !important;
-                padding: 0 0.03rem !important;
-            }
-            
-            .property-item div[style*="display: flex"] { gap: 0.2rem !important; }
-            
-            #manage-tab {
-                overflow: visible !important;
-                padding-bottom: 1rem !important;
-            }
-            
-            #backToTopBtn {
-                bottom: 65px;
-                right: 12px;
-                width: 38px;
-                height: 38px;
-                font-size: 0.9rem;
-                background: rgba(26, 82, 118, 0.45);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
+                margin-left: 0.05rem !important;
+                padding: 0.05rem 0.05rem !important;
+                font-size: 0.4rem !important;
+                height: 20px !important;
+                width: 55px !important;
             }
             
             .form-row-2cols {
                 grid-template-columns: 1fr;
-                gap: 0.3rem;
+                gap: 0.2rem;
+            }
+            
+            .form-group {
+                margin-bottom: 0.4rem;
+                padding: 0.2rem;
             }
         }
 
@@ -967,14 +870,10 @@
             font-family: 'Courier New', monospace;
         }
         
-        .form-compact #propertyForm { gap: 0.5rem; }
+        .form-compact #propertyForm { gap: 0.4rem; }
         .form-compact #propertyForm > div { margin-bottom: 0 !important; }
-        .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.4rem 0.5rem; font-size: 0.85rem; }
-        .form-compact #propertyForm textarea { min-height: 50px; padding: 0.4rem 0.5rem; font-size: 0.85rem; }
-        
-        #propertyForm > div {
-            margin-bottom: 0.6rem;
-        }
+        .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.35rem 0.45rem; font-size: 0.8rem; }
+        .form-compact #propertyForm textarea { min-height: 45px; padding: 0.35rem 0.45rem; font-size: 0.8rem; }
     </style>
 </head>
 <body>
@@ -1091,7 +990,7 @@
     
     <!-- ========== PAINEL DE ADMINISTRACAO ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: #1a5276; margin-bottom: 1rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
+        <h3 style="text-align: center; color: #1a5276; margin-bottom: 0.8rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
             <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-database"></i> GERENCIAR</button>
@@ -1099,7 +998,7 @@
         </div>
         
         <div id="manage-tab" class="admin-tab-content active">
-            <div style="background: white; padding: 0.5rem 0;">
+            <div style="background: white; padding: 0.4rem 0;">
                 <div class="section-title-windows">
                     <i class="fas fa-archive"></i> GERENCIAR IMOVEIS EXISTENTES
                     <small>total: <strong id="propertyCount">0</strong></small>
@@ -1109,7 +1008,7 @@
         </div>
         
         <div id="form-tab" class="admin-tab-content form-compact">
-            <div style="background: white; padding: 0.5rem 0;">
+            <div style="background: white; padding: 0.4rem 0;">
                 <div class="section-title-windows">
                     <i class="fas fa-edit"></i> ADICIONAR NOVO IMOVEL
                     <small>preencha todos os campos obrigatórios *</small>
@@ -1139,7 +1038,7 @@
                     <div class="form-group">
                         <label><i class="fas fa-list"></i> CARACTERISTICAS</label>
                         <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina">
-                        <small style="display:block; margin-top:0.2rem; font-family:'Courier New', monospace; font-size:0.6rem;">Separe por virgulas</small>
+                        <small style="display:block; margin-top:0.15rem; font-family:'Courier New', monospace; font-size:0.55rem;">Separe por virgulas</small>
                     </div>
 
                     <div class="form-group">
@@ -1149,7 +1048,7 @@
                             <small style="display:block;">Max: 5 arquivos • 10MB</small>
                         </div>
                         <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display:none;">
-                        <div id="pdfUploadPreview" style="margin-top:0.3rem;"></div>
+                        <div id="pdfUploadPreview" style="margin-top:0.25rem;"></div>
                     </div>
                     
                     <div class="form-group">
@@ -1159,7 +1058,7 @@
                             <small style="display:block;">Fotos (JPG, PNG) • Videos (MP4) • Max: 10 arquivos • 5MB</small>
                         </div>
                         <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
-                        <div id="uploadPreview" style="margin-top:0.3rem;"></div>
+                        <div id="uploadPreview" style="margin-top:0.25rem;"></div>
                     </div>
                     
                     <div class="form-row-2cols">
@@ -1191,7 +1090,7 @@
                         </label>
                     </div>
                     
-                    <div style="display: flex; gap: 0.6rem; margin-top: 0.8rem;">
+                    <div style="display: flex; gap: 0.5rem; margin-top: 0.6rem;">
                         <button type="submit"><i class="fas fa-save"></i> Adicionar Imóvel ao Site</button>
                         <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="display:none;"><i class="fas fa-times"></i> Cancelar</button>
                     </div>
@@ -1202,17 +1101,17 @@
 
     <!-- Modal PDF -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
-        <div class="pdf-modal-content" style="background:#ece9d8; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:1.2rem; max-width:380px; width:90%; text-align:center;">
-            <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.8rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imovel</h3>
+        <div class="pdf-modal-content" style="background:#ece9d8; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:1rem; max-width:380px; width:90%; text-align:center;">
+            <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.6rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imovel</h3>
             <form id="pdfPasswordForm">
-                <div id="pdfPreview" style="margin:0.8rem 0; padding:0.5rem; background:#ffffff; border:1px solid #808080; border-radius:0px;"><p>Digite a senha para visualizar</p></div>
-                <input type="password" id="pdfPassword" placeholder="Senha" style="width:100%; padding:0.5rem; border:1px solid #808080; border-top-color:#404040; border-left-color:#404040; border-radius:0px;" autocomplete="off" required>
-                <div style="display:flex; gap:0.6rem; margin-top:0.8rem;">
-                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.5rem; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
-                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.5rem; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
+                <div id="pdfPreview" style="margin:0.6rem 0; padding:0.4rem; background:#ffffff; border:1px solid #808080; border-radius:0px;"><p>Digite a senha para visualizar</p></div>
+                <input type="password" id="pdfPassword" placeholder="Senha" style="width:100%; padding:0.4rem; border:1px solid #808080; border-top-color:#404040; border-left-color:#404040; border-radius:0px;" autocomplete="off" required>
+                <div style="display:flex; gap:0.5rem; margin-top:0.6rem;">
+                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
+                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
                 </div>
             </form>
-            <p style="font-size:0.65rem; color:#666; margin-top:0.8rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
+            <p style="font-size:0.6rem; color:#666; margin-top:0.6rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
         </div>
     </div>
 
@@ -1259,25 +1158,26 @@
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
-                            // ===== CORREÇÃO FINAL: PAINEL INSTANTÂNEO NO TOPO =====
-                            // 1. Tornar o painel visível IMEDIATAMENTE
-                            adminPanel.style.display = 'block';
-                            
-                            // 2. Forçar scroll para o TOPO ABSOLUTO (0) sem animação
+                            // ===== CORREÇÃO DEFINITIVA: SCROLL INSTANTÂNEO PARA O TOPO =====
+                            // 1. Primeiro, forçar scroll para o topo (antes de mostrar)
                             window.scrollTo(0, 0);
                             
-                            // 3. Pequena verificação para garantir que o scroll realmente foi para 0
-                            setTimeout(function() {
-                                if (window.scrollY !== 0) {
-                                    window.scrollTo(0, 0);
-                                }
-                            }, 10);
+                            // 2. Tornar o painel visível
+                            adminPanel.style.display = 'block';
                             
-                            // 4. Efeito de destaque visual
+                            // 3. Forçar novamente o scroll para garantir
+                            window.scrollTo(0, 0);
+                            
+                            // 4. Remover qualquer âncora na URL que possa estar causando scroll
+                            if (window.location.hash) {
+                                history.pushState("", document.title, window.location.pathname + window.location.search);
+                            }
+                            
+                            // 5. Efeito de destaque visual
                             adminPanel.classList.add('admin-panel-highlight');
                             setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
                             
-                            // 5. Carregar a lista de propriedades
+                            // 6. Carregar a lista de propriedades
                             if (typeof window.loadPropertyList === 'function') {
                                 setTimeout(window.loadPropertyList, 100);
                             }
