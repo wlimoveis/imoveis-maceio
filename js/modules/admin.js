@@ -257,7 +257,7 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== VERSÃO ORIGINAL FUNCIONAL DO AUTOCOMPLETE (com retry mechanism) ==========
+// ========== AUTOCOMPLETE COM CORREÇÃO DO DROPDOWN ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
     
@@ -290,10 +290,11 @@ window.setupLocationAutocomplete = function() {
     function createSuggestionsContainer() {
         const container = document.createElement('div');
         container.className = 'admin-location-suggestions';
-        container.style.cssText = `position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-top:none !important; max-height:250px !important; overflow-y:auto !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; border-radius:0 0 8px 8px !important;`;
+        container.style.cssText = `position:absolute !important; z-index:9999999 !important; background:#fff !important; border:2px solid #1a5276 !important; border-radius:0 0 8px 8px !important; box-shadow:0 4px 15px rgba(0,0,0,0.3) !important; max-height:250px !important; overflow-y:auto !important;`;
         return container;
     }
 
+    // ========== FUNÇÃO SHOWSUGGESTIONS CORRIGIDA ==========
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) { 
             if (suggestionsContainer) suggestionsContainer.remove(); 
@@ -306,6 +307,7 @@ window.setupLocationAutocomplete = function() {
             return; 
         }
         
+        // 🔧 CORREÇÃO: Garantir que locationInput existe e é um elemento
         if (!locationInput || !(locationInput instanceof Element)) {
             console.warn('⚠️ locationInput inválido em showSuggestions');
             return;
@@ -322,7 +324,7 @@ window.setupLocationAutocomplete = function() {
         if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
         if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
         
-        // Calcular posição
+        // Calcular posição relativa ao viewport
         const inputRect = locationInput.getBoundingClientRect();
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         
