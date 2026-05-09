@@ -277,10 +277,10 @@
             font-size: 0.8rem;
         }
 
-        /* ========== FORMULÁRIO - CORREÇÃO DEFINITIVA DO ESPAÇAMENTO ========== */
+        /* ========== FORMULÁRIO - CORREÇÃO DEFINITIVA: GAP ZERO ========== */
         .form-group {
             margin-bottom: 0.6rem;
-            padding: 0.3rem;
+            padding: 0.25rem;
             border: 1px solid #808080;
             border-top-color: #ffffff;
             border-left-color: #ffffff;
@@ -303,22 +303,22 @@
             color: #1a5276;
         }
         
-        /* CORREÇÃO DEFINITIVA: REMOVER TODO ESPAÇO EXTRA ENTRE TÍTULO E PREÇO */
+        /* CORREÇÃO DEFINITIVA: GAP ZERO ENTRE TÍTULO E PREÇO */
         .form-row-2cols {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 0.15rem;
+            gap: 0;
             margin-bottom: 0;
         }
         
         .form-row-2cols .form-group {
             margin-bottom: 0;
-            padding: 0.25rem;
+            padding: 0.2rem;
         }
         
-        /* Garantir que os inputs fiquem justapostos */
         .form-row-2cols .form-group:first-child {
             margin-right: 0;
+            border-right: 1px solid #808080;
         }
         
         .form-row-2cols .form-group:last-child {
@@ -778,76 +778,14 @@
                 border-radius: 10px !important;
             }
             
-            .manage-container {
-                max-height: none !important;
-                overflow-y: visible !important;
-                padding-bottom: 1rem !important;
-            }
-            
-            #propertyList {
-                gap: 0 !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                padding-bottom: 0.8rem !important;
-            }
-            
-            .property-item {
-                padding: 0.4rem;
-                margin: 0 !important;
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 0.2rem;
-                border-bottom: 1px solid #d4d0c8;
-            }
-            
-            .property-item:last-child { 
-                border-bottom: none;
-                margin-bottom: 0 !important;
-                padding-bottom: 0.25rem !important;
-            }
-            
-            .property-item > div:first-child {
-                width: 50px;
-                height: 50px;
-            }
-            
-            #propertyList > div:first-child {
-                padding: 0.2rem 0.25rem !important;
-                margin-bottom: 0.25rem !important;
-                gap: 0.15rem !important;
-            }
-            
-            #propertyList > div:first-child span {
-                font-size: 0.55rem !important;
-                padding: 0.1rem 0.3rem !important;
-            }
-            
-            #propertyList > div:last-child {
-                gap: 0.02rem !important;
-                margin-top: 0.25rem !important;
-                margin-bottom: 0.03rem !important;
-                padding: 0.1rem 0.05rem !important;
-            }
-            
-            #propertyList > div:last-child button,
-            #propertyList > div:last-child span {
-                min-width: 22px !important;
-                height: 22px !important;
-                padding: 0 0.08rem !important;
-                font-size: 0.45rem !important;
-            }
-            
-            #propertyList > div:last-child select {
-                margin-left: 0.05rem !important;
-                padding: 0.05rem 0.05rem !important;
-                font-size: 0.4rem !important;
-                height: 20px !important;
-                width: 55px !important;
-            }
-            
             .form-row-2cols {
                 grid-template-columns: 1fr;
-                gap: 0.2rem;
+                gap: 0;
+            }
+            
+            .form-row-2cols .form-group:first-child {
+                border-right: none;
+                border-bottom: 1px solid #808080;
             }
             
             .form-group {
@@ -990,7 +928,7 @@
     
     <!-- ========== PAINEL DE ADMINISTRACAO ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: #1a5276; margin-bottom: 0.8rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
+        <h3 id="adminPanelTitle" style="text-align: center; color: #1a5276; margin-bottom: 0.8rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
         
         <div class="admin-tabs">
             <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-database"></i> GERENCIAR</button>
@@ -1158,26 +1096,51 @@
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
-                            // ===== CORREÇÃO DEFINITIVA: SCROLL INSTANTÂNEO PARA O TOPO =====
-                            // 1. Primeiro, forçar scroll para o topo (antes de mostrar)
-                            window.scrollTo(0, 0);
+                            // ===== CORREÇÃO DEFINITIVA: 3 FORMAS DE GARANTIR O TOPO =====
                             
-                            // 2. Tornar o painel visível
-                            adminPanel.style.display = 'block';
-                            
-                            // 3. Forçar novamente o scroll para garantir
-                            window.scrollTo(0, 0);
-                            
-                            // 4. Remover qualquer âncora na URL que possa estar causando scroll
+                            // 1. Remover qualquer hash da URL
                             if (window.location.hash) {
                                 history.pushState("", document.title, window.location.pathname + window.location.search);
                             }
                             
-                            // 5. Efeito de destaque visual
+                            // 2. Desabilitar scroll suave temporariamente
+                            const originalScrollBehavior = document.documentElement.style.scrollBehavior;
+                            document.documentElement.style.scrollBehavior = 'auto';
+                            document.body.style.scrollBehavior = 'auto';
+                            
+                            // 3. Forçar scroll para o topo múltiplas vezes
+                            window.scrollTo(0, 0);
+                            document.documentElement.scrollTop = 0;
+                            document.body.scrollTop = 0;
+                            
+                            // 4. Tornar o painel visível
+                            adminPanel.style.display = 'block';
+                            
+                            // 5. Forçar novamente o scroll para o topo
+                            window.scrollTo(0, 0);
+                            document.documentElement.scrollTop = 0;
+                            document.body.scrollTop = 0;
+                            
+                            // 6. Restaurar o comportamento de scroll original
+                            setTimeout(() => {
+                                document.documentElement.style.scrollBehavior = originalScrollBehavior;
+                                document.body.style.scrollBehavior = originalScrollBehavior;
+                            }, 100);
+                            
+                            // 7. Garantir que o título do painel esteja visível no topo
+                            const panelTitle = document.getElementById('adminPanelTitle');
+                            if (panelTitle) {
+                                const titleRect = panelTitle.getBoundingClientRect();
+                                if (titleRect.top > 50 || titleRect.top < 0) {
+                                    window.scrollTo(0, 0);
+                                }
+                            }
+                            
+                            // 8. Efeito de destaque visual
                             adminPanel.classList.add('admin-panel-highlight');
                             setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
                             
-                            // 6. Carregar a lista de propriedades
+                            // 9. Carregar a lista de propriedades
                             if (typeof window.loadPropertyList === 'function') {
                                 setTimeout(window.loadPropertyList, 100);
                             }
