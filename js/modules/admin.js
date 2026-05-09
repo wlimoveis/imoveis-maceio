@@ -312,57 +312,43 @@ window.setupLocationAutocomplete = function() {
             return;
         }
         
-        let parentContainer = locationInput.parentElement;
+        // 🔧 IMPORTANTE: O container deve ser o corpo do documento para posicionamento
+        // mas precisamos garantir que o body tenha position relative
+        const parentContainer = document.body;
         
-        // 🔧 CORREÇÃO: Verificar se parentContainer é válido antes do loop
-        if (!parentContainer || !(parentContainer instanceof Element)) {
-            console.warn('⚠️ parentContainer inválido, usando document.body');
-            parentContainer = document.body;
-        }
-        
-        // Buscar container com position relative
-        let currentElement = parentContainer;
-        while (currentElement && currentElement !== document.body && currentElement instanceof Element) {
-            try {
-                if (getComputedStyle(currentElement).position === 'relative') {
-                    parentContainer = currentElement;
-                    break;
-                }
-            } catch (e) {
-                console.warn('Erro ao verificar position:', e);
-            }
-            currentElement = currentElement.parentElement;
-            if (!currentElement || !(currentElement instanceof Element)) break;
-        }
-        
-        // Último fallback
-        if (!parentContainer || !(parentContainer instanceof Element)) {
-            parentContainer = document.body;
-        }
-        
-        // Garantir position relative no container
-        try {
-            if (getComputedStyle(parentContainer).position !== 'relative') {
-                parentContainer.style.position = 'relative';
-            }
-        } catch (e) {
-            console.warn('Erro ao definir position relative:', e);
+        // Garantir que body tenha position relative para o posicionamento absoluto funcionar
+        if (getComputedStyle(parentContainer).position !== 'relative') {
+            parentContainer.style.position = 'relative';
         }
         
         if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
         if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
         
+        // 🔧 CORREÇÃO: Calcular posição relativa ao viewport
         const inputRect = locationInput.getBoundingClientRect();
-        const parentRect = parentContainer.getBoundingClientRect();
-        suggestionsContainer.style.top = `${inputRect.bottom - parentRect.top}px`;
-        suggestionsContainer.style.left = `${inputRect.left - parentRect.left}px`;
+        const scrollTop = window.scrollY || document.documentElement.scrollTop;
+        
+        // Posicionar abaixo do campo de entrada
+        suggestionsContainer.style.position = 'absolute';
+        suggestionsContainer.style.top = `${inputRect.bottom + scrollTop}px`;
+        suggestionsContainer.style.left = `${inputRect.left}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
+        suggestionsContainer.style.zIndex = '9999999';
         suggestionsContainer.innerHTML = '';
+        
+        // Adicionar um fundo semi-transparente para destacar (opcional)
+        suggestionsContainer.style.backgroundColor = '#fff';
+        suggestionsContainer.style.border = '2px solid #1a5276';
+        suggestionsContainer.style.borderRadius = '0 0 8px 8px';
+        suggestionsContainer.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
+        suggestionsContainer.style.maxHeight = '250px';
+        suggestionsContainer.style.overflowY = 'auto';
         
         matches.forEach(bairro => {
             const div = document.createElement('div');
             div.style.cssText = `padding:10px 14px !important; cursor:pointer !important; font-size:0.9rem !important; color:#1a5276 !important; background:#fff !important; border-bottom:1px solid #e0e0e0 !important;`;
+            div.style.transition = 'background 0.2s ease';
             const escapedTerm = termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const regex = new RegExp(`(${escapedTerm})`, 'gi');
             div.innerHTML = bairro.replace(regex, `<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>`);
@@ -378,7 +364,7 @@ window.setupLocationAutocomplete = function() {
             div.onmouseleave = () => div.style.background = '#fff';
             suggestionsContainer.appendChild(div);
         });
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}"`);
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em top: ${inputRect.bottom + scrollTop}px`);
     }
     
     function hideSuggestions() { 
