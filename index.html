@@ -270,6 +270,13 @@
             color: #ffd700;
             margin-left: 8px;
         }
+        
+        /* Negrito apenas no número do total */
+        .section-title-windows small strong {
+            color: #ffd700;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
 
         /* ========== FORMULÁRIO ========== */
         .form-group {
@@ -762,28 +769,46 @@
                 padding: 0.3rem 0.4rem !important;
             }
             
-            /* ===== PAGINAÇÃO MOBILE - BOTÕES MAIS PRÓXIMOS ===== */
+            /* ===== ESTATÍSTICAS DO HEADER MAIS JUNTAS NO MOBILE ===== */
+            #propertyList > div:first-child {
+                padding: 0.3rem 0.4rem !important;
+                gap: 0.3rem !important;
+            }
+            
+            #propertyList > div:first-child > div:first-child {
+                gap: 0.3rem !important;
+                flex-wrap: wrap !important;
+            }
+            
+            #propertyList > div:first-child span {
+                font-size: 0.65rem !important;
+                padding: 0.2rem 0.4rem !important;
+                background: #eef2f5 !important;
+                border-radius: 12px !important;
+            }
+            
+            /* ===== PAGINAÇÃO MOBILE - BOTÕES ULTRA PRÓXIMOS ===== */
             #propertyList > div:last-child {
-                gap: 0.1rem !important;
-                margin-top: 0.5rem !important;
-                margin-bottom: 0.2rem !important;
-                padding: 0.3rem 0.15rem !important;
+                gap: 0.05rem !important;
+                margin-top: 0.4rem !important;
+                margin-bottom: 0.1rem !important;
+                padding: 0.2rem 0.1rem !important;
             }
             
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
-                min-width: 28px !important;
-                height: 28px !important;
-                padding: 0 0.2rem !important;
-                font-size: 0.6rem !important;
+                min-width: 26px !important;
+                height: 26px !important;
+                padding: 0 0.15rem !important;
+                font-size: 0.55rem !important;
             }
             
             #propertyList > div:last-child select {
-                margin-left: 0.15rem !important;
-                padding: 0.1rem 0.15rem !important;
-                font-size: 0.55rem !important;
-                height: 26px !important;
-                width: 70px !important;
+                margin-left: 0.1rem !important;
+                padding: 0.1rem 0.1rem !important;
+                font-size: 0.5rem !important;
+                height: 24px !important;
+                width: 65px !important;
             }
             
             #propertyList > div:last-child button:nth-child(n+10),
@@ -792,8 +817,8 @@
             }
             
             #propertyList > div:last-child span.ellipsis {
-                min-width: 12px !important;
-                padding: 0 0.1rem !important;
+                min-width: 10px !important;
+                padding: 0 0.05rem !important;
             }
             
             .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
@@ -820,13 +845,21 @@
             }
             
             .section-title-windows {
-                font-size: 0.7rem;
-                padding: 0.4rem 0.6rem;
+                font-size: 0.65rem;
+                padding: 0.35rem 0.5rem;
             }
             
             .section-title-windows i {
-                font-size: 0.85rem;
-                margin-right: 6px;
+                font-size: 0.75rem;
+                margin-right: 5px;
+            }
+            
+            .section-title-windows small {
+                font-size: 0.55rem;
+            }
+            
+            .section-title-windows small strong {
+                font-size: 0.7rem;
             }
         }
 
@@ -979,7 +1012,7 @@
             <div style="background: white; padding: 0.5rem 0;">
                 <div class="section-title-windows">
                     <i class="fas fa-archive"></i> GERENCIAR IMOVEIS EXISTENTES
-                    <small>total: <span id="propertyCount">0</span></small>
+                    <small>total: <strong id="propertyCount">0</strong></small>
                 </div>
                 <div id="propertyList" class="manage-container"></div>
             </div>
