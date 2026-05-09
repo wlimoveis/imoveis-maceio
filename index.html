@@ -303,7 +303,7 @@
             color: #1a5276;
         }
         
-        /* ===== EFEITO DE AFUNDAMENTO NAS BORDAS DOS CAMPOS BRANCOS ===== */
+        /* Efeito de afundamento nas bordas dos campos brancos */
         .admin-tab-content input,
         .admin-tab-content textarea,
         .admin-tab-content select {
@@ -316,11 +316,9 @@
             width: 100%;
             box-sizing: border-box;
             transition: all 0.1s ease;
-            /* Efeito de afundamento - sombra interna nas bordas */
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
         }
         
-        /* Efeito mais acentuado quando em foco */
         .admin-tab-content input:focus,
         .admin-tab-content textarea:focus,
         .admin-tab-content select:focus {
@@ -330,9 +328,15 @@
             box-shadow: inset 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 3px rgba(0,0,0,0.08);
         }
         
-        /* Efeito de afundamento também para as áreas de upload */
-        #uploadArea,
-        #pdfUploadArea {
+        .admin-tab-content input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            transform: scale(1.1);
+            vertical-align: middle;
+            box-shadow: none;
+        }
+        
+        #uploadArea, #pdfUploadArea {
             border: 2px solid;
             border-color: #404040 #ffffff #ffffff #404040;
             background: #ffffff;
@@ -345,28 +349,17 @@
             box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
         }
         
-        #uploadArea:active,
-        #pdfUploadArea:active {
+        #uploadArea:active, #pdfUploadArea:active {
             border-color: #ffffff #404040 #404040 #ffffff;
             box-shadow: inset 1px 1px 3px rgba(0,0,0,0.12);
         }
         
-        /* Efeito de afundamento nos previews */
-        #uploadPreview,
-        #pdfUploadPreview {
+        #uploadPreview, #pdfUploadPreview {
             background: #ffffff;
             border: 1px solid #808080;
             padding: 0.3rem;
             min-height: 60px;
             box-shadow: inset 1px 1px 3px rgba(0,0,0,0.08);
-        }
-        
-        .admin-tab-content input[type="checkbox"] {
-            width: auto;
-            margin-right: 0.5rem;
-            transform: scale(1.1);
-            vertical-align: middle;
-            box-shadow: none;
         }
         
         #propertyForm button[type="submit"] {
@@ -1257,13 +1250,26 @@
                     const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                     if (password === "wl654") {
                         if (adminPanel) {
+                            // ===== ALTERAÇÃO: NÃO ROLAR A PÁGINA, APENAS ABRIR INSTANTANEAMENTE =====
                             adminPanel.style.display = 'block';
+                            
+                            // ===== ENQUADRAMENTO PRECISO NO INÍCIO DA SESSÃO =====
+                            // Pequeno delay para garantir que o DOM foi atualizado
                             setTimeout(() => {
-                                adminPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                adminPanel.classList.add('admin-panel-highlight');
-                                setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
-                            }, 100);
-                            if (typeof window.loadPropertyList === 'function') setTimeout(window.loadPropertyList, 300);
+                                const panelRect = adminPanel.getBoundingClientRect();
+                                const panelTop = panelRect.top + window.scrollY;
+                                
+                                // Scroll suave mas rápido para o início do painel
+                                window.scrollTo({
+                                    top: panelTop - 10, // Pequena margem superior
+                                    behavior: 'smooth'
+                                });
+                            }, 50);
+                            
+                            adminPanel.classList.add('admin-panel-highlight');
+                            setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
+                            
+                            if (typeof window.loadPropertyList === 'function') setTimeout(window.loadPropertyList, 100);
                             if (typeof window.resetAdminFormCompletely === 'function') window.resetAdminFormCompletely(false);
                         }
                     } else if (password !== null && password !== "") {
