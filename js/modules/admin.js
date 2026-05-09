@@ -257,7 +257,7 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE COM CORREÇÃO DO DROPDOWN (USANDO POSITION FIXED) ==========
+// ========== AUTOCOMPLETE CORRIGIDO - VERSÃO ROBUSTA ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
     
@@ -294,13 +294,20 @@ window.setupLocationAutocomplete = function() {
 
     function showSuggestions(searchTerm) {
         if (!searchTerm || searchTerm.length < 2) { 
-            if (suggestionsContainer) suggestionsContainer.remove(); 
+            if (suggestionsContainer && suggestionsContainer.parentElement) {
+                suggestionsContainer.remove();
+                suggestionsContainer = null;
+            }
             return; 
         }
+        
         const termLower = searchTerm.toLowerCase();
         const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
         if (!matches.length) { 
-            if (suggestionsContainer) suggestionsContainer.remove(); 
+            if (suggestionsContainer && suggestionsContainer.parentElement) {
+                suggestionsContainer.remove();
+                suggestionsContainer = null;
+            }
             return; 
         }
         
@@ -309,24 +316,56 @@ window.setupLocationAutocomplete = function() {
             return;
         }
         
-        // Criar container se não existir
+        // 🔧 IMPORTANTE: Garantir que o campo está visível
+        const inputRect = locationInput.getBoundingClientRect();
+        if (inputRect.bottom === 0 && inputRect.top === 0) {
+            console.warn('⚠️ Campo não está visível, aguardando...');
+            setTimeout(() => showSuggestions(searchTerm), 100);
+            return;
+        }
+        
+        // Determinar o melhor container pai (alinhado com o campo)
+        let parentContainer = locationInput.parentElement;
+        while (parentContainer && parentContainer !== document.body) {
+            const style = getComputedStyle(parentContainer);
+            if (style.position === 'relative' || style.position === 'absolute' || style.position === 'fixed') {
+                break;
+            }
+            parentContainer = parentContainer.parentElement;
+        }
+        
+        // Fallback para o body
+        if (!parentContainer || parentContainer === document.body) {
+            parentContainer = document.body;
+            if (getComputedStyle(parentContainer).position !== 'relative') {
+                parentContainer.style.position = 'relative';
+            }
+        }
+        
+        // Criar ou reutilizar container
         if (!suggestionsContainer) {
             suggestionsContainer = createSuggestionsContainer();
         }
         
-        // Garantir que o container está no body
-        if (suggestionsContainer.parentElement !== document.body) {
-            document.body.appendChild(suggestionsContainer);
+        // Anexar ao container pai correto
+        if (suggestionsContainer.parentElement !== parentContainer) {
+            if (suggestionsContainer.parentElement) {
+                suggestionsContainer.remove();
+            }
+            parentContainer.appendChild(suggestionsContainer);
         }
         
-        // 🔧 CORREÇÃO CRÍTICA: Usar position fixed em vez de absolute
-        // Isso evita problemas com scroll e posicionamento incorreto
-        const inputRect = locationInput.getBoundingClientRect();
+        // Calcular posição RELATIVA ao container pai (não fixed)
+        const inputRectAbs = locationInput.getBoundingClientRect();
+        const parentRect = parentContainer.getBoundingClientRect();
         
-        // Aplicar estilos de posicionamento FIXED
-        suggestionsContainer.style.position = 'fixed';
-        suggestionsContainer.style.top = `${inputRect.bottom + 5}px`;  // +5px de margem
-        suggestionsContainer.style.left = `${inputRect.left}px`;
+        const topPosition = inputRectAbs.bottom - parentRect.top;
+        const leftPosition = inputRectAbs.left - parentRect.left;
+        
+        // Aplicar estilos
+        suggestionsContainer.style.position = 'absolute';
+        suggestionsContainer.style.top = `${topPosition}px`;
+        suggestionsContainer.style.left = `${leftPosition}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
         suggestionsContainer.style.zIndex = '9999999';
@@ -349,8 +388,10 @@ window.setupLocationAutocomplete = function() {
             div.innerHTML = bairro.replace(regex, `<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>`);
             div.onclick = () => { 
                 locationInput.value = bairro; 
-                if (suggestionsContainer) suggestionsContainer.remove(); 
-                suggestionsContainer = null; 
+                if (suggestionsContainer) {
+                    suggestionsContainer.remove();
+                    suggestionsContainer = null;
+                }
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
                 locationInput.dispatchEvent(new Event('change', { bubbles: true }));
                 console.log('📍 Bairro selecionado:', bairro);
@@ -359,7 +400,7 @@ window.setupLocationAutocomplete = function() {
             div.onmouseleave = () => div.style.background = '#fff';
             suggestionsContainer.appendChild(div);
         });
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em y=${inputRect.bottom + 5}px (fixed)`);
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - posição top=${topPosition}px, left=${leftPosition}px`);
     }
     
     function hideSuggestions() { 
@@ -369,7 +410,7 @@ window.setupLocationAutocomplete = function() {
         } 
     }
     
-    // Remover event listeners antigos e adicionar novos
+    // Clonar para evitar duplicação de eventos
     const newInput = locationInput.cloneNode(true);
     locationInput.parentNode.replaceChild(newInput, locationInput);
     
@@ -390,20 +431,6 @@ window.setupLocationAutocomplete = function() {
                 newInput.dispatchEvent(new Event('change', { bubbles: true }));
             } 
         } 
-    });
-    
-    // Adicionar evento de scroll para fechar o dropdown quando a página rolar
-    window.addEventListener('scroll', function() {
-        if (suggestionsContainer) {
-            hideSuggestions();
-        }
-    }, { passive: true });
-    
-    // Adicionar evento de resize para fechar o dropdown quando a janela for redimensionada
-    window.addEventListener('resize', function() {
-        if (suggestionsContainer) {
-            hideSuggestions();
-        }
     });
     
     newInput.setAttribute('data-autocomplete-initialized', 'true');
