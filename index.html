@@ -271,7 +271,6 @@
             margin-left: 8px;
         }
         
-        /* Negrito apenas no número do total */
         .section-title-windows small strong {
             color: #ffd700;
             font-weight: bold;
@@ -648,70 +647,102 @@
         /* ========== MOBILE - AJUSTE FINO ========== */
         @media (max-width: 768px) {
             .admin-tabs {
-                padding-left: 6px;
-                flex-wrap: wrap;
+                padding-left: 0px;
+                gap: -2px;
+                flex-wrap: nowrap;
                 border-bottom: none;
                 background: #ece9d8;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
             
+            /* SOBREPOSIÇÃO DAS ABAS - UMA SOBRE A OUTRA */
             .admin-tab {
-                padding: 0.4rem 1rem 0.5rem 1rem;
-                font-size: 0.7rem;
-                min-width: 70px;
+                padding: 0.4rem 0.8rem 0.5rem 0.8rem;
+                font-size: 0.65rem;
+                min-width: auto;
+                flex: 1;
+                text-align: center;
+                margin-right: -4px;
+                white-space: nowrap;
+            }
+            
+            /* Primeira aba - sem margem negativa à esquerda */
+            .admin-tab:first-child {
+                margin-left: 0;
+                margin-right: -4px;
+            }
+            
+            /* Última aba */
+            .admin-tab:last-child {
+                margin-right: 0;
+            }
+            
+            /* Aba ativa - sobrepondo as demais */
+            .admin-tab.active {
+                z-index: 10;
+                transform: translateY(1px);
+                margin-right: -4px;
+                margin-left: -2px;
+            }
+            
+            /* Aba inativa - recuada */
+            .admin-tab:not(.active) {
+                z-index: 1;
+                opacity: 0.9;
             }
             
             .admin-tab i {
-                margin-right: 6px;
-                font-size: 0.85rem;
+                margin-right: 4px;
+                font-size: 0.75rem;
             }
             
             .admin-tab-content {
-                padding: 0.6rem;
-                padding-bottom: 1rem !important;
-                overflow: visible !important;
+                padding: 0.5rem;
+                padding-bottom: 0.8rem !important;
             }
             
             .admin-tab-content > div {
-                padding: 0.5rem;
+                padding: 0.4rem;
             }
 
             .manage-container {
                 max-height: none !important;
                 overflow-y: visible !important;
-                padding-bottom: 2rem !important;
+                padding-bottom: 1.5rem !important;
             }
             
             #propertyList {
                 gap: 0 !important;
                 margin: 0 !important;
                 padding: 0 !important;
-                padding-bottom: 1.5rem !important;
+                padding-bottom: 1rem !important;
             }
             
             .admin-panel {
-                padding-left: 0.5rem !important;
-                padding-right: 0.5rem !important;
+                padding-left: 0.3rem !important;
+                padding-right: 0.3rem !important;
             }
             
             .admin-panel .manage-container,
             .admin-panel .form-compact {
-                margin-left: -0.25rem !important;
-                margin-right: -0.25rem !important;
+                margin-left: -0.15rem !important;
+                margin-right: -0.15rem !important;
             }
             
             .property-item {
-                padding: 0.6rem;
+                padding: 0.5rem;
                 margin: 0 !important;
                 flex-direction: column;
                 align-items: flex-start;
-                gap: 0.4rem;
+                gap: 0.3rem;
                 border-bottom: 1px solid #d4d0c8;
             }
             
             .property-item:last-child { 
                 border-bottom: none;
                 margin-bottom: 0 !important;
-                padding-bottom: 0.4rem !important;
+                padding-bottom: 0.3rem !important;
             }
             
             .property-item > div {
@@ -724,7 +755,7 @@
                 display: flex !important;
                 flex-wrap: wrap !important;
                 align-items: center !important;
-                gap: 0.3rem !important;
+                gap: 0.2rem !important;
                 margin-top: 0.2rem !important;
                 padding: 0 !important;
             }
@@ -732,12 +763,12 @@
             .property-item > div:nth-child(2) > div:last-child span {
                 display: inline-flex !important;
                 align-items: center !important;
-                gap: 0.2rem !important;
-                font-size: 0.65rem !important;
+                gap: 0.15rem !important;
+                font-size: 0.6rem !important;
                 color: #555 !important;
                 background: #eef2f5 !important;
-                padding: 0.2rem 0.5rem !important;
-                border-radius: 15px !important;
+                padding: 0.15rem 0.4rem !important;
+                border-radius: 12px !important;
                 margin: 0 !important;
                 white-space: nowrap !important;
             }
@@ -752,114 +783,126 @@
                 flex-wrap: nowrap !important;
                 justify-content: flex-start !important;
                 align-items: center !important;
-                gap: 0.3rem !important;
+                gap: 0.25rem !important;
                 width: 100%;
-                margin-top: 0.2rem !important;
+                margin-top: 0.15rem !important;
             }
             
             .property-item button {
                 flex: 0 0 auto !important;
-                padding: 0.3rem 0.5rem !important;
-                font-size: 0.65rem !important;
+                padding: 0.25rem 0.4rem !important;
+                font-size: 0.6rem !important;
                 margin: 0 !important;
                 white-space: nowrap !important;
             }
             
             .property-item button:nth-child(2) {
-                padding: 0.3rem 0.4rem !important;
+                padding: 0.25rem 0.35rem !important;
             }
             
             /* ===== ESTATÍSTICAS DO HEADER MAIS JUNTAS NO MOBILE ===== */
             #propertyList > div:first-child {
-                padding: 0.3rem 0.4rem !important;
-                gap: 0.3rem !important;
+                padding: 0.25rem 0.3rem !important;
+                margin-bottom: 0.3rem !important;
+                gap: 0.2rem !important;
             }
             
             #propertyList > div:first-child > div:first-child {
-                gap: 0.3rem !important;
+                gap: 0.2rem !important;
                 flex-wrap: wrap !important;
             }
             
             #propertyList > div:first-child span {
-                font-size: 0.65rem !important;
-                padding: 0.2rem 0.4rem !important;
+                font-size: 0.6rem !important;
+                padding: 0.15rem 0.35rem !important;
                 background: #eef2f5 !important;
+                border-radius: 10px !important;
+            }
+            
+            /* ===== SEPARAR TÍTULO DO TOTAL ===== */
+            .section-title-windows {
+                margin-bottom: 0.6rem !important;
+                padding: 0.4rem 0.5rem !important;
+                font-size: 0.6rem !important;
+                display: flex !important;
+                justify-content: space-between !important;
+                align-items: center !important;
+                flex-wrap: wrap !important;
+                gap: 0.3rem !important;
+            }
+            
+            .section-title-windows i {
+                font-size: 0.7rem !important;
+                margin-right: 4px !important;
+            }
+            
+            .section-title-windows small {
+                font-size: 0.55rem !important;
+                margin-left: 0 !important;
+                background: rgba(0,0,0,0.2) !important;
+                padding: 0.15rem 0.4rem !important;
                 border-radius: 12px !important;
+            }
+            
+            .section-title-windows small strong {
+                font-size: 0.65rem !important;
             }
             
             /* ===== PAGINAÇÃO MOBILE - BOTÕES ULTRA PRÓXIMOS ===== */
             #propertyList > div:last-child {
-                gap: 0.05rem !important;
-                margin-top: 0.4rem !important;
-                margin-bottom: 0.1rem !important;
-                padding: 0.2rem 0.1rem !important;
+                gap: 0.03rem !important;
+                margin-top: 0.3rem !important;
+                margin-bottom: 0.05rem !important;
+                padding: 0.15rem 0.08rem !important;
             }
             
             #propertyList > div:last-child button,
             #propertyList > div:last-child span {
-                min-width: 26px !important;
-                height: 26px !important;
-                padding: 0 0.15rem !important;
-                font-size: 0.55rem !important;
+                min-width: 24px !important;
+                height: 24px !important;
+                padding: 0 0.1rem !important;
+                font-size: 0.5rem !important;
             }
             
             #propertyList > div:last-child select {
-                margin-left: 0.1rem !important;
-                padding: 0.1rem 0.1rem !important;
-                font-size: 0.5rem !important;
-                height: 24px !important;
-                width: 65px !important;
+                margin-left: 0.08rem !important;
+                padding: 0.08rem 0.08rem !important;
+                font-size: 0.45rem !important;
+                height: 22px !important;
+                width: 60px !important;
             }
             
-            #propertyList > div:last-child button:nth-child(n+10),
-            #propertyList > div:last-child span:nth-child(n+10) {
+            #propertyList > div:last-child button:nth-child(n+9),
+            #propertyList > div:last-child span:nth-child(n+9) {
                 display: none !important;
             }
             
             #propertyList > div:last-child span.ellipsis {
-                min-width: 10px !important;
-                padding: 0 0.05rem !important;
+                min-width: 8px !important;
+                padding: 0 0.03rem !important;
             }
             
-            .property-item div[style*="display: flex"] { gap: 0.3rem !important; }
+            .property-item div[style*="display: flex"] { gap: 0.2rem !important; }
             
             #manage-tab {
                 overflow: visible !important;
-                padding-bottom: 2rem !important;
+                padding-bottom: 1rem !important;
             }
             
             #backToTopBtn {
-                bottom: 70px;
-                right: 15px;
-                width: 42px;
-                height: 42px;
-                font-size: 1rem;
-                background: rgba(26, 82, 118, 0.4);
-                backdrop-filter: blur(10px);
-                -webkit-backdrop-filter: blur(10px);
+                bottom: 65px;
+                right: 12px;
+                width: 38px;
+                height: 38px;
+                font-size: 0.9rem;
+                background: rgba(26, 82, 118, 0.45);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
             }
             
             .form-row-2cols {
                 grid-template-columns: 1fr;
-                gap: 0.4rem;
-            }
-            
-            .section-title-windows {
-                font-size: 0.65rem;
-                padding: 0.35rem 0.5rem;
-            }
-            
-            .section-title-windows i {
-                font-size: 0.75rem;
-                margin-right: 5px;
-            }
-            
-            .section-title-windows small {
-                font-size: 0.55rem;
-            }
-            
-            .section-title-windows small strong {
-                font-size: 0.7rem;
+                gap: 0.3rem;
             }
         }
 
@@ -1011,7 +1054,7 @@
         <div id="manage-tab" class="admin-tab-content active">
             <div style="background: white; padding: 0.5rem 0;">
                 <div class="section-title-windows">
-                    <i class="fas fa-archive"></i>  GERENCIAR IMOVEIS EXISTENTES:
+                    <i class="fas fa-archive"></i> GERENCIAR IMOVEIS EXISTENTES
                     <small>total: <strong id="propertyCount">0</strong></small>
                 </div>
                 <div id="propertyList" class="manage-container"></div>
