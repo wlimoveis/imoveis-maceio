@@ -167,6 +167,36 @@ class PropertyTemplateEngine {
         this._localCache = new Map();
     }
 
+    // Função auxiliar para escape HTML com fallback garantido
+    _safe(str) {
+        if (!str) return '';
+        // Usar SharedCore se disponível, caso contrário fallback local seguro
+        if (window.SharedCore && typeof window.SharedCore.escapeHtml === 'function') {
+            return window.SharedCore.escapeHtml(str);
+        }
+        // Fallback local (nunca deve ocorrer, mas é uma garantia de operação)
+        return String(str).replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Método DRY para renderização de features
+    _renderFeaturesList(features, isRural) {
+        const displayFeatures = window.SharedCore.formatFeaturesForDisplay(features);
+        if (!displayFeatures) return '';
+        
+        return displayFeatures.split(',').map(f => {
+            const feature = f.trim();
+            if (feature) {
+                return window.FeatureIconMapper.renderFeatureWithIcon(feature, isRural);
+            }
+            return '';
+        }).join('');
+    }
+
     generate(property) {
         if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
             return window.TemplateCache.getTemplate(property, (prop) => this._generateTemplate(prop));
@@ -198,10 +228,6 @@ class PropertyTemplateEngine {
     
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
-        
-        const formatPrice = (price) => {
-            return window.SharedCore.PriceFormatter.formatForCard(price);
-        };
 
         const descriptionText = property.description || 'Descrição não disponível.';
         const truncatedDesc = descriptionText.length > 120 
@@ -228,25 +254,21 @@ class PropertyTemplateEngine {
             </div>
         ` : '';
 
+        const featuresHtml = this._renderFeaturesList(property.features, property.rural);
+
         const html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
                 ${this.generateImageSection(property, newBadgeHtml)}
                 <div class="property-content">
-                    <div class="property-price" data-price-field>${formatPrice(property.price)}</div>
-                    <h3 class="property-title" data-title-field>${this.escapeHtml(property.title) || 'Sem título'}</h3>
+                    <div class="property-price" data-price-field>${window.SharedCore.PriceFormatter.formatForCard(property.price)}</div>
+                    <h3 class="property-title" data-title-field>${this._safe(property.title) || 'Sem título'}</h3>
                     <div class="property-location" data-location-field>
-                        <i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(property.location) || 'Local não informado'}
+                        <i class="fas fa-map-marker-alt"></i> ${this._safe(property.location) || 'Local não informado'}
                     </div>
-                    <p data-description-field>${this.escapeHtml(truncatedDesc)}</p>
+                    <p data-description-field>${this._safe(truncatedDesc)}</p>
                     ${displayFeatures ? `
                         <div class="property-features" data-features-field style="display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0;">
-                            ${displayFeatures.split(',').map(f => {
-                                const feature = f.trim();
-                                if (feature) {
-                                    return window.FeatureIconMapper.renderFeatureWithIcon(feature, property.rural);
-                                }
-                                return '';
-                            }).join('')}
+                            ${featuresHtml}
                         </div>
                     ` : ''}
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
@@ -306,7 +328,7 @@ class PropertyTemplateEngine {
                     <img src="${firstImageUrl}" 
                          loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
-                         alt="${this.escapeHtml(property.title)}"
+                         alt="${this._safe(property.title)}"
                          data-original-src="${firstImageUrl}"
                          onerror="this.src='${this.imageFallback}'">
                     
@@ -323,7 +345,7 @@ class PropertyTemplateEngine {
                             font-weight: bold; 
                             z-index: 10;
                         ">
-                            ${this.escapeHtml(property.badge)}
+                            ${this._safe(property.badge)}
                         </div>
                     ` : ''}
                     
@@ -420,16 +442,6 @@ class PropertyTemplateEngine {
         `;
     }
     
-    escapeHtml(str) {
-        if (!str) return '';
-        return str
-            .replace(/&/g, '&amp;')
-            .replace(/</g, '&lt;')
-            .replace(/>/g, '&gt;')
-            .replace(/"/g, '&quot;')
-            .replace(/'/g, '&#39;');
-    }
-    
     updateCardContent(propertyId, propertyData) {
         console.log(`🔍 Atualizando conteúdo do card ${propertyId}`, propertyData);
         
@@ -451,7 +463,7 @@ class PropertyTemplateEngine {
             if (propertyData.title !== undefined) {
                 const titleElement = card.querySelector('[data-title-field]');
                 if (titleElement) {
-                    titleElement.textContent = this.escapeHtml(propertyData.title);
+                    titleElement.textContent = this._safe(propertyData.title);
                 }
                 card.setAttribute('data-property-title', propertyData.title);
             }
@@ -459,7 +471,7 @@ class PropertyTemplateEngine {
             if (propertyData.location !== undefined) {
                 const locationElement = card.querySelector('[data-location-field]');
                 if (locationElement) {
-                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${this.escapeHtml(propertyData.location)}`;
+                    locationElement.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${this._safe(propertyData.location)}`;
                 }
             }
             
@@ -470,23 +482,17 @@ class PropertyTemplateEngine {
                     const truncatedDesc = descriptionText.length > 120 
                         ? descriptionText.substring(0, 120) + '...' 
                         : descriptionText;
-                    descriptionElement.textContent = this.escapeHtml(truncatedDesc);
+                    descriptionElement.textContent = this._safe(truncatedDesc);
                 }
             }
             
             if (propertyData.features !== undefined) {
                 const featuresElement = card.querySelector('[data-features-field]');
-                const displayFeatures = window.SharedCore.formatFeaturesForDisplay(propertyData.features);
+                const featuresHtml = this._renderFeaturesList(propertyData.features, propertyData.rural);
                 
                 if (featuresElement) {
-                    if (displayFeatures) {
-                        featuresElement.innerHTML = displayFeatures.split(',').map(f => {
-                            const feature = f.trim();
-                            if (feature) {
-                                return window.FeatureIconMapper.renderFeatureWithIcon(feature, propertyData.rural);
-                            }
-                            return '';
-                        }).join('');
+                    if (featuresHtml) {
+                        featuresElement.innerHTML = featuresHtml;
                         featuresElement.style.display = 'flex';
                         featuresElement.style.flexWrap = 'wrap';
                         featuresElement.style.gap = '8px';
