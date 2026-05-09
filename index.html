@@ -303,6 +303,7 @@
             color: #1a5276;
         }
         
+        /* ===== EFEITO DE AFUNDAMENTO NAS BORDAS DOS CAMPOS BRANCOS ===== */
         .admin-tab-content input,
         .admin-tab-content textarea,
         .admin-tab-content select {
@@ -314,24 +315,24 @@
             font-size: 0.8rem;
             width: 100%;
             box-sizing: border-box;
+            transition: all 0.1s ease;
+            /* Efeito de afundamento - sombra interna nas bordas */
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
         }
         
+        /* Efeito mais acentuado quando em foco */
         .admin-tab-content input:focus,
         .admin-tab-content textarea:focus,
         .admin-tab-content select:focus {
             border-color: #000000 #808080 #808080 #000000;
             outline: none;
             background: #fffff0;
+            box-shadow: inset 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 3px rgba(0,0,0,0.08);
         }
         
-        .admin-tab-content input[type="checkbox"] {
-            width: auto;
-            margin-right: 0.5rem;
-            transform: scale(1.1);
-            vertical-align: middle;
-        }
-        
-        #uploadArea, #pdfUploadArea {
+        /* Efeito de afundamento também para as áreas de upload */
+        #uploadArea,
+        #pdfUploadArea {
             border: 2px solid;
             border-color: #404040 #ffffff #ffffff #404040;
             background: #ffffff;
@@ -341,17 +342,31 @@
             font-family: 'Courier New', monospace;
             font-size: 0.7rem;
             text-align: center;
+            box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
         }
         
-        #uploadArea:active, #pdfUploadArea:active {
+        #uploadArea:active,
+        #pdfUploadArea:active {
             border-color: #ffffff #404040 #404040 #ffffff;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.12);
         }
         
-        #uploadPreview, #pdfUploadPreview {
+        /* Efeito de afundamento nos previews */
+        #uploadPreview,
+        #pdfUploadPreview {
             background: #ffffff;
             border: 1px solid #808080;
             padding: 0.3rem;
             min-height: 60px;
+            box-shadow: inset 1px 1px 3px rgba(0,0,0,0.08);
+        }
+        
+        .admin-tab-content input[type="checkbox"] {
+            width: auto;
+            margin-right: 0.5rem;
+            transform: scale(1.1);
+            vertical-align: middle;
+            box-shadow: none;
         }
         
         #propertyForm button[type="submit"] {
@@ -656,7 +671,7 @@
                 justify-content: flex-start;
             }
             
-            /* ===== ABAS COM TAMANHO SOB MEDIDA (BASEADO NO CONTEÚDO) E SOBREPOSIÇÃO DE 1/3 ===== */
+            /* ===== ABAS COM TAMANHO SOB MEDIDA E SOBREPOSIÇÃO ===== */
             .admin-tab {
                 padding: 0.4rem 0.8rem 0.5rem 0.8rem;
                 font-size: 0.65rem;
@@ -665,31 +680,27 @@
                 flex: 0 0 auto;
                 text-align: center;
                 white-space: nowrap;
-                margin-right: -22px;  /* Sobreposição de aproximadamente 1/3 da largura */
+                margin-right: -22px;
                 z-index: 1;
                 background: #d8d4c2;
                 border-right: 1px solid #a09b8a;
             }
             
-            /* Primeira aba - sem margem negativa à esquerda para manter estrutura */
             .admin-tab:first-child {
                 margin-left: 0;
                 margin-right: -22px;
             }
             
-            /* Última aba - sem sobreposição à direita */
             .admin-tab:last-child {
                 margin-right: 0;
             }
             
-            /* Aba inativa - recuada, levemente escurecida e com sobreposição visível */
             .admin-tab:not(.active) {
                 z-index: 1;
                 opacity: 0.85;
                 background: #cec9b6;
             }
             
-            /* Aba ativa - sobrepõe as demais com destaque e profundidade */
             .admin-tab.active {
                 z-index: 10;
                 transform: translateY(1px);
@@ -702,7 +713,6 @@
                 box-shadow: -2px 1px 6px rgba(0,0,0,0.15), 2px 1px 4px rgba(0,0,0,0.1);
             }
             
-            /* Efeito de profundidade - sombra na aba ativa sobrepondo as demais */
             .admin-tab.active::before {
                 content: '';
                 position: absolute;
@@ -907,7 +917,6 @@
                 width: 60px !important;
             }
             
-            /* Limitar número de botões no mobile para não quebrar layout */
             #propertyList > div:last-child button:nth-child(n+9),
             #propertyList > div:last-child span:nth-child(n+9) {
                 display: none !important;
