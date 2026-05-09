@@ -306,17 +306,15 @@ window.setupLocationAutocomplete = function() {
             return; 
         }
         
-        // 🔧 CORREÇÃO: Garantir que locationInput existe e é um elemento
         if (!locationInput || !(locationInput instanceof Element)) {
             console.warn('⚠️ locationInput inválido em showSuggestions');
             return;
         }
         
-        // 🔧 IMPORTANTE: O container deve ser o corpo do documento para posicionamento
-        // mas precisamos garantir que o body tenha position relative
+        // Usar o body como container principal
         const parentContainer = document.body;
         
-        // Garantir que body tenha position relative para o posicionamento absoluto funcionar
+        // Garantir position relative no body
         if (getComputedStyle(parentContainer).position !== 'relative') {
             parentContainer.style.position = 'relative';
         }
@@ -324,26 +322,25 @@ window.setupLocationAutocomplete = function() {
         if (!suggestionsContainer) suggestionsContainer = createSuggestionsContainer();
         if (suggestionsContainer.parentElement !== parentContainer) parentContainer.appendChild(suggestionsContainer);
         
-        // 🔧 CORREÇÃO: Calcular posição relativa ao viewport
+        // Calcular posição
         const inputRect = locationInput.getBoundingClientRect();
         const scrollTop = window.scrollY || document.documentElement.scrollTop;
         
-        // Posicionar abaixo do campo de entrada
+        // Aplicar estilos de posicionamento
         suggestionsContainer.style.position = 'absolute';
         suggestionsContainer.style.top = `${inputRect.bottom + scrollTop}px`;
         suggestionsContainer.style.left = `${inputRect.left}px`;
         suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
         suggestionsContainer.style.display = 'block';
         suggestionsContainer.style.zIndex = '9999999';
-        suggestionsContainer.innerHTML = '';
-        
-        // Adicionar um fundo semi-transparente para destacar (opcional)
         suggestionsContainer.style.backgroundColor = '#fff';
         suggestionsContainer.style.border = '2px solid #1a5276';
+        suggestionsContainer.style.borderTop = 'none';
         suggestionsContainer.style.borderRadius = '0 0 8px 8px';
         suggestionsContainer.style.boxShadow = '0 4px 15px rgba(0,0,0,0.3)';
         suggestionsContainer.style.maxHeight = '250px';
         suggestionsContainer.style.overflowY = 'auto';
+        suggestionsContainer.innerHTML = '';
         
         matches.forEach(bairro => {
             const div = document.createElement('div');
@@ -364,7 +361,7 @@ window.setupLocationAutocomplete = function() {
             div.onmouseleave = () => div.style.background = '#fff';
             suggestionsContainer.appendChild(div);
         });
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em top: ${inputRect.bottom + scrollTop}px`);
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - dropdown posicionado em y=${inputRect.bottom + scrollTop}px`);
     }
     
     function hideSuggestions() { 
