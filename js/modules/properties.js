@@ -1,5 +1,5 @@
-// js/modules/properties.js
-console.log('✅ properties.js carregado');
+// js/modules/properties.js - VERSÃO ATUALIZADA COM FORMATAÇÃO CENTRALIZADA
+console.log('✅ properties.js carregado - Formatação de preço via SharedCore');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -7,7 +7,6 @@ window.currentFilter = 'todos';
 
 // ========== CONFIGURAÇÃO DE PAGINAÇÃO ==========
 window.adminCurrentPage = 1;
-// Detectar mobile e ajustar itens por página
 const isMobileForPagination = window.innerWidth <= 768;
 window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
 
@@ -167,14 +166,11 @@ class PropertyTemplateEngine {
         this._localCache = new Map();
     }
 
-    // Função auxiliar para escape HTML com fallback garantido
     _safe(str) {
         if (!str) return '';
-        // Usar SharedCore se disponível, caso contrário fallback local seguro
         if (window.SharedCore && typeof window.SharedCore.escapeHtml === 'function') {
             return window.SharedCore.escapeHtml(str);
         }
-        // Fallback local (nunca deve ocorrer, mas é uma garantia de operação)
         return String(str).replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
@@ -183,7 +179,6 @@ class PropertyTemplateEngine {
         });
     }
 
-    // Método DRY para renderização de features
     _renderFeaturesList(features, isRural) {
         const displayFeatures = window.SharedCore.formatFeaturesForDisplay(features);
         if (!displayFeatures) return '';
@@ -228,12 +223,10 @@ class PropertyTemplateEngine {
     
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
-
         const descriptionText = property.description || 'Descrição não disponível.';
         const truncatedDesc = descriptionText.length > 120 
             ? descriptionText.substring(0, 120) + '...' 
             : descriptionText;
-
         const showNewBadge = this.isNewProperty(property.created_at);
         const newBadgeHtml = showNewBadge ? `
             <div style="
@@ -253,14 +246,16 @@ class PropertyTemplateEngine {
                 <i class="fas fa-star"></i> NOVO
             </div>
         ` : '';
-
         const featuresHtml = this._renderFeaturesList(property.features, property.rural);
+        
+        // ✅ FORMATAÇÃO DE PREÇO CENTRALIZADA VIA SHAREDCORE
+        const formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
 
         const html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${property.title}">
                 ${this.generateImageSection(property, newBadgeHtml)}
                 <div class="property-content">
-                    <div class="property-price" data-price-field>${window.SharedCore.PriceFormatter.formatForCard(property.price)}</div>
+                    <div class="property-price" data-price-field>${formattedPrice}</div>
                     <h3 class="property-title" data-title-field>${this._safe(property.title) || 'Sem título'}</h3>
                     <div class="property-location" data-location-field>
                         <i class="fas fa-map-marker-alt"></i> ${this._safe(property.location) || 'Local não informado'}
@@ -296,7 +291,6 @@ class PropertyTemplateEngine {
                 </div>
             </div>
         `;
-
         return html;
     }
 
@@ -455,6 +449,7 @@ class PropertyTemplateEngine {
             if (propertyData.price !== undefined) {
                 const priceElement = card.querySelector('[data-price-field]');
                 if (priceElement) {
+                    // ✅ FORMATAÇÃO CENTRALIZADA VIA SHAREDCORE
                     const formattedPrice = window.SharedCore.PriceFormatter.formatForCard(propertyData.price);
                     priceElement.textContent = formattedPrice;
                 }
@@ -1230,11 +1225,9 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     const paginationDiv = document.createElement('div');
     paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
     
-    // Usar o itemsPerPage passado ou detectar mobile
     const isMobile = window.innerWidth <= 768;
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     
-    // Botão Primeira página
     const firstBtn = document.createElement('button');
     firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
     firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1243,7 +1236,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     firstBtn.onclick = () => window.loadPropertyList(1);
     paginationDiv.appendChild(firstBtn);
     
-    // Botão Anterior
     const prevBtn = document.createElement('button');
     prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1252,7 +1244,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
     paginationDiv.appendChild(prevBtn);
     
-    // ===== PAGINAÇÃO COMPACTA (menos números no mobile) =====
     const maxVisiblePages = isMobile ? 3 : 5;
     
     let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
@@ -1262,7 +1253,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
     
-    // Primeira página
     if (startPage > 1) {
         const firstPageSpan = document.createElement('span');
         firstPageSpan.textContent = '1';
@@ -1278,7 +1268,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         }
     }
     
-    // Páginas centrais
     for (let i = startPage; i <= endPage; i++) {
         const pageBtn = document.createElement('button');
         pageBtn.textContent = i;
@@ -1287,7 +1276,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         paginationDiv.appendChild(pageBtn);
     }
     
-    // Última página
     if (endPage < totalPages) {
         if (endPage < totalPages - 1) {
             const ellipsis = document.createElement('span');
@@ -1303,7 +1291,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         paginationDiv.appendChild(lastPageSpan);
     }
     
-    // Botão Próximo
     const nextBtn = document.createElement('button');
     nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1312,7 +1299,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
     paginationDiv.appendChild(nextBtn);
     
-    // Botão Última página
     const lastBtn = document.createElement('button');
     lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
     lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1321,7 +1307,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
-    // Select de itens por página
     const perPageSelect = document.createElement('select');
     perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
@@ -1340,7 +1325,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     return paginationDiv;
 }
 
-// ========== LOAD PROPERTY LIST (COM 3 ITENS POR PÁGINA NO MOBILE E ESPAÇO PARA PAGINAÇÃO) ==========
+// ========== LOAD PROPERTY LIST ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1352,7 +1337,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     if (!container) return;
     
-    // ===== DETECTAR MOBILE E AJUSTAR ITENS POR PÁGINA =====
     const isMobile = window.innerWidth <= 768;
     const itemsPerPage = isMobile ? 3 : window.adminItemsPerPage;
     
@@ -1375,15 +1359,13 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         return;
     }
     
-    // AUMENTAR O CONTAINER PARA DAR ESPAÇO PARA A PAGINAÇÃO
     container.style.maxHeight = '650px';
     container.style.overflowY = 'auto';
     container.style.paddingRight = '5px';
-    container.style.paddingBottom = '20px'; // ESPAÇO EXTRA PARA PAGINAÇÃO
+    container.style.paddingBottom = '20px';
     
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
-    // Header da lista
     const statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;';
     
@@ -1408,7 +1390,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     statsHeader.appendChild(statsContainer);
     container.appendChild(statsHeader);
     
-    // Lista de imóveis
     const listContainer = document.createElement('div');
     listContainer.id = 'propertyListItems';
     listContainer.style.cssText = 'margin: 0.5rem 0;';
@@ -1491,7 +1472,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     container.appendChild(listContainer);
     
-    // WRAPPER DA PAGINAÇÃO COM ESPAÇO EXTRA
     if (totalPages > 1) {
         const paginationWrapper = document.createElement('div');
         paginationWrapper.style.cssText = 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
