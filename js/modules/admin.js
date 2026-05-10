@@ -257,9 +257,52 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE SIMPLES E FUNCIONAL ==========
+// ========== AUTOCOMPLETE COM CSS FORÇADO ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
+    
+    // Adicionar estilo global para garantir que o dropdown apareça
+    if (!document.getElementById('admin-autocomplete-style')) {
+        const style = document.createElement('style');
+        style.id = 'admin-autocomplete-style';
+        style.textContent = `
+            .admin-location-suggestions {
+                position: fixed !important;
+                z-index: 9999999 !important;
+                background: white !important;
+                border: 2px solid #1a5276 !important;
+                border-top: none !important;
+                border-radius: 0 0 8px 8px !important;
+                box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+                max-height: 250px !important;
+                overflow-y: auto !important;
+                box-sizing: border-box !important;
+                display: block !important;
+                visibility: visible !important;
+                opacity: 1 !important;
+            }
+            .admin-location-suggestions div {
+                padding: 10px 14px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                color: #1a5276 !important;
+                background: white !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                transition: background 0.2s ease !important;
+            }
+            .admin-location-suggestions div:hover {
+                background: #e8f4fd !important;
+            }
+            .admin-location-suggestions strong {
+                color: #c0392b !important;
+                background: #fdebd0 !important;
+                padding: 2px 4px !important;
+                border-radius: 4px !important;
+            }
+        `;
+        document.head.appendChild(style);
+        console.log('✅ Estilo global do autocomplete adicionado');
+    }
     
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
@@ -286,24 +329,6 @@ window.setupLocationAutocomplete = function() {
     
     let suggestionsContainer = null;
     
-    function createSuggestionsContainer() {
-        const container = document.createElement('div');
-        container.className = 'admin-location-suggestions';
-        container.style.cssText = `
-            position: fixed !important;
-            z-index: 9999999 !important;
-            background: white !important;
-            border: 2px solid #1a5276 !important;
-            border-top: none !important;
-            border-radius: 0 0 8px 8px !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-            max-height: 250px !important;
-            overflow-y: auto !important;
-            box-sizing: border-box !important;
-        `;
-        return container;
-    }
-
     function showSuggestions(searchTerm) {
         // Limpar container anterior se existir
         if (suggestionsContainer && suggestionsContainer.parentElement) {
@@ -329,18 +354,42 @@ window.setupLocationAutocomplete = function() {
         }
         
         // Criar novo container
-        suggestionsContainer = createSuggestionsContainer();
-        suggestionsContainer.style.top = `${rect.bottom + 5}px`;
-        suggestionsContainer.style.left = `${rect.left}px`;
-        suggestionsContainer.style.width = `${locationInput.offsetWidth}px`;
-        suggestionsContainer.style.display = 'block';
-        suggestionsContainer.innerHTML = '';
+        suggestionsContainer = document.createElement('div');
+        suggestionsContainer.className = 'admin-location-suggestions';
+        
+        // Estilos inline forçados
+        suggestionsContainer.style.cssText = `
+            position: fixed !important;
+            top: ${rect.bottom + 5}px !important;
+            left: ${rect.left}px !important;
+            width: ${locationInput.offsetWidth}px !important;
+            z-index: 9999999 !important;
+            background: white !important;
+            border: 2px solid #1a5276 !important;
+            border-top: none !important;
+            border-radius: 0 0 8px 8px !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+            max-height: 250px !important;
+            overflow-y: auto !important;
+            box-sizing: border-box !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        `;
         
         matches.forEach(bairro => {
             const div = document.createElement('div');
-            div.style.cssText = 'padding:10px 14px; cursor:pointer; font-size:0.9rem; color:#1a5276; background:#fff; border-bottom:1px solid #e0e0e0;';
+            div.style.cssText = `
+                padding: 10px 14px !important;
+                cursor: pointer !important;
+                font-size: 0.9rem !important;
+                color: #1a5276 !important;
+                background: white !important;
+                border-bottom: 1px solid #e0e0e0 !important;
+                transition: background 0.2s ease !important;
+            `;
             div.onmouseenter = () => div.style.background = '#e8f4fd';
-            div.onmouseleave = () => div.style.background = '#fff';
+            div.onmouseleave = () => div.style.background = 'white';
             
             const escapedTerm = termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
             const regex = new RegExp(`(${escapedTerm})`, 'gi');
@@ -361,7 +410,11 @@ window.setupLocationAutocomplete = function() {
         });
         
         document.body.appendChild(suggestionsContainer);
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - top=${rect.bottom + 5}px`);
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - top=${rect.bottom + 5}px, left=${rect.left}px, width=${locationInput.offsetWidth}px`);
+        
+        // Debug: verificar se o elemento foi realmente adicionado
+        console.log('✅ Dropdown adicionado ao body:', suggestionsContainer);
+        console.log('📐 Dimensões do dropdown:', suggestionsContainer.getBoundingClientRect());
     }
     
     function hideSuggestions() {
