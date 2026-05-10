@@ -1,6 +1,9 @@
 /* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
 /* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
-/* ATUALIZADO: Layout diferenciado entre abas em mobile - Gerenciar (100% largura) / Incluir/Editar (layout anterior com margens) */
+/* ATUALIZADO: Layout original restaurado para aba INCLUIR/EDITAR em mobile */
+/* - Campos Título e Preço na mesma linha */
+/* - Espaçamento justo (estilo C/C++ skeuomorphism) */
+/* - Aba GERENCIAR mantém 100% largura */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -1925,7 +1928,10 @@ select {
 /* ========== MOBILE: LAYOUT DIFERENCIADO ENTRE ABAS ========== */
 /* 
    REGRA 1: ABA GERENCIAR (manage-tab) - ocupa 100% da largura, sem margens
-   REGRA 2: ABA INCLUIR/EDITAR (form-tab) - mantém layout anterior com margens amigáveis
+   REGRA 2: ABA INCLUIR/EDITAR (form-tab) - layout original preservado
+     - Campos Título e Preço na MESMA LINHA (grid 1fr 1fr)
+     - Espaçamento justo (gap reduzido)
+     - Estilo consistente com o original
 */
 
 /* Ajuste base do painel em mobile */
@@ -1973,47 +1979,83 @@ select {
     }
 }
 
-/* ESTILO ESPECÍFICO PARA ABA INCLUIR/EDITAR (layout anterior com margens) */
+/* ESTILO ESPECÍFICO PARA ABA INCLUIR/EDITAR (layout original restaurado) */
 @media (max-width: 768px) {
     #form-tab.active {
-        padding: 0.5rem !important;
+        padding: 0 !important;
     }
     
     #form-tab.active > div {
         padding: 0.5rem !important;
         margin: 0 auto !important;
         max-width: 100% !important;
-        border-radius: 8px !important;
     }
     
-    /* Preservar o layout original do formulário */
-    #form-tab.active .form-group {
-        margin-bottom: 0.6rem !important;
-        padding: 0.3rem !important;
-    }
-    
+    /* RESTAURAR LAYOUT ORIGINAL: TÍTULO E PREÇO NA MESMA LINHA */
     #form-tab.active .form-row-2cols {
         display: grid !important;
-        grid-template-columns: 1fr !important;
-        gap: 0.2rem !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.15rem !important;
+        margin-bottom: 0 !important;
     }
     
+    /* Espaçamento justo entre os campos (estilo C/C++) */
+    #form-tab.active .form-group {
+        margin-bottom: 0.15rem !important;
+        padding: 0.15rem !important;
+    }
+    
+    /* Remover gaps extras entre campos */
+    #form-tab.active #propertyForm {
+        gap: 0 !important;
+    }
+    
+    /* Campos com padding reduzido para manter justaposição */
+    #form-tab.active #propertyForm input,
+    #form-tab.active #propertyForm textarea,
+    #form-tab.active #propertyForm select {
+        padding: 0.35rem 0.45rem !important;
+        font-size: 0.75rem !important;
+    }
+    
+    /* Botões com layout justo */
     #form-tab.active #propertyForm button[type="submit"],
     #form-tab.active #cancelEditBtn {
         width: 100% !important;
-        padding: 0.6rem !important;
-        font-size: 0.8rem !important;
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+        margin-top: 0.15rem !important;
     }
     
-    /* Manter padding adequado nas áreas de upload */
+    /* Áreas de upload com padding reduzido */
     #form-tab.active #uploadArea,
     #form-tab.active #pdfUploadArea {
-        padding: 0.8rem !important;
+        padding: 0.5rem !important;
+        margin: 0.25rem 0 !important;
     }
     
-    /* Manter o título da seção com boa aparência */
+    /* Área de preview com espaçamento justo */
+    #form-tab.active #uploadPreview,
+    #form-tab.active #pdfUploadPreview {
+        margin: 0.25rem 0 !important;
+        padding: 0.25rem !important;
+    }
+    
+    /* Título da seção com espaçamento ajustado */
     #form-tab.active .section-title-windows {
-        margin: 0.5rem 0 !important;
-        padding: 0.4rem !important;
+        margin: 0.25rem 0 0.5rem 0 !important;
+        padding: 0.3rem !important;
+    }
+    
+    /* Container do formulário sem margens extras */
+    #form-tab.active #propertyForm {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Checkbox com espaçamento justo */
+    #form-tab.active .form-group label[style*="display:flex"] {
+        margin: 0 !important;
+        padding: 0.1rem 0 !important;
     }
 }
