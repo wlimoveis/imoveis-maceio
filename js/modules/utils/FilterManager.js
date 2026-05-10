@@ -1,6 +1,6 @@
 // js/modules/utils/FilterManager.js - Dropdown de BAIRROS por tipo de Destaque
-// ✅ CONSOLIDADO: Extração de bairros delegada ao SharedCore (única fonte da verdade)
-console.log('🎛️ FilterManager.js carregado - Dropdown de bairros por Destaque (consolidado)');
+// ✅ CSS inline movido para main.css (classes CSS)
+console.log('🎛️ FilterManager.js carregado - Dropdown de bairros por Destaque (CSS externalizado)');
 
 const FilterManager = (function() {
     const CONFIG = {
@@ -22,11 +22,9 @@ const FilterManager = (function() {
         hoverTimeout: null
     };
 
-    // Variáveis de controle para dropdown
     let currentActiveDropdown = null;
     let dropdownCloseTimeout = null;
 
-    // ========== MAPEAMENTO CORRETO POR CATEGORIA ==========
     const CATEGORY_CONFIG = {
         'Comercial': {
             filterBy: 'type',
@@ -57,20 +55,12 @@ const FilterManager = (function() {
         }
     };
 
-    // ========== FUNÇÃO SIMPLIFICADA PARA EXTRAIR BAIRRO (DELEGA AO SHAREDCORE) ==========
-    // ✅ Agora usa APENAS o SharedCore como fonte da verdade (lista duplicada removida)
     function extractBairroFromLocation(location) {
-        // Delegar para o SharedCore (única fonte da verdade)
         if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
             return window.SharedCore.extractBairroFromLocation(location);
         }
-        
-        // Fallback mínimo apenas se SharedCore não estiver disponível (improvável)
         if (!location || typeof location !== 'string') return null;
-        
         const locationClean = location.trim();
-        
-        // Fallback básico - apenas para casos extremos
         if (locationClean.includes(',')) {
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
@@ -83,16 +73,12 @@ const FilterManager = (function() {
                 }
             }
         }
-        
         if (locationClean.toLowerCase().includes('rural') || locationClean.toLowerCase().includes('zona rural')) {
             return 'Zona Rural';
         }
-        
         return null;
     }
 
-    // ========== LISTA DE BAIRROS PARA ORDENAÇÃO (APENAS PARA PRIORIDADE) ==========
-    // Esta lista é usada APENAS para ordenação do dropdown, NÃO para extração
     const bairrosPrioridade = [
         'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
         'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -106,17 +92,12 @@ const FilterManager = (function() {
         'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
     ];
 
-    // ========== EXTRAIR BAIRROS POR CATEGORIA ==========
     function extractBairrosByCategory(properties, category) {
         if (!properties || !Array.isArray(properties)) return [];
-        
         const config = CATEGORY_CONFIG[category];
         if (!config) return [];
-        
         console.log(`🔍 Buscando imóveis para categoria: ${category}`);
-        
         let filteredProperties = [];
-        
         if (config.filterBy === 'type') {
             filteredProperties = properties.filter(property => 
                 property.type && config.expectedValues.includes(property.type)
@@ -130,14 +111,9 @@ const FilterManager = (function() {
                 return hasCorrectBadge;
             });
         }
-        
         console.log(`📊 Encontrados ${filteredProperties.length} imóveis para categoria ${category}`);
-        
         if (filteredProperties.length === 0) return [];
-        
-        // Extrair bairros usando SharedCore
         const bairrosMap = new Map();
-        
         filteredProperties.forEach(property => {
             if (property.location && property.location.trim() !== '') {
                 const bairro = extractBairroFromLocation(property.location);
@@ -146,37 +122,27 @@ const FilterManager = (function() {
                 }
             }
         });
-        
-        // Converter para array de objetos com nome e contagem
         let bairrosComContagem = Array.from(bairrosMap.entries()).map(([nome, count]) => ({
             nome: nome,
             count: count
         }));
-        
-        // Ordenar pela ordem de prioridade
         bairrosComContagem.sort((a, b) => {
             const indexA = bairrosPrioridade.indexOf(a.nome);
             const indexB = bairrosPrioridade.indexOf(b.nome);
-            
             if (indexA !== -1 && indexB !== -1) return indexA - indexB;
             if (indexA !== -1) return -1;
             if (indexB !== -1) return 1;
             return a.nome.localeCompare(b.nome, 'pt-BR');
         });
-        
         const bairros = bairrosComContagem.map(item => item.nome);
-        
         console.log(`📍 Categoria "${category}" - ${bairros.length} bairros únicos encontrados`);
-        
         return bairros;
     }
 
-    // ========== FUNÇÃO PARA FECHAR DROPDOWN ==========
     function closeDropdownImmediately() {
         if (currentActiveDropdown && currentActiveDropdown.parentNode) {
             currentActiveDropdown.remove();
         }
-        
         const allButtons = document.querySelectorAll('.filter-btn');
         allButtons.forEach(btn => {
             if (btn._closeHandler) {
@@ -184,17 +150,14 @@ const FilterManager = (function() {
                 delete btn._closeHandler;
             }
         });
-        
         currentActiveDropdown = null;
         state.dropdownActive = false;
-        
         if (dropdownCloseTimeout) {
             clearTimeout(dropdownCloseTimeout);
             dropdownCloseTimeout = null;
         }
     }
 
-    // ========== MOSTRAR MENSAGEM TEMPORÁRIA ==========
     function showTemporaryMessage(button, message) {
         const tempMsg = document.createElement('div');
         tempMsg.style.cssText = `
@@ -215,10 +178,8 @@ const FilterManager = (function() {
         setTimeout(() => tempMsg.remove(), 2000);
     }
 
-    // ========== CRIAR DROPDOWN DE BAIRROS ==========
     function createBairroDropdown(buttonElement, category, bairros) {
         if (!bairros || bairros.length === 0) return null;
-        
         if (currentActiveDropdown) closeDropdownImmediately();
         
         const config = CATEGORY_CONFIG[category];
@@ -226,22 +187,47 @@ const FilterManager = (function() {
         const title = config ? config.title : category;
         
         const dropdown = document.createElement('div');
-        dropdown.className = 'filter-dropdown filter-dropdown-active';
-        dropdown.style.cssText = `
-            position: absolute;
-            z-index: 10000;
-            background: white;
-            border: 2px solid var(--primary);
-            border-radius: 8px;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-            min-width: 220px;
-            max-height: 350px;
-            overflow-y: auto;
-            overflow-x: hidden;
-            top: 100%;
-            left: 0;
-            margin-top: 5px;
+        dropdown.className = 'filter-dropdown';
+        
+        const header = document.createElement('div');
+        header.className = 'filter-dropdown-header';
+        header.innerHTML = `
+            <span><i class="fas ${icon}"></i> Filtrar ${title} por bairro</span>
+            <span class="filter-dropdown-close">×</span>
         `;
+        dropdown.appendChild(header);
+        
+        const isAllActive = state.currentBairro === null;
+        const allOption = document.createElement('div');
+        allOption.className = 'filter-dropdown-all' + (isAllActive ? ' active' : '');
+        allOption.innerHTML = `<i class="fas fa-globe"></i> Todos os bairros (${bairros.length})`;
+        allOption.onclick = (e) => {
+            e.stopPropagation();
+            state.currentBairro = null;
+            applyFilterWithBairro(category, null);
+            closeDropdownImmediately();
+        };
+        dropdown.appendChild(allOption);
+        
+        bairros.forEach(bairro => {
+            const isActive = state.currentBairro === bairro && state.currentFilter === category;
+            const option = document.createElement('div');
+            option.className = 'filter-dropdown-item' + (isActive ? ' active' : '');
+            option.innerHTML = `<i class="fas fa-location-dot"></i> ${escapeHtml(bairro)}`;
+            option.onclick = (e) => {
+                e.stopPropagation();
+                state.currentBairro = bairro;
+                applyFilterWithBairro(category, bairro);
+                closeDropdownImmediately();
+            };
+            dropdown.appendChild(option);
+        });
+        
+        const propertyCount = getPropertyCountByCategoryAndBairro(category, null);
+        const footer = document.createElement('div');
+        footer.className = 'filter-dropdown-footer';
+        footer.innerHTML = `<i class="fas fa-chart-line"></i> ${propertyCount} imóvel(is) encontrado(s)`;
+        dropdown.appendChild(footer);
         
         dropdown.addEventListener('mouseenter', () => {
             if (dropdownCloseTimeout) {
@@ -254,103 +240,12 @@ const FilterManager = (function() {
             dropdownCloseTimeout = setTimeout(() => closeDropdownImmediately(), 300);
         });
         
-        const header = document.createElement('div');
-        header.style.cssText = `
-            padding: 10px 12px;
-            background: var(--primary);
-            color: white;
-            font-weight: 600;
-            font-size: 0.85rem;
-            border-radius: 6px 6px 0 0;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 1;
-        `;
-        header.innerHTML = `
-            <span><i class="fas ${icon}"></i> Filtrar ${title} por bairro</span>
-            <span style="cursor:pointer; font-size:1.2rem;" class="dropdown-close">×</span>
-        `;
-        dropdown.appendChild(header);
-        
-        const allOption = document.createElement('div');
-        allOption.style.cssText = `
-            padding: 10px 12px;
-            cursor: pointer;
-            transition: background 0.2s ease;
-            border-bottom: 1px solid #eee;
-            font-weight: ${state.currentBairro === null ? 'bold' : 'normal'};
-            background: ${state.currentBairro === null ? '#e8f4fd' : 'white'};
-            color: ${state.currentBairro === null ? 'var(--primary)' : '#333'};
-        `;
-        allOption.innerHTML = `<i class="fas fa-globe"></i> Todos os bairros (${bairros.length})`;
-        allOption.onmouseenter = () => { allOption.style.background = '#f0f7ff'; };
-        allOption.onmouseleave = () => { 
-            allOption.style.background = state.currentBairro === null ? '#e8f4fd' : 'white'; 
-        };
-        allOption.onclick = (e) => {
-            e.stopPropagation();
-            state.currentBairro = null;
-            applyFilterWithBairro(category, null);
-            closeDropdownImmediately();
-        };
-        dropdown.appendChild(allOption);
-        
-        bairros.forEach(bairro => {
-            const isActive = state.currentBairro === bairro && state.currentFilter === category;
-            const option = document.createElement('div');
-            option.style.cssText = `
-                padding: 8px 12px;
-                cursor: pointer;
-                transition: background 0.2s ease;
-                border-bottom: 1px solid #f0f0f0;
-                font-weight: ${isActive ? 'bold' : 'normal'};
-                background: ${isActive ? '#e8f4fd' : 'white'};
-                color: ${isActive ? 'var(--primary)' : '#333'};
-                display: flex;
-                align-items: center;
-                gap: 8px;
-            `;
-            option.innerHTML = `<i class="fas fa-location-dot" style="color: var(--accent);"></i> ${escapeHtml(bairro)}`;
-            option.onmouseenter = () => { option.style.background = '#f0f7ff'; };
-            option.onmouseleave = () => { 
-                option.style.background = isActive ? '#e8f4fd' : 'white'; 
-            };
-            option.onclick = (e) => {
-                e.stopPropagation();
-                state.currentBairro = bairro;
-                applyFilterWithBairro(category, bairro);
-                closeDropdownImmediately();
-            };
-            dropdown.appendChild(option);
-        });
-        
-        const propertyCount = getPropertyCountByCategoryAndBairro(category, null);
-        const footer = document.createElement('div');
-        footer.style.cssText = `
-            padding: 8px 12px;
-            background: #f8f9fa;
-            font-size: 0.7rem;
-            color: #666;
-            text-align: center;
-            border-top: 1px solid #eee;
-            border-radius: 0 0 6px 6px;
-            position: sticky;
-            bottom: 0;
-        `;
-        footer.innerHTML = `<i class="fas fa-chart-line"></i> ${propertyCount} imóvel(is) encontrado(s)`;
-        dropdown.appendChild(footer);
-        
         return dropdown;
     }
 
-    // ========== MOSTRAR DROPDOWN ==========
     function showDropdown(button, category) {
         if (state.dropdownActive && currentActiveDropdown) closeDropdownImmediately();
         if (dropdownCloseTimeout) clearTimeout(dropdownCloseTimeout);
-        
         if (!hasDropdown(category)) return;
         
         const properties = window.properties || [];
@@ -395,13 +290,12 @@ const FilterManager = (function() {
         document.body.appendChild(dropdown);
         state.dropdownActive = true;
         
-        const closeBtn = dropdown.querySelector('.dropdown-close');
+        const closeBtn = dropdown.querySelector('.filter-dropdown-close');
         if (closeBtn) closeBtn.onclick = () => closeDropdownImmediately();
         
         setTimeout(() => {
             document.addEventListener('click', closeDropdownHandler);
             document.addEventListener('keydown', escapeHandler);
-            
             const allButtons = document.querySelectorAll('.filter-btn');
             allButtons.forEach(otherBtn => {
                 if (otherBtn !== button) {
@@ -412,14 +306,11 @@ const FilterManager = (function() {
         }, 100);
     }
 
-    // ========== CONTAR IMÓVEIS ==========
     function getPropertyCountByCategoryAndBairro(category, bairro) {
         const properties = window.properties || [];
         const config = CATEGORY_CONFIG[category];
         if (!config) return 0;
-        
         let filtered = [];
-        
         if (config.filterBy === 'type') {
             filtered = properties.filter(p => p.type && config.expectedValues.includes(p.type));
         } else {
@@ -429,38 +320,31 @@ const FilterManager = (function() {
                 return hasCorrectBadge;
             });
         }
-        
         if (bairro) {
             filtered = filtered.filter(p => {
                 const propertyBairro = extractBairroFromLocation(p.location);
                 return propertyBairro === bairro;
             });
         }
-        
         return filtered.length;
     }
 
-    // ========== APLICAR FILTRO ==========
     function applyFilterWithBairro(category, bairro) {
         state.currentFilter = category;
         const filterValue = bairro ? `${category}|${bairro}` : category;
-        
         state.callbacks.forEach(callback => {
             if (typeof callback === 'function') {
                 callback(filterValue, { category: category, bairro: bairro });
             }
         });
-        
         updateActiveButtonStyle(category);
         console.log(`🎯 Filtro aplicado: Categoria="${category}", Bairro="${bairro || 'Todos'}"`);
     }
 
-    // ========== VERIFICAR SE CATEGORIA TEM DROPDOWN ==========
     function hasDropdown(category) {
         return CATEGORY_CONFIG[category] !== undefined;
     }
 
-    // ========== ATUALIZAR ESTILO DOS BOTÕES ==========
     function updateActiveButtonStyle(filterValue) {
         state.containers.forEach((containerState) => {
             containerState.buttons.forEach(button => {
@@ -484,22 +368,18 @@ const FilterManager = (function() {
         });
     }
 
-    // ========== API PÚBLICA ==========
     return {
         init(onFilterChange = null) {
             if (state.initialized) {
                 console.log('⏭️ FilterManager já inicializado');
                 return;
             }
-            
             console.log('🔧 Inicializando FilterManager...');
-            
             const containers = document.querySelectorAll(`.${CONFIG.containerClass}`);
             if (containers.length === 0) {
                 console.warn('⚠️ Nenhum container de filtros encontrado');
                 return;
             }
-
             containers.forEach((container, index) => {
                 const containerId = `filter-container-${index}`;
                 state.containers.set(containerId, {
@@ -508,11 +388,9 @@ const FilterManager = (function() {
                 });
                 this.setupContainer(container, containerId, onFilterChange);
             });
-
             if (onFilterChange && typeof onFilterChange === 'function') {
                 state.callbacks.set('global', onFilterChange);
             }
-
             this.activateDefaultFilter();
             state.initialized = true;
             console.log(`✅ FilterManager inicializado: ${state.containers.size} container(s)`);
@@ -521,14 +399,11 @@ const FilterManager = (function() {
         setupContainer(container, containerId, onFilterChange) {
             const buttons = container.querySelectorAll(`.${CONFIG.buttonClass}`);
             const containerState = state.containers.get(containerId);
-
             buttons.forEach((button) => {
                 const newBtn = button.cloneNode(true);
                 button.parentNode.replaceChild(newBtn, button);
-
                 const filterText = newBtn.textContent.trim();
                 const filterValue = filterText === 'Todos' ? 'todos' : filterText;
-                
                 newBtn.style.backgroundColor = '';
                 newBtn.style.color = '';
                 newBtn.style.borderColor = '';
@@ -536,17 +411,14 @@ const FilterManager = (function() {
                 newBtn.style.boxShadow = '';
                 newBtn.style.position = 'relative';
                 newBtn.style.cursor = 'pointer';
-                
                 if (filterValue !== 'todos' && CATEGORY_CONFIG[filterValue]) {
                     newBtn.classList.add('has-dropdown');
                     let hoverTimer;
-                    
                     newBtn.addEventListener('mouseenter', () => {
                         if (state.dropdownActive && currentActiveDropdown) closeDropdownImmediately();
                         if (dropdownCloseTimeout) clearTimeout(dropdownCloseTimeout);
                         hoverTimer = setTimeout(() => showDropdown(newBtn, filterValue), CONFIG.dropdownDelay);
                     });
-                    
                     newBtn.addEventListener('mouseleave', (event) => {
                         clearTimeout(hoverTimer);
                         dropdownCloseTimeout = setTimeout(() => {
@@ -561,13 +433,10 @@ const FilterManager = (function() {
                         }, 200);
                     });
                 }
-                
                 newBtn.addEventListener('click', (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    
                     if (currentActiveDropdown) closeDropdownImmediately();
-                    
                     const allBtns = document.querySelectorAll(`.${CONFIG.buttonClass}`);
                     allBtns.forEach(btn => {
                         btn.classList.remove(CONFIG.activeClass);
@@ -577,35 +446,29 @@ const FilterManager = (function() {
                         btn.style.fontWeight = '';
                         btn.style.boxShadow = '';
                     });
-                    
                     newBtn.classList.add(CONFIG.activeClass);
-                    
                     if (filterValue === 'todos') {
                         state.currentBairro = null;
                         state.currentFilter = 'todos';
                     } else {
                         state.currentFilter = filterValue;
                     }
-                    
                     if (onFilterChange) onFilterChange(filterValue);
                     state.callbacks.forEach(callback => {
                         if (typeof callback === 'function') callback(filterValue);
                     });
                 });
-
                 containerState.buttons.push({
                     element: newBtn,
                     originalText: filterText,
                     value: filterValue
                 });
             });
-
             state.containers.set(containerId, containerState);
         },
 
         setActiveFilter(filterValue, sourceContainerId = null) {
             state.currentFilter = filterValue;
-            
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     button.element.classList.remove(CONFIG.activeClass);
@@ -616,7 +479,6 @@ const FilterManager = (function() {
                     button.element.style.boxShadow = '';
                 });
             });
-            
             state.containers.forEach((containerState) => {
                 containerState.buttons.forEach(button => {
                     if (button.value === filterValue) {
@@ -653,7 +515,6 @@ const FilterManager = (function() {
 
         setupWithFallback() {
             if (state.initialized) return true;
-            
             if (this.init) {
                 this.init((filterValue, details) => {
                     window.currentFilter = filterValue;
@@ -714,4 +575,4 @@ if (!window._filterManagerInitScheduled) {
     }, 500);
 }
 
-console.log('✅ FilterManager carregado - Extração de bairros consolidada no SharedCore');
+console.log('✅ FilterManager carregado - CSS externalizado para main.css');
