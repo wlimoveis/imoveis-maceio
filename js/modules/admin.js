@@ -257,9 +257,37 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE COM CSS FORÇADO ==========
+// ========== AUTOCOMPLETE COM LISTA COMPLETA DE BAIRROS (ATUALIZADA) ==========
 window.setupLocationAutocomplete = function() {
     console.log('🔧 setupLocationAutocomplete chamado');
+    
+    // LISTA COMPLETA DE BAIRROS - ATUALIZADA CONFORME SOLICITADO
+    const bairrosMaceio = [
+        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
+        'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
+        'Farol, Maceió/AL', 'Jardim Petrópolis, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL', 'Feitosa, Maceió/AL',
+        'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
+        'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
+        'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
+        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL', 
+        'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma, Maceió/AL',
+        'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL', 'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 
+        'São Miguel dos Campos, AL', 'Murilopes, Maceió/AL',
+        'Barra de São Miguel, AL', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres, AL', 'Zona Rural, AL'
+    ];
+
+    const locationInput = document.getElementById('propLocation');
+    if (!locationInput) {
+        console.warn('⚠️ Campo propLocation não encontrado');
+        return false;
+    }
+    
+    if (locationInput.hasAttribute('data-autocomplete-initialized')) {
+        console.log('ℹ️ Autocomplete já inicializado neste campo');
+        return true;
+    }
+    
+    console.log('📝 Configurando autocomplete no campo:', locationInput);
     
     // Adicionar estilo global para garantir que o dropdown apareça
     if (!document.getElementById('admin-autocomplete-style')) {
@@ -303,29 +331,6 @@ window.setupLocationAutocomplete = function() {
         document.head.appendChild(style);
         console.log('✅ Estilo global do autocomplete adicionado');
     }
-    
-    const bairrosMaceio = [
-        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
-        'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
-        'Farol, Maceió/AL', 'Jardim Petrópolis, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL', 'Feitosa, Maceió/AL',
-        'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
-        'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
-        'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
-        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL'
-    ];
-
-    const locationInput = document.getElementById('propLocation');
-    if (!locationInput) {
-        console.warn('⚠️ Campo propLocation não encontrado');
-        return false;
-    }
-    
-    if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        console.log('ℹ️ Autocomplete já inicializado neste campo');
-        return true;
-    }
-    
-    console.log('📝 Configurando autocomplete no campo:', locationInput);
     
     let suggestionsContainer = null;
     
@@ -410,11 +415,7 @@ window.setupLocationAutocomplete = function() {
         });
         
         document.body.appendChild(suggestionsContainer);
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}" - top=${rect.bottom + 5}px, left=${rect.left}px, width=${locationInput.offsetWidth}px`);
-        
-        // Debug: verificar se o elemento foi realmente adicionado
-        console.log('✅ Dropdown adicionado ao body:', suggestionsContainer);
-        console.log('📐 Dimensões do dropdown:', suggestionsContainer.getBoundingClientRect());
+        console.log(`📋 ${matches.length} sugestões para "${searchTerm}"`);
     }
     
     function hideSuggestions() {
