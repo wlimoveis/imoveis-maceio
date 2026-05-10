@@ -1032,3 +1032,181 @@ body {
         font-size: 0.8rem;
     }
 }
+
+/* ========== ESTILOS DO DROPDOWN DE FILTROS (extraídos do FilterManager.js) ========== */
+
+/* Container do dropdown */
+.filter-dropdown {
+    position: absolute;
+    z-index: 10000;
+    background: white;
+    border: 2px solid var(--primary);
+    border-radius: 8px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    min-width: 220px;
+    max-height: 350px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    top: 100%;
+    left: 0;
+    margin-top: 5px;
+    animation: dropdownFadeIn 0.2s ease;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Cabeçalho do dropdown */
+.filter-dropdown-header {
+    padding: 10px 12px;
+    background: var(--primary);
+    color: white;
+    font-weight: 600;
+    font-size: 0.85rem;
+    border-radius: 6px 6px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.filter-dropdown-header i {
+    margin-right: 6px;
+}
+
+.filter-dropdown-close {
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: transform 0.2s ease;
+}
+
+.filter-dropdown-close:hover {
+    transform: scale(1.1);
+}
+
+/* Opção "Todos os bairros" */
+.filter-dropdown-all {
+    padding: 10px 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #eee;
+    font-weight: normal;
+    background: white;
+    color: #333;
+}
+
+.filter-dropdown-all.active {
+    font-weight: bold;
+    background: #e8f4fd;
+    color: var(--primary);
+}
+
+.filter-dropdown-all:hover {
+    background: #f0f7ff;
+}
+
+.filter-dropdown-all i {
+    margin-right: 8px;
+    color: var(--accent);
+}
+
+/* Opção de bairro individual */
+.filter-dropdown-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: normal;
+    background: white;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-dropdown-item.active {
+    font-weight: bold;
+    background: #e8f4fd;
+    color: var(--primary);
+}
+
+.filter-dropdown-item:hover {
+    background: #f0f7ff;
+}
+
+.filter-dropdown-item i {
+    color: var(--accent);
+    width: 16px;
+}
+
+/* Footer do dropdown */
+.filter-dropdown-footer {
+    padding: 8px 12px;
+    background: #f8f9fa;
+    font-size: 0.7rem;
+    color: #666;
+    text-align: center;
+    border-top: 1px solid #eee;
+    border-radius: 0 0 6px 6px;
+    position: sticky;
+    bottom: 0;
+}
+
+.filter-dropdown-footer i {
+    margin-right: 4px;
+}
+
+/* Scrollbar do dropdown */
+.filter-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.filter-dropdown::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.filter-dropdown::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.filter-dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* Mobile para dropdown */
+@media (max-width: 768px) {
+    .filter-dropdown {
+        position: fixed !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 90% !important;
+        max-width: 280px !important;
+    }
+    
+    @keyframes dropdownFadeInMobile {
+        from {
+            opacity: 0;
+            transform: translateX(-50%) translateY(-20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    }
+    
+    .filter-dropdown {
+        animation: dropdownFadeInMobile 0.2s ease;
+    }
+}
