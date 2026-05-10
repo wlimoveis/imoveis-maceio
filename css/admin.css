@@ -1,6 +1,6 @@
 /* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
 /* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
-/* ATUALIZADO: Melhorias de espaçamento mobile para ocupar 100% da largura */
+/* ATUALIZADO: Layout diferenciado entre abas em mobile - Gerenciar (100% largura) / Incluir/Editar (layout anterior com margens) */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -1922,37 +1922,20 @@ select {
     opacity: 0.5;
 }
 
-/* ========== MOBILE: AJUSTE DO PAINEL ADMIN PARA OCUPAR 100% DA LARGURA ========== */
+/* ========== MOBILE: LAYOUT DIFERENCIADO ENTRE ABAS ========== */
+/* 
+   REGRA 1: ABA GERENCIAR (manage-tab) - ocupa 100% da largura, sem margens
+   REGRA 2: ABA INCLUIR/EDITAR (form-tab) - mantém layout anterior com margens amigáveis
+*/
+
+/* Ajuste base do painel em mobile */
 @media (max-width: 768px) {
     .admin-panel {
         margin: 1rem 0 !important;
-        padding: 1rem !important;
+        padding: 0.5rem !important;
         max-width: 100% !important;
         border-radius: 0 !important;
         width: 100% !important;
-    }
-    
-    /* Ajuste adicional para o conteúdo interno */
-    .admin-panel .admin-tab-content {
-        padding: 0.5rem !important;
-    }
-    
-    .admin-panel .admin-tab-content > div {
-        padding: 0.5rem !important;
-    }
-    
-    /* Garantir que o formulário ocupe toda largura */
-    .admin-panel #propertyForm .form-group input,
-    .admin-panel #propertyForm .form-group textarea,
-    .admin-panel #propertyForm .form-group select {
-        width: 100% !important;
-        box-sizing: border-box !important;
-    }
-    
-    /* Ajuste das áreas de upload para mobile */
-    .admin-panel #uploadArea,
-    .admin-panel #pdfUploadArea {
-        padding: 1rem !important;
     }
     
     /* Ajuste do botão toggle para mobile */
@@ -1961,5 +1944,76 @@ select {
         right: 15px !important;
         width: 44px !important;
         height: 44px !important;
+    }
+}
+
+/* ESTILO ESPECÍFICO PARA ABA GERENCIAR (100% largura, sem margens) */
+@media (max-width: 768px) {
+    #manage-tab.active,
+    #manage-tab.active > div {
+        width: 100% !important;
+        padding: 0.25rem !important;
+        margin: 0 !important;
+    }
+    
+    #manage-tab.active .manage-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    #manage-tab.active #propertyList {
+        width: 100% !important;
+    }
+    
+    #manage-tab.active .property-item {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* ESTILO ESPECÍFICO PARA ABA INCLUIR/EDITAR (layout anterior com margens) */
+@media (max-width: 768px) {
+    #form-tab.active {
+        padding: 0.5rem !important;
+    }
+    
+    #form-tab.active > div {
+        padding: 0.5rem !important;
+        margin: 0 auto !important;
+        max-width: 100% !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Preservar o layout original do formulário */
+    #form-tab.active .form-group {
+        margin-bottom: 0.6rem !important;
+        padding: 0.3rem !important;
+    }
+    
+    #form-tab.active .form-row-2cols {
+        display: grid !important;
+        grid-template-columns: 1fr !important;
+        gap: 0.2rem !important;
+    }
+    
+    #form-tab.active #propertyForm button[type="submit"],
+    #form-tab.active #cancelEditBtn {
+        width: 100% !important;
+        padding: 0.6rem !important;
+        font-size: 0.8rem !important;
+    }
+    
+    /* Manter padding adequado nas áreas de upload */
+    #form-tab.active #uploadArea,
+    #form-tab.active #pdfUploadArea {
+        padding: 0.8rem !important;
+    }
+    
+    /* Manter o título da seção com boa aparência */
+    #form-tab.active .section-title-windows {
+        margin: 0.5rem 0 !important;
+        padding: 0.4rem !important;
     }
 }
