@@ -1,5 +1,18 @@
 /* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
-/* Inclui estilos extraídos do index.html para centralização */
+/* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
+
+/* ========== VARIÁVEIS GLOBAIS ========== */
+:root {
+    --primary: #1a5276;
+    --secondary: #2980b9;
+    --accent: #3498db;
+    --gold: #f39c12;
+    --green: #27ae60;
+    --text: #2c3e50;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --success: #27ae60;
+}
 
 /* ========== ESTILOS DO PAINEL ADMIN ========== */
 .admin-panel {
@@ -26,15 +39,78 @@
     font-size: 1.2rem;
 }
 
-.property-item {
-    background: #f5f5f5;
-    padding: 1rem;
-    margin: 0.5rem 0;
-    border-radius: 5px;
+/* ========== BOTÃO ADMIN TOGGLE ========== */
+.admin-toggle {
+    position: fixed;
+    bottom: 15px !important;
+    right: 15px !important;
+    background: #1a5276;
+    color: white;
+    border: 1px solid #0e3d5c;
+    border-top-color: #2980b9;
+    border-left-color: #2980b9;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 0px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    font-size: 1.3rem;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    border-left: 4px solid var(--primary);
+    justify-content: center;
+    opacity: 0.9 !important;
+    transition: all 0.3s ease;
+}
+
+.admin-toggle:hover {
+    background: #0e3d5c;
+    opacity: 1 !important;
+}
+
+.admin-toggle:active {
+    border-top-color: #0e3d5c;
+    border-left-color: #0e3d5c;
+    border-bottom-color: #2980b9;
+    border-right-color: #2980b9;
+    transform: translateY(1px);
+}
+
+/* ========== BOTÃO VOLTAR AO TOPO ========== */
+#backToTopBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: rgba(26, 82, 118, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    opacity: 0.85;
+}
+
+#backToTopBtn:hover {
+    background: rgba(26, 82, 118, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transform: scale(1.08);
+    opacity: 1;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+#backToTopBtn:active {
+    transform: scale(0.95);
 }
 
 /* PDF ICON */
@@ -1150,80 +1226,6 @@ select:focus {
 .admin-panel-highlight { animation: highlightPulse 0.8s ease; }
 .admin-panel { display: none; }
 
-/* ========== BOTÃO ADMIN TOGGLE ========== */
-.admin-toggle {
-    position: fixed;
-    bottom: 15px !important;
-    right: 15px !important;
-    background: #1a5276;
-    color: white;
-    border: 1px solid #0e3d5c;
-    border-top-color: #2980b9;
-    border-left-color: #2980b9;
-    width: 48px !important;
-    height: 48px !important;
-    border-radius: 0px;
-    cursor: pointer;
-    z-index: 1000;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
-    font-size: 1.3rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0.9 !important;
-    transition: all 0.3s ease;
-}
-
-.admin-toggle:hover {
-    background: #0e3d5c;
-    opacity: 1 !important;
-}
-
-.admin-toggle:active {
-    border-top-color: #0e3d5c;
-    border-left-color: #0e3d5c;
-    border-bottom-color: #2980b9;
-    border-right-color: #2980b9;
-    transform: translateY(1px);
-}
-
-/* ========== BOTÃO VOLTAR AO TOPO ========== */
-#backToTopBtn {
-    position: fixed;
-    bottom: 80px;
-    right: 20px;
-    background: rgba(26, 82, 118, 0.35);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    color: white;
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    cursor: pointer;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.2rem;
-    z-index: 999;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-    transition: all 0.3s ease;
-    opacity: 0.85;
-}
-
-#backToTopBtn:hover {
-    background: rgba(26, 82, 118, 0.6);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    transform: scale(1.08);
-    opacity: 1;
-    box-shadow: 0 6px 25px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
-}
-
-#backToTopBtn:active {
-    transform: scale(0.95);
-}
-
 /* ========== DESKTOP - PAGINAÇÃO ========== */
 #propertyList > div:last-child {
     display: flex !important;
@@ -1525,3 +1527,396 @@ select {
 .form-compact #propertyForm > div { margin-bottom: 0 !important; }
 .form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.35rem 0.45rem; font-size: 0.8rem; }
 .form-compact #propertyForm textarea { min-height: 45px; padding: 0.35rem 0.45rem; font-size: 0.8rem; }
+
+/* ========== ESTILOS DO MODAL PDF (extraídos do pdf-unified.js) ========== */
+
+/* Modal principal de seleção de PDFs */
+.pdf-selection-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10001;
+    overflow-y: auto;
+}
+
+/* Container interno do modal */
+.pdf-selection-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .pdf-selection-modal {
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .pdf-selection-container {
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .pdf-selection-modal {
+        align-items: flex-start;
+        justify-content: center;
+        padding: 10px;
+    }
+    .pdf-selection-container {
+        max-width: 500px;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 1.2rem;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Botão fechar do modal */
+.pdf-modal-close-btn {
+    position: absolute;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-close-btn {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-close-btn {
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+}
+
+.pdf-modal-close-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: #c0392b;
+}
+
+/* Título do modal */
+.pdf-modal-title {
+    color: #1a5276;
+    margin: 0;
+    padding-right: 30px;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-title {
+        margin-bottom: 1.5rem;
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-title {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        padding-right: 25px;
+    }
+}
+
+.pdf-modal-title i {
+    margin-right: 8px;
+}
+
+/* Descrição do modal */
+.pdf-modal-description {
+    color: #666;
+    line-height: 1.4;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-description {
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-description {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Container da lista de PDFs */
+.pdf-items-container {
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .pdf-items-container {
+        margin-bottom: 1.2rem;
+    }
+}
+
+/* Item da lista de PDF */
+.pdf-list-item {
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 4px solid #1a5276;
+}
+
+.pdf-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 769px) {
+    .pdf-list-item {
+        padding: 1rem;
+        margin-bottom: 0.8rem;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-list-item {
+        padding: 0.8rem;
+        margin-bottom: 0.6rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* Informações do PDF */
+.pdf-item-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pdf-item-icon {
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-icon {
+        gap: 10px;
+    }
+    .pdf-item-icon i {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-icon {
+        gap: 8px;
+    }
+    .pdf-item-icon i {
+        font-size: 1.2rem;
+    }
+}
+
+.pdf-item-name {
+    min-width: 0;
+}
+
+.pdf-item-name strong {
+    display: block;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-name strong {
+        font-size: 1rem;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-name strong {
+        font-size: 0.9rem;
+        max-width: 200px;
+    }
+}
+
+.pdf-item-meta {
+    color: #7f8c8d;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-meta {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-meta {
+        font-size: 0.7rem;
+    }
+}
+
+/* Botão visualizar PDF */
+.pdf-view-btn {
+    background: #1a5276;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.pdf-view-btn:hover {
+    background: #0e3d5c;
+    transform: scale(1.02);
+}
+
+.pdf-view-btn:active {
+    transform: scale(0.98);
+}
+
+@media (min-width: 769px) {
+    .pdf-view-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    .pdf-view-btn span {
+        display: inline;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-view-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .pdf-view-btn span {
+        display: none;
+    }
+}
+
+/* Footer do modal */
+.pdf-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-footer {
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-footer {
+        gap: 0.5rem;
+    }
+}
+
+.pdf-modal-footer small {
+    color: #95a5a6;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-footer small {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-footer small {
+        font-size: 0.75rem;
+        order: 2;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+}
+
+.pdf-download-all-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+}
+
+.pdf-download-all-btn:hover {
+    background: #219653;
+    transform: scale(1.02);
+}
+
+@media (min-width: 769px) {
+    .pdf-download-all-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-download-all-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        order: 1;
+    }
+    .pdf-download-all-btn span {
+        display: inline;
+    }
+}
+
+/* Mensagem de nenhum documento */
+.pdf-empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.pdf-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
