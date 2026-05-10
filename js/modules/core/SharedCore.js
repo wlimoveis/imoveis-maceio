@@ -1,5 +1,5 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM FUNÇÕES DE VISUALIZAÇÃO DA GALERIA
-console.log('🔧 SharedCore.js carregado - Versão com funções de visualização centralizadas');
+// js/modules/core/SharedCore.js - VERSÃO OTIMIZADA (código morto removido)
+console.log('🔧 SharedCore.js carregado - Versão Otimizada (código morto removido)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -91,12 +91,6 @@ const SharedCore = (function() {
             clearTimeout(timeout);
             timeout = setTimeout(later, wait);
         };
-    };
-
-    // ========== VALIDAÇÕES ==========
-    const isMobileDevice = () => {
-        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-            .test(navigator.userAgent);
     };
 
     // ========== MANIPULAÇÃO DE STRINGS ==========
@@ -260,11 +254,6 @@ const SharedCore = (function() {
         return id;
     };
 
-    const truncateText = (text, maxLength = 100) => {
-        if (!text || text.length <= maxLength) return text;
-        return text.substring(0, maxLength) + '...';
-    };
-
     // ========== SISTEMA DE FORMATAÇÃO UNIFICADO DE PREÇO ==========
     const PriceFormatter = {
         formatNumberWithSeparators: function(number) {
@@ -391,36 +380,6 @@ const SharedCore = (function() {
         }
     };
 
-    // ========== DOM UTILITIES ==========
-    const elementExists = (id) => {
-        return document.getElementById(id) !== null;
-    };
-
-    const createElement = (tag, attributes = {}, children = []) => {
-        const element = document.createElement(tag);
-        Object.entries(attributes).forEach(([key, value]) => {
-            if (key === 'className') {
-                element.className = value;
-            } else if (key === 'textContent') {
-                element.textContent = value;
-            } else if (key === 'innerHTML') {
-                element.innerHTML = value;
-            } else if (key.startsWith('on')) {
-                element[key.toLowerCase()] = value;
-            } else {
-                element.setAttribute(key, value);
-            }
-        });
-        children.forEach(child => {
-            if (typeof child === 'string') {
-                element.appendChild(document.createTextNode(child));
-            } else if (child instanceof Node) {
-                element.appendChild(child);
-            }
-        });
-        return element;
-    };
-
     // ========== SUPABASE ESSENCIAL ==========
     const supabaseFetch = async (endpoint, options = {}) => {
         try {
@@ -450,63 +409,7 @@ const SharedCore = (function() {
         }
     };
 
-    // ========== MANIPULAÇÃO DE ARRAYS ==========
-    const arrayUtils = {
-        findDuplicates: (array, key) => {
-            const seen = new Set();
-            const duplicates = [];
-            array.forEach(item => {
-                const value = key ? item[key] : item;
-                if (seen.has(value)) {
-                    duplicates.push(item);
-                } else {
-                    seen.add(value);
-                }
-            });
-            return duplicates;
-        },
-        sortByKey: (array, key, ascending = true) => {
-            return [...array].sort((a, b) => {
-                const aVal = a[key];
-                const bVal = b[key];
-                if (aVal < bVal) return ascending ? -1 : 1;
-                if (aVal > bVal) return ascending ? 1 : -1;
-                return 0;
-            });
-        }
-    };
-
-    const generateUniqueId = (prefix = 'id') => {
-        const timestamp = Date.now().toString(36);
-        const random = Math.random().toString(36).substring(2, 9);
-        return `${prefix}_${timestamp}_${random}`;
-    };
-
-    const sanitizeText = (text, maxLength = null) => {
-        if (!text) return '';
-        let sanitized = text.toString()
-            .replace(/<[^>]*>/g, '')
-            .replace(/\s+/g, ' ')
-            .trim();
-        if (maxLength && sanitized.length > maxLength) {
-            sanitized = sanitized.substring(0, maxLength - 3) + '...';
-        }
-        return sanitized;
-    };
-
-    const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
-
-    const copyToClipboard = async (text) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            return true;
-        } catch (err) {
-            console.error('❌ Erro ao copiar:', err);
-            return false;
-        }
-    };
-
-    // ========== FUNÇÕES DE VISUALIZAÇÃO DA GALERIA (MOVEDO DO GALLERY.JS) ==========
+    // ========== FUNÇÕES DE VISUALIZAÇÃO DA GALERIA ==========
     const getGalleryViews = function(propertyId) {
         try {
             const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
@@ -569,12 +472,8 @@ const SharedCore = (function() {
         // Performance
         debounce,
         
-        // Validações
-        isMobileDevice,
-        
         // Formatação
         formatPrice,
-        truncateText,
         
         // Features e Video (Proxy)
         formatFeaturesForDisplay,
@@ -604,19 +503,8 @@ const SharedCore = (function() {
         // Utilitários de Mídia
         ImageLoader,
         
-        // DOM
-        elementExists,
-        createElement,
-        
         // Dados
         supabaseFetch,
-        arrayUtils,
-        
-        // Utilitários Gerais
-        copyToClipboard,
-        generateUniqueId,
-        sanitizeText,
-        delay,
         
         // Funções de Visualização da Galeria
         getGalleryViews,
@@ -695,7 +583,6 @@ window.SharedCore = SharedCore;
         };
     }
 
-    // Funções de visualização da galeria - compatibilidade global
     if (typeof window.getGalleryViews === 'undefined') {
         window.getGalleryViews = function(propertyId) {
             return SharedCore.getGalleryViews(propertyId);
@@ -728,9 +615,7 @@ function initializeGlobalCompatibility() {
     
     const globalExports = {
         debounce: SharedCore.debounce,
-        isMobileDevice: SharedCore.isMobileDevice,
         formatPrice: SharedCore.formatPrice,
-        truncateText: SharedCore.truncateText,
         formatFeaturesForDisplay: SharedCore.formatFeaturesForDisplay,
         parseFeaturesForStorage: SharedCore.parseFeaturesForStorage,
         ensureBooleanVideo: SharedCore.ensureBooleanVideo,
@@ -740,14 +625,9 @@ function initializeGlobalCompatibility() {
         formatPriceForInput: SharedCore.formatPriceForInput,
         getPriceNumbersOnly: SharedCore.getPriceNumbersOnly,
         setupPriceAutoFormat: SharedCore.setupPriceAutoFormat,
-        elementExists: SharedCore.elementExists,
         supabaseFetch: SharedCore.supabaseFetch,
-        copyToClipboard: SharedCore.copyToClipboard,
         escapeHtml: SharedCore.escapeHtml,
         isVideoUrl: SharedCore.isVideoUrl,
-        generateUniqueId: SharedCore.generateUniqueId,
-        sanitizeText: SharedCore.sanitizeText,
-        delay: SharedCore.delay,
         getGalleryViews: SharedCore.getGalleryViews,
         getTotalGalleryViews: SharedCore.getTotalGalleryViews,
         getLastGalleryView: SharedCore.getLastGalleryView,
@@ -778,8 +658,7 @@ setTimeout(() => {
     console.group('🧪 VALIDAÇÃO DO SHAREDCORE');
     
     const essentialFunctions = [
-        'debounce', 'formatPrice', 'supabaseFetch', 'elementExists', 
-        'isMobileDevice', 'copyToClipboard',
+        'debounce', 'formatPrice', 'supabaseFetch',
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation',
         'getGalleryViews', 'getTotalGalleryViews'
     ];
@@ -802,4 +681,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão com funções de visualização centralizadas`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada (código morto removido)`);
