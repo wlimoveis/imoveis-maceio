@@ -1,5 +1,6 @@
 /* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
 /* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
+/* ATUALIZADO: Melhorias de espaçamento mobile para ocupar 100% da largura */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -1919,4 +1920,46 @@ select {
     font-size: 2rem;
     margin-bottom: 1rem;
     opacity: 0.5;
+}
+
+/* ========== MOBILE: AJUSTE DO PAINEL ADMIN PARA OCUPAR 100% DA LARGURA ========== */
+@media (max-width: 768px) {
+    .admin-panel {
+        margin: 1rem 0 !important;
+        padding: 1rem !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Ajuste adicional para o conteúdo interno */
+    .admin-panel .admin-tab-content {
+        padding: 0.5rem !important;
+    }
+    
+    .admin-panel .admin-tab-content > div {
+        padding: 0.5rem !important;
+    }
+    
+    /* Garantir que o formulário ocupe toda largura */
+    .admin-panel #propertyForm .form-group input,
+    .admin-panel #propertyForm .form-group textarea,
+    .admin-panel #propertyForm .form-group select {
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Ajuste das áreas de upload para mobile */
+    .admin-panel #uploadArea,
+    .admin-panel #pdfUploadArea {
+        padding: 1rem !important;
+    }
+    
+    /* Ajuste do botão toggle para mobile */
+    .admin-toggle {
+        bottom: 15px !important;
+        right: 15px !important;
+        width: 44px !important;
+        height: 44px !important;
+    }
 }
