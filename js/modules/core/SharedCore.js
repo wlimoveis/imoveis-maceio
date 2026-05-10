@@ -1,5 +1,5 @@
-// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA (logModule removida)
-console.log('🔧 SharedCore.js carregado - Versão Otimizada (logModule removida)');
+// js/modules/core/SharedCore.js - VERSÃO ATUALIZADA COM FUNÇÕES DE VISUALIZAÇÃO DA GALERIA
+console.log('🔧 SharedCore.js carregado - Versão com funções de visualização centralizadas');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -506,6 +506,64 @@ const SharedCore = (function() {
         }
     };
 
+    // ========== FUNÇÕES DE VISUALIZAÇÃO DA GALERIA (MOVEDO DO GALLERY.JS) ==========
+    const getGalleryViews = function(propertyId) {
+        try {
+            const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+            return views[propertyId] || 0;
+        } catch (error) {
+            if (window.DEBUG_MODE) console.error('[SharedCore] Erro ao obter visualizações:', error);
+            return 0;
+        }
+    };
+
+    const getTotalGalleryViews = function() {
+        try {
+            const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+            let total = 0;
+            for (let key in views) {
+                if (views.hasOwnProperty(key)) {
+                    total += views[key];
+                }
+            }
+            return total;
+        } catch (error) {
+            if (window.DEBUG_MODE) console.error('[SharedCore] Erro ao obter total de visualizações:', error);
+            return 0;
+        }
+    };
+
+    const getLastGalleryView = function(propertyId) {
+        try {
+            const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+            return lastViews[propertyId] || null;
+        } catch (error) {
+            if (window.DEBUG_MODE) console.error('[SharedCore] Erro ao obter última visualização:', error);
+            return null;
+        }
+    };
+
+    const resetAllGalleryViews = function() {
+        if (!confirm('⚠️ ATENÇÃO! Isso irá ZERAR TODAS as visualizações de TODOS os imóveis.\n\nEsta ação NÃO pode ser desfeita.\n\nClique em OK para continuar:')) {
+            return false;
+        }
+        const confirmation = prompt('Digite "CONFIRMAR" para zerar TODAS as visualizações:');
+        if (confirmation !== 'CONFIRMAR') {
+            alert('❌ Operação cancelada. Digite "CONFIRMAR" exatamente como solicitado.');
+            return false;
+        }
+        try {
+            localStorage.setItem('galleryViews', JSON.stringify({}));
+            localStorage.setItem('galleryViewsLast', JSON.stringify({}));
+            window.dispatchEvent(new CustomEvent('galleryViewsReset'));
+            return true;
+        } catch (error) {
+            console.error('[SharedCore] Erro ao resetar visualizações:', error);
+            alert('❌ Erro ao zerar visualizações!');
+            return false;
+        }
+    };
+
     // ========== API PÚBLICA ==========
     return {
         // Performance
@@ -559,6 +617,12 @@ const SharedCore = (function() {
         generateUniqueId,
         sanitizeText,
         delay,
+        
+        // Funções de Visualização da Galeria
+        getGalleryViews,
+        getTotalGalleryViews,
+        getLastGalleryView,
+        resetAllGalleryViews,
         
         // Constantes
         SUPABASE_CONSTANTS: window.SUPABASE_CONSTANTS
@@ -630,6 +694,31 @@ window.SharedCore = SharedCore;
             return SharedCore.isVideoUrl(url);
         };
     }
+
+    // Funções de visualização da galeria - compatibilidade global
+    if (typeof window.getGalleryViews === 'undefined') {
+        window.getGalleryViews = function(propertyId) {
+            return SharedCore.getGalleryViews(propertyId);
+        };
+    }
+
+    if (typeof window.getTotalGalleryViews === 'undefined') {
+        window.getTotalGalleryViews = function() {
+            return SharedCore.getTotalGalleryViews();
+        };
+    }
+
+    if (typeof window.getLastGalleryView === 'undefined') {
+        window.getLastGalleryView = function(propertyId) {
+            return SharedCore.getLastGalleryView(propertyId);
+        };
+    }
+
+    if (typeof window.resetAllGalleryViews === 'undefined') {
+        window.resetAllGalleryViews = function() {
+            return SharedCore.resetAllGalleryViews();
+        };
+    }
     
     console.log('✅ Compatibilidade global configurada');
 })();
@@ -658,7 +747,11 @@ function initializeGlobalCompatibility() {
         isVideoUrl: SharedCore.isVideoUrl,
         generateUniqueId: SharedCore.generateUniqueId,
         sanitizeText: SharedCore.sanitizeText,
-        delay: SharedCore.delay
+        delay: SharedCore.delay,
+        getGalleryViews: SharedCore.getGalleryViews,
+        getTotalGalleryViews: SharedCore.getTotalGalleryViews,
+        getLastGalleryView: SharedCore.getLastGalleryView,
+        resetAllGalleryViews: SharedCore.resetAllGalleryViews
     };
     
     Object.entries(globalExports).forEach(([name, func]) => {
@@ -687,7 +780,8 @@ setTimeout(() => {
     const essentialFunctions = [
         'debounce', 'formatPrice', 'supabaseFetch', 'elementExists', 
         'isMobileDevice', 'copyToClipboard',
-        'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation'
+        'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation',
+        'getGalleryViews', 'getTotalGalleryViews'
     ];
     
     let allAvailable = true;
@@ -708,4 +802,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada (logModule removida)`);
+console.log(`✅ SharedCore.js pronto - Versão com funções de visualização centralizadas`);
