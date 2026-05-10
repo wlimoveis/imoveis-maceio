@@ -1,7 +1,68 @@
-console.log('✅ admin.js carregado');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.0');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
+
+// ========== SISTEMA DE DIAGNÓSTICO E ESTABILIDADE ==========
+window.AUTOCOMPLETE_ACTIVE = false;
+let autocompleteInitialized = false;
+
+// Função de diagnóstico para verificar saúde do autocomplete
+window.diagnoseAutocomplete = function() {
+    console.group('🔍 DIAGNÓSTICO DO AUTOCOMPLETE');
+    
+    const input = document.getElementById('propLocation');
+    const dropdown = document.querySelector('.admin-location-suggestions');
+    
+    const resultados = {
+        'Campo existe': !!input,
+        'Campo visível': input ? input.getBoundingClientRect().bottom > 0 : false,
+        'Autocomplete inicializado': input ? input.hasAttribute('data-autocomplete-initialized') : false,
+        'Flag AUTOCOMPLETE_ACTIVE': window.AUTOCOMPLETE_ACTIVE,
+        'Dropdown existe': !!dropdown,
+        'Dropdown visível': dropdown ? dropdown.style.display !== 'none' : false,
+        'Container pai': dropdown ? dropdown.parentElement?.tagName : 'N/A'
+    };
+    
+    console.table(resultados);
+    
+    if (input && input.hasAttribute('data-autocomplete-initialized')) {
+        console.log('✅ Autocomplete está configurado e pronto para uso');
+    } else {
+        console.warn('⚠️ Autocomplete NÃO está configurado!');
+    }
+    
+    console.groupEnd();
+    return resultados;
+};
+
+// Função de saúde do sistema (heartbeat)
+let healthCheckInterval = null;
+
+function startHealthCheck() {
+    if (healthCheckInterval) clearInterval(healthCheckInterval);
+    
+    healthCheckInterval = setInterval(() => {
+        if (window.AUTOCOMPLETE_ACTIVE) {
+            const input = document.getElementById('propLocation');
+            const dropdown = document.querySelector('.admin-location-suggestions');
+            
+            // Verificar se o dropdown está visível quando deveria estar
+            if (input && document.activeElement === input) {
+                if (!dropdown && input.value.length >= 2) {
+                    console.warn('⚠️ [HEALTH] Autocomplete pode estar com problema - dropdown não encontrado');
+                }
+            }
+        }
+    }, 30000); // verifica a cada 30 segundos
+}
+
+function stopHealthCheck() {
+    if (healthCheckInterval) {
+        clearInterval(healthCheckInterval);
+        healthCheckInterval = null;
+    }
+}
 
 // ========== FUNÇÕES DE TROCA DE ABA (GARANTIDAS) ==========
 function switchToFormTab() {
@@ -15,7 +76,7 @@ function switchToFormTab() {
         if (manageContent) manageContent.classList.remove('active');
         formTab.classList.add('active');
         formContent.classList.add('active');
-        console.log('✅ Mudou para aba INCLUIR/EDITAR');
+        console.log('[ADMIN] ✅ Mudou para aba INCLUIR/EDITAR');
     }
 }
 
@@ -30,7 +91,7 @@ function switchToManageTab() {
         if (formContent) formContent.classList.remove('active');
         manageTab.classList.add('active');
         manageContent.classList.add('active');
-        console.log('✅ Mudou para aba GERENCIAR');
+        console.log('[ADMIN] ✅ Mudou para aba GERENCIAR');
     }
 }
 
@@ -73,7 +134,7 @@ window.resetAdminFormCompletely = function(showNotification = true) {
         try {
             if (typeof window.MediaSystem.resetState === 'function') window.MediaSystem.resetState();
             ['uploadPreview', 'pdfUploadPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
-        } catch (error) { console.error('Erro ao resetar MediaSystem:', error); }
+        } catch (error) { console.error('[ADMIN] Erro ao resetar MediaSystem:', error); }
     }
     
     const formTitle = document.getElementById('formTitle');
@@ -186,7 +247,7 @@ window.editProperty = function(id) {
 };
 
 window.saveProperty = async function() {
-    console.group('💾 SALVANDO IMÓVEL');
+    console.group('[ADMIN] 💾 SALVANDO IMÓVEL');
     try {
         const propertyData = {};
         const videoCheckbox = document.getElementById('propHasVideo');
@@ -251,17 +312,23 @@ window.saveProperty = async function() {
             } else throw new Error('Função addNewProperty não disponível');
         }
     } catch (error) {
-        console.error('❌ Erro ao salvar imóvel:', error);
+        console.error('[ADMIN] ❌ Erro ao salvar imóvel:', error);
         if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ Erro: ${error.message}`, 'error', 5000);
         else alert(`❌ Erro: ${error.message}`);
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE COM LISTA COMPLETA DE BAIRROS (ATUALIZADA) ==========
+// ========== AUTOCOMPLETE COM LISTA COMPLETA DE BAIRROS (ESTÁVEL v2.0) ==========
 window.setupLocationAutocomplete = function() {
-    console.log('🔧 setupLocationAutocomplete chamado');
+    // Evitar múltiplas inicializações
+    if (autocompleteInitialized) {
+        console.log('[AUTOCOMPLETE] ℹ️ Já inicializado, pulando...');
+        return true;
+    }
     
-    // LISTA COMPLETA DE BAIRROS - ATUALIZADA CONFORME SOLICITADO
+    console.log('[AUTOCOMPLETE] 🔧 Iniciando configuração...');
+    
+    // LISTA COMPLETA DE BAIRROS - VERSÃO ESTÁVEL
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
         'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
@@ -278,18 +345,21 @@ window.setupLocationAutocomplete = function() {
 
     const locationInput = document.getElementById('propLocation');
     if (!locationInput) {
-        console.warn('⚠️ Campo propLocation não encontrado');
+        console.warn('[AUTOCOMPLETE] ⚠️ Campo propLocation não encontrado');
         return false;
     }
     
+    // Verificar se já está inicializado (atributo)
     if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        console.log('ℹ️ Autocomplete já inicializado neste campo');
+        console.log('[AUTOCOMPLETE] ℹ️ Autocomplete já inicializado neste campo');
+        autocompleteInitialized = true;
+        window.AUTOCOMPLETE_ACTIVE = true;
         return true;
     }
     
-    console.log('📝 Configurando autocomplete no campo:', locationInput);
+    console.log('[AUTOCOMPLETE] 📝 Configurando no campo:', locationInput);
     
-    // Adicionar estilo global para garantir que o dropdown apareça
+    // Adicionar estilo global (apenas uma vez)
     if (!document.getElementById('admin-autocomplete-style')) {
         const style = document.createElement('style');
         style.id = 'admin-autocomplete-style';
@@ -329,13 +399,13 @@ window.setupLocationAutocomplete = function() {
             }
         `;
         document.head.appendChild(style);
-        console.log('✅ Estilo global do autocomplete adicionado');
+        console.log('[AUTOCOMPLETE] ✅ Estilo global adicionado');
     }
     
     let suggestionsContainer = null;
     
     function showSuggestions(searchTerm) {
-        // Limpar container anterior se existir
+        // Limpar container anterior
         if (suggestionsContainer && suggestionsContainer.parentElement) {
             suggestionsContainer.remove();
             suggestionsContainer = null;
@@ -349,20 +419,17 @@ window.setupLocationAutocomplete = function() {
         
         if (!locationInput) return;
         
-        // Obter posição do campo
         const rect = locationInput.getBoundingClientRect();
         
-        // Se o campo não estiver visível, não mostrar dropdown
+        // Campo não visível
         if (rect.bottom === 0 && rect.top === 0) {
-            console.log('⏸️ Campo não visível, dropdown não será mostrado');
+            console.log('[AUTOCOMPLETE] ⏸️ Campo não visível');
             return;
         }
         
-        // Criar novo container
+        // Criar container
         suggestionsContainer = document.createElement('div');
         suggestionsContainer.className = 'admin-location-suggestions';
-        
-        // Estilos inline forçados
         suggestionsContainer.style.cssText = `
             position: fixed !important;
             top: ${rect.bottom + 5}px !important;
@@ -408,14 +475,14 @@ window.setupLocationAutocomplete = function() {
                 }
                 locationInput.dispatchEvent(new Event('input', { bubbles: true }));
                 locationInput.dispatchEvent(new Event('change', { bubbles: true }));
-                console.log('📍 Bairro selecionado:', bairro);
+                console.log('[AUTOCOMPLETE] 📍 Bairro selecionado:', bairro);
             };
             
             suggestionsContainer.appendChild(div);
         });
         
         document.body.appendChild(suggestionsContainer);
-        console.log(`📋 ${matches.length} sugestões para "${searchTerm}"`);
+        console.log(`[AUTOCOMPLETE] 📋 ${matches.length} sugestões para "${searchTerm}"`);
     }
     
     function hideSuggestions() {
@@ -425,7 +492,7 @@ window.setupLocationAutocomplete = function() {
         }
     }
     
-    // Configurar eventos
+    // Configurar eventos (SEM CLONAGEM - usando o input original)
     locationInput.addEventListener('input', function(e) {
         showSuggestions(e.target.value);
     });
@@ -450,25 +517,34 @@ window.setupLocationAutocomplete = function() {
     window.addEventListener('scroll', hideSuggestions, { passive: true });
     window.addEventListener('resize', hideSuggestions);
     
+    // Marcar como inicializado
     locationInput.setAttribute('data-autocomplete-initialized', 'true');
     locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
     
-    console.log('✅ Autocomplete configurado com sucesso!');
+    autocompleteInitialized = true;
+    window.AUTOCOMPLETE_ACTIVE = true;
+    
+    console.log('[AUTOCOMPLETE] ✅ Configurado com sucesso!');
     return true;
 };
 
-function ensureAutocomplete(retries = 10, delay = 500) {
+// Função com backoff exponencial para inicialização
+function ensureAutocomplete(retries = 5, delay = 100) {
+    console.log(`[AUTOCOMPLETE] 🔄 Tentativa ${6 - retries}/5...`);
+    
     if (document.getElementById('propLocation')) {
         if (window.setupLocationAutocomplete && window.setupLocationAutocomplete()) {
-            console.log('✅ Autocomplete configurado com sucesso!');
+            console.log('[AUTOCOMPLETE] ✅ Inicializado com sucesso!');
+            startHealthCheck();
             return true;
         }
     }
     
     if (retries > 0) {
-        setTimeout(() => ensureAutocomplete(retries - 1, delay), delay);
+        const nextDelay = Math.min(delay * 2, 2000);
+        setTimeout(() => ensureAutocomplete(retries - 1, nextDelay), delay);
     } else {
-        console.error('❌ Falha ao configurar autocomplete após múltiplas tentativas');
+        console.error('[AUTOCOMPLETE] ❌ Falha ao inicializar após 5 tentativas');
     }
     return false;
 }
@@ -486,7 +562,7 @@ window.setupForm = function() {
         if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...'; }
         const loading = window.LoadingManager?.show?.('Salvando Imóvel...', 'Por favor, aguarde...', { variant: 'processing' });
         try { await window.saveProperty(); }
-        catch (error) { console.error('❌ Erro no salvamento:', error); if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ ${error.message}`, 'error', 5000); }
+        catch (error) { console.error('[ADMIN] ❌ Erro no salvamento:', error); if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ ${error.message}`, 'error', 5000); }
         finally {
             if (submitBtn) setTimeout(() => { submitBtn.disabled = false; submitBtn.innerHTML = originalText || (window.editingPropertyId ? '<i class="fas fa-save"></i> Salvar Alterações' : '<i class="fas fa-plus"></i> Adicionar Imóvel ao Site'); }, 1000);
             if (loading) loading.hide();
@@ -494,7 +570,7 @@ window.setupForm = function() {
     });
     
     setTimeout(() => {
-        ensureAutocomplete(10, 500);
+        ensureAutocomplete(5, 100);
     }, 200);
 };
 
@@ -525,14 +601,29 @@ window.setupAdminUI = function() {
 };
 
 function initializeAdmin() {
-    try { const stored = JSON.parse(localStorage.getItem('properties') || '[]'); if (!window.properties && stored.length) window.properties = stored; }
-    catch (e) { console.error('Erro ao carregar do localStorage:', e); }
+    console.log('[ADMIN] 🚀 Inicializando sistema...');
+    
+    try { 
+        const stored = JSON.parse(localStorage.getItem('properties') || '[]'); 
+        if (!window.properties && stored.length) window.properties = stored;
+        console.log(`[ADMIN] 📦 ${stored.length} imóveis carregados do localStorage`);
+    } catch (e) { 
+        console.error('[ADMIN] Erro ao carregar do localStorage:', e); 
+    }
+    
     window.setupAdminUI();
+    
     setTimeout(() => {
-        ensureAutocomplete(10, 500);
+        ensureAutocomplete(5, 100);
     }, 600);
 }
 
+// Comandos úteis disponíveis no console
+window.diagnoseAutocomplete = window.diagnoseAutocomplete;
+window.getAutocompleteStatus = () => window.AUTOCOMPLETE_ACTIVE;
+window.stopHealthCheck = stopHealthCheck;
+
+// Exportar funções de troca de aba globalmente
 window.switchToManageTab = switchToManageTab;
 window.switchToFormTab = switchToFormTab;
 
