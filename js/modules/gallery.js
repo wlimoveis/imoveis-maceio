@@ -1,5 +1,5 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
-// ✅ Função isVideoUrl centralizada no SharedCore (removido fallback redundante)
+// ✅ Funções de visualização delegadas ao SharedCore
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -12,27 +12,108 @@ window.SWIPE_THRESHOLD = 50;
 // ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE ==========
 // A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
+// ========== FUNÇÕES DELEGADAS PARA O SHAREDCORE (COM FALLBACK) ==========
+
+window.getGalleryViews = function(propertyId) {
+    if (window.SharedCore && typeof window.SharedCore.getGalleryViews === 'function') {
+        return window.SharedCore.getGalleryViews(propertyId);
+    }
+    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getGalleryViews');
+    try {
+        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        return views[propertyId] || 0;
+    } catch (error) {
+        return 0;
+    }
+};
+
+window.getTotalGalleryViews = function() {
+    if (window.SharedCore && typeof window.SharedCore.getTotalGalleryViews === 'function') {
+        return window.SharedCore.getTotalGalleryViews();
+    }
+    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getTotalGalleryViews');
+    try {
+        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        let total = 0;
+        for (let key in views) total += views[key];
+        return total;
+    } catch (error) {
+        return 0;
+    }
+};
+
+window.getLastGalleryView = function(propertyId) {
+    if (window.SharedCore && typeof window.SharedCore.getLastGalleryView === 'function') {
+        return window.SharedCore.getLastGalleryView(propertyId);
+    }
+    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getLastGalleryView');
+    try {
+        const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+        return lastViews[propertyId] || null;
+    } catch (error) {
+        return null;
+    }
+};
+
+window.resetAllGalleryViews = function() {
+    if (window.SharedCore && typeof window.SharedCore.resetAllGalleryViews === 'function') {
+        const result = window.SharedCore.resetAllGalleryViews();
+        if (result && typeof window.loadPropertyList === 'function') {
+            setTimeout(() => window.loadPropertyList(), 100);
+        }
+        return result;
+    }
+    console.error('[Gallery] SharedCore não disponível para resetAllGalleryViews. Operação não realizada.');
+    alert('❌ Sistema de visualizações não disponível. Recarregue a página.');
+    return false;
+};
+
+window.resetGalleryViews = function(propertyId, propertyTitle) {
+    if (!confirm(`⚠️ TEM CERTEZA que deseja ZERAR as visualizações do imóvel?\n\n"${propertyTitle}"\n\nEsta ação NÃO pode ser desfeita.`)) {
+        return false;
+    }
+    try {
+        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
+        let lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
+        
+        views[propertyId] = 0;
+        lastViews[propertyId] = new Date().toISOString();
+        
+        localStorage.setItem('galleryViews', JSON.stringify(views));
+        localStorage.setItem('galleryViewsLast', JSON.stringify(lastViews));
+        
+        updateViewCounter(propertyId, 0);
+        
+        if (typeof window.loadPropertyList === 'function') {
+            setTimeout(() => window.loadPropertyList(), 100);
+        }
+        
+        if (typeof window.showAdminNotification === 'function') {
+            window.showAdminNotification(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`, 'success', 3000);
+        } else {
+            alert(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`);
+        }
+        return true;
+    } catch (error) {
+        console.error('Erro ao zerar visualizações:', error);
+        alert('❌ Erro ao zerar visualizações!');
+        return false;
+    }
+};
+
 // ========== FUNÇÃO PARA REGISTRAR VISUALIZAÇÃO (PERSISTENTE) ==========
 window.registerGalleryView = function(propertyId) {
     try {
-        // Recuperar visualizações existentes do localStorage
         let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        
-        // Incrementar contagem para este imóvel
         views[propertyId] = (views[propertyId] || 0) + 1;
-        
-        // Salvar de volta no localStorage
         localStorage.setItem('galleryViews', JSON.stringify(views));
         
-        // Registrar timestamp da última visualização
         let lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
         lastViews[propertyId] = new Date().toISOString();
         localStorage.setItem('galleryViewsLast', JSON.stringify(lastViews));
         
-        // Atualizar contador na UI
         updateViewCounter(propertyId, views[propertyId]);
         
-        // Se o admin panel estiver visível, atualizar a lista
         const adminPanel = document.getElementById('adminPanel');
         if (adminPanel && adminPanel.style.display === 'block') {
             if (typeof window.loadPropertyList === 'function') {
@@ -45,127 +126,6 @@ window.registerGalleryView = function(propertyId) {
     } catch (error) {
         console.error('Erro ao registrar visualização:', error);
         return 0;
-    }
-};
-
-// ========== FUNÇÃO PARA ZERAR VISUALIZAÇÕES DE UM IMÓVEL ==========
-window.resetGalleryViews = function(propertyId, propertyTitle) {
-    if (!confirm(`⚠️ TEM CERTEZA que deseja ZERAR as visualizações do imóvel?\n\n"${propertyTitle}"\n\nEsta ação NÃO pode ser desfeita.`)) {
-        return false;
-    }
-    
-    try {
-        let views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        let lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
-        
-        // Zerar contagem
-        views[propertyId] = 0;
-        lastViews[propertyId] = new Date().toISOString();
-        
-        // Salvar
-        localStorage.setItem('galleryViews', JSON.stringify(views));
-        localStorage.setItem('galleryViewsLast', JSON.stringify(lastViews));
-        
-        // Atualizar UI do card se existir
-        updateViewCounter(propertyId, 0);
-        
-        // Atualizar lista do admin
-        if (typeof window.loadPropertyList === 'function') {
-            setTimeout(() => window.loadPropertyList(), 100);
-        }
-        
-        // Notificar sucesso
-        if (typeof window.showAdminNotification === 'function') {
-            window.showAdminNotification(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`, 'success', 3000);
-        } else {
-            alert(`✅ Visualizações de "${propertyTitle}" zeradas com sucesso!`);
-        }
-        
-        console.log(`🔄 Visualizações zeradas para imóvel ${propertyId}`);
-        return true;
-    } catch (error) {
-        console.error('Erro ao zerar visualizações:', error);
-        alert('❌ Erro ao zerar visualizações!');
-        return false;
-    }
-};
-
-// ========== FUNÇÃO PARA OBTER VISUALIZAÇÕES ==========
-window.getGalleryViews = function(propertyId) {
-    try {
-        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        return views[propertyId] || 0;
-    } catch (error) {
-        console.error('Erro ao obter visualizações:', error);
-        return 0;
-    }
-};
-
-// ========== FUNÇÃO PARA OBTER ÚLTIMA VISUALIZAÇÃO ==========
-window.getLastGalleryView = function(propertyId) {
-    try {
-        const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
-        return lastViews[propertyId] || null;
-    } catch (error) {
-        return null;
-    }
-};
-
-// ========== FUNÇÃO PARA OBTER TOTAL DE VISUALIZAÇÕES DO SITE ==========
-window.getTotalGalleryViews = function() {
-    try {
-        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        let total = 0;
-        for (let key in views) {
-            total += views[key];
-        }
-        return total;
-    } catch (error) {
-        return 0;
-    }
-};
-
-// ========== FUNÇÃO PARA BOTÃO ZERAR TODAS (COM DUPLA CONFIRMAÇÃO) ==========
-window.resetAllGalleryViews = function() {
-    if (!confirm('⚠️ ATENÇÃO! Isso irá ZERAR TODAS as visualizações de TODOS os imóveis.\n\nEsta ação NÃO pode ser desfeita.\n\nClique em OK para continuar:')) {
-        return false;
-    }
-    
-    const confirmation = prompt('Digite "CONFIRMAR" para zerar TODAS as visualizações:');
-    if (confirmation !== 'CONFIRMAR') {
-        alert('❌ Operação cancelada. Digite "CONFIRMAR" exatamente como solicitado.');
-        return false;
-    }
-    
-    try {
-        // Zerar todas as visualizações
-        localStorage.setItem('galleryViews', JSON.stringify({}));
-        localStorage.setItem('galleryViewsLast', JSON.stringify({}));
-        
-        // Atualizar todos os cards na página
-        if (window.properties) {
-            window.properties.forEach(property => {
-                updateViewCounter(property.id, 0);
-            });
-        }
-        
-        // Atualizar lista do admin
-        if (typeof window.loadPropertyList === 'function') {
-            setTimeout(() => window.loadPropertyList(), 100);
-        }
-        
-        if (typeof window.showAdminNotification === 'function') {
-            window.showAdminNotification('✅ TODAS as visualizações foram zeradas!', 'success', 3000);
-        } else {
-            alert('✅ TODAS as visualizações foram zeradas!');
-        }
-        
-        console.log('🔄 Todas as visualizações zeradas');
-        return true;
-    } catch (error) {
-        console.error('Erro ao zerar todas visualizações:', error);
-        alert('❌ Erro ao zerar visualizações!');
-        return false;
     }
 };
 
@@ -422,7 +382,6 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     
     const allMedia = property.images.split(',').filter(url => url.trim() !== '');
     
-    // REGISTRAR VISUALIZAÇÃO quando abrir a galeria
     window.registerGalleryView(propertyId);
     
     const currentIndex = getCurrentCardIndex(propertyId);
@@ -594,20 +553,14 @@ window.setupGalleryEvents = function() {
         }
     });
     
-    // ========== DEBOUNCE PARA EVENTO DE RESIZE ==========
     let resizeTimeout;
     window.addEventListener('resize', function() {
-        // Limpar timeout anterior
         if (resizeTimeout) clearTimeout(resizeTimeout);
-        
-        // Executar apenas após 250ms sem novos eventos de resize
         resizeTimeout = setTimeout(function() {
             const galleryModal = document.getElementById('propertyGalleryModal');
             if (galleryModal && galleryModal.style.display === 'block') {
-                // Se o modal da galeria estiver aberto, reajustar o conteúdo
                 const currentVideo = document.getElementById('galleryVideo');
                 if (currentVideo) {
-                    // Pequeno ajuste para garantir que o vídeo se ajuste à nova tela
                     currentVideo.style.maxHeight = window.innerHeight * 0.8 + 'px';
                 }
             }
@@ -615,31 +568,23 @@ window.setupGalleryEvents = function() {
         }, 250);
     });
     
-    // ========== THROTTLE PARA EVENTO DE SCROLL ==========
     let scrollThrottleTimeout = null;
     let lastScrollPosition = 0;
     
     window.addEventListener('scroll', function() {
-        // Ignorar se já tem um timeout agendado
         if (scrollThrottleTimeout) return;
-        
         scrollThrottleTimeout = setTimeout(function() {
             scrollThrottleTimeout = null;
-            
             const currentScroll = window.scrollY;
             const scrollDelta = Math.abs(currentScroll - lastScrollPosition);
-            
-            // Se a rolagem foi significativa (> 100px), verificar imagens lazy
             if (scrollDelta > 100) {
                 const lazyImages = document.querySelectorAll('img[loading="lazy"]');
-                // O navegador já gerencia o lazy loading, apenas log para debug
                 if (lazyImages.length > 0 && window.DEBUG_MODE) {
                     console.log(`📜 Scroll detectado: ${lazyImages.length} imagens lazy aguardando`);
                 }
             }
-            
             lastScrollPosition = currentScroll;
-        }, 100); // Executa no máximo a cada 100ms
+        }, 100);
     });
     
     console.log('✅ Throttle de scroll configurado');
@@ -688,4 +633,4 @@ window.openGallery = window.openGalleryAtCurrentIndex;
 
 console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
 console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll');
-console.log('✅ isVideoUrl centralizado no SharedCore (fallback removido)');
+console.log('✅ Funções de visualização delegadas ao SharedCore');
