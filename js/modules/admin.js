@@ -1,4 +1,8 @@
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.0');
+// js/modules/admin.js - Versão ESTÁVEL v2.1
+// CORREÇÃO: Removido scroll automático ao abrir o painel admin
+// Agora o painel aparece instantaneamente sem rolar a página
+
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.1 (sem scroll automático)');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -108,11 +112,15 @@ window.toggleAdminPanel = function() {
             setTimeout(switchToManageTab, 50);
         }
         panel.style.display = isVisible ? 'none' : 'block';
+        
+        // CORREÇÃO: REMOVIDO O scrollIntoView!
+        // O painel aparece instantaneamente sem rolar a página
         if (!isVisible) {
-            setTimeout(() => {
-                panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                if (typeof window.loadPropertyList === 'function') window.loadPropertyList();
-            }, 300);
+            // Apenas carrega a lista de imóveis, SEM ROLAR
+            if (typeof window.loadPropertyList === 'function') {
+                setTimeout(() => window.loadPropertyList(), 100);
+            }
+            console.log('[ADMIN] ✅ Painel aberto instantaneamente (sem scroll)');
         }
     }
 };
@@ -222,9 +230,14 @@ window.editProperty = function(id) {
         if (panel && panel.style.display !== 'block') {
             panel.style.display = 'block';
         }
+        // CORREÇÃO: Não rolar automaticamente, apenas focar no formulário
         const formElement = document.getElementById('propertyForm');
         if (formElement) {
-            formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            // Apenas foca no primeiro campo, SEM rolar a página
+            const firstInput = formElement.querySelector('input, textarea, select');
+            if (firstInput && typeof firstInput.focus === 'function') {
+                firstInput.focus();
+            }
         }
     }, 150);
     
