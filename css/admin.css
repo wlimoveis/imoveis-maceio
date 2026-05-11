@@ -1,8 +1,9 @@
 /* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
 /* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
 /* ATUALIZADO: Layout original restaurado para aba INCLUIR/EDITAR em mobile */
-/* - Campos Título e Preço na mesma linha */
-/* - Espaçamento justo (estilo C/C++ skeuomorphism) */
+/* CORREÇÃO: Estabilidade durante edição de imóveis - previne desajustes */
+/* - Campos Título e Preço na mesma linha (mesmo durante edição) */
+/* - Espaçamento justo (estilo C/C++ skeuomorphism) preservado */
 /* - Aba GERENCIAR mantém 100% largura */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -1932,6 +1933,7 @@ select {
      - Campos Título e Preço na MESMA LINHA (grid 1fr 1fr)
      - Espaçamento justo (gap reduzido)
      - Estilo consistente com o original
+     - CORREÇÃO: Estabilidade durante edição (mesmo com classes dinâmicas)
 */
 
 /* Ajuste base do painel em mobile */
@@ -1980,51 +1982,84 @@ select {
 }
 
 /* ESTILO ESPECÍFICO PARA ABA INCLUIR/EDITAR (layout original restaurado) */
+/* CORREÇÃO: Maior especificidade para prevenir desajustes durante edição */
 @media (max-width: 768px) {
-    #form-tab.active {
+    /* Container principal da aba */
+    #form-tab.active,
+    #form-tab.active[style*="display"],
+    #form-tab.active[class*="active"] {
         padding: 0 !important;
     }
     
-    #form-tab.active > div {
+    /* Container interno com o formulário */
+    #form-tab.active > div,
+    #form-tab.active > div[style*="background"],
+    #form-tab.active > div:first-child {
         padding: 0.5rem !important;
         margin: 0 auto !important;
         max-width: 100% !important;
+        box-sizing: border-box !important;
     }
     
-    /* RESTAURAR LAYOUT ORIGINAL: TÍTULO E PREÇO NA MESMA LINHA */
-    #form-tab.active .form-row-2cols {
+    /* FORÇAR layout de grid para a linha de Título e Preço */
+    #form-tab.active .form-row-2cols,
+    #form-tab.active div.form-row-2cols,
+    #form-tab.active .form-row-2cols[class*="row"] {
         display: grid !important;
         grid-template-columns: 1fr 1fr !important;
         gap: 0.15rem !important;
         margin-bottom: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Garantir que os grupos de formulário mantenham o layout justo */
+    #form-tab.active .form-row-2cols .form-group,
+    #form-tab.active .form-row-2cols div.form-group {
+        margin-bottom: 0 !important;
+        padding: 0.15rem !important;
+        width: auto !important;
+        box-sizing: border-box !important;
     }
     
     /* Espaçamento justo entre os campos (estilo C/C++) */
-    #form-tab.active .form-group {
+    #form-tab.active .form-group,
+    #form-tab.active div.form-group {
         margin-bottom: 0.15rem !important;
         padding: 0.15rem !important;
     }
     
     /* Remover gaps extras entre campos */
-    #form-tab.active #propertyForm {
+    #form-tab.active #propertyForm,
+    #form-tab.active form#propertyForm {
         gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
     }
     
     /* Campos com padding reduzido para manter justaposição */
     #form-tab.active #propertyForm input,
     #form-tab.active #propertyForm textarea,
-    #form-tab.active #propertyForm select {
+    #form-tab.active #propertyForm select,
+    #form-tab.active form#propertyForm input,
+    #form-tab.active form#propertyForm textarea,
+    #form-tab.active form#propertyForm select {
         padding: 0.35rem 0.45rem !important;
         font-size: 0.75rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
     
     /* Botões com layout justo */
     #form-tab.active #propertyForm button[type="submit"],
-    #form-tab.active #cancelEditBtn {
+    #form-tab.active #cancelEditBtn,
+    #form-tab.active form#propertyForm button[type="submit"],
+    #form-tab.active button#cancelEditBtn {
         width: 100% !important;
         padding: 0.5rem !important;
         font-size: 0.75rem !important;
         margin-top: 0.15rem !important;
+        box-sizing: border-box !important;
     }
     
     /* Áreas de upload com padding reduzido */
@@ -2048,13 +2083,15 @@ select {
     }
     
     /* Container do formulário sem margens extras */
-    #form-tab.active #propertyForm {
+    #form-tab.active #propertyForm,
+    #form-tab.active form {
         margin: 0 !important;
         padding: 0 !important;
     }
     
     /* Checkbox com espaçamento justo */
-    #form-tab.active .form-group label[style*="display:flex"] {
+    #form-tab.active .form-group label[style*="display:flex"],
+    #form-tab.active label[for="propHasVideo"] {
         margin: 0 !important;
         padding: 0.1rem 0 !important;
     }
