@@ -1,8 +1,8 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.3
-// CORREÇÃO: O botão OK após senha tem o MESMO efeito que clicar na aba GERENCIAR
-// O painel aparece com a aba GERENCIAR ativa (comportamento idêntico)
+// js/modules/admin.js - Versão ESTÁVEL v2.4
+// CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
+// SEM scroll, apenas exibição direta e carregamento da lista
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.3 (OK = clique na aba GERENCIAR)');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4 (OK funciona instantaneamente)');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -11,50 +11,34 @@ window.editingPropertyId = null;
 window.AUTOCOMPLETE_ACTIVE = false;
 let autocompleteInitialized = false;
 
-// Função de diagnóstico para verificar saúde do autocomplete
 window.diagnoseAutocomplete = function() {
     console.group('🔍 DIAGNÓSTICO DO AUTOCOMPLETE');
-    
     const input = document.getElementById('propLocation');
     const dropdown = document.querySelector('.admin-location-suggestions');
-    
     const resultados = {
         'Campo existe': !!input,
         'Campo visível': input ? input.getBoundingClientRect().bottom > 0 : false,
         'Autocomplete inicializado': input ? input.hasAttribute('data-autocomplete-initialized') : false,
         'Flag AUTOCOMPLETE_ACTIVE': window.AUTOCOMPLETE_ACTIVE,
         'Dropdown existe': !!dropdown,
-        'Dropdown visível': dropdown ? dropdown.style.display !== 'none' : false,
-        'Container pai': dropdown ? dropdown.parentElement?.tagName : 'N/A'
+        'Dropdown visível': dropdown ? dropdown.style.display !== 'none' : false
     };
-    
     console.table(resultados);
-    
-    if (input && input.hasAttribute('data-autocomplete-initialized')) {
-        console.log('✅ Autocomplete está configurado e pronto para uso');
-    } else {
-        console.warn('⚠️ Autocomplete NÃO está configurado!');
-    }
-    
     console.groupEnd();
     return resultados;
 };
 
-// Função de saúde do sistema (heartbeat)
 let healthCheckInterval = null;
 
 function startHealthCheck() {
     if (healthCheckInterval) clearInterval(healthCheckInterval);
-    
     healthCheckInterval = setInterval(() => {
         if (window.AUTOCOMPLETE_ACTIVE) {
             const input = document.getElementById('propLocation');
             const dropdown = document.querySelector('.admin-location-suggestions');
-            
-            // Verificar se o dropdown está visível quando deveria estar
             if (input && document.activeElement === input) {
                 if (!dropdown && input.value.length >= 2) {
-                    console.warn('⚠️ [HEALTH] Autocomplete pode estar com problema - dropdown não encontrado');
+                    console.warn('⚠️ [HEALTH] Autocomplete pode estar com problema');
                 }
             }
         }
@@ -68,7 +52,7 @@ function stopHealthCheck() {
     }
 }
 
-// ========== FUNÇÕES DE TROCA DE ABA (GARANTIDAS) ==========
+// ========== FUNÇÕES DE TROCA DE ABA ==========
 function switchToFormTab() {
     const formTab = document.querySelector('.admin-tab[data-tab="form-tab"]');
     const manageTab = document.querySelector('.admin-tab[data-tab="manage-tab"]');
@@ -97,49 +81,63 @@ function switchToManageTab() {
         manageContent.classList.add('active');
         console.log('[ADMIN] ✅ Mudou para aba GERENCIAR');
         
-        // Carregar a lista de imóveis quando a aba GERENCIAR for ativada
+        // Carregar a lista de imóveis
         if (typeof window.loadPropertyList === 'function') {
-            setTimeout(() => window.loadPropertyList(), 50);
+            setTimeout(function() {
+                window.loadPropertyList();
+                console.log('[ADMIN] 📋 Lista de imóveis carregada');
+            }, 50);
         }
     }
 }
 
-// ========== FUNÇÃO PARA ABRIR O PAINEL COM A ABA GERENCIAR ATIVA ==========
-// Esta função é chamada pelo botão OK após validar a senha
-function openAdminPanelWithManageTab() {
+// ========== FUNÇÃO PRINCIPAL: TOGGLE DO PAINEL ADMIN ==========
+window.toggleAdminPanel = function() {
+    console.log('[ADMIN] 🔑 Solicitando acesso ao painel...');
+    
+    const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
+    
+    if (!password) {
+        console.log('[ADMIN] ❌ Acesso cancelado pelo usuário');
+        return;
+    }
+    
+    if (password !== ADMIN_CONFIG.password) {
+        alert('❌ Senha incorreta!');
+        console.log('[ADMIN] ❌ Senha incorreta');
+        return;
+    }
+    
+    console.log('[ADMIN] ✅ Senha correta! Abrindo painel...');
+    
     const panel = document.getElementById(ADMIN_CONFIG.panelId);
-    if (!panel) return;
     
-    // Reset do formulário (limpar dados de edição anteriores)
-    window.resetAdminFormCompletely(false);
+    if (!panel) {
+        console.error('[ADMIN] ❌ Painel não encontrado!');
+        return;
+    }
     
-    // Ativar a aba GERENCIAR (MESMA FUNÇÃO que o clique na aba)
-    switchToManageTab();
-    
-    // Mostrar o painel
+    // FORÇAR a exibição do painel (independente do estado anterior)
     panel.style.display = 'block';
     
-    console.log('[ADMIN] ✅ Painel aberto com aba GERENCIAR ativa (comportamento idêntico ao clique na aba)');
-}
-
-window.toggleAdminPanel = function() {
-    const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
-    if (!password) return;
-    if (password !== ADMIN_CONFIG.password) return alert('❌ Senha incorreta!');
+    // Reset do formulário (limpar dados de edição)
+    window.resetAdminFormCompletely(false);
     
-    const panel = document.getElementById(ADMIN_CONFIG.panelId);
-    if (panel) {
-        const isVisible = panel.style.display === 'block';
+    // ATIVAR A ABA GERENCIAR (principal)
+    switchToManageTab();
+    
+    // Pequeno delay para garantir que o DOM foi atualizado
+    setTimeout(function() {
+        // Rolar suavemente até o painel apenas se necessário (opcional, mas mantém usabilidade)
+        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        console.log('[ADMIN] ✅ Painel aberto com sucesso - Aba GERENCIAR ativa');
         
-        if (!isVisible) {
-            // ABRIR o painel com a aba GERENCIAR ativa (MESMO COMPORTAMENTO da aba)
-            openAdminPanelWithManageTab();
-        } else {
-            // Fechar o painel
-            panel.style.display = 'none';
-            console.log('[ADMIN] ✅ Painel fechado');
-        }
-    }
+        // Notificação visual opcional
+        panel.classList.add('admin-panel-highlight');
+        setTimeout(function() {
+            panel.classList.remove('admin-panel-highlight');
+        }, 1000);
+    }, 100);
 };
 
 window.resetAdminFormCompletely = function(showNotification = true) {
@@ -199,14 +197,12 @@ window.editProperty = function(id) {
         return false;
     }
     
-    // Garantir que o painel está visível antes de tentar editar
     const panel = document.getElementById('adminPanel');
     if (panel && panel.style.display !== 'block') {
         panel.style.display = 'block';
     }
     
     switchToFormTab();
-    
     window.resetAdminFormCompletely(false);
     
     const formatPrice = (price) => window.SharedCore.PriceFormatter.formatForAdmin(price) ?? '';
@@ -248,7 +244,6 @@ window.editProperty = function(id) {
     
     if (window.MediaSystem?.loadExisting) window.MediaSystem.loadExisting(property);
     
-    // Focar no primeiro campo do formulário
     setTimeout(() => {
         const formElement = document.getElementById('propertyForm');
         if (formElement) {
@@ -349,14 +344,11 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
-// ========== AUTOCOMPLETE COM LISTA COMPLETA DE BAIRROS (ESTÁVEL v2.0) ==========
+// ========== AUTOCOMPLETE ==========
 window.setupLocationAutocomplete = function() {
     if (autocompleteInitialized) {
-        console.log('[AUTOCOMPLETE] ℹ️ Já inicializado, pulando...');
         return true;
     }
-    
-    console.log('[AUTOCOMPLETE] 🔧 Iniciando configuração...');
     
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
@@ -373,13 +365,9 @@ window.setupLocationAutocomplete = function() {
     ];
 
     const locationInput = document.getElementById('propLocation');
-    if (!locationInput) {
-        console.warn('[AUTOCOMPLETE] ⚠️ Campo propLocation não encontrado');
-        return false;
-    }
+    if (!locationInput) return false;
     
     if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        console.log('[AUTOCOMPLETE] ℹ️ Autocomplete já inicializado neste campo');
         autocompleteInitialized = true;
         window.AUTOCOMPLETE_ACTIVE = true;
         return true;
@@ -399,10 +387,6 @@ window.setupLocationAutocomplete = function() {
                 box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
                 max-height: 250px !important;
                 overflow-y: auto !important;
-                box-sizing: border-box !important;
-                display: block !important;
-                visibility: visible !important;
-                opacity: 1 !important;
             }
             .admin-location-suggestions div {
                 padding: 10px 14px !important;
@@ -411,7 +395,6 @@ window.setupLocationAutocomplete = function() {
                 color: #1a5276 !important;
                 background: white !important;
                 border-bottom: 1px solid #e0e0e0 !important;
-                transition: background 0.2s ease !important;
             }
             .admin-location-suggestions div:hover {
                 background: #e8f4fd !important;
@@ -433,7 +416,6 @@ window.setupLocationAutocomplete = function() {
             suggestionsContainer.remove();
             suggestionsContainer = null;
         }
-        
         if (!searchTerm || searchTerm.length < 2) return;
         
         const termLower = searchTerm.toLowerCase();
@@ -459,10 +441,6 @@ window.setupLocationAutocomplete = function() {
             box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
             max-height: 250px !important;
             overflow-y: auto !important;
-            box-sizing: border-box !important;
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
         `;
         
         matches.forEach(bairro => {
@@ -474,7 +452,6 @@ window.setupLocationAutocomplete = function() {
                 color: #1a5276 !important;
                 background: white !important;
                 border-bottom: 1px solid #e0e0e0 !important;
-                transition: background 0.2s ease !important;
             `;
             div.onmouseenter = () => div.style.background = '#e8f4fd';
             div.onmouseleave = () => div.style.background = 'white';
@@ -540,8 +517,7 @@ function ensureAutocomplete(retries = 5, delay = 100) {
         }
     }
     if (retries > 0) {
-        const nextDelay = Math.min(delay * 2, 2000);
-        setTimeout(() => ensureAutocomplete(retries - 1, nextDelay), delay);
+        setTimeout(() => ensureAutocomplete(retries - 1, delay * 2), delay);
     }
     return false;
 }
