@@ -1,11 +1,61 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.4
-// CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
-// SEM scroll, apenas exibição direta e carregamento da lista
+// js/modules/admin.js - Versão ESTÁVEL v2.5
+// NOVO: Indicador "Tempo de Mercado" (Days on Market) na lista de gerenciamento
+// Mostra há quanto tempo o imóvel está cadastrado sem venda
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4 (OK funciona instantaneamente)');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.5 (com indicador Tempo de Mercado)');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
+
+// ========== FUNÇÃO PARA CALCULAR TEMPO DE MERCADO (DOM) ==========
+function getMarketTime(createdAt) {
+    if (!createdAt) {
+        // Se não tem data, usa data atual (hoje)
+        createdAt = new Date().toISOString();
+    }
+    
+    const createdDate = new Date(createdAt);
+    const now = new Date();
+    
+    // Calcular diferença em milissegundos
+    const diffMs = now - createdDate;
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+    const diffMonths = Math.floor(diffDays / 30);
+    const diffYears = Math.floor(diffDays / 365);
+    
+    // Formatar texto
+    let text = '';
+    let color = '';
+    let status = '';
+    
+    if (diffDays < 1) {
+        text = 'Hoje';
+        color = '#27ae60';      // verde
+        status = 'Liquidez Alta';
+    } else if (diffDays <= 30) {
+        text = `${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
+        color = '#27ae60';      // verde
+        status = 'Liquidez Alta';
+    } else if (diffDays <= 90) {
+        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
+        color = '#f39c12';      // amarelo
+        status = 'Liquidez Média';
+    } else if (diffDays <= 180) {
+        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
+        color = '#e67e22';      // laranja
+        status = 'Baixa Liquidez';
+    } else if (diffDays <= 365) {
+        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
+        color = '#e74c3c';      // vermelho
+        status = 'Estagnado';
+    } else {
+        text = `${diffYears} ano${diffYears !== 1 ? 's' : ''}`;
+        color = '#c0392b';      // vermelho escuro
+        status = 'Crítico';
+    }
+    
+    return { text, color, status, days: diffDays };
+}
 
 // ========== SISTEMA DE DIAGNÓSTICO E ESTABILIDADE ==========
 window.AUTOCOMPLETE_ACTIVE = false;
@@ -81,7 +131,6 @@ function switchToManageTab() {
         manageContent.classList.add('active');
         console.log('[ADMIN] ✅ Mudou para aba GERENCIAR');
         
-        // Carregar a lista de imóveis
         if (typeof window.loadPropertyList === 'function') {
             setTimeout(function() {
                 window.loadPropertyList();
@@ -117,22 +166,14 @@ window.toggleAdminPanel = function() {
         return;
     }
     
-    // FORÇAR a exibição do painel (independente do estado anterior)
     panel.style.display = 'block';
-    
-    // Reset do formulário (limpar dados de edição)
     window.resetAdminFormCompletely(false);
-    
-    // ATIVAR A ABA GERENCIAR (principal)
     switchToManageTab();
     
-    // Pequeno delay para garantir que o DOM foi atualizado
     setTimeout(function() {
-        // Rolar suavemente até o painel apenas se necessário (opcional, mas mantém usabilidade)
         panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         console.log('[ADMIN] ✅ Painel aberto com sucesso - Aba GERENCIAR ativa');
         
-        // Notificação visual opcional
         panel.classList.add('admin-panel-highlight');
         setTimeout(function() {
             panel.classList.remove('admin-panel-highlight');
@@ -344,11 +385,281 @@ window.saveProperty = async function() {
     } finally { console.groupEnd(); }
 };
 
+// ========== FUNÇÃO PARA CARREGAR LISTA DE IMÓVEIS COM INDICADOR DE TEMPO ==========
+window.loadPropertyList = function(page = window.adminCurrentPage) {
+    if (!window.properties || typeof window.properties.forEach !== 'function') {
+        console.error('❌ window.properties não é um array válido');
+        return;
+    }
+    
+    const container = document.getElementById('propertyList');
+    const countElement = document.getElementById('propertyCount');
+    
+    if (!container) return;
+    
+    const isMobile = window.innerWidth <= 768;
+    const itemsPerPage = isMobile ? 3 : window.adminItemsPerPage;
+    
+    window.adminCurrentPage = page;
+    
+    const totalItems = window.properties.length;
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
+    const paginatedProperties = window.properties.slice(startIndex, endIndex);
+    
+    container.innerHTML = '';
+    
+    if (countElement) {
+        countElement.textContent = totalItems;
+    }
+    
+    if (totalItems === 0) {
+        container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Nenhum imóvel cadastrado</p>';
+        return;
+    }
+    
+    container.style.maxHeight = '650px';
+    container.style.overflowY = 'auto';
+    container.style.paddingRight = '5px';
+    container.style.paddingBottom = '20px';
+    
+    const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
+    
+    const statsHeader = document.createElement('div');
+    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;';
+    
+    const statsContainer = document.createElement('div');
+    statsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.5rem;';
+    
+    const viewsSpan = document.createElement('span');
+    viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
+    viewsSpan.innerHTML = `<i class="fas fa-eye"></i> <strong>Total Visualizações:</strong> ${totalViews}`;
+    statsContainer.appendChild(viewsSpan);
+    
+    const itemsSpan = document.createElement('span');
+    itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
+    itemsSpan.innerHTML = `<i class="fas fa-building"></i> <strong>Total imóveis:</strong> ${totalItems}`;
+    statsContainer.appendChild(itemsSpan);
+    
+    const showingSpan = document.createElement('span');
+    showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
+    showingSpan.innerHTML = `<i class="fas fa-list"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex} de ${totalItems}`;
+    statsContainer.appendChild(showingSpan);
+    
+    statsHeader.appendChild(statsContainer);
+    container.appendChild(statsHeader);
+    
+    const listContainer = document.createElement('div');
+    listContainer.id = 'propertyListItems';
+    listContainer.style.cssText = 'margin: 0.5rem 0;';
+    
+    const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
+    
+    paginatedProperties.forEach(property => {
+        const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
+        const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
+        
+        // NOVO: Calcular tempo de mercado (Days on Market)
+        const marketTime = getMarketTime(property.created_at);
+        
+        let firstImage = defaultImage;
+        let isVideo = false;
+        
+        if (property.images && property.images !== 'EMPTY') {
+            const imageUrls = property.images.split(',').filter(url => url && url.trim() !== '');
+            if (imageUrls.length > 0) {
+                firstImage = imageUrls[0];
+                isVideo = window.SharedCore ? window.SharedCore.isVideoUrl(firstImage) : false;
+            }
+        }
+        
+        const item = document.createElement('div');
+        item.className = 'property-item';
+        item.style.cssText = 'background: #f5f5f5; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
+        
+        item.innerHTML = `
+            <div style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" 
+                 onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
+                 title="Clique para abrir galeria">
+                ${isVideo ? `
+                    <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-video" style="font-size: 1.5rem; color: rgba(255,255,255,0.8);"></i>
+                    </div>
+                ` : `
+                    <img src="${firstImage}" 
+                         loading="lazy"
+                         style="width: 100%; height: 100%; object-fit: cover;"
+                         onerror="this.src='${defaultImage}'; this.onerror=null;"
+                         alt="${window.SharedCore ? window.SharedCore.escapeHtml(property.title) : property.title}">
+                `}
+            </div>
+            <div style="flex: 3; min-width: 180px;">
+                <strong style="color: var(--primary); font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">
+                    ${window.SharedCore ? window.SharedCore.escapeHtml(property.title) : property.title}
+                </strong>
+                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem;">
+                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-tag"></i> ${property.price}
+                    </small>
+                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 40)}${property.location.length > 40 ? '...' : ''}
+                    </small>
+                </div>
+                <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
+                    <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
+                    ${property.has_video ? '<span style="color: #9b59b6;"><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
+                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
+                    ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
+                    <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
+                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
+                    <!-- NOVO: Indicador de Tempo de Mercado -->
+                    <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: ${marketTime.color}20; padding: 0.15rem 0.4rem; border-radius: 12px; border-left: 3px solid ${marketTime.color};">
+                        <i class="fas fa-hourglass-half" style="color: ${marketTime.color};"></i>
+                        <strong style="color: ${marketTime.color};">${marketTime.text}</strong>
+                        <small style="color: ${marketTime.color};">(${marketTime.status})</small>
+                    </span>
+                </div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
+                <button onclick="editProperty(${property.id})" 
+                        style="background: var(--accent); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                    <i class="fas fa-edit"></i> Editar
+                </button>
+                <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
+                        style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                    <i class="fas fa-eye-slash"></i> Zerar views
+                </button>
+                <button onclick="deleteProperty(${property.id})" 
+                        style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                    <i class="fas fa-trash"></i> Excluir
+                </button>
+            </div>
+        `;
+        listContainer.appendChild(item);
+    });
+    
+    container.appendChild(listContainer);
+    
+    if (totalPages > 1) {
+        const paginationWrapper = document.createElement('div');
+        paginationWrapper.style.cssText = 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
+        const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
+        paginationWrapper.appendChild(paginationBottom);
+        container.appendChild(paginationWrapper);
+    }
+    
+    console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (${itemsPerPage} por página, total: ${totalItems})`);
+};
+
+// ========== FUNÇÃO DE PAGINAÇÃO (mantida existente) ==========
+function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
+    const paginationDiv = document.createElement('div');
+    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
+    
+    const isMobile = window.innerWidth <= 768;
+    const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
+    
+    const firstBtn = document.createElement('button');
+    firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
+    firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    firstBtn.disabled = currentPage === 1;
+    if (currentPage === 1) firstBtn.style.opacity = '0.5';
+    firstBtn.onclick = () => window.loadPropertyList(1);
+    paginationDiv.appendChild(firstBtn);
+    
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
+    prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    prevBtn.disabled = currentPage === 1;
+    if (currentPage === 1) prevBtn.style.opacity = '0.5';
+    prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
+    paginationDiv.appendChild(prevBtn);
+    
+    const maxVisiblePages = isMobile ? 3 : 5;
+    
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+    
+    if (startPage > 1) {
+        const firstPageSpan = document.createElement('span');
+        firstPageSpan.textContent = '1';
+        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
+        firstPageSpan.onclick = () => window.loadPropertyList(1);
+        paginationDiv.appendChild(firstPageSpan);
+        
+        if (startPage > 2) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
+            paginationDiv.appendChild(ellipsis);
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const pageBtn = document.createElement('button');
+        pageBtn.textContent = i;
+        pageBtn.style.cssText = `background: ${i === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${i === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
+        pageBtn.onclick = () => window.loadPropertyList(i);
+        paginationDiv.appendChild(pageBtn);
+    }
+    
+    if (endPage < totalPages) {
+        if (endPage < totalPages - 1) {
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
+            paginationDiv.appendChild(ellipsis);
+        }
+        
+        const lastPageSpan = document.createElement('span');
+        lastPageSpan.textContent = totalPages;
+        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
+        lastPageSpan.onclick = () => window.loadPropertyList(totalPages);
+        paginationDiv.appendChild(lastPageSpan);
+    }
+    
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
+    nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    nextBtn.disabled = currentPage === totalPages;
+    if (currentPage === totalPages) nextBtn.style.opacity = '0.5';
+    nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
+    paginationDiv.appendChild(nextBtn);
+    
+    const lastBtn = document.createElement('button');
+    lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
+    lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
+    lastBtn.disabled = currentPage === totalPages;
+    if (currentPage === totalPages) lastBtn.style.opacity = '0.5';
+    lastBtn.onclick = () => window.loadPropertyList(totalPages);
+    paginationDiv.appendChild(lastBtn);
+    
+    const perPageSelect = document.createElement('select');
+    perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
+    perPageSelect.innerHTML = `
+        <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3 por página</option>
+        <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4 por página</option>
+        <option value="8" ${currentItemsPerPage === 8 ? 'selected' : ''}>8 por página</option>
+        <option value="12" ${currentItemsPerPage === 12 ? 'selected' : ''}>12 por página</option>
+    `;
+    perPageSelect.onchange = (e) => {
+        window.adminItemsPerPage = parseInt(e.target.value);
+        window.adminCurrentPage = 1;
+        window.loadPropertyList(1);
+    };
+    paginationDiv.appendChild(perPageSelect);
+    
+    return paginationDiv;
+}
+
 // ========== AUTOCOMPLETE ==========
 window.setupLocationAutocomplete = function() {
-    if (autocompleteInitialized) {
-        return true;
-    }
+    if (autocompleteInitialized) return true;
     
     const bairrosMaceio = [
         'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
