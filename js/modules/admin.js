@@ -552,7 +552,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (${itemsPerPage} por página, total: ${totalItems})`);
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO PADRÃO DE MERCADO (CORRIGIDA) ==========
+// ========== FUNÇÃO DE PAGINAÇÃO (mantida existente) ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
     const paginationDiv = document.createElement('div');
     paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
@@ -560,7 +560,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     const isMobile = window.innerWidth <= 768;
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     
-    // Botão Primeira Página (<<)
     const firstBtn = document.createElement('button');
     firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
     firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -569,7 +568,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     firstBtn.onclick = () => window.loadPropertyList(1);
     paginationDiv.appendChild(firstBtn);
     
-    // Botão Anterior (<)
     const prevBtn = document.createElement('button');
     prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -578,64 +576,53 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
     paginationDiv.appendChild(prevBtn);
     
-    // Determinar intervalo de páginas visíveis (máximo 5)
-    const maxVisible = 5;
-    let startPage = Math.max(1, currentPage - 2);
-    let endPage = Math.min(totalPages, startPage + maxVisible - 1);
+    const maxVisiblePages = isMobile ? 3 : 5;
     
-    // Ajustar se o final ultrapassou o limite
-    if (endPage - startPage + 1 < maxVisible) {
-        startPage = Math.max(1, endPage - maxVisible + 1);
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    
+    if (endPage - startPage + 1 < maxVisiblePages) {
+        startPage = Math.max(1, endPage - maxVisiblePages + 1);
     }
     
-    // LÓGICA CORRIGIDA: Mostrar primeira página e ellipsis se necessário
     if (startPage > 1) {
-        // Botão da página 1
-        const firstPageSpan = document.createElement('button');
+        const firstPageSpan = document.createElement('span');
         firstPageSpan.textContent = '1';
-        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; min-width: 32px; text-align: center;';
+        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
         firstPageSpan.onclick = () => window.loadPropertyList(1);
         paginationDiv.appendChild(firstPageSpan);
         
-        // Ellipsis no início (se houver páginas ocultas entre 1 e startPage)
         if (startPage > 2) {
-            const startEllipsis = document.createElement('span');
-            startEllipsis.textContent = '...';
-            startEllipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem; user-select: none;';
-            startEllipsis.onclick = null; // Não é clicável
-            paginationDiv.appendChild(startEllipsis);
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
+            paginationDiv.appendChild(ellipsis);
         }
     }
     
-    // Páginas do intervalo central
     for (let i = startPage; i <= endPage; i++) {
         const pageBtn = document.createElement('button');
         pageBtn.textContent = i;
-        pageBtn.style.cssText = `background: ${i === currentPage ? '#f39c12' : '#e9ecef'}; color: ${i === currentPage ? 'white' : '#2c3e50'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
+        pageBtn.style.cssText = `background: ${i === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${i === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
         pageBtn.onclick = () => window.loadPropertyList(i);
         paginationDiv.appendChild(pageBtn);
     }
     
-    // LÓGICA CORRIGIDA: Mostrar ellipsis no final e última página
     if (endPage < totalPages) {
-        // Ellipsis no final (se houver páginas ocultas entre endPage e totalPages)
         if (endPage < totalPages - 1) {
-            const endEllipsis = document.createElement('span');
-            endEllipsis.textContent = '...';
-            endEllipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem; user-select: none;';
-            endEllipsis.onclick = null; // Não é clicável
-            paginationDiv.appendChild(endEllipsis);
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
+            paginationDiv.appendChild(ellipsis);
         }
         
-        // Botão da última página
-        const lastPageSpan = document.createElement('button');
+        const lastPageSpan = document.createElement('span');
         lastPageSpan.textContent = totalPages;
-        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; min-width: 32px; text-align: center;';
+        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
         lastPageSpan.onclick = () => window.loadPropertyList(totalPages);
         paginationDiv.appendChild(lastPageSpan);
     }
     
-    // Botão Próximo (>)
     const nextBtn = document.createElement('button');
     nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -644,7 +631,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
     paginationDiv.appendChild(nextBtn);
     
-    // Botão Última Página (>>)
     const lastBtn = document.createElement('button');
     lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
     lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -653,9 +639,8 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
-    // Seletor de itens por página
     const perPageSelect = document.createElement('select');
-    perPageSelect.style.cssText = 'background: white; border: 1px solid #1a5276; padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
+    perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
         <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3 por página</option>
         <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4 por página</option>
