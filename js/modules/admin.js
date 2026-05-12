@@ -1,904 +1,2218 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.5
-// NOVO: Indicador "Tempo de Mercado" (Days on Market) na lista de gerenciamento
-// Mostra há quanto tempo o imóvel está cadastrado sem venda
+/* css/admin.css - Estilos do Painel Administrativo (VERSÃO COMPLETA) */
+/* Inclui estilos extraídos do index.html e pdf-unified.js para centralização */
+/* ATUALIZADO: Layout original restaurado para aba INCLUIR/EDITAR em mobile */
+/* CORREÇÃO: Estabilidade durante edição de imóveis - previne desajustes */
+/* - Campos Título e Preço na mesma linha (mesmo durante edição) */
+/* - Espaçamento justo (estilo C/C++ skeuomorphism) preservado */
+/* - Aba GERENCIAR mantém 100% largura */
+/* - Otimizações para paginação e botões */
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.5 (com indicador Tempo de Mercado)');
-
-const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
-window.editingPropertyId = null;
-
-// ========== FUNÇÃO PARA CALCULAR TEMPO DE MERCADO (DOM) ==========
-function getMarketTime(createdAt) {
-    if (!createdAt) {
-        // Se não tem data, usa data atual (hoje)
-        createdAt = new Date().toISOString();
-    }
-    
-    const createdDate = new Date(createdAt);
-    const now = new Date();
-    
-    // Calcular diferença em milissegundos
-    const diffMs = now - createdDate;
-    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
-    const diffMonths = Math.floor(diffDays / 30);
-    const diffYears = Math.floor(diffDays / 365);
-    
-    // Formatar texto
-    let text = '';
-    let color = '';
-    let status = '';
-    
-    if (diffDays < 1) {
-        text = 'Hoje';
-        color = '#27ae60';      // verde
-        status = 'Liquidez Alta';
-    } else if (diffDays <= 30) {
-        text = `${diffDays} dia${diffDays !== 1 ? 's' : ''}`;
-        color = '#27ae60';      // verde
-        status = 'Liquidez Alta';
-    } else if (diffDays <= 90) {
-        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
-        color = '#f39c12';      // amarelo
-        status = 'Liquidez Média';
-    } else if (diffDays <= 180) {
-        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
-        color = '#e67e22';      // laranja
-        status = 'Baixa Liquidez';
-    } else if (diffDays <= 365) {
-        text = `${diffMonths} mês${diffMonths !== 1 ? 'es' : ''}`;
-        color = '#e74c3c';      // vermelho
-        status = 'Estagnado';
-    } else {
-        text = `${diffYears} ano${diffYears !== 1 ? 's' : ''}`;
-        color = '#c0392b';      // vermelho escuro
-        status = 'Crítico';
-    }
-    
-    return { text, color, status, days: diffDays };
+/* ========== VARIÁVEIS GLOBAIS ========== */
+:root {
+    --primary: #1a5276;
+    --secondary: #2980b9;
+    --accent: #3498db;
+    --gold: #f39c12;
+    --green: #27ae60;
+    --text: #2c3e50;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --warning: #e67e22;
 }
 
-// ========== SISTEMA DE DIAGNÓSTICO E ESTABILIDADE ==========
-window.AUTOCOMPLETE_ACTIVE = false;
-let autocompleteInitialized = false;
-
-window.diagnoseAutocomplete = function() {
-    console.group('🔍 DIAGNÓSTICO DO AUTOCOMPLETE');
-    const input = document.getElementById('propLocation');
-    const dropdown = document.querySelector('.admin-location-suggestions');
-    const resultados = {
-        'Campo existe': !!input,
-        'Campo visível': input ? input.getBoundingClientRect().bottom > 0 : false,
-        'Autocomplete inicializado': input ? input.hasAttribute('data-autocomplete-initialized') : false,
-        'Flag AUTOCOMPLETE_ACTIVE': window.AUTOCOMPLETE_ACTIVE,
-        'Dropdown existe': !!dropdown,
-        'Dropdown visível': dropdown ? dropdown.style.display !== 'none' : false
-    };
-    console.table(resultados);
-    console.groupEnd();
-    return resultados;
-};
-
-let healthCheckInterval = null;
-
-function startHealthCheck() {
-    if (healthCheckInterval) clearInterval(healthCheckInterval);
-    healthCheckInterval = setInterval(() => {
-        if (window.AUTOCOMPLETE_ACTIVE) {
-            const input = document.getElementById('propLocation');
-            const dropdown = document.querySelector('.admin-location-suggestions');
-            if (input && document.activeElement === input) {
-                if (!dropdown && input.value.length >= 2) {
-                    console.warn('⚠️ [HEALTH] Autocomplete pode estar com problema');
-                }
-            }
-        }
-    }, 30000);
+/* ========== ESTILOS DO PAINEL ADMIN ========== */
+.admin-panel {
+    background: #f8f9fa;
+    padding: 2rem;
+    margin: 2rem auto;
+    max-width: 1000px;
+    border-radius: 10px;
+    display: none;
 }
 
-function stopHealthCheck() {
-    if (healthCheckInterval) {
-        clearInterval(healthCheckInterval);
-        healthCheckInterval = null;
+.admin-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 1rem;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    font-size: 1.2rem;
+}
+
+/* ========== BOTÃO ADMIN TOGGLE ========== */
+.admin-toggle {
+    position: fixed;
+    bottom: 15px !important;
+    right: 15px !important;
+    background: #1a5276;
+    color: white;
+    border: 1px solid #0e3d5c;
+    border-top-color: #2980b9;
+    border-left-color: #2980b9;
+    width: 48px !important;
+    height: 48px !important;
+    border-radius: 0px;
+    cursor: pointer;
+    z-index: 1000;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    font-size: 1.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.9 !important;
+    transition: all 0.3s ease;
+}
+
+.admin-toggle:hover {
+    background: #0e3d5c;
+    opacity: 1 !important;
+}
+
+.admin-toggle:active {
+    border-top-color: #0e3d5c;
+    border-left-color: #0e3d5c;
+    border-bottom-color: #2980b9;
+    border-right-color: #2980b9;
+    transform: translateY(1px);
+}
+
+/* ========== BOTÃO VOLTAR AO TOPO ========== */
+#backToTopBtn {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background: rgba(26, 82, 118, 0.35);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    color: white;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    cursor: pointer;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    z-index: 999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
+    transition: all 0.3s ease;
+    opacity: 0.85;
+}
+
+#backToTopBtn:hover {
+    background: rgba(26, 82, 118, 0.6);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transform: scale(1.08);
+    opacity: 1;
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.3);
+}
+
+#backToTopBtn:active {
+    transform: scale(0.95);
+}
+
+/* PDF ICON */
+.pdf-access {
+    position: absolute;
+    bottom: 2px;
+    right: 35px;
+    background: rgba(255, 255, 255, 0.95);
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    color: var(--primary);
+    transition: all 0.3s ease;
+    z-index: 15;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    border: 1px solid rgba(0,0,0,0.15);
+}
+
+.pdf-access:hover {
+    background: white;
+    transform: scale(1.1);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.4);
+    color: #1a5276;
+}
+
+/* VIDEO INDICATOR */
+.video-indicator {
+    position: absolute !important;
+    top: 40px !important;
+    right: 10px !important;
+    background: rgba(0, 0, 0, 0.7) !important;
+    color: white !important;
+    padding: 5px 10px !important;
+    border-radius: 4px !important;
+    font-size: 12px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 5px !important;
+    z-index: 9 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    backdrop-filter: blur(4px) !important;
+}
+
+.video-indicator i {
+    color: white !important;
+    font-size: 12px !important;
+}
+
+/* MODAL ANIMATIONS */
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-30px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
     }
 }
 
-// ========== FUNÇÕES DE TROCA DE ABA ==========
-function switchToFormTab() {
-    const formTab = document.querySelector('.admin-tab[data-tab="form-tab"]');
-    const manageTab = document.querySelector('.admin-tab[data-tab="manage-tab"]');
-    const formContent = document.getElementById('form-tab');
-    const manageContent = document.getElementById('manage-tab');
-    
-    if (formTab && formContent) {
-        if (manageTab) manageTab.classList.remove('active');
-        if (manageContent) manageContent.classList.remove('active');
-        formTab.classList.add('active');
-        formContent.classList.add('active');
-        console.log('[ADMIN] ✅ Mudou para aba INCLUIR/EDITAR');
+@keyframes modalFadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
     }
 }
 
-function switchToManageTab() {
-    const manageTab = document.querySelector('.admin-tab[data-tab="manage-tab"]');
-    const formTab = document.querySelector('.admin-tab[data-tab="form-tab"]');
-    const manageContent = document.getElementById('manage-tab');
-    const formContent = document.getElementById('form-tab');
-    
-    if (manageTab && manageContent) {
-        if (formTab) formTab.classList.remove('active');
-        if (formContent) formContent.classList.remove('active');
-        manageTab.classList.add('active');
-        manageContent.classList.add('active');
-        console.log('[ADMIN] ✅ Mudou para aba GERENCIAR');
-        
-        if (typeof window.loadPropertyList === 'function') {
-            setTimeout(function() {
-                window.loadPropertyList();
-                console.log('[ADMIN] 📋 Lista de imóveis carregada');
-            }, 50);
-        }
+.pdf-modal {
+    animation: modalFadeIn 0.3s ease;
+}
+
+.pdf-modal-content {
+    animation: modalSlideIn 0.3s ease;
+}
+
+#pdfSelectionModal {
+    animation: modalFadeIn 0.25s ease;
+}
+
+#pdfSelectionModal > div {
+    animation: modalSlideIn 0.25s ease;
+}
+
+#closeSelectionModalBtn {
+    transition: all 0.2s ease;
+}
+
+#closeSelectionModalBtn:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: #c0392b !important;
+}
+
+/* IMAGE PREVIEW */
+.image-preview-container {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+.delete-image-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.delete-image-btn:hover {
+    background: #c0392b;
+    transform: scale(1.1);
+}
+
+.image-count {
+    position: absolute;
+    bottom: 1px;
+    right: 1px;
+    background: rgba(0,0,0,0.9);
+    color: white;
+    padding: 0.1rem 0.35rem;
+    border-radius: 8px 0 8px 8px;
+    font-size: 0.75rem;
+    z-index: 10;
+    white-space: nowrap;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.6);
+    font-weight: 600;
+    min-width: 22px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: 0.5px solid rgba(255,255,255,0.15);
+}
+
+/* UPLOAD SECTIONS */
+#existingImagesSection .image-preview-container,
+#existingPdfsSection .image-preview-container {
+    border: 2px solid var(--success);
+}
+
+#existingImagesSection .delete-image-btn,
+#existingPdfsSection .delete-image-btn {
+    background: #e74c3c;
+}
+
+#newImagesSection .image-preview-container {
+    border: 2px dashed #3498db;
+}
+
+#newImagesSection .delete-image-btn,
+#newPdfsSection .delete-image-btn {
+    background: #3498db;
+}
+
+#newImagesSection .delete-image-btn:hover,
+#newPdfsSection .delete-image-btn:hover {
+    background: #2980b9;
+}
+
+#newPdfsSection .pdf-file-item {
+    border: 2px dashed #3498db;
+    background: #f8faff;
+}
+
+#existingImagesSection,
+#existingPdfsSection {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid #eee;
+}
+
+#newImagesSection,
+#newPdfsSection {
+    margin-top: 1rem;
+    padding-top: 1.5rem;
+}
+
+#existingImagesSection > div,
+#newImagesSection > div,
+#existingPdfsSection > div,
+#newPdfsSection > div {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+/* FORM STYLES */
+#propertyForm input,
+#propertyForm textarea,
+#propertyForm select {
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: 100%;
+    font-size: 1rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+#propertyForm input:focus,
+#propertyForm textarea:focus,
+#propertyForm select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+}
+
+#propertyForm button[type="submit"] {
+    background: var(--success);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+#propertyForm button[type="submit"]:hover {
+    background: #219653;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(33, 150, 83, 0.3);
+}
+
+#cancelEditBtn {
+    background: #95a5a6;
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+#cancelEditBtn:hover {
+    background: #7f8c8d;
+}
+
+/* CANCEL BUTTON FIX */
+#cancelEditBtn {
+    cursor: pointer !important;
+    pointer-events: auto !important;
+    opacity: 1 !important;
+    transition: all 0.3s ease !important;
+}
+
+#cancelEditBtn:hover {
+    background: #7f8c8d !important;
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(149, 165, 166, 0.3) !important;
+}
+
+#cancelEditBtn:disabled {
+    opacity: 0.5 !important;
+    cursor: not-allowed !important;
+    pointer-events: none !important;
+}
+
+#cancelEditBtn {
+    display: inline-block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 1000 !important;
+}
+
+#cancelEditBtn * {
+    pointer-events: none !important;
+}
+
+#cancelEditBtn.cancelling {
+    animation: pulseCancel 0.5s ease;
+}
+
+@keyframes pulseCancel {
+    0% { transform: scale(1); }
+    50% { transform: scale(0.95); box-shadow: 0 0 0 5px rgba(149, 165, 166, 0.3); }
+    100% { transform: scale(1); }
+}
+
+/* UPLOAD AREAS */
+#uploadArea,
+#pdfUploadArea {
+    border: 2px dashed #ddd;
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    margin: 1rem 0;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #fafafa;
+}
+
+#uploadArea:hover,
+#pdfUploadArea:hover {
+    border-color: var(--primary);
+    background: #f0f8ff;
+}
+
+/* ========== PREVIEW DE ARQUIVOS - LAYOUT HORIZONTAL ========== */
+#uploadPreview,
+#pdfUploadPreview {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
+    gap: 8px !important;
+    margin: 0.5rem 0 !important;
+    padding: 0.6rem !important;
+    background: #f8f9fa !important;
+    border-radius: 8px !important;
+    border: 1px solid #e0e0e0 !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    scroll-behavior: smooth !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+#uploadPreview::-webkit-scrollbar,
+#pdfUploadPreview::-webkit-scrollbar {
+    height: 6px !important;
+}
+
+#uploadPreview::-webkit-scrollbar-track,
+#pdfUploadPreview::-webkit-scrollbar-track {
+    background: #e0e0e0 !important;
+    border-radius: 3px !important;
+}
+
+#uploadPreview::-webkit-scrollbar-thumb,
+#pdfUploadPreview::-webkit-scrollbar-thumb {
+    background: var(--primary) !important;
+    border-radius: 3px !important;
+}
+
+#uploadPreview > div,
+#pdfUploadPreview > div {
+    position: relative !important;
+    width: 70px !important;
+    height: 70px !important;
+    flex: 0 0 auto !important;
+    background: #fff !important;
+    border-radius: 6px !important;
+    overflow: hidden !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+    transition: transform 0.2s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#uploadPreview > div:hover,
+#pdfUploadPreview > div:hover {
+    transform: scale(1.05) !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important;
+}
+
+#uploadPreview img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    background: #f0f0f0 !important;
+}
+
+#uploadPreview video {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    background: #1a1a2e !important;
+}
+
+#pdfUploadPreview .fa-file-pdf {
+    font-size: 2rem !important;
+    color: #e74c3c !important;
+}
+
+#pdfUploadPreview div {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    background: #fef9e6 !important;
+}
+
+#uploadPreview > div div:last-child,
+#pdfUploadPreview > div div:last-child {
+    font-size: 0.55rem !important;
+    padding: 2px !important;
+}
+
+#uploadPreview .delete-image-btn,
+#pdfUploadPreview .delete-image-btn {
+    position: absolute !important;
+    top: -4px !important;
+    right: -4px !important;
+    width: 18px !important;
+    height: 18px !important;
+    background: #e74c3c !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 50% !important;
+    cursor: pointer !important;
+    font-size: 9px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    z-index: 10 !important;
+    transition: all 0.2s ease !important;
+}
+
+#uploadPreview .delete-image-btn:hover,
+#pdfUploadPreview .delete-image-btn:hover {
+    background: #c0392b !important;
+    transform: scale(1.1) !important;
+}
+
+#uploadPreview .order-indicator,
+#pdfUploadPreview .order-indicator {
+    font-size: 0.5rem !important;
+    width: 14px !important;
+    height: 14px !important;
+    bottom: 1px !important;
+    right: 1px !important;
+    top: auto !important;
+}
+
+/* ADMIN BUTTONS */
+.admin-panel button:not(.delete-image-btn):not(.pdf-access):not(.gallery-modal-btn):not(.gallery-modal-close) {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+}
+
+.admin-panel button:not(.delete-image-btn):not(.pdf-access):not(.gallery-modal-btn):not(.gallery-modal-close):hover {
+    background: #2980b9;
+    transform: translateY(-2px);
+}
+
+.admin-panel button[style*="background: #e74c3c"] {
+    background: #e74c3c !important;
+}
+
+.admin-panel button[style*="background: #e74c3c"]:hover {
+    background: #c0392b !important;
+}
+
+/* PASSWORD VALIDATION */
+#pdfPassword[aria-invalid="true"] {
+    border-color: #e74c3c !important;
+    background-color: #ffeaea !important;
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+#pdfPassword:focus {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#pdfPasswordForm {
+    position: relative;
+}
+
+#pdfPasswordForm:after {
+    content: "*";
+    color: #e74c3c;
+    position: absolute;
+    top: 1rem;
+    right: 0.5rem;
+    font-size: 1.2rem;
+}
+
+#pdfPassword:focus-visible {
+    outline: 3px solid var(--primary);
+    outline-offset: 2px;
+}
+
+#pdfPassword:valid:not(:placeholder-shown) {
+    border-color: var(--success) !important;
+    background-color: #e8f8ef !important;
+}
+
+/* LOCATION AUTOCOMPLETE */
+#propLocation {
+    position: relative !important;
+    z-index: 100 !important;
+}
+
+#propertyForm,
+.admin-panel {
+    overflow: visible !important;
+}
+
+/* PROPERTY LIST */
+#propertyList {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary) #e0e0e0;
+    max-height: 650px;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+}
+
+#propertyList::-webkit-scrollbar {
+    width: 6px;
+}
+
+#propertyList::-webkit-scrollbar-track {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
+
+#propertyList::-webkit-scrollbar-thumb {
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+#propertyList button:not(:disabled):hover {
+    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+#propertyList button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+#propertyListItems {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: TOGGLE DO PAINEL ADMIN ==========
-window.toggleAdminPanel = function() {
-    console.log('[ADMIN] 🔑 Solicitando acesso ao painel...');
-    
-    const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
-    
-    if (!password) {
-        console.log('[ADMIN] ❌ Acesso cancelado pelo usuário');
-        return;
-    }
-    
-    if (password !== ADMIN_CONFIG.password) {
-        alert('❌ Senha incorreta!');
-        console.log('[ADMIN] ❌ Senha incorreta');
-        return;
-    }
-    
-    console.log('[ADMIN] ✅ Senha correta! Abrindo painel...');
-    
-    const panel = document.getElementById(ADMIN_CONFIG.panelId);
-    
-    if (!panel) {
-        console.error('[ADMIN] ❌ Painel não encontrado!');
-        return;
-    }
-    
-    panel.style.display = 'block';
-    window.resetAdminFormCompletely(false);
-    switchToManageTab();
-    
-    setTimeout(function() {
-        panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        console.log('[ADMIN] ✅ Painel aberto com sucesso - Aba GERENCIAR ativa');
-        
-        panel.classList.add('admin-panel-highlight');
-        setTimeout(function() {
-            panel.classList.remove('admin-panel-highlight');
-        }, 1000);
-    }, 100);
-};
-
-window.resetAdminFormCompletely = function(showNotification = true) {
-    if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(null);
-    else window.editingPropertyId = null;
-    
-    ['propTitle', 'propPrice', 'propLocation', 'propDescription', 'propFeatures', 'propType', 'propBadge', 'propHasVideo'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            if (el.type === 'select-one') el.value = el.id === 'propType' ? 'residencial' : 'Novo';
-            else if (el.type === 'checkbox') el.checked = false;
-            else el.value = '';
-        }
-    });
-    
-    if (window.MediaSystem) {
-        try {
-            if (typeof window.MediaSystem.resetState === 'function') window.MediaSystem.resetState();
-            ['uploadPreview', 'pdfUploadPreview'].forEach(id => { const el = document.getElementById(id); if (el) el.innerHTML = ''; });
-        } catch (error) { console.error('[ADMIN] Erro ao resetar MediaSystem:', error); }
-    }
-    
-    const formTitle = document.getElementById('formTitle');
-    if (formTitle) formTitle.textContent = 'Adicionar Novo Imóvel';
-    
-    const submitBtn = document.querySelector('#propertyForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<i class="fas fa-plus"></i> Adicionar Imóvel ao Site';
-        submitBtn.style.background = '#27ae60';
-    }
-    
-    const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) cancelBtn.style.display = 'none';
-    
-    if (showNotification && typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Formulário limpo para novo imóvel', 'info');
-    return true;
-};
-
-window.cancelEdit = function() {
-    if (window.editingPropertyId) {
-        if (confirm('❓ Cancelar edição?\n\nTodos os dados não salvos serão perdidos.')) {
-            window.resetAdminFormCompletely(true);
-            setTimeout(switchToManageTab, 100);
-            return true;
-        }
-    } else {
-        window.resetAdminFormCompletely(false);
-    }
-    return false;
-};
-
-window.editProperty = function(id) {
-    const property = window.properties?.find(p => p.id === id);
-    if (!property) {
-        if (typeof window.showAdminNotification === 'function') window.showAdminNotification('❌ Imóvel não encontrado!', 'error', 3000);
-        else alert('❌ Imóvel não encontrado!');
-        return false;
-    }
-    
-    const panel = document.getElementById('adminPanel');
-    if (panel && panel.style.display !== 'block') {
-        panel.style.display = 'block';
-    }
-    
-    switchToFormTab();
-    window.resetAdminFormCompletely(false);
-    
-    const formatPrice = (price) => window.SharedCore.PriceFormatter.formatForAdmin(price) ?? '';
-    const formatFeatures = (features) => window.SharedCore.formatFeaturesForDisplay(features) ?? '';
-    
-    const fieldMappings = {
-        'propTitle': property.title || '',
-        'propPrice': formatPrice(property.price) || '',
-        'propLocation': property.location || '',
-        'propDescription': property.description || '',
-        'propFeatures': formatFeatures(property.features) || '',
-        'propType': property.type || 'residencial',
-        'propBadge': property.badge || 'Novo',
-        'propHasVideo': window.SharedCore.ensureBooleanVideo(property.has_video)
-    };
-    
-    Object.entries(fieldMappings).forEach(([fieldId, value]) => {
-        const element = document.getElementById(fieldId);
-        if (element) {
-            if (element.type === 'checkbox') element.checked = Boolean(value);
-            else element.value = value;
-        }
-    });
-    
-    const formTitle = document.getElementById('formTitle');
-    if (formTitle) formTitle.textContent = `Editando: ${property.title}`;
-    
-    const submitBtn = document.querySelector('#propertyForm button[type="submit"]');
-    if (submitBtn) {
-        submitBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Alterações';
-        submitBtn.style.background = '#3498db';
-    }
-    
-    const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) cancelBtn.style.display = 'inline-block';
-    
-    if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(property.id);
-    else window.editingPropertyId = property.id;
-    
-    if (window.MediaSystem?.loadExisting) window.MediaSystem.loadExisting(property);
-    
-    setTimeout(() => {
-        const formElement = document.getElementById('propertyForm');
-        if (formElement) {
-            const firstInput = formElement.querySelector('input, textarea, select');
-            if (firstInput && typeof firstInput.focus === 'function') {
-                firstInput.focus();
-            }
-        }
-    }, 200);
-    
-    setTimeout(() => {
-        const card = document.querySelector(`.property-card[data-property-id="${id}"]`);
-        if (card) {
-            card.classList.add('editing-highlight');
-            card.style.transition = 'all 0.3s ease';
-            card.style.boxShadow = '0 0 0 3px #f39c12, 0 8px 25px rgba(0,0,0,0.15)';
-            card.style.transform = 'scale(1.02)';
-            setTimeout(() => {
-                card.classList.remove('editing-highlight');
-                card.style.boxShadow = '';
-                card.style.transform = '';
-            }, 5000);
-        }
-    }, 200);
-    
-    return true;
-};
-
-window.saveProperty = async function() {
-    console.group('[ADMIN] 💾 SALVANDO IMÓVEL');
-    try {
-        const propertyData = {};
-        const videoCheckbox = document.getElementById('propHasVideo');
-        propertyData.has_video = window.SharedCore.ensureBooleanVideo(videoCheckbox?.checked);
-        
-        const fields = [
-            { id: 'propTitle', key: 'title' }, { id: 'propPrice', key: 'price' },
-            { id: 'propLocation', key: 'location' }, { id: 'propDescription', key: 'description' },
-            { id: 'propFeatures', key: 'features' }, { id: 'propType', key: 'type' },
-            { id: 'propBadge', key: 'badge' }
-        ];
-        
-        fields.forEach(field => {
-            const el = document.getElementById(field.id);
-            propertyData[field.key] = el ? (el.type === 'select-one' ? el.value : el.value.trim()) : '';
-        });
-        
-        if (!propertyData.title || !propertyData.price || !propertyData.location) throw new Error('Preencha Título, Preço e Localização!');
-        
-        if (window.SharedCore.PriceFormatter?.formatForAdmin) propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
-        
-        propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
-        
-        let imageUrls = '', pdfUrls = '';
-        if (window.MediaSystem) {
-            const hasSupabase = window.SUPABASE_CONSTANTS?.URL && window.SUPABASE_CONSTANTS?.KEY;
-            const tempId = window.editingPropertyId || 'temp_' + Date.now();
-            if (hasSupabase) {
-                try {
-                    const uploadResult = await MediaSystem.uploadAll(tempId, propertyData.title || 'Imóvel');
-                    if (uploadResult.success) { imageUrls = uploadResult.images; pdfUrls = uploadResult.pdfs; }
-                    else { const localResult = MediaSystem.saveAndKeepLocal(tempId, propertyData.title || 'Imóvel'); imageUrls = localResult.images; pdfUrls = localResult.pdfs; }
-                } catch (e) { const localResult = MediaSystem.saveAndKeepLocal(tempId, propertyData.title || 'Imóvel'); imageUrls = localResult.images; pdfUrls = localResult.pdfs; }
-            } else { const localResult = MediaSystem.saveAndKeepLocal(tempId, propertyData.title || 'Imóvel'); imageUrls = localResult.images; pdfUrls = localResult.pdfs; }
-        }
-        propertyData.images = imageUrls || 'EMPTY';
-        propertyData.pdfs = pdfUrls || 'EMPTY';
-        
-        if (window.editingPropertyId) {
-            if (typeof window.updateProperty === 'function') {
-                const updateResult = await window.updateProperty(window.editingPropertyId, propertyData);
-                if (updateResult?.success && typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Imóvel atualizado com sucesso!', 'success', 3000);
-                else if (typeof window.showAdminNotification === 'function') window.showAdminNotification('⚠️ Imóvel salvo apenas localmente', 'info', 3000);
-            }
-            setTimeout(() => {
-                if (typeof window.updatePropertyCard === 'function') window.updatePropertyCard(window.editingPropertyId);
-                else if (typeof window.renderProperties === 'function') window.renderProperties(window.currentFilter || 'todos');
-            }, 300);
-            setTimeout(() => {
-                window.resetAdminFormCompletely(true);
-                setTimeout(switchToManageTab, 100);
-            }, 1500);
-        } else {
-            const newProperty = { ...propertyData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
-            if (typeof window.addNewProperty === 'function') {
-                const result = await window.addNewProperty(newProperty);
-                if (result) {
-                    if (typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Imóvel criado com sucesso!', 'success', 3000);
-                    setTimeout(() => { if (typeof window.renderProperties === 'function') window.renderProperties('todos'); }, 300);
-                    setTimeout(() => window.resetAdminFormCompletely(true), 1500);
-                } else throw new Error('addNewProperty retornou null');
-            } else throw new Error('Função addNewProperty não disponível');
-        }
-    } catch (error) {
-        console.error('[ADMIN] ❌ Erro ao salvar imóvel:', error);
-        if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ Erro: ${error.message}`, 'error', 5000);
-        else alert(`❌ Erro: ${error.message}`);
-    } finally { console.groupEnd(); }
-};
-
-// ========== FUNÇÃO PARA CARREGAR LISTA DE IMÓVEIS COM INDICADOR DE TEMPO ==========
-window.loadPropertyList = function(page = window.adminCurrentPage) {
-    if (!window.properties || typeof window.properties.forEach !== 'function') {
-        console.error('❌ window.properties não é um array válido');
-        return;
-    }
-    
-    const container = document.getElementById('propertyList');
-    const countElement = document.getElementById('propertyCount');
-    
-    if (!container) return;
-    
-    const isMobile = window.innerWidth <= 768;
-    const itemsPerPage = isMobile ? 3 : window.adminItemsPerPage;
-    
-    window.adminCurrentPage = page;
-    
-    const totalItems = window.properties.length;
-    const totalPages = Math.ceil(totalItems / itemsPerPage);
-    const startIndex = (page - 1) * itemsPerPage;
-    const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-    const paginatedProperties = window.properties.slice(startIndex, endIndex);
-    
-    container.innerHTML = '';
-    
-    if (countElement) {
-        countElement.textContent = totalItems;
-    }
-    
-    if (totalItems === 0) {
-        container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Nenhum imóvel cadastrado</p>';
-        return;
-    }
-    
-    container.style.maxHeight = '650px';
-    container.style.overflowY = 'auto';
-    container.style.paddingRight = '5px';
-    container.style.paddingBottom = '20px';
-    
-    const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
-    
-    const statsHeader = document.createElement('div');
-    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;';
-    
-    const statsContainer = document.createElement('div');
-    statsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.5rem;';
-    
-    const viewsSpan = document.createElement('span');
-    viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
-    viewsSpan.innerHTML = `<i class="fas fa-eye"></i> <strong>Total Visualizações:</strong> ${totalViews}`;
-    statsContainer.appendChild(viewsSpan);
-    
-    const itemsSpan = document.createElement('span');
-    itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
-    itemsSpan.innerHTML = `<i class="fas fa-building"></i> <strong>Total imóveis:</strong> ${totalItems}`;
-    statsContainer.appendChild(itemsSpan);
-    
-    const showingSpan = document.createElement('span');
-    showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.7rem;';
-    showingSpan.innerHTML = `<i class="fas fa-list"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex} de ${totalItems}`;
-    statsContainer.appendChild(showingSpan);
-    
-    statsHeader.appendChild(statsContainer);
-    container.appendChild(statsHeader);
-    
-    const listContainer = document.createElement('div');
-    listContainer.id = 'propertyListItems';
-    listContainer.style.cssText = 'margin: 0.5rem 0;';
-    
-    const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
-    
-    paginatedProperties.forEach(property => {
-        const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
-        const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
-        
-        // NOVO: Calcular tempo de mercado (Days on Market)
-        const marketTime = getMarketTime(property.created_at);
-        
-        let firstImage = defaultImage;
-        let isVideo = false;
-        
-        if (property.images && property.images !== 'EMPTY') {
-            const imageUrls = property.images.split(',').filter(url => url && url.trim() !== '');
-            if (imageUrls.length > 0) {
-                firstImage = imageUrls[0];
-                isVideo = window.SharedCore ? window.SharedCore.isVideoUrl(firstImage) : false;
-            }
-        }
-        
-        const item = document.createElement('div');
-        item.className = 'property-item';
-        item.style.cssText = 'background: #f5f5f5; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
-        
-        item.innerHTML = `
-            <div style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" 
-                 onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
-                 title="Clique para abrir galeria">
-                ${isVideo ? `
-                    <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-video" style="font-size: 1.5rem; color: rgba(255,255,255,0.8);"></i>
-                    </div>
-                ` : `
-                    <img src="${firstImage}" 
-                         loading="lazy"
-                         style="width: 100%; height: 100%; object-fit: cover;"
-                         onerror="this.src='${defaultImage}'; this.onerror=null;"
-                         alt="${window.SharedCore ? window.SharedCore.escapeHtml(property.title) : property.title}">
-                `}
-            </div>
-            <div style="flex: 3; min-width: 180px;">
-                <strong style="color: var(--primary); font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">
-                    ${window.SharedCore ? window.SharedCore.escapeHtml(property.title) : property.title}
-                </strong>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem;">
-                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                        <i class="fas fa-tag"></i> ${property.price}
-                    </small>
-                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 40)}${property.location.length > 40 ? '...' : ''}
-                    </small>
-                </div>
-                <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
-                    <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
-                    ${property.has_video ? '<span style="color: #9b59b6;"><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
-                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
-                    ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
-                    <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
-                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
-                    <!-- NOVO: Indicador de Tempo de Mercado -->
-                    <span style="display: inline-flex; align-items: center; gap: 0.3rem; background: ${marketTime.color}20; padding: 0.15rem 0.4rem; border-radius: 12px; border-left: 3px solid ${marketTime.color};">
-                        <i class="fas fa-hourglass-half" style="color: ${marketTime.color};"></i>
-                        <strong style="color: ${marketTime.color};">${marketTime.text}</strong>
-                        <small style="color: ${marketTime.color};">(${marketTime.status})</small>
-                    </span>
-                </div>
-            </div>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
-                <button onclick="editProperty(${property.id})" 
-                        style="background: var(--accent); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-                    <i class="fas fa-edit"></i> Editar
-                </button>
-                <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${property.title.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
-                        style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-                    <i class="fas fa-eye-slash"></i> Zerar views
-                </button>
-                <button onclick="deleteProperty(${property.id})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-                    <i class="fas fa-trash"></i> Excluir
-                </button>
-            </div>
-        `;
-        listContainer.appendChild(item);
-    });
-    
-    container.appendChild(listContainer);
-    
-    if (totalPages > 1) {
-        const paginationWrapper = document.createElement('div');
-        paginationWrapper.style.cssText = 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
-        const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
-        paginationWrapper.appendChild(paginationBottom);
-        container.appendChild(paginationWrapper);
-    }
-    
-    console.log(`✅ Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (${itemsPerPage} por página, total: ${totalItems})`);
-};
-
-// ========== FUNÇÃO DE PAGINAÇÃO (mantida existente) ==========
-function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
-    const paginationDiv = document.createElement('div');
-    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
-    
-    const isMobile = window.innerWidth <= 768;
-    const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
-    
-    const firstBtn = document.createElement('button');
-    firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
-    firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
-    firstBtn.disabled = currentPage === 1;
-    if (currentPage === 1) firstBtn.style.opacity = '0.5';
-    firstBtn.onclick = () => window.loadPropertyList(1);
-    paginationDiv.appendChild(firstBtn);
-    
-    const prevBtn = document.createElement('button');
-    prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
-    prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
-    prevBtn.disabled = currentPage === 1;
-    if (currentPage === 1) prevBtn.style.opacity = '0.5';
-    prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
-    paginationDiv.appendChild(prevBtn);
-    
-    const maxVisiblePages = isMobile ? 3 : 5;
-    
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-    
-    if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    if (startPage > 1) {
-        const firstPageSpan = document.createElement('span');
-        firstPageSpan.textContent = '1';
-        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
-        firstPageSpan.onclick = () => window.loadPropertyList(1);
-        paginationDiv.appendChild(firstPageSpan);
-        
-        if (startPage > 2) {
-            const ellipsis = document.createElement('span');
-            ellipsis.textContent = '...';
-            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
-            paginationDiv.appendChild(ellipsis);
-        }
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.textContent = i;
-        pageBtn.style.cssText = `background: ${i === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${i === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
-        pageBtn.onclick = () => window.loadPropertyList(i);
-        paginationDiv.appendChild(pageBtn);
-    }
-    
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            const ellipsis = document.createElement('span');
-            ellipsis.textContent = '...';
-            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
-            paginationDiv.appendChild(ellipsis);
-        }
-        
-        const lastPageSpan = document.createElement('span');
-        lastPageSpan.textContent = totalPages;
-        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
-        lastPageSpan.onclick = () => window.loadPropertyList(totalPages);
-        paginationDiv.appendChild(lastPageSpan);
-    }
-    
-    const nextBtn = document.createElement('button');
-    nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
-    nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
-    nextBtn.disabled = currentPage === totalPages;
-    if (currentPage === totalPages) nextBtn.style.opacity = '0.5';
-    nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
-    paginationDiv.appendChild(nextBtn);
-    
-    const lastBtn = document.createElement('button');
-    lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
-    lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
-    lastBtn.disabled = currentPage === totalPages;
-    if (currentPage === totalPages) lastBtn.style.opacity = '0.5';
-    lastBtn.onclick = () => window.loadPropertyList(totalPages);
-    paginationDiv.appendChild(lastBtn);
-    
-    const perPageSelect = document.createElement('select');
-    perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
-    perPageSelect.innerHTML = `
-        <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3 por página</option>
-        <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4 por página</option>
-        <option value="8" ${currentItemsPerPage === 8 ? 'selected' : ''}>8 por página</option>
-        <option value="12" ${currentItemsPerPage === 12 ? 'selected' : ''}>12 por página</option>
-    `;
-    perPageSelect.onchange = (e) => {
-        window.adminItemsPerPage = parseInt(e.target.value);
-        window.adminCurrentPage = 1;
-        window.loadPropertyList(1);
-    };
-    paginationDiv.appendChild(perPageSelect);
-    
-    return paginationDiv;
+/* Pagination Styles */
+.pagination-controls {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 1rem 0 0.5rem 0;
+    flex-wrap: wrap;
+    padding: 0.5rem 0.2rem;
 }
 
-// ========== AUTOCOMPLETE ==========
-window.setupLocationAutocomplete = function() {
-    if (autocompleteInitialized) return true;
-    
-    const bairrosMaceio = [
-        'Pajuçara, Maceió/AL', 'Ponta Verde, Maceió/AL', 'Jatiúca, Maceió/AL', 'Jacarecica, Maceió/AL', 'Cruz das Almas, Maceió/AL',
-        'Mangabeiras, Maceió/AL', 'Poço, Maceió/AL', 'Barro Duro, Maceió/AL', 'Gruta de Lourdes, Maceió/AL', 'Serraria, Maceió/AL',
-        'Farol, Maceió/AL', 'Jardim Petrópolis, Maceió/AL', 'Centro, Maceió/AL', 'Prado, Maceió/AL', 'Jaraguá, Maceió/AL', 'Feitosa, Maceió/AL',
-        'Pinheiro, Maceió/AL', 'Santa Lúcia, Maceió/AL', 'Santa Amélia, Maceió/AL', 'Tabuleiro do Martins, Maceió/AL',
-        'Cidade Universitária, Maceió/AL', 'Clima Bom, Maceió/AL', 'Benedito Bentes, Maceió/AL', 'Santos Dumont, Maceió/AL',
-        'São Jorge, Maceió/AL', 'Levada, Maceió/AL', 'Trapiche da Barra, Maceió/AL', 'Vergel do Lago, Maceió/AL',
-        'Ouro Preto, Maceió/AL', 'Mutange, Maceió/AL', 'Fernão Velho, Maceió/AL', 'Forene, Maceió/AL', 'Rio Novo, Maceió/AL', 
-        'Riacho Doce, Maceió/AL', 'Pontal da Barra, Maceió/AL', 'Guaxuma, Maceió/AL',
-        'Ipioca, Maceió/AL', 'Garça Torta, Maceió/AL', 'Pescaria, Maceió/AL', 'Ponta da Terra, Maceió/AL', 
-        'São Miguel dos Campos, AL', 'Murilopes, Maceió/AL',
-        'Barra de São Miguel, AL', 'Boa Viagem, Recife/PE', 'São Miguel dos Milagres, AL', 'Zona Rural, AL'
-    ];
-
-    const locationInput = document.getElementById('propLocation');
-    if (!locationInput) return false;
-    
-    if (locationInput.hasAttribute('data-autocomplete-initialized')) {
-        autocompleteInitialized = true;
-        window.AUTOCOMPLETE_ACTIVE = true;
-        return true;
-    }
-    
-    if (!document.getElementById('admin-autocomplete-style')) {
-        const style = document.createElement('style');
-        style.id = 'admin-autocomplete-style';
-        style.textContent = `
-            .admin-location-suggestions {
-                position: fixed !important;
-                z-index: 9999999 !important;
-                background: white !important;
-                border: 2px solid #1a5276 !important;
-                border-top: none !important;
-                border-radius: 0 0 8px 8px !important;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-                max-height: 250px !important;
-                overflow-y: auto !important;
-            }
-            .admin-location-suggestions div {
-                padding: 10px 14px !important;
-                cursor: pointer !important;
-                font-size: 0.9rem !important;
-                color: #1a5276 !important;
-                background: white !important;
-                border-bottom: 1px solid #e0e0e0 !important;
-            }
-            .admin-location-suggestions div:hover {
-                background: #e8f4fd !important;
-            }
-            .admin-location-suggestions strong {
-                color: #c0392b !important;
-                background: #fdebd0 !important;
-                padding: 2px 4px !important;
-                border-radius: 4px !important;
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    let suggestionsContainer = null;
-    
-    function showSuggestions(searchTerm) {
-        if (suggestionsContainer && suggestionsContainer.parentElement) {
-            suggestionsContainer.remove();
-            suggestionsContainer = null;
-        }
-        if (!searchTerm || searchTerm.length < 2) return;
-        
-        const termLower = searchTerm.toLowerCase();
-        const matches = bairrosMaceio.filter(b => b.toLowerCase().includes(termLower));
-        if (!matches.length) return;
-        if (!locationInput) return;
-        
-        const rect = locationInput.getBoundingClientRect();
-        if (rect.bottom === 0 && rect.top === 0) return;
-        
-        suggestionsContainer = document.createElement('div');
-        suggestionsContainer.className = 'admin-location-suggestions';
-        suggestionsContainer.style.cssText = `
-            position: fixed !important;
-            top: ${rect.bottom + 5}px !important;
-            left: ${rect.left}px !important;
-            width: ${locationInput.offsetWidth}px !important;
-            z-index: 9999999 !important;
-            background: white !important;
-            border: 2px solid #1a5276 !important;
-            border-top: none !important;
-            border-radius: 0 0 8px 8px !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-            max-height: 250px !important;
-            overflow-y: auto !important;
-        `;
-        
-        matches.forEach(bairro => {
-            const div = document.createElement('div');
-            div.style.cssText = `
-                padding: 10px 14px !important;
-                cursor: pointer !important;
-                font-size: 0.9rem !important;
-                color: #1a5276 !important;
-                background: white !important;
-                border-bottom: 1px solid #e0e0e0 !important;
-            `;
-            div.onmouseenter = () => div.style.background = '#e8f4fd';
-            div.onmouseleave = () => div.style.background = 'white';
-            
-            const escapedTerm = termLower.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-            const regex = new RegExp(`(${escapedTerm})`, 'gi');
-            div.innerHTML = bairro.replace(regex, `<strong style="color:#c0392b; background:#fdebd0; padding:2px 4px; border-radius:4px;">$1</strong>`);
-            
-            div.onclick = () => {
-                locationInput.value = bairro;
-                if (suggestionsContainer) {
-                    suggestionsContainer.remove();
-                    suggestionsContainer = null;
-                }
-                locationInput.dispatchEvent(new Event('input', { bubbles: true }));
-                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
-            };
-            
-            suggestionsContainer.appendChild(div);
-        });
-        
-        document.body.appendChild(suggestionsContainer);
-    }
-    
-    function hideSuggestions() {
-        if (suggestionsContainer) {
-            suggestionsContainer.remove();
-            suggestionsContainer = null;
-        }
-    }
-    
-    locationInput.addEventListener('input', function(e) { showSuggestions(e.target.value); });
-    locationInput.addEventListener('blur', function() { setTimeout(hideSuggestions, 200); });
-    locationInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && suggestionsContainer) {
-            e.preventDefault();
-            const first = suggestionsContainer.querySelector('div');
-            if (first) {
-                locationInput.value = first.textContent;
-                hideSuggestions();
-                locationInput.dispatchEvent(new Event('change', { bubbles: true }));
-            }
-        }
-    });
-    
-    window.addEventListener('scroll', hideSuggestions, { passive: true });
-    window.addEventListener('resize', hideSuggestions);
-    
-    locationInput.setAttribute('data-autocomplete-initialized', 'true');
-    locationInput.placeholder = 'Digite o bairro (ex: Ponta Verde)';
-    
-    autocompleteInitialized = true;
-    window.AUTOCOMPLETE_ACTIVE = true;
-    
-    return true;
-};
-
-function ensureAutocomplete(retries = 5, delay = 100) {
-    if (document.getElementById('propLocation')) {
-        if (window.setupLocationAutocomplete && window.setupLocationAutocomplete()) {
-            startHealthCheck();
-            return true;
-        }
-    }
-    if (retries > 0) {
-        setTimeout(() => ensureAutocomplete(retries - 1, delay * 2), delay);
-    }
-    return false;
+.pagination-btn {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 0.4rem 0.8rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    min-width: 36px;
 }
 
-window.setupForm = function() {
-    const form = document.getElementById('propertyForm');
-    if (!form) return;
-    
-    if (window.setupPriceAutoFormat) window.setupPriceAutoFormat();
-    
-    form.addEventListener('submit', async function(e) {
-        e.preventDefault();
-        const submitBtn = this.querySelector('button[type="submit"]');
-        const originalText = submitBtn?.innerHTML;
-        if (submitBtn) { submitBtn.disabled = true; submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Salvando...'; }
-        const loading = window.LoadingManager?.show?.('Salvando Imóvel...', 'Por favor, aguarde...', { variant: 'processing' });
-        try { await window.saveProperty(); }
-        catch (error) { console.error('[ADMIN] ❌ Erro no salvamento:', error); if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ ${error.message}`, 'error', 5000); }
-        finally {
-            if (submitBtn) setTimeout(() => { submitBtn.disabled = false; submitBtn.innerHTML = originalText || (window.editingPropertyId ? '<i class="fas fa-save"></i> Salvar Alterações' : '<i class="fas fa-plus"></i> Adicionar Imóvel ao Site'); }, 1000);
-            if (loading) loading.hide();
-        }
-    });
-    
-    setTimeout(() => { ensureAutocomplete(5, 100); }, 200);
-};
-
-window.setupAdminUI = function() {
-    const panel = document.getElementById('adminPanel');
-    if (panel) panel.style.display = 'none';
-    
-    const adminBtn = document.querySelector('.admin-toggle');
-    if (adminBtn) {
-        adminBtn.onclick = function(e) { 
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            window.toggleAdminPanel(); 
-        };
-    }
-    
-    const cancelBtn = document.getElementById('cancelEditBtn');
-    if (cancelBtn) {
-        cancelBtn.onclick = function(e) { 
-            e.preventDefault(); 
-            e.stopPropagation(); 
-            window.cancelEdit(); 
-        };
-        cancelBtn.style.display = 'none';
-    }
-    
-    if (typeof window.setupForm === 'function') setTimeout(window.setupForm, 100);
-};
-
-function initializeAdmin() {
-    try { 
-        const stored = JSON.parse(localStorage.getItem('properties') || '[]'); 
-        if (!window.properties && stored.length) window.properties = stored;
-    } catch (e) { 
-        console.error('[ADMIN] Erro ao carregar do localStorage:', e); 
-    }
-    
-    window.setupAdminUI();
-    setTimeout(() => { ensureAutocomplete(5, 100); }, 600);
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
 }
 
-window.diagnoseAutocomplete = window.diagnoseAutocomplete;
-window.getAutocompleteStatus = () => window.AUTOCOMPLETE_ACTIVE;
-window.stopHealthCheck = stopHealthCheck;
-window.switchToManageTab = switchToManageTab;
-window.switchToFormTab = switchToFormTab;
+.pagination-btn:hover:not(:disabled) {
+    background: #0e3d5c;
+    transform: translateY(-1px);
+}
 
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
-else initializeAdmin();
+.pagination-number {
+    background: #e9ecef;
+    color: var(--text);
+    border: none;
+    padding: 0.3rem 0.7rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.2s ease;
+    min-width: 32px;
+    text-align: center;
+}
+
+.pagination-number.active {
+    background: var(--gold);
+    color: white;
+    font-weight: bold;
+}
+
+.pagination-number:hover:not(.active) {
+    background: #d4d0c8;
+    transform: translateY(-1px);
+}
+
+.pagination-ellipsis {
+    padding: 0.3rem 0.2rem;
+    color: #666;
+    font-size: 0.8rem;
+    user-select: none;
+}
+
+.pagination-perpage {
+    background: white;
+    border: 1px solid var(--primary);
+    padding: 0.3rem 0.5rem;
+    border-radius: 5px;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+    cursor: pointer;
+}
+
+@media (max-width: 768px) {
+    .pagination-btn,
+    .pagination-number {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.7rem;
+        min-width: 28px;
+    }
+    
+    .pagination-ellipsis {
+        padding: 0.2rem 0.1rem;
+        font-size: 0.7rem;
+    }
+    
+    .pagination-perpage {
+        padding: 0.2rem 0.3rem;
+        font-size: 0.65rem;
+    }
+}
+
+select:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 2px rgba(243, 156, 18, 0.2);
+}
+
+@media (max-width: 768px) {
+    select {
+        font-size: 0.7rem;
+        padding: 0.25rem 0.4rem;
+    }
+    
+    .property-item {
+        padding: 0.8rem;
+    }
+}
+
+.pagination-loading {
+    position: relative;
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.pagination-loading::after {
+    content: "\1F504";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 1.5rem;
+    background: rgba(255,255,255,0.9);
+    padding: 1rem;
+    border-radius: 50%;
+}
+
+/* ========== ABAS ESTILO WINDOWS 98 / CLASSIC UI ========== */
+
+/* Container das abas */
+.admin-tabs {
+    display: flex;
+    gap: 0px;
+    margin-bottom: -1px;
+    position: relative;
+    padding-left: 12px;
+    background: #ece9d8;
+    border-top: 2px solid #ffffff;
+    border-left: 1px solid #ffffff;
+    border-right: 1px solid #808080;
+    border-bottom: none;
+    border-radius: 0px;
+    box-shadow: none;
+}
+
+/* Estilo base da aba - Desktop */
+.admin-tab {
+    position: relative;
+    padding: 0.5rem 1.5rem 0.6rem 1.5rem;
+    background: #ece9d8;
+    border: none;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    font-family: 'Segoe UI', 'Tahoma', 'Microsoft Sans Serif', sans-serif;
+    color: #000000;
+    transition: none;
+    letter-spacing: normal;
+    text-shadow: none;
+    transform: none;
+    margin-right: -2px;
+    z-index: 1;
+    border-left: 1px solid #ffffff;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #808080;
+    border-bottom: none;
+    box-shadow: none;
+    min-width: 100px;
+    text-align: center;
+}
+
+/* Ícones das abas - inativo escuro, ativo dourado */
+.admin-tab i {
+    margin-right: 10px;
+    font-size: 1rem;
+    color: #555555;
+    filter: none;
+    text-shadow: none;
+    vertical-align: middle;
+    transition: all 0.1s ease;
+}
+
+.admin-tab:not(.active):hover i {
+    color: #1a5276;
+}
+
+.admin-tab.active i {
+    color: #ffd700;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+
+.admin-tab::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: -1px;
+    border-left: 1px solid #ffffff;
+    border-top: 1px solid #ffffff;
+    border-right: 1px solid #808080;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.admin-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ece9d8;
+    z-index: 2;
+}
+
+.admin-tab:not(.active):hover {
+    background: #f5f3e8;
+    color: #000000;
+    transform: none;
+    box-shadow: none;
+}
+
+.admin-tab.active {
+    background: #ece9d8;
+    color: #000000;
+    border: none;
+    transform: translateY(1px);
+    z-index: 4;
+    position: relative;
+    text-shadow: none;
+    border-left: 1px solid #808080;
+    border-top: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    border-bottom: none;
+    box-shadow: inset 1px 1px 0px 0px rgba(0,0,0,0.1);
+    margin-top: 1px;
+    padding-top: 0.5rem;
+    padding-bottom: 0.7rem;
+}
+
+.admin-tab.active::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: -2px;
+    border-left: 1px solid #808080;
+    border-top: 1px solid #808080;
+    border-right: 1px solid #ffffff;
+    pointer-events: none;
+    z-index: -1;
+}
+
+.admin-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: #ece9d8;
+    z-index: 5;
+}
+
+.admin-tab:first-child {
+    margin-left: 0;
+    border-left: 1px solid #ffffff;
+}
+
+.admin-tab.active:first-child {
+    border-left: 1px solid #808080;
+}
+
+/* ========== CONTEÚDO DAS ABAS ========== */
+.admin-tab-content {
+    display: none;
+    padding: 1rem;
+    background: #ece9d8;
+    border: 1px solid #808080;
+    border-top: none;
+    border-radius: 0px;
+    margin-top: 0;
+    position: relative;
+    z-index: 2;
+    box-shadow: inset 0 1px 0 0 rgba(255,255,255,0.8), inset 0 -1px 0 0 rgba(0,0,0,0.1);
+    transition: none;
+    overflow: visible !important;
+    padding-bottom: 1.5rem !important;
+}
+
+.admin-tab-content::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    bottom: 1px;
+    border: 1px solid #ffffff;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.admin-tab-content.active {
+    display: block;
+    border-left: 1px solid #808080;
+}
+
+.admin-tab-content > div {
+    background: #ffffff;
+    border: 1px solid #d4d0c8;
+    padding: 0.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ========== TÍTULOS DAS SEÇÕES ========== */
+.section-title-windows {
+    position: relative;
+    margin-top: 0;
+    margin-bottom: 1rem;
+    padding: 0.6rem 0.8rem;
+    background: linear-gradient(135deg, #1a5276 0%, #0e3d5c 100%);
+    color: #ffffff;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    border: 1px solid #0e3d5c;
+    border-top-color: #2980b9;
+    border-left-color: #2980b9;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.2), inset 1px 1px 0 rgba(255,255,255,0.2);
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+}
+
+.section-title-windows::before {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    right: 2px;
+    bottom: 2px;
+    border: 1px solid rgba(255,255,255,0.15);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.section-title-windows::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,0.03) 0px,
+        rgba(255,255,255,0.03) 2px,
+        transparent 2px,
+        transparent 6px
+    );
+    pointer-events: none;
+    z-index: 0;
+}
+
+.section-title-windows i {
+    margin-right: 10px;
+    font-size: 1rem;
+    color: #ffd700;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.3);
+}
+
+.section-title-windows small {
+    font-size: 0.65rem;
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    color: #ffd700;
+    margin-left: 8px;
+}
+
+.section-title-windows small strong {
+    color: #ffd700;
+    font-weight: bold;
+    font-size: 0.8rem;
+}
+
+/* ========== FORMULÁRIO - CORREÇÃO DEFINITIVA DO ESPAÇAMENTO ========== */
+.form-group {
+    margin-bottom: 0.6rem;
+    padding: 0.3rem;
+    border: 1px solid #808080;
+    border-top-color: #ffffff;
+    border-left-color: #ffffff;
+    background: #ece9d8;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.15rem;
+    font-weight: 700;
+    font-size: 0.65rem;
+    color: #000000;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group label i {
+    margin-right: 4px;
+    color: #1a5276;
+}
+
+/* CORREÇÃO DEFINITIVA: REMOVER TODO ESPAÇO EXTRA ENTRE TÍTULO E PREÇO */
+.form-row-2cols {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.15rem;
+    margin-bottom: 0;
+}
+
+.form-row-2cols .form-group {
+    margin-bottom: 0;
+    padding: 0.25rem;
+}
+
+/* Garantir que os inputs fiquem justapostos */
+.form-row-2cols .form-group:first-child {
+    margin-right: 0;
+}
+
+.form-row-2cols .form-group:last-child {
+    margin-left: 0;
+}
+
+/* Efeito de afundamento nas bordas dos campos brancos */
+.admin-tab-content input,
+.admin-tab-content textarea,
+.admin-tab-content select {
+    background: #ffffff;
+    border: 2px solid;
+    border-color: #404040 #ffffff #ffffff #404040;
+    padding: 0.35rem 0.45rem;
+    font-family: 'Courier New', 'Consolas', 'Monaco', monospace;
+    font-size: 0.8rem;
+    width: 100%;
+    box-sizing: border-box;
+    transition: all 0.1s ease;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
+}
+
+.admin-tab-content input:focus,
+.admin-tab-content textarea:focus,
+.admin-tab-content select:focus {
+    border-color: #000000 #808080 #808080 #000000;
+    outline: none;
+    background: #fffff0;
+    box-shadow: inset 3px 3px 6px rgba(0,0,0,0.15), inset -1px -1px 3px rgba(0,0,0,0.08);
+}
+
+.admin-tab-content input[type="checkbox"] {
+    width: auto;
+    margin-right: 0.5rem;
+    transform: scale(1.1);
+    vertical-align: middle;
+    box-shadow: none;
+}
+
+#uploadArea, #pdfUploadArea {
+    border: 2px solid;
+    border-color: #404040 #ffffff #ffffff #404040;
+    background: #ffffff;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: all 0.1s ease;
+    font-family: 'Courier New', monospace;
+    font-size: 0.7rem;
+    text-align: center;
+    box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1), inset -1px -1px 2px rgba(0,0,0,0.05);
+}
+
+#uploadArea:active, #pdfUploadArea:active {
+    border-color: #ffffff #404040 #404040 #ffffff;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.12);
+}
+
+#uploadPreview, #pdfUploadPreview {
+    background: #ffffff;
+    border: 1px solid #808080;
+    padding: 0.3rem;
+    min-height: 60px;
+    box-shadow: inset 1px 1px 3px rgba(0,0,0,0.08);
+}
+
+#propertyForm button[type="submit"] {
+    background: #27ae60;
+    color: white;
+    border: 2px solid;
+    border-color: #2ecc71 #1e8449 #1e8449 #2ecc71;
+    font-weight: 700;
+    padding: 0.5rem 1rem;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.1s ease;
+}
+
+#propertyForm button[type="submit"]:hover {
+    background: #219653;
+    transform: scale(1.01);
+}
+
+#propertyForm button[type="submit"]:active {
+    border-color: #1e8449 #2ecc71 #2ecc71 #1e8449;
+    transform: translateY(1px);
+}
+
+#cancelEditBtn {
+    background: #ece9d8;
+    color: #000000;
+    border: 2px solid;
+    border-color: #ffffff #808080 #808080 #ffffff;
+    font-family: 'Courier New', 'Consolas', monospace;
+    font-size: 0.7rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+}
+
+#cancelEditBtn:active {
+    border-color: #808080 #ffffff #ffffff #808080;
+    transform: translateY(1px);
+}
+
+/* ========== LISTA DE PROPRIEDADES ========== */
+.manage-container {
+    max-height: 650px;
+    overflow-y: auto;
+    padding-bottom: 2rem !important;
+    margin-bottom: 0 !important;
+    background: #ffffff;
+    border: 1px solid #808080;
+    border-top-color: #404040;
+    border-left-color: #404040;
+}
+
+.manage-container::-webkit-scrollbar {
+    width: 16px;
+    background: #ece9d8;
+}
+
+.manage-container::-webkit-scrollbar-track {
+    background: #ece9d8;
+    border-left: 1px solid #808080;
+    border-top: 1px solid #808080;
+}
+
+.manage-container::-webkit-scrollbar-thumb {
+    background: #c0c0c0;
+    border: 1px solid #ffffff;
+    border-top-color: #808080;
+    border-left-color: #808080;
+}
+
+.manage-container::-webkit-scrollbar-thumb:hover {
+    background: #d4d0c8;
+}
+
+#propertyList {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    padding-bottom: 1.5rem !important;
+}
+
+.property-item {
+    background: #ffffff;
+    padding: 0.8rem;
+    margin: 0;
+    border-radius: 0px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: 4px solid var(--primary);
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #d4d0c8;
+}
+
+.property-item:hover {
+    background: #f5f3e8;
+}
+
+.property-item:last-child {
+    border-bottom: none;
+    margin-bottom: 0 !important;
+    padding-bottom: 0.6rem !important;
+}
+
+/* Indicador de Tempo de Mercado */
+.market-time-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.15rem 0.4rem;
+    border-radius: 12px;
+    font-size: 0.65rem;
+    font-weight: 600;
+}
+
+.market-time-high {
+    background: rgba(39, 174, 96, 0.15);
+    border-left: 3px solid #27ae60;
+    color: #27ae60;
+}
+
+.market-time-medium {
+    background: rgba(243, 156, 18, 0.15);
+    border-left: 3px solid #f39c12;
+    color: #f39c12;
+}
+
+.market-time-low {
+    background: rgba(230, 126, 34, 0.15);
+    border-left: 3px solid #e67e22;
+    color: #e67e22;
+}
+
+.market-time-stagnant {
+    background: rgba(231, 76, 60, 0.15);
+    border-left: 3px solid #e74c3c;
+    color: #e74c3c;
+}
+
+.market-time-critical {
+    background: rgba(192, 57, 43, 0.15);
+    border-left: 3px solid #c0392b;
+    color: #c0392b;
+}
+
+@keyframes highlightPulse {
+    0% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(26, 82, 118, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(26, 82, 118, 0); }
+}
+
+.admin-panel-highlight { animation: highlightPulse 0.8s ease; }
+.admin-panel { display: none; }
+
+/* ========== DESKTOP - PAGINAÇÃO ========== */
+#propertyList > div:last-child {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 0.3rem !important;
+    margin-top: 1rem !important;
+    margin-bottom: 0.5rem !important;
+    padding: 0.6rem 0.5rem !important;
+    background: #ece9d8 !important;
+    border-top: 1px solid #808080 !important;
+}
+
+#propertyList > div:last-child button,
+#propertyList > div:last-child span {
+    flex: 0 0 auto !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    min-width: 36px !important;
+    height: 36px !important;
+    padding: 0 0.5rem !important;
+    margin: 0 !important;
+    font-size: 0.8rem !important;
+    font-weight: normal !important;
+    border-radius: 0px !important;
+    white-space: nowrap !important;
+    cursor: pointer !important;
+    background: #ece9d8 !important;
+    color: #000000 !important;
+    border: 1px solid #808080 !important;
+    border-top-color: #ffffff !important;
+    border-left-color: #ffffff !important;
+    transition: none !important;
+    font-family: 'Courier New', monospace !important;
+}
+
+#propertyList > div:last-child button.active-page,
+#propertyList > div:last-child button[style*="background: #f39c12"],
+#propertyList > div:last-child button[style*="background: var(--gold)"] {
+    background: var(--primary) !important;
+    color: #ffffff !important;
+    border: 1px solid #0e3d5c !important;
+}
+
+#propertyList > div:last-child select {
+    flex: 0 0 auto !important;
+    margin-left: 0.5rem !important;
+    padding: 0.2rem 0.3rem !important;
+    font-size: 0.7rem !important;
+    border-radius: 0px !important;
+    height: 32px !important;
+    width: 95px !important;
+    background: #ffffff !important;
+    border: 1px solid #808080 !important;
+    border-top-color: #404040 !important;
+    border-left-color: #404040 !important;
+    font-family: 'Courier New', monospace !important;
+    cursor: pointer !important;
+}
+
+#propertyList > div:last-child button:not(:disabled):hover,
+#propertyList > div:last-child span:not(.ellipsis):hover {
+    background: #d4d0c8 !important;
+}
+
+#propertyList > div:last-child button:active {
+    border-top-color: #808080 !important;
+    border-left-color: #808080 !important;
+    border-bottom-color: #ffffff !important;
+    border-right-color: #ffffff !important;
+    transform: translateY(1px);
+}
+
+#propertyList > div:last-child span.ellipsis {
+    background: transparent !important;
+    border: none !important;
+    cursor: default !important;
+    min-width: 20px !important;
+    color: #000000 !important;
+    font-weight: bold !important;
+}
+
+#propertyList > div:last-child span.ellipsis:hover {
+    background: transparent !important;
+    border: none !important;
+}
+
+/* ========== MOBILE - AJUSTE FINO ========== */
+@media (max-width: 768px) {
+    .admin-tabs {
+        padding-left: 8px;
+        gap: 0px;
+        flex-wrap: nowrap;
+        background: #ece9d8;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        justify-content: flex-start;
+    }
+    
+    .admin-tab {
+        padding: 0.35rem 0.7rem 0.45rem 0.7rem;
+        font-size: 0.6rem;
+        min-width: auto;
+        width: auto;
+        flex: 0 0 auto;
+        text-align: center;
+        white-space: nowrap;
+        margin-right: -18px;
+        z-index: 1;
+        background: #d8d4c2;
+        border-right: 1px solid #a09b8a;
+    }
+    
+    .admin-tab:first-child {
+        margin-left: 0;
+        margin-right: -18px;
+    }
+    
+    .admin-tab:last-child {
+        margin-right: 0;
+    }
+    
+    .admin-tab:not(.active) {
+        z-index: 1;
+        opacity: 0.85;
+        background: #cec9b6;
+    }
+    
+    .admin-tab.active {
+        z-index: 10;
+        transform: translateY(1px);
+        background: #ece9d8;
+        margin-right: -16px;
+        margin-left: -16px;
+        padding-left: 0.8rem;
+        padding-right: 0.8rem;
+        position: relative;
+        box-shadow: -2px 1px 6px rgba(0,0,0,0.15), 2px 1px 4px rgba(0,0,0,0.1);
+    }
+    
+    .admin-tab.active::before {
+        content: '';
+        position: absolute;
+        left: -4px;
+        top: 2px;
+        bottom: 2px;
+        width: 4px;
+        background: linear-gradient(to right, rgba(0,0,0,0.15), transparent);
+        pointer-events: none;
+    }
+    
+    .admin-tab.active::after {
+        content: '';
+        position: absolute;
+        right: -4px;
+        top: 2px;
+        bottom: 2px;
+        width: 4px;
+        background: linear-gradient(to left, rgba(0,0,0,0.1), transparent);
+        pointer-events: none;
+    }
+    
+    .admin-tab i {
+        margin-right: 4px;
+        font-size: 0.7rem;
+    }
+    
+    .admin-tab-content {
+        padding: 0.4rem;
+        padding-bottom: 0.6rem !important;
+    }
+    
+    .admin-tab-content > div {
+        padding: 0.3rem;
+    }
+    
+    .section-title-windows {
+        text-align: left !important;
+        justify-content: flex-start !important;
+        padding: 0.3rem 0.4rem !important;
+        margin-bottom: 0.6rem !important;
+        font-size: 0.55rem !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 0.2rem !important;
+        flex-wrap: wrap !important;
+    }
+    
+    .section-title-windows i {
+        font-size: 0.65rem !important;
+        margin-right: 4px !important;
+    }
+    
+    .section-title-windows small {
+        font-size: 0.5rem !important;
+        margin-left: auto !important;
+        margin-right: 0 !important;
+        background: rgba(0,0,0,0.2) !important;
+        padding: 0.1rem 0.4rem !important;
+        border-radius: 10px !important;
+    }
+    
+    .manage-container {
+        max-height: none !important;
+        overflow-y: visible !important;
+        padding-bottom: 1rem !important;
+    }
+    
+    #propertyList {
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        padding-bottom: 0.8rem !important;
+    }
+    
+    .property-item {
+        padding: 0.4rem;
+        margin: 0 !important;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+        border-bottom: 1px solid #d4d0c8;
+    }
+    
+    .property-item:last-child { 
+        border-bottom: none;
+        margin-bottom: 0 !important;
+        padding-bottom: 0.25rem !important;
+    }
+    
+    .property-item > div:first-child {
+        width: 50px;
+        height: 50px;
+    }
+    
+    #propertyList > div:first-child {
+        padding: 0.2rem 0.25rem !important;
+        margin-bottom: 0.25rem !important;
+        gap: 0.15rem !important;
+    }
+    
+    #propertyList > div:first-child span {
+        font-size: 0.55rem !important;
+        padding: 0.1rem 0.3rem !important;
+    }
+    
+    #propertyList > div:last-child {
+        gap: 0.02rem !important;
+        margin-top: 0.25rem !important;
+        margin-bottom: 0.03rem !important;
+        padding: 0.1rem 0.05rem !important;
+    }
+    
+    #propertyList > div:last-child button,
+    #propertyList > div:last-child span {
+        min-width: 22px !important;
+        height: 22px !important;
+        padding: 0 0.08rem !important;
+        font-size: 0.45rem !important;
+    }
+    
+    #propertyList > div:last-child select {
+        margin-left: 0.05rem !important;
+        padding: 0.05rem 0.05rem !important;
+        font-size: 0.4rem !important;
+        height: 20px !important;
+        width: 55px !important;
+    }
+    
+    .form-row-2cols {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
+    }
+    
+    .form-group {
+        margin-bottom: 0.4rem;
+        padding: 0.2rem;
+    }
+}
+
+.admin-tab:focus-visible {
+    outline: 2px solid #000000;
+    outline-offset: 2px;
+}
+
+select {
+    background: #ffffff;
+    border: 2px solid;
+    border-color: #404040 #ffffff #ffffff #404040;
+    border-radius: 0px;
+    padding: 0.2rem 0.4rem;
+    font-family: 'Courier New', monospace;
+}
+
+.form-compact #propertyForm { gap: 0.4rem; }
+.form-compact #propertyForm > div { margin-bottom: 0 !important; }
+.form-compact #propertyForm input, .form-compact #propertyForm select { padding: 0.35rem 0.45rem; font-size: 0.8rem; }
+.form-compact #propertyForm textarea { min-height: 45px; padding: 0.35rem 0.45rem; font-size: 0.8rem; }
+
+/* ========== ESTILOS DO MODAL PDF (extraídos do pdf-unified.js) ========== */
+
+/* Modal principal de seleção de PDFs */
+.pdf-selection-modal {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.95);
+    z-index: 10001;
+    overflow-y: auto;
+}
+
+/* Container interno do modal */
+.pdf-selection-container {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    position: relative;
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+    .pdf-selection-modal {
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+    }
+    .pdf-selection-container {
+        max-width: 600px;
+        width: 90%;
+        max-height: 80vh;
+        overflow-y: auto;
+        padding: 2rem;
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .pdf-selection-modal {
+        align-items: flex-start;
+        justify-content: center;
+        padding: 10px;
+    }
+    .pdf-selection-container {
+        max-width: 500px;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        padding: 1.2rem;
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
+}
+
+/* Botão fechar do modal */
+.pdf-modal-close-btn {
+    position: absolute;
+    background: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-close-btn {
+        top: 10px;
+        right: 10px;
+        width: 30px;
+        height: 30px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-close-btn {
+        top: 8px;
+        right: 8px;
+        width: 28px;
+        height: 28px;
+        font-size: 0.9rem;
+    }
+}
+
+.pdf-modal-close-btn:hover {
+    transform: scale(1.1) rotate(90deg);
+    background: #c0392b;
+}
+
+/* Título do modal */
+.pdf-modal-title {
+    color: #1a5276;
+    margin: 0;
+    padding-right: 30px;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-title {
+        margin-bottom: 1.5rem;
+        font-size: 1.4rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-title {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        padding-right: 25px;
+    }
+}
+
+.pdf-modal-title i {
+    margin-right: 8px;
+}
+
+/* Descrição do modal */
+.pdf-modal-description {
+    color: #666;
+    line-height: 1.4;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-description {
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-description {
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Container da lista de PDFs */
+.pdf-items-container {
+    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .pdf-items-container {
+        margin-bottom: 1.2rem;
+    }
+}
+
+/* Item da lista de PDF */
+.pdf-list-item {
+    background: white;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s;
+    border-left: 4px solid #1a5276;
+}
+
+.pdf-list-item:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 769px) {
+    .pdf-list-item {
+        padding: 1rem;
+        margin-bottom: 0.8rem;
+        flex-wrap: nowrap;
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-list-item {
+        padding: 0.8rem;
+        margin-bottom: 0.6rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+}
+
+/* Informações do PDF */
+.pdf-item-info {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.pdf-item-icon {
+    display: flex;
+    align-items: center;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-icon {
+        gap: 10px;
+    }
+    .pdf-item-icon i {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-icon {
+        gap: 8px;
+    }
+    .pdf-item-icon i {
+        font-size: 1.2rem;
+    }
+}
+
+.pdf-item-name {
+    min-width: 0;
+}
+
+.pdf-item-name strong {
+    display: block;
+    color: #2c3e50;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-name strong {
+        font-size: 1rem;
+        max-width: 300px;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-name strong {
+        font-size: 0.9rem;
+        max-width: 200px;
+    }
+}
+
+.pdf-item-meta {
+    color: #7f8c8d;
+}
+
+@media (min-width: 769px) {
+    .pdf-item-meta {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-item-meta {
+        font-size: 0.7rem;
+    }
+}
+
+/* Botão visualizar PDF */
+.pdf-view-btn {
+    background: #1a5276;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+    flex-shrink: 0;
+}
+
+.pdf-view-btn:hover {
+    background: #0e3d5c;
+    transform: scale(1.02);
+}
+
+.pdf-view-btn:active {
+    transform: scale(0.98);
+}
+
+@media (min-width: 769px) {
+    .pdf-view-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+    .pdf-view-btn span {
+        display: inline;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-view-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    .pdf-view-btn span {
+        display: none;
+    }
+}
+
+/* Footer do modal */
+.pdf-modal-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-footer {
+        gap: 0;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-footer {
+        gap: 0.5rem;
+    }
+}
+
+.pdf-modal-footer small {
+    color: #95a5a6;
+}
+
+@media (min-width: 769px) {
+    .pdf-modal-footer small {
+        font-size: 0.8rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-modal-footer small {
+        font-size: 0.75rem;
+        order: 2;
+        width: 100%;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+}
+
+.pdf-download-all-btn {
+    background: #27ae60;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    transition: all 0.3s;
+}
+
+.pdf-download-all-btn:hover {
+    background: #219653;
+    transform: scale(1.02);
+}
+
+@media (min-width: 769px) {
+    .pdf-download-all-btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .pdf-download-all-btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        order: 1;
+    }
+    .pdf-download-all-btn span {
+        display: inline;
+    }
+}
+
+/* Mensagem de nenhum documento */
+.pdf-empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #666;
+}
+
+.pdf-empty-state i {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* ========== MOBILE: LAYOUT DIFERENCIADO ENTRE ABAS ========== */
+/* 
+   REGRA 1: ABA GERENCIAR (manage-tab) - ocupa 100% da largura, sem margens
+   REGRA 2: ABA INCLUIR/EDITAR (form-tab) - layout original preservado
+     - Campos Título e Preço na MESMA LINHA (grid 1fr 1fr)
+     - Espaçamento justo (gap reduzido)
+     - Estilo consistente com o original
+     - CORREÇÃO: Estabilidade durante edição (mesmo com classes dinâmicas)
+*/
+
+/* Ajuste base do painel em mobile */
+@media (max-width: 768px) {
+    .admin-panel {
+        margin: 1rem 0 !important;
+        padding: 0.5rem !important;
+        max-width: 100% !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+    
+    /* Ajuste do botão toggle para mobile */
+    .admin-toggle {
+        bottom: 15px !important;
+        right: 15px !important;
+        width: 44px !important;
+        height: 44px !important;
+    }
+}
+
+/* ESTILO ESPECÍFICO PARA ABA GERENCIAR (100% largura, sem margens) */
+@media (max-width: 768px) {
+    #manage-tab.active,
+    #manage-tab.active > div {
+        width: 100% !important;
+        padding: 0.25rem !important;
+        margin: 0 !important;
+    }
+    
+    #manage-tab.active .manage-container {
+        padding: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    
+    #manage-tab.active #propertyList {
+        width: 100% !important;
+    }
+    
+    #manage-tab.active .property-item {
+        margin: 0 !important;
+        border-radius: 0 !important;
+        width: 100% !important;
+    }
+}
+
+/* ESTILO ESPECÍFICO PARA ABA INCLUIR/EDITAR (layout original restaurado) */
+/* CORREÇÃO: Maior especificidade para prevenir desajustes durante edição */
+@media (max-width: 768px) {
+    /* Container principal da aba */
+    #form-tab.active,
+    #form-tab.active[style*="display"],
+    #form-tab.active[class*="active"] {
+        padding: 0 !important;
+    }
+    
+    /* Container interno com o formulário */
+    #form-tab.active > div,
+    #form-tab.active > div[style*="background"],
+    #form-tab.active > div:first-child {
+        padding: 0.5rem !important;
+        margin: 0 auto !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* FORÇAR layout de grid para a linha de Título e Preço */
+    #form-tab.active .form-row-2cols,
+    #form-tab.active div.form-row-2cols,
+    #form-tab.active .form-row-2cols[class*="row"] {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 0.15rem !important;
+        margin-bottom: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Garantir que os grupos de formulário mantenham o layout justo */
+    #form-tab.active .form-row-2cols .form-group,
+    #form-tab.active .form-row-2cols div.form-group {
+        margin-bottom: 0 !important;
+        padding: 0.15rem !important;
+        width: auto !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Espaçamento justo entre os campos (estilo C/C++) */
+    #form-tab.active .form-group,
+    #form-tab.active div.form-group {
+        margin-bottom: 0.15rem !important;
+        padding: 0.15rem !important;
+    }
+    
+    /* Remover gaps extras entre campos */
+    #form-tab.active #propertyForm,
+    #form-tab.active form#propertyForm {
+        gap: 0 !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Campos com padding reduzido para manter justaposição */
+    #form-tab.active #propertyForm input,
+    #form-tab.active #propertyForm textarea,
+    #form-tab.active #propertyForm select,
+    #form-tab.active form#propertyForm input,
+    #form-tab.active form#propertyForm textarea,
+    #form-tab.active form#propertyForm select {
+        padding: 0.35rem 0.45rem !important;
+        font-size: 0.75rem !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Botões com layout justo */
+    #form-tab.active #propertyForm button[type="submit"],
+    #form-tab.active #cancelEditBtn,
+    #form-tab.active form#propertyForm button[type="submit"],
+    #form-tab.active button#cancelEditBtn {
+        width: 100% !important;
+        padding: 0.5rem !important;
+        font-size: 0.75rem !important;
+        margin-top: 0.15rem !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* Áreas de upload com padding reduzido */
+    #form-tab.active #uploadArea,
+    #form-tab.active #pdfUploadArea {
+        padding: 0.5rem !important;
+        margin: 0.25rem 0 !important;
+    }
+    
+    /* Área de preview com espaçamento justo */
+    #form-tab.active #uploadPreview,
+    #form-tab.active #pdfUploadPreview {
+        margin: 0.25rem 0 !important;
+        padding: 0.25rem !important;
+    }
+    
+    /* Título da seção com espaçamento ajustado */
+    #form-tab.active .section-title-windows {
+        margin: 0.25rem 0 0.5rem 0 !important;
+        padding: 0.3rem !important;
+    }
+    
+    /* Container do formulário sem margens extras */
+    #form-tab.active #propertyForm,
+    #form-tab.active form {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+    
+    /* Checkbox com espaçamento justo */
+    #form-tab.active .form-group label[style*="display:flex"],
+    #form-tab.active label[for="propHasVideo"] {
+        margin: 0 !important;
+        padding: 0.1rem 0 !important;
+    }
+}
