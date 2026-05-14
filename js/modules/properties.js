@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM INDICADOR DE TEMPO DE MERCADO
-console.log('✅ properties.js carregado - Com indicador de Tempo de Mercado');
+// js/modules/properties.js - VERSÃO COMPLETA COM INDICADOR INDIVIDUALIZADO DE TEMPO DE MERCADO
+console.log('✅ properties.js carregado - Com indicador individualizado de Tempo de Mercado');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -12,17 +12,15 @@ window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
 
 // ========== INDICADOR DE TEMPO DE MERCADO (DIAS NO MERCADO) ==========
 window.calculateMarketTime = function(property) {
-    // Se o imóvel tem data de criação, usa ela; senão, usa data atual como início
     let startDate;
     
     if (property.created_at && property.created_at !== 'undefined' && property.created_at !== null) {
         startDate = new Date(property.created_at);
-        // Verifica se a data é válida
         if (isNaN(startDate.getTime())) {
-            startDate = new Date(); // Fallback para hoje
+            startDate = new Date();
         }
     } else {
-        startDate = new Date(); // Imóveis existentes sem data começam hoje
+        startDate = new Date();
     }
     
     const today = new Date();
@@ -1432,7 +1430,7 @@ function createPerPageSelect(currentItemsPerPage) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM INDICADOR DE TEMPO DE MERCADO) ==========
+// ========== LOAD PROPERTY LIST (COM INDICADORES INDIVIDUALIZADOS) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1504,10 +1502,11 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
     
     paginatedProperties.forEach(property => {
+        // ========== INDICADOR DE VISUALIZAÇÕES ==========
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
-        // ========== CALCULAR TEMPO DE MERCADO ==========
+        // ========== INDICADOR DE TEMPO DE MERCADO ==========
         const marketDays = window.calculateMarketTime(property);
         const marketStatus = window.getMarketStatus(marketDays);
         const marketTimeFormatted = window.formatMarketTime(marketDays);
@@ -1563,16 +1562,41 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     </small>
                 </div>
                 <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
-                    <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
-                    <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
-                    ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
-                    <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
-                    ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
+                    <!-- Indicador ID -->
+                    <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-id-card"></i> ID: ${property.id}
+                    </span>
                     
-                    <!-- INDICADOR DE TEMPO DE MERCADO -->
+                    <!-- Indicador de Imagens -->
+                    <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}
+                    </span>
+                    
+                    <!-- Indicador de PDFs -->
+                    ${property.pdfs && property.pdfs !== 'EMPTY' ? `
+                        <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                            <i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}
+                        </span>
+                    ` : ''}
+                    
+                    <!-- Indicador de Visualizações -->
+                    <span style="background: #e3f2fd; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <i class="fas fa-eye" style="color: #1976d2;"></i>
+                        <strong style="color: #1976d2;">Visualizações: ${viewCount}</strong>
+                    </span>
+                    
+                    <!-- Indicador de Última Visualização -->
+                    ${lastView ? `
+                        <span style="background: #f3e5f5; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                            <i class="fas fa-clock" style="color: #7b1fa2;"></i>
+                            <strong style="color: #7b1fa2;">Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
+                        </span>
+                    ` : ''}
+                    
+                    <!-- INDICADOR DE TEMPO DE MERCADO (INDIVIDUALIZADO) -->
                     <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
                         <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.color};"></i>
-                        <strong style="color: ${marketStatus.color};">${marketStatus.text}</strong>
+                        <strong style="color: ${marketStatus.color};">Tempo de Mercado: ${marketStatus.text}</strong>
                         <span style="color: ${marketStatus.color};">(${marketTimeFormatted})</span>
                     </span>
                 </div>
