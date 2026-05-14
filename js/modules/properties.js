@@ -1,4 +1,4 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM loadPropertyList RESTAURADO (FUNCIONAL EM PRODUÇÃO)
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO CORRIGIDA (PADRÃO DE MERCADO)
 console.log('✅ properties.js carregado - loadPropertyList restaurado (funcional em produção)');
 
 window.properties = [];
@@ -1218,7 +1218,7 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO ==========
+// ========== FUNÇÃO DE PAGINAÇÃO - PADRÃO DE MERCADO (ELIPSES FIXAS) ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
     const paginationDiv = document.createElement('div');
     paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem; position: relative; z-index: 10;';
@@ -1226,6 +1226,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     const isMobile = window.innerWidth <= 768;
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     
+    // ========== BOTÃO PRIMEIRA PÁGINA ==========
     const firstBtn = document.createElement('button');
     firstBtn.innerHTML = '<i class="fas fa-angle-double-left"></i>';
     firstBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1234,6 +1235,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     firstBtn.onclick = () => window.loadPropertyList(1);
     paginationDiv.appendChild(firstBtn);
     
+    // ========== BOTÃO ANTERIOR ==========
     const prevBtn = document.createElement('button');
     prevBtn.innerHTML = '<i class="fas fa-chevron-left"></i>';
     prevBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1242,53 +1244,79 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     prevBtn.onclick = () => window.loadPropertyList(currentPage - 1);
     paginationDiv.appendChild(prevBtn);
     
-    const maxVisiblePages = isMobile ? 3 : 5;
+    // ========== LÓGICA CORRETA DE PAGINAÇÃO (PADRÃO DE MERCADO) ==========
+    // Define quantos números mostrar antes/depois da página atual
+    const maxVisible = isMobile ? 3 : 5;      // Total de números visíveis
+    const sideItems = isMobile ? 1 : 2;        // Quantos mostrar de cada lado
     
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    // Array para armazenar os números a serem exibidos
+    let pagesToShow = [];
     
-    if (endPage - startPage + 1 < maxVisiblePages) {
-        startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-    
-    if (startPage > 1) {
-        const firstPageSpan = document.createElement('span');
-        firstPageSpan.textContent = '1';
-        firstPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
-        firstPageSpan.onclick = () => window.loadPropertyList(1);
-        paginationDiv.appendChild(firstPageSpan);
+    if (totalPages <= maxVisible) {
+        // Caso 1: Todas as páginas cabem - mostra todas
+        for (let i = 1; i <= totalPages; i++) {
+            pagesToShow.push(i);
+        }
+    } else {
+        // Caso 2: Mais páginas que o limite - implementa padrão com elipses fixas
         
+        // Sempre mostra a primeira página
+        pagesToShow.push(1);
+        
+        // Determina o bloco central de páginas
+        let startPage = Math.max(2, currentPage - sideItems);
+        let endPage = Math.min(totalPages - 1, currentPage + sideItems);
+        
+        // Ajusta se estiver no início
+        if (currentPage <= sideItems + 2) {
+            endPage = maxVisible - 1;
+        }
+        
+        // Ajusta se estiver no final
+        if (currentPage >= totalPages - sideItems - 1) {
+            startPage = totalPages - (maxVisible - 2);
+        }
+        
+        // Adiciona elipse antes do bloco central se necessário
         if (startPage > 2) {
-            const ellipsis = document.createElement('span');
-            ellipsis.textContent = '...';
-            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
-            paginationDiv.appendChild(ellipsis);
-        }
-    }
-    
-    for (let i = startPage; i <= endPage; i++) {
-        const pageBtn = document.createElement('button');
-        pageBtn.textContent = i;
-        pageBtn.style.cssText = `background: ${i === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${i === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${i === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
-        pageBtn.onclick = () => window.loadPropertyList(i);
-        paginationDiv.appendChild(pageBtn);
-    }
-    
-    if (endPage < totalPages) {
-        if (endPage < totalPages - 1) {
-            const ellipsis = document.createElement('span');
-            ellipsis.textContent = '...';
-            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem;';
-            paginationDiv.appendChild(ellipsis);
+            pagesToShow.push('...');
         }
         
-        const lastPageSpan = document.createElement('span');
-        lastPageSpan.textContent = totalPages;
-        lastPageSpan.style.cssText = 'background: #e9ecef; color: var(--text); padding: 0.3rem 0.7rem; border-radius: 5px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s ease; min-width: 32px; text-align: center;';
-        lastPageSpan.onclick = () => window.loadPropertyList(totalPages);
-        paginationDiv.appendChild(lastPageSpan);
+        // Adiciona páginas do bloco central
+        for (let i = startPage; i <= endPage; i++) {
+            if (i !== 1 && i !== totalPages) {
+                pagesToShow.push(i);
+            }
+        }
+        
+        // Adiciona elipse depois do bloco central se necessário
+        if (endPage < totalPages - 1) {
+            pagesToShow.push('...');
+        }
+        
+        // Sempre mostra a última página
+        pagesToShow.push(totalPages);
     }
     
+    // Renderiza os botões/páginas
+    for (const page of pagesToShow) {
+        if (page === '...') {
+            // Elemento de elipse (não clicável)
+            const ellipsis = document.createElement('span');
+            ellipsis.textContent = '...';
+            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem; user-select: none;';
+            paginationDiv.appendChild(ellipsis);
+        } else {
+            // Botão de página
+            const pageBtn = document.createElement('button');
+            pageBtn.textContent = page;
+            pageBtn.style.cssText = `background: ${page === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${page === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; font-weight: ${page === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
+            pageBtn.onclick = () => window.loadPropertyList(page);
+            paginationDiv.appendChild(pageBtn);
+        }
+    }
+    
+    // ========== BOTÃO PRÓXIMO ==========
     const nextBtn = document.createElement('button');
     nextBtn.innerHTML = '<i class="fas fa-chevron-right"></i>';
     nextBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1297,6 +1325,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     nextBtn.onclick = () => window.loadPropertyList(currentPage + 1);
     paginationDiv.appendChild(nextBtn);
     
+    // ========== BOTÃO ÚLTIMA PÁGINA ==========
     const lastBtn = document.createElement('button');
     lastBtn.innerHTML = '<i class="fas fa-angle-double-right"></i>';
     lastBtn.style.cssText = 'background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease;';
@@ -1305,6 +1334,7 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     lastBtn.onclick = () => window.loadPropertyList(totalPages);
     paginationDiv.appendChild(lastBtn);
     
+    // ========== SELETOR DE ITENS POR PÁGINA ==========
     const perPageSelect = document.createElement('select');
     perPageSelect.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
     perPageSelect.innerHTML = `
