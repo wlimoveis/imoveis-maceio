@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO CORRIGIDA (APENAS UM "...")
-console.log('✅ properties.js carregado - loadPropertyList restaurado (funcional em produção)');
+// js/modules/properties.js - VERSÃO COMPLETA COM INDICADOR DE TEMPO DE MERCADO
+console.log('✅ properties.js carregado - Com indicador de Tempo de Mercado');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -9,6 +9,50 @@ window.currentFilter = 'todos';
 window.adminCurrentPage = 1;
 const isMobileForPagination = window.innerWidth <= 768;
 window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
+
+// ========== INDICADOR DE TEMPO DE MERCADO (DIAS NO MERCADO) ==========
+window.calculateMarketTime = function(property) {
+    // Se o imóvel tem data de criação, usa ela; senão, usa data atual como início
+    let startDate;
+    
+    if (property.created_at && property.created_at !== 'undefined' && property.created_at !== null) {
+        startDate = new Date(property.created_at);
+        // Verifica se a data é válida
+        if (isNaN(startDate.getTime())) {
+            startDate = new Date(); // Fallback para hoje
+        }
+    } else {
+        startDate = new Date(); // Imóveis existentes sem data começam hoje
+    }
+    
+    const today = new Date();
+    const diffTime = Math.abs(today - startDate);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+};
+
+window.getMarketStatus = function(days) {
+    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', icon: 'fa-chart-line', daysText: `${days} dias` };
+    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', icon: 'fa-chart-simple', daysText: `${days} dias` };
+    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', icon: 'fa-chart-line-down', daysText: `${days} dias` };
+    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', icon: 'fa-stop-circle', daysText: `${days} dias` };
+    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', icon: 'fa-skull-crossbones', daysText: `${days} dias` };
+};
+
+window.formatMarketTime = function(days) {
+    if (days < 30) return `${days} dia${days !== 1 ? 's' : ''}`;
+    if (days < 365) {
+        const months = Math.floor(days / 30);
+        const remainingDays = days % 30;
+        if (remainingDays === 0) return `${months} mês${months !== 1 ? 'es' : ''}`;
+        return `${months} mês${months !== 1 ? 'es' : ''} e ${remainingDays} dia${remainingDays !== 1 ? 's' : ''}`;
+    }
+    const years = Math.floor(days / 365);
+    const remainingMonths = Math.floor((days % 365) / 30);
+    if (remainingMonths === 0) return `${years} ano${years !== 1 ? 's' : ''}`;
+    return `${years} ano${years !== 1 ? 's' : ''} e ${remainingMonths} mês${remainingMonths !== 1 ? 'es' : ''}`;
+};
 
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
@@ -1388,7 +1432,7 @@ function createPerPageSelect(currentItemsPerPage) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (FUNCIONAL EM PRODUÇÃO) ==========
+// ========== LOAD PROPERTY LIST (COM INDICADOR DE TEMPO DE MERCADO) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1463,6 +1507,11 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
+        // ========== CALCULAR TEMPO DE MERCADO ==========
+        const marketDays = window.calculateMarketTime(property);
+        const marketStatus = window.getMarketStatus(marketDays);
+        const marketTimeFormatted = window.formatMarketTime(marketDays);
+        
         let firstImage = defaultImage;
         let isVideo = false;
         
@@ -1515,11 +1564,17 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                 </div>
                 <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
                     <span><i class="fas fa-id-card"></i> ID: ${property.id}</span>
-                    ${property.has_video ? '<span style="color: #9b59b6;"><i class="fas fa-video"></i> Tem vídeo</span>' : ''}
                     <span><i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}</span>
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `<span><i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}</span>` : ''}
                     <span><i class="fas fa-eye"></i> <strong>Visualizações: ${viewCount}</strong></span>
                     ${lastView ? `<span><i class="fas fa-clock"></i> Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</span>` : ''}
+                    
+                    <!-- INDICADOR DE TEMPO DE MERCADO -->
+                    <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
+                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.color};"></i>
+                        <strong style="color: ${marketStatus.color};">${marketStatus.text}</strong>
+                        <span style="color: ${marketStatus.color};">(${marketTimeFormatted})</span>
+                    </span>
                 </div>
             </div>
             <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
