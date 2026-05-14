@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM INDICADOR INDIVIDUALIZADO DE TEMPO DE MERCADO
-console.log('✅ properties.js carregado - Com indicador individualizado de Tempo de Mercado');
+// js/modules/properties.js - VERSÃO COMPLETA COM BOLINHA COLORIDA PARA TEMPO DE MERCADO
+console.log('✅ properties.js carregado - Com bolinha colorida para Tempo de Mercado');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -31,11 +31,11 @@ window.calculateMarketTime = function(property) {
 };
 
 window.getMarketStatus = function(days) {
-    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', icon: 'fa-chart-line', daysText: `${days} dias` };
-    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', icon: 'fa-chart-simple', daysText: `${days} dias` };
-    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', icon: 'fa-chart-line-down', daysText: `${days} dias` };
-    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', icon: 'fa-stop-circle', daysText: `${days} dias` };
-    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', icon: 'fa-skull-crossbones', daysText: `${days} dias` };
+    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', daysText: `${days} dias` };
+    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', daysText: `${days} dias` };
+    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', daysText: `${days} dias` };
+    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', daysText: `${days} dias` };
+    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', daysText: `${days} dias` };
 };
 
 window.formatMarketTime = function(days) {
@@ -1430,7 +1430,7 @@ function createPerPageSelect(currentItemsPerPage) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM INDICADORES INDIVIDUALIZADOS) ==========
+// ========== LOAD PROPERTY LIST (COM BOLINHA COLORIDA PARA TEMPO DE MERCADO) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1593,9 +1593,10 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                         </span>
                     ` : ''}
                     
-                    <!-- INDICADOR DE TEMPO DE MERCADO (INDIVIDUALIZADO) -->
+                    <!-- INDICADOR DE TEMPO DE MERCADO COM BOLINHA COLORIDA -->
                     <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.color};"></i>
+                        <!-- Bolinha colorida indicadora de liquidez -->
+                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: ${marketStatus.iconColor}; box-shadow: 0 0 2px rgba(0,0,0,0.2);"></span>
                         <strong style="color: ${marketStatus.color};">Tempo de Mercado: ${marketStatus.text}</strong>
                         <span style="color: ${marketStatus.color};">(${marketTimeFormatted})</span>
                     </span>
