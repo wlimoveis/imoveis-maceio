@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM BOLINHA COLORIDA PARA TEMPO DE MERCADO
-console.log('✅ properties.js carregado - Com bolinha colorida para Tempo de Mercado');
+// js/modules/properties.js - VERSÃO COMPLETA COM ÍCONE DE AMPULHETA E NÚMEROS DESTACADOS
+console.log('✅ properties.js carregado - Com ícone de ampulheta para Tempo de Mercado');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -31,25 +31,42 @@ window.calculateMarketTime = function(property) {
 };
 
 window.getMarketStatus = function(days) {
-    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', daysText: `${days} dias` };
-    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', daysText: `${days} dias` };
-    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', daysText: `${days} dias` };
-    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', daysText: `${days} dias` };
-    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', daysText: `${days} dias` };
+    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', icon: 'fa-hourglass-start', daysText: `${days} dias` };
+    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', icon: 'fa-hourglass-half', daysText: `${days} dias` };
+    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', icon: 'fa-hourglass-half', daysText: `${days} dias` };
+    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', icon: 'fa-hourglass-end', daysText: `${days} dias` };
+    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', icon: 'fa-hourglass-end', daysText: `${days} dias` };
 };
 
 window.formatMarketTime = function(days) {
-    if (days < 30) return `${days} dia${days !== 1 ? 's' : ''}`;
+    if (days < 30) {
+        return { number: days, unit: days !== 1 ? 'dias' : 'dia', type: 'days' };
+    }
     if (days < 365) {
         const months = Math.floor(days / 30);
         const remainingDays = days % 30;
-        if (remainingDays === 0) return `${months} mês${months !== 1 ? 'es' : ''}`;
-        return `${months} mês${months !== 1 ? 'es' : ''} e ${remainingDays} dia${remainingDays !== 1 ? 's' : ''}`;
+        if (remainingDays === 0) {
+            return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months' };
+        }
+        return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months', remainingDays: remainingDays };
     }
     const years = Math.floor(days / 365);
     const remainingMonths = Math.floor((days % 365) / 30);
-    if (remainingMonths === 0) return `${years} ano${years !== 1 ? 's' : ''}`;
-    return `${years} ano${years !== 1 ? 's' : ''} e ${remainingMonths} mês${remainingMonths !== 1 ? 'es' : ''}`;
+    if (remainingMonths === 0) {
+        return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years' };
+    }
+    return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years', remainingMonths: remainingMonths };
+};
+
+window.formatMarketTimeText = function(days) {
+    const formatted = window.formatMarketTime(days);
+    if (formatted.remainingDays) {
+        return `${formatted.number} ${formatted.unit} e ${formatted.remainingDays} ${formatted.remainingDays !== 1 ? 'dias' : 'dia'}`;
+    }
+    if (formatted.remainingMonths) {
+        return `${formatted.number} ${formatted.unit} e ${formatted.remainingMonths} ${formatted.remainingMonths !== 1 ? 'meses' : 'mês'}`;
+    }
+    return `${formatted.number} ${formatted.unit}`;
 };
 
 window.ensureSupabaseCredentials = function() {
@@ -1430,7 +1447,7 @@ function createPerPageSelect(currentItemsPerPage) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM BOLINHA COLORIDA PARA TEMPO DE MERCADO) ==========
+// ========== LOAD PROPERTY LIST (COM AMPULHETA E NÚMEROS DESTACADOS) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1509,7 +1526,8 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         // ========== INDICADOR DE TEMPO DE MERCADO ==========
         const marketDays = window.calculateMarketTime(property);
         const marketStatus = window.getMarketStatus(marketDays);
-        const marketTimeFormatted = window.formatMarketTime(marketDays);
+        const marketTimeFormatted = window.formatMarketTimeText(marketDays);
+        const marketTimeObj = window.formatMarketTime(marketDays);
         
         let firstImage = defaultImage;
         let isVideo = false;
@@ -1532,6 +1550,22 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             if (m === '>') return '&gt;';
             return m;
         });
+        
+        // Construir a parte do tempo destacada
+        let timeDisplayHtml = '';
+        if (marketTimeObj.type === 'days') {
+            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+        } else if (marketTimeObj.type === 'months') {
+            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+            if (marketTimeObj.remainingDays) {
+                timeDisplayHtml += ` e <strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
+            }
+        } else if (marketTimeObj.type === 'years') {
+            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+            if (marketTimeObj.remainingMonths) {
+                timeDisplayHtml += ` e <strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
+            }
+        }
         
         item.innerHTML = `
             <div style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" 
@@ -1593,12 +1627,14 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                         </span>
                     ` : ''}
                     
-                    <!-- INDICADOR DE TEMPO DE MERCADO COM BOLINHA COLORIDA -->
+                    <!-- INDICADOR DE TEMPO DE MERCADO COM AMPULHETA E NÚMEROS DESTACADOS -->
                     <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <!-- Bolinha colorida indicadora de liquidez -->
-                        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: ${marketStatus.iconColor}; box-shadow: 0 0 2px rgba(0,0,0,0.2);"></span>
-                        <strong style="color: ${marketStatus.color};">Tempo de Mercado: ${marketStatus.text}</strong>
-                        <span style="color: ${marketStatus.color};">(${marketTimeFormatted})</span>
+                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: 0.85rem;"></i>
+                        <strong style="color: ${marketStatus.color};">Tempo de Mercado:</strong>
+                        <span style="color: ${marketStatus.color};">${marketStatus.text}</span>
+                        <span style="display: inline-flex; align-items: baseline; gap: 0.1rem;">
+                            ${timeDisplayHtml}
+                        </span>
                     </span>
                 </div>
             </div>
