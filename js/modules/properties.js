@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA E BANNER POSICIONADO POR ÚLTIMO
-console.log('✅ properties.js carregado - Com seleção múltipla de imóveis e banner discreto');
+// js/modules/properties.js - VERSÃO COMPLETA COM COMPRESSÃO VERTICAL NO DESKTOP
+console.log('✅ properties.js carregado - Com compressão vertical para desktop');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -139,7 +139,7 @@ function updateSelectionCounter() {
     }
 }
 
-// ========== FUNÇÃO CORRIGIDA PARA CARREGAR IMÓVEIS SELECIONADOS DA URL ==========
+// ========== FUNÇÃO PARA CARREGAR IMÓVEIS SELECIONADOS DA URL ==========
 window.loadSelectedPropertiesFromUrl = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const selectedIdsParam = urlParams.get('selected_properties');
@@ -169,7 +169,7 @@ window.loadSelectedPropertiesFromUrl = function() {
         if (container && window.propertyTemplates) {
             container.innerHTML = selectedPropertiesList.map(prop => window.propertyTemplates.generate(prop)).join('');
             
-            // ========== BANNER CORRIGIDO - POSICIONADO POR ÚLTIMO (APÓS OS IMÓVEIS) ==========
+            // Banner discreto posicionado após os cards
             const filterWarning = document.createElement('div');
             filterWarning.style.cssText = `
                 background: #f0f4f8;
@@ -197,8 +197,6 @@ window.loadSelectedPropertiesFromUrl = function() {
                     <i class="fas fa-times"></i> Limpar
                 </a>
             `;
-            
-            // Adicionar o banner como ÚLTIMO elemento do container (após todos os cards)
             container.appendChild(filterWarning);
         }
         
@@ -217,11 +215,11 @@ window.loadPropertiesBasedOnUrl = function() {
     if (urlParams.has('selected_properties')) {
         const selected = window.loadSelectedPropertiesFromUrl();
         if (selected && selected.length > 0) {
-            return; // Já renderizou os imóveis selecionados
+            return;
         }
     }
     
-    // Verificar se há parâmetro de imóvel único (compatibilidade com versão anterior)
+    // Verificar se há parâmetro de imóvel único
     if (urlParams.has('property')) {
         const propertyIdFromUrl = urlParams.get('property');
         const singleProperty = window.filterPropertyById(propertyIdFromUrl);
@@ -233,7 +231,6 @@ window.loadPropertiesBasedOnUrl = function() {
         }
     }
     
-    // Comportamento padrão: exibir todos os imóveis
     console.log('🏠 Exibindo todos os imóveis.');
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos');
@@ -245,7 +242,7 @@ window.adminCurrentPage = 1;
 const isMobileForPagination = window.innerWidth <= 768;
 window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
 
-// ========== INDICADOR DE TEMPO DE MERCADO (DIAS NO MERCADO) ==========
+// ========== INDICADOR DE TEMPO DE MERCADO ==========
 window.calculateMarketTime = function(property) {
     let startDate;
     
@@ -266,11 +263,11 @@ window.calculateMarketTime = function(property) {
 };
 
 window.getMarketStatus = function(days) {
-    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', icon: 'fa-hourglass-start', daysText: `${days} dias` };
-    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', icon: 'fa-hourglass-half', daysText: `${days} dias` };
-    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', icon: 'fa-hourglass-half', daysText: `${days} dias` };
-    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', icon: 'fa-hourglass-end', daysText: `${days} dias` };
-    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', icon: 'fa-hourglass-end', daysText: `${days} dias` };
+    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', icon: 'fa-hourglass-start' };
+    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', icon: 'fa-hourglass-half' };
+    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', icon: 'fa-hourglass-half' };
+    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', icon: 'fa-hourglass-end' };
+    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', icon: 'fa-hourglass-end' };
 };
 
 window.formatMarketTime = function(days) {
@@ -1467,14 +1464,12 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO - APENAS UM "..." FIXO (COM ALTURA REDUZIDA NO DESKTOP) ==========
+// ========== FUNÇÃO DE PAGINAÇÃO ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
     const paginationDiv = document.createElement('div');
     
-    // Verificar se é desktop (largura > 768px)
     const isDesktop = window.innerWidth > 768;
     
-    // CSS base da paginação - otimizado para desktop
     if (isDesktop) {
         paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.35rem; margin: 0.5rem 0 0.25rem 0; flex-wrap: wrap; padding: 0.2rem 0.2rem;';
     } else {
@@ -1483,56 +1478,43 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     
     const isMobile = window.innerWidth <= 768;
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
-    const maxVisible = isMobile ? 4 : 5;  // Número máximo de botões visíveis (excluindo navegação)
+    const maxVisible = isMobile ? 4 : 5;
     
-    // Botões de navegação com tamanho ajustado para desktop
     const firstBtn = createNavButton('<<', currentPage === 1, () => window.loadPropertyList(1), isDesktop);
     const prevBtn = createNavButton('<', currentPage === 1, () => window.loadPropertyList(currentPage - 1), isDesktop);
     paginationDiv.appendChild(firstBtn);
     paginationDiv.appendChild(prevBtn);
     
-    // ========== LÓGICA: UM ÚNICO "..." ==========
     const pagesToShow = [];
     
     if (totalPages <= maxVisible) {
-        // Cenário 1: Todas as páginas cabem - sem "..."
         for (let i = 1; i <= totalPages; i++) {
             pagesToShow.push(i);
         }
     } else {
-        // Cenário 2: Precisa de um "..."
-        
-        // Sempre mostra a página 1
         pagesToShow.push(1);
         
-        // Calcula quantas páginas mostrar antes/depois
-        const remainingSlots = maxVisible - 2; // -2 porque página 1 e última são fixas
+        const remainingSlots = maxVisible - 2;
         const halfSlots = Math.floor(remainingSlots / 2);
         
         let startPage, endPage;
         
         if (currentPage <= halfSlots + 2) {
-            // Está no início - mostra primeiras páginas, "..." no final
             startPage = 2;
             endPage = maxVisible - 1;
-            // Adiciona páginas do início
             for (let i = startPage; i <= endPage && i < totalPages; i++) {
                 pagesToShow.push(i);
             }
-            // Adiciona "..." se ainda há páginas não mostradas
             if (endPage < totalPages - 1) {
                 pagesToShow.push('...');
             }
         } 
         else if (currentPage >= totalPages - halfSlots - 1) {
-            // Está no final - "..." no início, mostra últimas páginas
             startPage = totalPages - (maxVisible - 2);
             endPage = totalPages - 1;
-            // Adiciona "..." no início
             if (startPage > 2) {
                 pagesToShow.push('...');
             }
-            // Adiciona páginas do final
             for (let i = startPage; i <= endPage; i++) {
                 if (i !== 1 && i !== totalPages) {
                     pagesToShow.push(i);
@@ -1540,37 +1522,30 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
             }
         }
         else {
-            // Está no meio - mostra páginas ao redor, "..." apenas no final
             startPage = currentPage - halfSlots;
             endPage = currentPage + halfSlots;
             
-            // Ajusta limites
             if (startPage < 2) startPage = 2;
             if (endPage > totalPages - 1) endPage = totalPages - 1;
             
-            // Adiciona "..." no início se necessário
             if (startPage > 2) {
                 pagesToShow.push('...');
             }
             
-            // Adiciona páginas do meio
             for (let i = startPage; i <= endPage; i++) {
                 if (i !== 1 && i !== totalPages) {
                     pagesToShow.push(i);
                 }
             }
             
-            // Adiciona "..." no final se necessário
             if (endPage < totalPages - 1) {
                 pagesToShow.push('...');
             }
         }
         
-        // Sempre mostra a última página
         pagesToShow.push(totalPages);
     }
     
-    // Remove possíveis duplicatas de "..."
     const uniquePages = [];
     let lastWasEllipsis = false;
     for (const page of pagesToShow) {
@@ -1585,12 +1560,10 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         }
     }
     
-    // Renderiza as páginas
     for (const page of uniquePages) {
         if (page === '...') {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
-            // Tamanho da elipse ajustado para desktop
             const ellipsisPadding = isDesktop ? '0.2rem 0.1rem' : '0.3rem 0.2rem';
             ellipsis.style.cssText = `padding: ${ellipsisPadding}; color: #666; font-size: 0.75rem; user-select: none; pointer-events: none;`;
             paginationDiv.appendChild(ellipsis);
@@ -1600,24 +1573,20 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         }
     }
     
-    // Botões de navegação finais
     const nextBtn = createNavButton('>', currentPage === totalPages, () => window.loadPropertyList(currentPage + 1), isDesktop);
     const lastBtn = createNavButton('>>', currentPage === totalPages, () => window.loadPropertyList(totalPages), isDesktop);
     paginationDiv.appendChild(nextBtn);
     paginationDiv.appendChild(lastBtn);
     
-    // Seletor de itens por página - tamanho ajustado para desktop
     const perPageSelect = createPerPageSelect(currentItemsPerPage, isDesktop);
     paginationDiv.appendChild(perPageSelect);
     
     return paginationDiv;
 }
 
-// ========== FUNÇÕES AUXILIARES DA PAGINAÇÃO COM SUPORTE A DESKTOP ==========
 function createNavButton(text, disabled, onClick, isDesktop = false) {
     const btn = document.createElement('button');
     btn.innerHTML = text;
-    // Tamanhos ajustados para desktop
     const padding = isDesktop ? '0.25rem 0.6rem' : '0.4rem 0.8rem';
     const fontSize = isDesktop ? '0.7rem' : '0.8rem';
     btn.style.cssText = `background: var(--primary); color: white; border: none; padding: ${padding}; border-radius: 5px; cursor: pointer; font-size: ${fontSize}; transition: all 0.2s ease; ${disabled ? 'opacity: 0.5;' : ''}`;
@@ -1629,7 +1598,6 @@ function createNavButton(text, disabled, onClick, isDesktop = false) {
 function createPageButton(pageNum, currentPage, isDesktop = false) {
     const btn = document.createElement('button');
     btn.textContent = pageNum;
-    // Tamanhos ajustados para desktop
     const padding = isDesktop ? '0.2rem 0.5rem' : '0.3rem 0.7rem';
     const fontSize = isDesktop ? '0.7rem' : '0.8rem';
     const minWidth = isDesktop ? '28px' : '32px';
@@ -1640,7 +1608,6 @@ function createPageButton(pageNum, currentPage, isDesktop = false) {
 
 function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     const select = document.createElement('select');
-    // Tamanhos ajustados para desktop
     const padding = isDesktop ? '0.2rem 0.3rem' : '0.3rem 0.5rem';
     const fontSize = isDesktop ? '0.65rem' : '0.75rem';
     const marginLeft = isDesktop ? '0.3rem' : '0.5rem';
@@ -1659,7 +1626,7 @@ function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM SELEÇÃO MÚLTIPLA E CONTÊINER AJUSTADO) ==========
+// ========== LOAD PROPERTY LIST COM COMPRESSÃO VERTICAL NO DESKTOP ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1709,7 +1676,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
-    // ========== BARRA DE SELEÇÃO MÚLTIPLA ==========
+    // BARRA DE SELEÇÃO MÚLTIPLA
     const selectionBar = document.createElement('div');
     selectionBar.style.cssText = `
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1793,7 +1760,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     selectionBar.appendChild(selectionRight);
     container.appendChild(selectionBar);
     
-    // ========== ESTATÍSTICAS ==========
+    // ESTATÍSTICAS
     const statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;';
     
@@ -1825,11 +1792,9 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
     
     paginatedProperties.forEach(property => {
-        // ========== INDICADOR DE VISUALIZAÇÕES ==========
         const viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         const lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
         
-        // ========== INDICADOR DE TEMPO DE MERCADO ==========
         const marketDays = window.calculateMarketTime(property);
         const marketStatus = window.getMarketStatus(marketDays);
         const marketTimeObj = window.formatMarketTime(marketDays);
@@ -1845,12 +1810,17 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             }
         }
         
-        // Verificar se o imóvel está selecionado
         const isSelected = window.selectedProperties.has(property.id);
         
         const item = document.createElement('div');
         item.className = 'property-item';
-        item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
+        
+        // Estilos com compressão vertical para desktop
+        if (isDesktop) {
+            item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.5rem 0.8rem; margin: 0.3rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.8rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
+        } else {
+            item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
+        }
         
         const escapeTitle = window.SharedCore ? window.SharedCore.escapeHtml(property.title) : (property.title || '').replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
@@ -1859,37 +1829,42 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             return m;
         });
         
-        // Construir a parte do tempo destacada
         let timeDisplayHtml = '';
         if (marketTimeObj.type === 'days') {
-            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.9rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
         } else if (marketTimeObj.type === 'months') {
-            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.9rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingDays) {
-                timeDisplayHtml += ` e <strong style="font-size: 0.9rem; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.8rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
             }
         } else if (marketTimeObj.type === 'years') {
-            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.9rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingMonths) {
-                timeDisplayHtml += ` e <strong style="font-size: 0.9rem; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.8rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
             }
         }
         
+        // Tamanhos da fonte ajustados para compressão no desktop
+        const titleFontSize = isDesktop ? '0.85rem' : '0.9rem';
+        const priceFontSize = isDesktop ? '0.7rem' : '0.75rem';
+        const indicatorFontSize = isDesktop ? '0.6rem' : '0.65rem';
+        const iconFontSize = isDesktop ? '0.7rem' : '0.8rem';
+        
         item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.8rem; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 0.6rem; flex-shrink: 0;">
                 <input type="checkbox" 
                        class="property-select-checkbox" 
                        data-property-id="${property.id}"
                        ${isSelected ? 'checked' : ''}
-                       style="width: 18px; height: 18px; cursor: pointer;"
+                       style="width: 16px; height: 16px; cursor: pointer;"
                        onchange="window.togglePropertySelection(${property.id}, this)">
             </div>
-            <div style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" 
+            <div style="flex-shrink: 0; width: 50px; height: 50px; border-radius: 6px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 1px 4px rgba(0,0,0,0.1);" 
                  onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
                  title="Clique para abrir galeria">
                 ${isVideo ? `
                     <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-video" style="font-size: 1.5rem; color: rgba(255,255,255,0.8);"></i>
+                        <i class="fas fa-video" style="font-size: 1.2rem; color: rgba(255,255,255,0.8);"></i>
                     </div>
                 ` : `
                     <img src="${firstImage}" 
@@ -1899,61 +1874,61 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                          alt="${escapeTitle}">
                 `}
             </div>
-            <div style="flex: 3; min-width: 180px;">
-                <strong style="color: var(--primary); font-size: 0.9rem; display: block; margin-bottom: 0.3rem;">
+            <div style="flex: 3; min-width: 160px;">
+                <strong style="color: var(--primary); font-size: ${titleFontSize}; display: block; margin-bottom: 0.2rem;">
                     ${escapeTitle}
                 </strong>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.3rem;">
-                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                <div style="display: flex; flex-wrap: wrap; gap: 0.4rem; margin-bottom: 0.2rem;">
+                    <small style="background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: ${priceFontSize};">
                         <i class="fas fa-tag"></i> ${property.price}
                     </small>
-                    <small style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    <small style="background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 4px; font-size: ${priceFontSize};">
                         <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 40)}${property.location.length > 40 ? '...' : ''}
                     </small>
                 </div>
-                <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
-                    <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                        <i class="fas fa-id-card"></i> ID: ${property.id}
+                <div style="font-size: ${indicatorFontSize}; color: #666; display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.15rem;">
+                    <span style="background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 4px;">
+                        <i class="fas fa-id-card"></i> ${property.id}
                     </span>
-                    <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                        <i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}
+                    <span style="background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 4px;">
+                        <i class="fas fa-images"></i> ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}
                     </span>
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `
-                        <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
-                            <i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}
+                        <span style="background: #e9ecef; padding: 0.15rem 0.4rem; border-radius: 4px;">
+                            <i class="fas fa-file-pdf"></i> ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}
                         </span>
                     ` : ''}
-                    <span style="background: #e3f2fd; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    <span style="background: #e3f2fd; padding: 0.15rem 0.4rem; border-radius: 4px;">
                         <i class="fas fa-eye" style="color: #1976d2;"></i>
-                        <strong style="color: #1976d2;">Visualizações: ${viewCount}</strong>
+                        <strong style="color: #1976d2;">${viewCount}</strong>
                     </span>
                     ${lastView ? `
-                        <span style="background: #f3e5f5; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                        <span style="background: #f3e5f5; padding: 0.15rem 0.4rem; border-radius: 4px;">
                             <i class="fas fa-clock" style="color: #7b1fa2;"></i>
-                            <strong style="color: #7b1fa2;">Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
+                            <strong style="color: #7b1fa2;">${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
                         </span>
                     ` : ''}
-                    <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: 0.8rem;"></i>
-                        <strong style="color: ${marketStatus.color};">Tempo de Mercado:</strong>
+                    <span style="background: ${marketStatus.bg}; padding: 0.15rem 0.4rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.2rem;">
+                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: ${iconFontSize};"></i>
+                        <strong style="color: ${marketStatus.color};">Tempo:</strong>
                         <span style="color: ${marketStatus.color};">${marketStatus.text}</span>
-                        <span style="display: inline-flex; align-items: baseline; gap: 0.1rem;">
+                        <span style="display: inline-flex; align-items: baseline; gap: 0.05rem;">
                             ${timeDisplayHtml}
                         </span>
                     </span>
                 </div>
             </div>
-            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; flex-shrink: 0;">
+            <div style="display: flex; gap: 0.4rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
-                        style="background: var(--accent); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                        style="background: var(--accent); color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">
                     <i class="fas fa-edit"></i> Editar
                 </button>
                 <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${escapeTitle.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
-                        style="background: #e67e22; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
-                    <i class="fas fa-eye-slash"></i> Zerar views
+                        style="background: #e67e22; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">
+                    <i class="fas fa-eye-slash"></i> Zerar
                 </button>
                 <button onclick="deleteProperty(${property.id})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.75rem;">
+                        style="background: #e74c3c; color: white; border: none; padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-size: 0.7rem;">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
@@ -1971,7 +1946,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         container.appendChild(paginationWrapper);
     }
     
-    // Configurar eventos após renderização
     const selectAllCheckbox = document.getElementById('selectAllCheckbox');
     if (selectAllCheckbox) {
         selectAllCheckbox.onclick = (e) => {
