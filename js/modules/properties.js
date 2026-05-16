@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO AINDA MAIS COMPACTA NO DESKTOP
-console.log('✅ properties.js carregado - Com paginação ultra compacta para desktop');
+// js/modules/properties.js - VERSÃO COMPLETA COM AJUSTE PERFEITO DE ALTURA PARA DESKTOP (SEM BARRA DE ROLAGEM DESNECESSÁRIA)
+console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -1453,9 +1453,8 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     const isDesktop = window.innerWidth > 768;
     const isMobile = window.innerWidth <= 768;
     
-    // Estilos ultra compactos para desktop
     if (isDesktop) {
-        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.2rem; margin: 0.25rem 0 0.1rem 0; flex-wrap: wrap; padding: 0.1rem 0.1rem;';
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.2rem; margin: 0.15rem 0 0 0; flex-wrap: wrap; padding: 0.05rem 0.1rem;';
     } else {
         paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem;';
     }
@@ -1463,13 +1462,11 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     const maxVisible = isMobile ? 4 : 5;
     
-    // Botões de navegação ultra compactos para desktop
     const firstBtn = createNavButton('<<', currentPage === 1, () => window.loadPropertyList(1), isDesktop);
     const prevBtn = createNavButton('<', currentPage === 1, () => window.loadPropertyList(currentPage - 1), isDesktop);
     paginationDiv.appendChild(firstBtn);
     paginationDiv.appendChild(prevBtn);
     
-    // Lógica de páginas
     const pagesToShow = [];
     
     if (totalPages <= maxVisible) {
@@ -1531,7 +1528,6 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         pagesToShow.push(totalPages);
     }
     
-    // Remove duplicatas de "..."
     const uniquePages = [];
     let lastWasEllipsis = false;
     for (const page of pagesToShow) {
@@ -1546,13 +1542,12 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         }
     }
     
-    // Renderiza páginas
     for (const page of uniquePages) {
         if (page === '...') {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
-            const ellipsisPadding = isDesktop ? '0.15rem 0.1rem' : '0.3rem 0.2rem';
-            const ellipsisFontSize = isDesktop ? '0.7rem' : '0.75rem';
+            const ellipsisPadding = isDesktop ? '0.1rem 0.05rem' : '0.3rem 0.2rem';
+            const ellipsisFontSize = isDesktop ? '0.65rem' : '0.75rem';
             ellipsis.style.cssText = `padding: ${ellipsisPadding}; color: #666; font-size: ${ellipsisFontSize}; user-select: none; pointer-events: none;`;
             paginationDiv.appendChild(ellipsis);
         } else {
@@ -1561,26 +1556,22 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         }
     }
     
-    // Botões de navegação finais
     const nextBtn = createNavButton('>', currentPage === totalPages, () => window.loadPropertyList(currentPage + 1), isDesktop);
     const lastBtn = createNavButton('>>', currentPage === totalPages, () => window.loadPropertyList(totalPages), isDesktop);
     paginationDiv.appendChild(nextBtn);
     paginationDiv.appendChild(lastBtn);
     
-    // Seletor de itens por página
     const perPageSelect = createPerPageSelect(currentItemsPerPage, isDesktop);
     paginationDiv.appendChild(perPageSelect);
     
     return paginationDiv;
 }
 
-// ========== FUNÇÕES AUXILIARES COM SUPORTE ULTRA COMPACTO ==========
 function createNavButton(text, disabled, onClick, isDesktop = false) {
     const btn = document.createElement('button');
     btn.innerHTML = text;
-    // Tamanhos ultra compactos para desktop
-    const padding = isDesktop ? '0.15rem 0.4rem' : '0.4rem 0.8rem';
-    const fontSize = isDesktop ? '0.65rem' : '0.8rem';
+    const padding = isDesktop ? '0.1rem 0.35rem' : '0.4rem 0.8rem';
+    const fontSize = isDesktop ? '0.6rem' : '0.8rem';
     btn.style.cssText = `background: var(--primary); color: white; border: none; padding: ${padding}; border-radius: 4px; cursor: pointer; font-size: ${fontSize}; transition: all 0.2s ease; ${disabled ? 'opacity: 0.5;' : ''}`;
     btn.disabled = disabled;
     if (!disabled) btn.onclick = onClick;
@@ -1590,10 +1581,9 @@ function createNavButton(text, disabled, onClick, isDesktop = false) {
 function createPageButton(pageNum, currentPage, isDesktop = false) {
     const btn = document.createElement('button');
     btn.textContent = pageNum;
-    // Tamanhos ultra compactos para desktop
-    const padding = isDesktop ? '0.15rem 0.4rem' : '0.3rem 0.7rem';
-    const fontSize = isDesktop ? '0.65rem' : '0.8rem';
-    const minWidth = isDesktop ? '26px' : '32px';
+    const padding = isDesktop ? '0.1rem 0.35rem' : '0.3rem 0.7rem';
+    const fontSize = isDesktop ? '0.6rem' : '0.8rem';
+    const minWidth = isDesktop ? '24px' : '32px';
     btn.style.cssText = `background: ${pageNum === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${pageNum === currentPage ? 'white' : 'var(--text)'}; border: none; padding: ${padding}; border-radius: 4px; cursor: pointer; font-size: ${fontSize}; font-weight: ${pageNum === currentPage ? 'bold' : 'normal'}; min-width: ${minWidth};`;
     btn.onclick = () => window.loadPropertyList(pageNum);
     return btn;
@@ -1601,10 +1591,9 @@ function createPageButton(pageNum, currentPage, isDesktop = false) {
 
 function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     const select = document.createElement('select');
-    // Tamanhos ultra compactos para desktop
-    const padding = isDesktop ? '0.15rem 0.25rem' : '0.3rem 0.5rem';
-    const fontSize = isDesktop ? '0.6rem' : '0.75rem';
-    const marginLeft = isDesktop ? '0.2rem' : '0.5rem';
+    const padding = isDesktop ? '0.1rem 0.2rem' : '0.3rem 0.5rem';
+    const fontSize = isDesktop ? '0.55rem' : '0.75rem';
+    const marginLeft = isDesktop ? '0.15rem' : '0.5rem';
     select.style.cssText = `background: white; border: 1px solid var(--primary); padding: ${padding}; border-radius: 4px; font-size: ${fontSize}; margin-left: ${marginLeft}; cursor: pointer;`;
     select.innerHTML = `
         <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3</option>
@@ -1620,7 +1609,7 @@ function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST COM COMPRESSÃO VERTICAL ==========
+// ========== LOAD PROPERTY LIST COM AJUSTE PERFEITO DE ALTURA (SEM ROLAGEM EXTRA) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1655,12 +1644,13 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         return;
     }
     
-    // Ajustar altura máxima do contêiner
+    // No desktop: altura automática baseada no conteúdo (sem rolagem extra)
     if (isDesktop) {
-        container.style.maxHeight = '70vh';
-        container.style.overflowY = 'auto';
+        container.style.maxHeight = 'none';
+        container.style.overflowY = 'visible';
         container.style.paddingRight = '8px';
-        container.style.paddingBottom = '5px';
+        container.style.paddingBottom = '0';
+        container.style.marginBottom = '0';
     } else {
         container.style.maxHeight = '650px';
         container.style.overflowY = 'auto';
@@ -1674,23 +1664,23 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     const selectionBar = document.createElement('div');
     selectionBar.style.cssText = `
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        padding: 0.5rem 0.8rem;
+        padding: 0.4rem 0.8rem;
         border-radius: 8px;
-        margin-bottom: 0.6rem;
+        margin-bottom: 0.5rem;
         display: flex;
         flex-wrap: wrap;
         align-items: center;
         justify-content: space-between;
-        gap: 0.5rem;
+        gap: 0.4rem;
     `;
     
     const selectionLeft = document.createElement('div');
-    selectionLeft.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;';
+    selectionLeft.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;';
     
     const selectAllContainer = document.createElement('label');
-    selectAllContainer.style.cssText = 'display: flex; align-items: center; gap: 0.4rem; color: white; cursor: pointer; font-size: 0.75rem;';
+    selectAllContainer.style.cssText = 'display: flex; align-items: center; gap: 0.3rem; color: white; cursor: pointer; font-size: 0.7rem;';
     selectAllContainer.innerHTML = `
-        <input type="checkbox" id="selectAllCheckbox" style="width: 14px; height: 14px; cursor: pointer;">
+        <input type="checkbox" id="selectAllCheckbox" style="width: 13px; height: 13px; cursor: pointer;">
         <span><i class="fas fa-check-double"></i> Selecionar Todos</span>
     `;
     selectionLeft.appendChild(selectAllContainer);
@@ -1701,10 +1691,10 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         background: rgba(255,255,255,0.2);
         color: white;
         border: none;
-        padding: 0.2rem 0.6rem;
+        padding: 0.15rem 0.5rem;
         border-radius: 20px;
         cursor: pointer;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         transition: all 0.2s ease;
     `;
     clearBtn.onmouseenter = () => clearBtn.style.background = 'rgba(255,255,255,0.3)';
@@ -1713,37 +1703,37 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     selectionLeft.appendChild(clearBtn);
     
     const selectionRight = document.createElement('div');
-    selectionRight.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem;';
+    selectionRight.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;';
     
     const selectedCountSpan = document.createElement('span');
     selectedCountSpan.id = 'selectedCount';
     selectedCountSpan.style.cssText = `
         background: rgba(255,255,255,0.2);
-        padding: 0.2rem 0.6rem;
+        padding: 0.15rem 0.5rem;
         border-radius: 20px;
-        font-size: 0.7rem;
+        font-size: 0.65rem;
         color: white;
         display: none;
     `;
-    selectedCountSpan.innerHTML = '0 imóveis selecionado(s)';
+    selectedCountSpan.innerHTML = '0';
     selectionRight.appendChild(selectedCountSpan);
     
     const generateLinkBtn = document.createElement('button');
     generateLinkBtn.id = 'generateShareLinkBtn';
-    generateLinkBtn.innerHTML = '<i class="fas fa-share-alt"></i> Gerar Link';
+    generateLinkBtn.innerHTML = '<i class="fas fa-share-alt"></i> Link';
     generateLinkBtn.style.cssText = `
         background: #27ae60;
         color: white;
         border: none;
-        padding: 0.3rem 0.8rem;
+        padding: 0.2rem 0.7rem;
         border-radius: 30px;
         cursor: pointer;
-        font-size: 0.75rem;
+        font-size: 0.7rem;
         font-weight: bold;
         transition: all 0.2s ease;
         display: inline-flex;
         align-items: center;
-        gap: 0.3rem;
+        gap: 0.2rem;
     `;
     generateLinkBtn.onmouseenter = () => generateLinkBtn.style.background = '#2ecc71';
     generateLinkBtn.onmouseleave = () => generateLinkBtn.style.background = '#27ae60';
@@ -1754,25 +1744,25 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     selectionBar.appendChild(selectionRight);
     container.appendChild(selectionBar);
     
-    // ESTATÍSTICAS
+    // ESTATÍSTICAS - mais compactas
     const statsHeader = document.createElement('div');
-    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.4rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.4rem;';
+    statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.3rem; border-radius: 8px; margin-bottom: 0.4rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.3rem;';
     
     const statsContainer = document.createElement('div');
-    statsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.4rem;';
+    statsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.3rem;';
     
     const viewsSpan = document.createElement('span');
-    viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.65rem;';
-    viewsSpan.innerHTML = `<i class="fas fa-eye"></i> <strong>Total Views:</strong> ${totalViews}`;
+    viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
+    viewsSpan.innerHTML = `<i class="fas fa-eye"></i> <strong>Views:</strong> ${totalViews}`;
     statsContainer.appendChild(viewsSpan);
     
     const itemsSpan = document.createElement('span');
-    itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.65rem;';
+    itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
     itemsSpan.innerHTML = `<i class="fas fa-building"></i> <strong>Total:</strong> ${totalItems}`;
     statsContainer.appendChild(itemsSpan);
     
     const showingSpan = document.createElement('span');
-    showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.65rem;';
+    showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
     showingSpan.innerHTML = `<i class="fas fa-list"></i> <strong>Exibindo:</strong> ${startIndex + 1}-${endIndex}`;
     statsContainer.appendChild(showingSpan);
     
@@ -1781,7 +1771,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     const listContainer = document.createElement('div');
     listContainer.id = 'propertyListItems';
-    listContainer.style.cssText = 'margin: 0.3rem 0;';
+    listContainer.style.cssText = 'margin: 0.2rem 0;';
     
     const defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
     
@@ -1810,7 +1800,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         item.className = 'property-item';
         
         if (isDesktop) {
-            item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.4rem 0.6rem; margin: 0.25rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.6rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
+            item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.3rem 0.5rem; margin: 0.2rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
         } else {
             item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
         }
@@ -1824,39 +1814,39 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         
         let timeDisplayHtml = '';
         if (marketTimeObj.type === 'days') {
-            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.85rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.6rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.8rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.55rem;">${marketTimeObj.unit}</span>`;
         } else if (marketTimeObj.type === 'months') {
-            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.85rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.6rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.8rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.55rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingDays) {
-                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.75rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.6rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.7rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.55rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
             }
         } else if (marketTimeObj.type === 'years') {
-            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.85rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.6rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: ${isDesktop ? '0.8rem' : '1rem'}; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.55rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingMonths) {
-                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.75rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.6rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: ${isDesktop ? '0.7rem' : '0.9rem'}; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.55rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
             }
         }
         
-        const titleFontSize = isDesktop ? '0.8rem' : '0.9rem';
-        const priceFontSize = isDesktop ? '0.65rem' : '0.75rem';
-        const indicatorFontSize = isDesktop ? '0.55rem' : '0.65rem';
-        const iconFontSize = isDesktop ? '0.65rem' : '0.8rem';
+        const titleFontSize = isDesktop ? '0.75rem' : '0.9rem';
+        const priceFontSize = isDesktop ? '0.6rem' : '0.75rem';
+        const indicatorFontSize = isDesktop ? '0.5rem' : '0.65rem';
+        const iconFontSize = isDesktop ? '0.6rem' : '0.8rem';
         
         item.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+            <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
                 <input type="checkbox" 
                        class="property-select-checkbox" 
                        data-property-id="${property.id}"
                        ${isSelected ? 'checked' : ''}
-                       style="width: 14px; height: 14px; cursor: pointer;"
+                       style="width: 13px; height: 13px; cursor: pointer;"
                        onchange="window.togglePropertySelection(${property.id}, this)">
             </div>
-            <div style="flex-shrink: 0; width: 45px; height: 45px; border-radius: 5px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.1);" 
+            <div style="flex-shrink: 0; width: 40px; height: 40px; border-radius: 4px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 1px 2px rgba(0,0,0,0.1);" 
                  onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
                  title="Clique para abrir galeria">
                 ${isVideo ? `
                     <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-video" style="font-size: 1rem; color: rgba(255,255,255,0.8);"></i>
+                        <i class="fas fa-video" style="font-size: 0.9rem; color: rgba(255,255,255,0.8);"></i>
                     </div>
                 ` : `
                     <img src="${firstImage}" 
@@ -1866,41 +1856,41 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                          alt="${escapeTitle}">
                 `}
             </div>
-            <div style="flex: 3; min-width: 150px;">
-                <strong style="color: var(--primary); font-size: ${titleFontSize}; display: block; margin-bottom: 0.15rem;">
+            <div style="flex: 3; min-width: 140px;">
+                <strong style="color: var(--primary); font-size: ${titleFontSize}; display: block; margin-bottom: 0.1rem;">
                     ${escapeTitle}
                 </strong>
-                <div style="display: flex; flex-wrap: wrap; gap: 0.3rem; margin-bottom: 0.15rem;">
-                    <small style="background: #e9ecef; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: ${priceFontSize};">
+                <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.1rem;">
+                    <small style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px; font-size: ${priceFontSize};">
                         <i class="fas fa-tag"></i> ${property.price}
                     </small>
-                    <small style="background: #e9ecef; padding: 0.1rem 0.35rem; border-radius: 3px; font-size: ${priceFontSize};">
-                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 35)}${property.location.length > 35 ? '...' : ''}
+                    <small style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px; font-size: ${priceFontSize};">
+                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 30)}${property.location.length > 30 ? '...' : ''}
                     </small>
                 </div>
-                <div style="font-size: ${indicatorFontSize}; color: #666; display: flex; flex-wrap: wrap; gap: 0.3rem; margin-top: 0.1rem;">
-                    <span style="background: #e9ecef; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                <div style="font-size: ${indicatorFontSize}; color: #666; display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.05rem;">
+                    <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
                         <i class="fas fa-id-card"></i> ${property.id}
                     </span>
-                    <span style="background: #e9ecef; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                    <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
                         <i class="fas fa-images"></i> ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}
                     </span>
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `
-                        <span style="background: #e9ecef; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                        <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
                             <i class="fas fa-file-pdf"></i> ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}
                         </span>
                     ` : ''}
-                    <span style="background: #e3f2fd; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                    <span style="background: #e3f2fd; padding: 0.08rem 0.3rem; border-radius: 3px;">
                         <i class="fas fa-eye" style="color: #1976d2;"></i>
                         <strong style="color: #1976d2;">${viewCount}</strong>
                     </span>
                     ${lastView ? `
-                        <span style="background: #f3e5f5; padding: 0.1rem 0.35rem; border-radius: 3px;">
+                        <span style="background: #f3e5f5; padding: 0.08rem 0.3rem; border-radius: 3px;">
                             <i class="fas fa-clock" style="color: #7b1fa2;"></i>
                             <strong style="color: #7b1fa2;">${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
                         </span>
                     ` : ''}
-                    <span style="background: ${marketStatus.bg}; padding: 0.1rem 0.35rem; border-radius: 3px; display: inline-flex; align-items: center; gap: 0.15rem;">
+                    <span style="background: ${marketStatus.bg}; padding: 0.08rem 0.3rem; border-radius: 3px; display: inline-flex; align-items: center; gap: 0.1rem;">
                         <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: ${iconFontSize};"></i>
                         <strong style="color: ${marketStatus.color};">Tempo:</strong>
                         <span style="color: ${marketStatus.color};">${marketStatus.text}</span>
@@ -1910,17 +1900,17 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     </span>
                 </div>
             </div>
-            <div style="display: flex; gap: 0.3rem; flex-wrap: wrap; flex-shrink: 0;">
+            <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
-                        style="background: var(--accent); color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.65rem;">
+                        style="background: var(--accent); color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
                     <i class="fas fa-edit"></i> Editar
                 </button>
                 <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${escapeTitle.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
-                        style="background: #e67e22; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.65rem;">
+                        style="background: #e67e22; color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
                     <i class="fas fa-eye-slash"></i> Zerar
                 </button>
                 <button onclick="deleteProperty(${property.id})" 
-                        style="background: #e74c3c; color: white; border: none; padding: 0.25rem 0.5rem; border-radius: 3px; cursor: pointer; font-size: 0.65rem;">
+                        style="background: #e74c3c; color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
                     <i class="fas fa-trash"></i> Excluir
                 </button>
             </div>
@@ -1932,7 +1922,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     if (totalPages > 1) {
         const paginationWrapper = document.createElement('div');
-        paginationWrapper.style.cssText = isDesktop ? 'margin-top: 0.15rem; padding-top: 0.1rem; border-top: 1px solid #e0e0e0;' : 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
+        paginationWrapper.style.cssText = isDesktop ? 'margin-top: 0.1rem; padding-top: 0.05rem; border-top: 1px solid #e0e0e0; margin-bottom: 0; padding-bottom: 0;' : 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
         const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
         paginationWrapper.appendChild(paginationBottom);
         container.appendChild(paginationWrapper);
