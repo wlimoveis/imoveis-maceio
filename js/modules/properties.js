@@ -1,9 +1,238 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO AJUSTADA PARA DESKTOP
-console.log('✅ properties.js carregado - Com paginação otimizada para desktop');
+// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA DE IMÓVEIS
+console.log('✅ properties.js carregado - Com seleção múltipla de imóveis');
 
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
+
+// ========== SELEÇÃO MÚLTIPLA DE IMÓVEIS ==========
+window.selectedProperties = new Set(); // Armazena IDs dos imóveis selecionados
+
+// Gerar link com os imóveis selecionados
+window.generateShareLinkForSelected = function() {
+    const selectedIds = Array.from(window.selectedProperties);
+    
+    if (selectedIds.length === 0) {
+        alert('⚠️ Nenhum imóvel selecionado. Marque pelo menos um imóvel para compartilhar.');
+        return null;
+    }
+    
+    // Criar URL com os IDs dos imóveis selecionados
+    const baseUrl = window.location.origin + window.location.pathname;
+    const idsParam = selectedIds.join(',');
+    const shareUrl = new URL(`?selected_properties=${encodeURIComponent(idsParam)}`, baseUrl).href;
+    
+    console.log(`🔗 Link de compartilhamento gerado para ${selectedIds.length} imóvel(is): ${shareUrl}`);
+    
+    // Copiar para clipboard
+    navigator.clipboard.writeText(shareUrl).then(() => {
+        // Mostrar toast de confirmação
+        const toast = document.createElement('div');
+        toast.textContent = `✅ Link copiado! ${selectedIds.length} imóvel(is) selecionado(s). Compartilhe com seu cliente.`;
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 10000;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideUpFade 0.3s ease;
+            pointer-events: none;
+        `;
+        
+        if (!document.querySelector('#shareToastStyle')) {
+            const style = document.createElement('style');
+            style.id = 'shareToastStyle';
+            style.textContent = `
+                @keyframes slideUpFade {
+                    from {
+                        opacity: 0;
+                        transform: translateX(-50%) translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateX(-50%) translateY(0);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        }
+        
+        document.body.appendChild(toast);
+        setTimeout(() => {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(() => toast.remove(), 300);
+        }, 3000);
+    }).catch(err => {
+        console.error('❌ Erro ao copiar link:', err);
+        alert('⚠️ Não foi possível copiar o link. Copie manualmente da barra de endereços.');
+    });
+    
+    return shareUrl;
+};
+
+// Selecionar todos os imóveis da página atual
+window.selectAllProperties = function() {
+    const checkboxes = document.querySelectorAll('.property-select-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = true;
+        const propertyId = parseInt(checkbox.getAttribute('data-property-id'));
+        window.selectedProperties.add(propertyId);
+    });
+    updateSelectionCounter();
+};
+
+// Limpar seleção de todos os imóveis
+window.clearAllPropertiesSelection = function() {
+    const checkboxes = document.querySelectorAll('.property-select-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.checked = false;
+        const propertyId = parseInt(checkbox.getAttribute('data-property-id'));
+        window.selectedProperties.delete(propertyId);
+    });
+    updateSelectionCounter();
+};
+
+// Alternar seleção de um imóvel
+window.togglePropertySelection = function(propertyId, checkbox) {
+    if (checkbox.checked) {
+        window.selectedProperties.add(propertyId);
+    } else {
+        window.selectedProperties.delete(propertyId);
+    }
+    updateSelectionCounter();
+};
+
+// Atualizar contador de seleção e estado do botão "Selecionar Todos"
+function updateSelectionCounter() {
+    const counterElement = document.getElementById('selectedCount');
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    const generateBtn = document.getElementById('generateShareLinkBtn');
+    
+    if (counterElement) {
+        const count = window.selectedProperties.size;
+        counterElement.textContent = `${count} imóvel${count !== 1 ? 'is' : ''} selecionado${count !== 1 ? 's' : ''}`;
+        counterElement.style.display = count > 0 ? 'inline-flex' : 'none';
+    }
+    
+    if (generateBtn) {
+        generateBtn.disabled = window.selectedProperties.size === 0;
+        generateBtn.style.opacity = window.selectedProperties.size === 0 ? '0.5' : '1';
+        generateBtn.style.cursor = window.selectedProperties.size === 0 ? 'not-allowed' : 'pointer';
+    }
+    
+    // Atualizar estado do checkbox "Selecionar Todos"
+    if (selectAllCheckbox) {
+        const allCheckboxes = document.querySelectorAll('.property-select-checkbox');
+        const allChecked = allCheckboxes.length > 0 && Array.from(allCheckboxes).every(cb => cb.checked);
+        const someChecked = Array.from(allCheckboxes).some(cb => cb.checked);
+        
+        selectAllCheckbox.checked = allChecked;
+        selectAllCheckbox.indeterminate = someChecked && !allChecked;
+    }
+}
+
+// Filtrar propriedades pelos IDs selecionados na URL
+window.loadSelectedPropertiesFromUrl = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const selectedIdsParam = urlParams.get('selected_properties');
+    
+    if (!selectedIdsParam) {
+        return null;
+    }
+    
+    try {
+        const idsString = decodeURIComponent(selectedIdsParam);
+        const ids = idsString.split(',').map(id => parseInt(id.trim())).filter(id => !isNaN(id));
+        
+        if (ids.length === 0) return null;
+        
+        console.log(`🔗 Link com seleção de ${ids.length} imóvel(is): ${ids.join(', ')}`);
+        
+        // Filtrar imóveis pelos IDs
+        const selectedPropertiesList = window.properties.filter(p => ids.includes(p.id));
+        
+        if (selectedPropertiesList.length === 0) {
+            console.warn('⚠️ Nenhum imóvel encontrado com os IDs fornecidos');
+            return null;
+        }
+        
+        // Renderizar apenas os imóveis selecionados
+        const container = document.getElementById('properties-container');
+        if (container && window.propertyTemplates) {
+            container.innerHTML = selectedPropertiesList.map(prop => window.propertyTemplates.generate(prop)).join('');
+            
+            // Adicionar aviso de filtro ativo
+            const filterWarning = document.createElement('div');
+            filterWarning.style.cssText = `
+                background: #e3f2fd;
+                border-left: 4px solid #2196f3;
+                padding: 0.75rem 1rem;
+                margin-bottom: 1rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            `;
+            filterWarning.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <i class="fas fa-filter" style="color: #2196f3;"></i>
+                    <span><strong>Visualização personalizada:</strong> Exibindo ${selectedPropertiesList.lenŧth} imóvel(is) selecionado(s) especialmente para você.</span>
+                </div>
+                <a href="./" style="background: #2196f3; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; font-size: 0.75rem;">
+                    <i class="fas fa-times"></i> Limpar filtro
+                </a>
+            `;
+            container.insertBefore(filterWarning, container.firstChild);
+        }
+        
+        return selectedPropertiesList;
+    } catch (error) {
+        console.error('❌ Erro ao processar link de seleção:', error);
+        return null;
+    }
+};
+
+// Modificar loadPropertiesBasedOnUrl para suportar seleção múltipla
+const originalLoadPropertiesBasedOnUrl = window.loadPropertiesBasedOnUrl;
+window.loadPropertiesBasedOnUrl = function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Verificar se há parâmetro de seleção múltipla
+    if (urlParams.has('selected_properties')) {
+        const selected = window.loadSelectedPropertiesFromUrl();
+        if (selected && selected.length > 0) {
+            return; // Já renderizou os imóveis selecionados
+        }
+    }
+    
+    // Verificar se há parâmetro de imóvel único (compatibilidade com versão anterior)
+    if (urlParams.has('property')) {
+        const propertyIdFromUrl = urlParams.get('property');
+        const singleProperty = window.filterPropertyById(propertyIdFromUrl);
+        
+        const container = document.getElementById('properties-container');
+        if (container && singleProperty && window.propertyTemplates) {
+            container.innerHTML = window.propertyTemplates.generate(singleProperty);
+            return;
+        }
+    }
+    
+    // Comportamento padrão: exibir todos os imóveis
+    console.log('🏠 Exibindo todos os imóveis.');
+    if (typeof window.renderProperties === 'function') {
+        window.renderProperties('todos');
+    }
+};
 
 // ========== CONFIGURAÇÃO DE PAGINAÇÃO ==========
 window.adminCurrentPage = 1;
@@ -172,51 +401,6 @@ window.filterPropertyById = function(propertyId) {
     }
     
     return foundProperty;
-};
-
-window.loadPropertiesBasedOnUrl = function() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const propertyIdFromUrl = urlParams.get('property');
-    
-    if (!propertyIdFromUrl) {
-        console.log('🏠 Nenhum imóvel específico na URL. Exibindo todos.');
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties('todos');
-        }
-        return;
-    }
-    
-    console.log(`🔗 Link direto detectado para o imóvel ID: ${propertyIdFromUrl}`);
-    const singleProperty = window.filterPropertyById(propertyIdFromUrl);
-    
-    const container = document.getElementById('properties-container');
-    if (!container) {
-        console.error('❌ Container "properties-container" não encontrado.');
-        return;
-    }
-    
-    if (singleProperty) {
-        if (window.propertyTemplates && typeof window.propertyTemplates.generate === 'function') {
-            const singlePropertyHtml = window.propertyTemplates.generate(singleProperty);
-            container.innerHTML = singlePropertyHtml;
-            console.log(`✨ Exibindo apenas o imóvel: "${singleProperty.title}"`);
-        } else {
-            console.error('❌ Template engine não encontrado.');
-            container.innerHTML = '<p class="error-message">Erro ao carregar o imóvel solicitado.</p>';
-        }
-    } else {
-        container.innerHTML = `
-            <div class="no-properties" style="text-align: center; padding: 3rem;">
-                <i class="fas fa-home" style="font-size: 3rem; color: #95a5a6; margin-bottom: 1rem; display: block;"></i>
-                <h3>Imóvel não encontrado</h3>
-                <p>O imóvel que você está procurando pode não existir mais ou o link pode estar incorreto.</p>
-                <a href="./" style="display: inline-block; margin-top: 1rem; padding: 0.8rem 1.5rem; background: var(--primary); color: white; border-radius: 5px; text-decoration: none;">
-                    <i class="fas fa-arrow-left"></i> Ver todos os imóveis
-                </a>
-            </div>
-        `;
-        console.warn(`⚠️ Imóvel com ID ${propertyIdFromUrl} não encontrado na base de dados.`);
-    }
 };
 
 class PropertyTemplateEngine {
@@ -1469,7 +1653,7 @@ function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM CONTÊINER AJUSTADO PARA DESKTOP) ==========
+// ========== LOAD PROPERTY LIST (COM SELEÇÃO MÚLTIPLA E CONTÊINER AJUSTADO) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1519,6 +1703,91 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
+    // ========== BARRA DE SELEÇÃO MÚLTIPLA ==========
+    const selectionBar = document.createElement('div');
+    selectionBar.style.cssText = `
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        margin-bottom: 0.8rem;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.8rem;
+    `;
+    
+    const selectionLeft = document.createElement('div');
+    selectionLeft.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem;';
+    
+    const selectAllContainer = document.createElement('label');
+    selectAllContainer.style.cssText = 'display: flex; align-items: center; gap: 0.5rem; color: white; cursor: pointer; font-size: 0.8rem;';
+    selectAllContainer.innerHTML = `
+        <input type="checkbox" id="selectAllCheckbox" style="width: 16px; height: 16px; cursor: pointer;">
+        <span><i class="fas fa-check-double"></i> Selecionar Todos</span>
+    `;
+    selectionLeft.appendChild(selectAllContainer);
+    
+    const clearBtn = document.createElement('button');
+    clearBtn.innerHTML = '<i class="fas fa-times"></i> Limpar Seleção';
+    clearBtn.style.cssText = `
+        background: rgba(255,255,255,0.2);
+        color: white;
+        border: none;
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 0.75rem;
+        transition: all 0.2s ease;
+    `;
+    clearBtn.onmouseenter = () => clearBtn.style.background = 'rgba(255,255,255,0.3)';
+    clearBtn.onmouseleave = () => clearBtn.style.background = 'rgba(255,255,255,0.2)';
+    clearBtn.onclick = () => window.clearAllPropertiesSelection();
+    selectionLeft.appendChild(clearBtn);
+    
+    const selectionRight = document.createElement('div');
+    selectionRight.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.8rem;';
+    
+    const selectedCountSpan = document.createElement('span');
+    selectedCountSpan.id = 'selectedCount';
+    selectedCountSpan.style.cssText = `
+        background: rgba(255,255,255,0.2);
+        padding: 0.3rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        color: white;
+        display: none;
+    `;
+    selectedCountSpan.innerHTML = '0 imóveis selecionado(s)';
+    selectionRight.appendChild(selectedCountSpan);
+    
+    const generateLinkBtn = document.createElement('button');
+    generateLinkBtn.id = 'generateShareLinkBtn';
+    generateLinkBtn.innerHTML = '<i class="fas fa-share-alt"></i> Gerar Link para Compartilhar';
+    generateLinkBtn.style.cssText = `
+        background: #27ae60;
+        color: white;
+        border: none;
+        padding: 0.4rem 1rem;
+        border-radius: 30px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        font-weight: bold;
+        transition: all 0.2s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    `;
+    generateLinkBtn.onmouseenter = () => generateLinkBtn.style.background = '#2ecc71';
+    generateLinkBtn.onmouseleave = () => generateLinkBtn.style.background = '#27ae60';
+    generateLinkBtn.onclick = () => window.generateShareLinkForSelected();
+    selectionRight.appendChild(generateLinkBtn);
+    
+    selectionBar.appendChild(selectionLeft);
+    selectionBar.appendChild(selectionRight);
+    container.appendChild(selectionBar);
+    
+    // ========== ESTATÍSTICAS ==========
     const statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.5rem; border-radius: 8px; margin-bottom: 0.5rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem;';
     
@@ -1571,9 +1840,12 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
             }
         }
         
+        // Verificar se o imóvel está selecionado
+        const isSelected = window.selectedProperties.has(property.id);
+        
         const item = document.createElement('div');
         item.className = 'property-item';
-        item.style.cssText = 'background: #f5f5f5; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid var(--primary); transition: all 0.3s ease;';
+        item.style.cssText = `background: ${isSelected ? '#e8f4fd' : '#f5f5f5'}; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid ${isSelected ? '#2196f3' : 'var(--primary)'}; transition: all 0.3s ease;`;
         
         const escapeTitle = window.SharedCore ? window.SharedCore.escapeHtml(property.title) : (property.title || '').replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
@@ -1599,6 +1871,14 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         }
         
         item.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-shrink: 0;">
+                <input type="checkbox" 
+                       class="property-select-checkbox" 
+                       data-property-id="${property.id}"
+                       ${isSelected ? 'checked' : ''}
+                       style="width: 18px; height: 18px; cursor: pointer;"
+                       onchange="window.togglePropertySelection(${property.id}, this)">
+            </div>
             <div style="flex-shrink: 0; width: 60px; height: 60px; border-radius: 8px; overflow: hidden; background: #2c3e50; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.1);" 
                  onclick="if(window.openGalleryAtCurrentIndex) window.openGalleryAtCurrentIndex(${property.id})"
                  title="Clique para abrir galeria">
@@ -1691,12 +1971,25 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     if (totalPages > 1) {
         const paginationWrapper = document.createElement('div');
-        // Reduzir margin-top no desktop
         paginationWrapper.style.cssText = isDesktop ? 'margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid #e0e0e0;' : 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
         const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
         paginationWrapper.appendChild(paginationBottom);
         container.appendChild(paginationWrapper);
     }
+    
+    // Configurar eventos após renderização
+    const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+    if (selectAllCheckbox) {
+        selectAllCheckbox.onclick = (e) => {
+            if (e.target.checked) {
+                window.selectAllProperties();
+            } else {
+                window.clearAllPropertiesSelection();
+            }
+        };
+    }
+    
+    updateSelectionCounter();
     
     console.log(`✅ Core - Página ${page}/${totalPages} - ${paginatedProperties.length} imóveis exibidos (${itemsPerPage} por página, total: ${totalItems})`);
 };
