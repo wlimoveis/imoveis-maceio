@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM ÍCONE DE AMPULHETA E NÚMEROS DESTACADOS
-console.log('✅ properties.js carregado - Com ícone de ampulheta para Tempo de Mercado');
+// js/modules/properties.js - VERSÃO COMPLETA COM PAGINAÇÃO AJUSTADA PARA DESKTOP
+console.log('✅ properties.js carregado - Com paginação otimizada para desktop');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -1277,18 +1277,27 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO - APENAS UM "..." FIXO ==========
+// ========== FUNÇÃO DE PAGINAÇÃO - APENAS UM "..." FIXO (COM ALTURA REDUZIDA NO DESKTOP) ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage = null) {
     const paginationDiv = document.createElement('div');
-    paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem;';
+    
+    // Verificar se é desktop (largura > 768px)
+    const isDesktop = window.innerWidth > 768;
+    
+    // CSS base da paginação - otimizado para desktop
+    if (isDesktop) {
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.35rem; margin: 0.5rem 0 0.25rem 0; flex-wrap: wrap; padding: 0.2rem 0.2rem;';
+    } else {
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem;';
+    }
     
     const isMobile = window.innerWidth <= 768;
     const currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     const maxVisible = isMobile ? 4 : 5;  // Número máximo de botões visíveis (excluindo navegação)
     
-    // Botões de navegação
-    const firstBtn = createNavButton('<<', currentPage === 1, () => window.loadPropertyList(1));
-    const prevBtn = createNavButton('<', currentPage === 1, () => window.loadPropertyList(currentPage - 1));
+    // Botões de navegação com tamanho ajustado para desktop
+    const firstBtn = createNavButton('<<', currentPage === 1, () => window.loadPropertyList(1), isDesktop);
+    const prevBtn = createNavButton('<', currentPage === 1, () => window.loadPropertyList(currentPage - 1), isDesktop);
     paginationDiv.appendChild(firstBtn);
     paginationDiv.appendChild(prevBtn);
     
@@ -1391,48 +1400,61 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage = null) 
         if (page === '...') {
             const ellipsis = document.createElement('span');
             ellipsis.textContent = '...';
-            ellipsis.style.cssText = 'padding: 0.3rem 0.2rem; color: #666; font-size: 0.8rem; user-select: none; pointer-events: none;';
+            // Tamanho da elipse ajustado para desktop
+            const ellipsisPadding = isDesktop ? '0.2rem 0.1rem' : '0.3rem 0.2rem';
+            ellipsis.style.cssText = `padding: ${ellipsisPadding}; color: #666; font-size: 0.75rem; user-select: none; pointer-events: none;`;
             paginationDiv.appendChild(ellipsis);
         } else {
-            const pageBtn = createPageButton(page, currentPage);
+            const pageBtn = createPageButton(page, currentPage, isDesktop);
             paginationDiv.appendChild(pageBtn);
         }
     }
     
     // Botões de navegação finais
-    const nextBtn = createNavButton('>', currentPage === totalPages, () => window.loadPropertyList(currentPage + 1));
-    const lastBtn = createNavButton('>>', currentPage === totalPages, () => window.loadPropertyList(totalPages));
+    const nextBtn = createNavButton('>', currentPage === totalPages, () => window.loadPropertyList(currentPage + 1), isDesktop);
+    const lastBtn = createNavButton('>>', currentPage === totalPages, () => window.loadPropertyList(totalPages), isDesktop);
     paginationDiv.appendChild(nextBtn);
     paginationDiv.appendChild(lastBtn);
     
-    // Seletor de itens por página
-    const perPageSelect = createPerPageSelect(currentItemsPerPage);
+    // Seletor de itens por página - tamanho ajustado para desktop
+    const perPageSelect = createPerPageSelect(currentItemsPerPage, isDesktop);
     paginationDiv.appendChild(perPageSelect);
     
     return paginationDiv;
 }
 
-// ========== FUNÇÕES AUXILIARES DA PAGINAÇÃO ==========
-function createNavButton(text, disabled, onClick) {
+// ========== FUNÇÕES AUXILIARES DA PAGINAÇÃO COM SUPORTE A DESKTOP ==========
+function createNavButton(text, disabled, onClick, isDesktop = false) {
     const btn = document.createElement('button');
     btn.innerHTML = text;
-    btn.style.cssText = `background: var(--primary); color: white; border: none; padding: 0.4rem 0.8rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; transition: all 0.2s ease; ${disabled ? 'opacity: 0.5;' : ''}`;
+    // Tamanhos ajustados para desktop
+    const padding = isDesktop ? '0.25rem 0.6rem' : '0.4rem 0.8rem';
+    const fontSize = isDesktop ? '0.7rem' : '0.8rem';
+    btn.style.cssText = `background: var(--primary); color: white; border: none; padding: ${padding}; border-radius: 5px; cursor: pointer; font-size: ${fontSize}; transition: all 0.2s ease; ${disabled ? 'opacity: 0.5;' : ''}`;
     btn.disabled = disabled;
     if (!disabled) btn.onclick = onClick;
     return btn;
 }
 
-function createPageButton(pageNum, currentPage) {
+function createPageButton(pageNum, currentPage, isDesktop = false) {
     const btn = document.createElement('button');
     btn.textContent = pageNum;
-    btn.style.cssText = `background: ${pageNum === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${pageNum === currentPage ? 'white' : 'var(--text)'}; border: none; padding: 0.3rem 0.7rem; border-radius: 5px; cursor: pointer; font-size: 0.8rem; font-weight: ${pageNum === currentPage ? 'bold' : 'normal'}; min-width: 32px;`;
+    // Tamanhos ajustados para desktop
+    const padding = isDesktop ? '0.2rem 0.5rem' : '0.3rem 0.7rem';
+    const fontSize = isDesktop ? '0.7rem' : '0.8rem';
+    const minWidth = isDesktop ? '28px' : '32px';
+    btn.style.cssText = `background: ${pageNum === currentPage ? 'var(--gold)' : '#e9ecef'}; color: ${pageNum === currentPage ? 'white' : 'var(--text)'}; border: none; padding: ${padding}; border-radius: 5px; cursor: pointer; font-size: ${fontSize}; font-weight: ${pageNum === currentPage ? 'bold' : 'normal'}; min-width: ${minWidth};`;
     btn.onclick = () => window.loadPropertyList(pageNum);
     return btn;
 }
 
-function createPerPageSelect(currentItemsPerPage) {
+function createPerPageSelect(currentItemsPerPage, isDesktop = false) {
     const select = document.createElement('select');
-    select.style.cssText = 'background: white; border: 1px solid var(--primary); padding: 0.3rem 0.5rem; border-radius: 5px; font-size: 0.75rem; margin-left: 0.5rem; cursor: pointer;';
+    // Tamanhos ajustados para desktop
+    const padding = isDesktop ? '0.2rem 0.3rem' : '0.3rem 0.5rem';
+    const fontSize = isDesktop ? '0.65rem' : '0.75rem';
+    const marginLeft = isDesktop ? '0.3rem' : '0.5rem';
+    select.style.cssText = `background: white; border: 1px solid var(--primary); padding: ${padding}; border-radius: 5px; font-size: ${fontSize}; margin-left: ${marginLeft}; cursor: pointer;`;
     select.innerHTML = `
         <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3 por página</option>
         <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4 por página</option>
@@ -1447,7 +1469,7 @@ function createPerPageSelect(currentItemsPerPage) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST (COM AMPULHETA E NÚMEROS DESTACADOS) ==========
+// ========== LOAD PROPERTY LIST (COM CONTÊINER AJUSTADO PARA DESKTOP) ==========
 window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
@@ -1460,6 +1482,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     if (!container) return;
     
     const isMobile = window.innerWidth <= 768;
+    const isDesktop = window.innerWidth > 768;
     const itemsPerPage = isMobile ? 3 : window.adminItemsPerPage;
     
     window.adminCurrentPage = page;
@@ -1481,10 +1504,18 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         return;
     }
     
-    container.style.maxHeight = '650px';
-    container.style.overflowY = 'auto';
-    container.style.paddingRight = '5px';
-    container.style.paddingBottom = '20px';
+    // Ajustar altura máxima do contêiner para melhor rolagem no desktop
+    if (isDesktop) {
+        container.style.maxHeight = '70vh';
+        container.style.overflowY = 'auto';
+        container.style.paddingRight = '8px';
+        container.style.paddingBottom = '10px';
+    } else {
+        container.style.maxHeight = '650px';
+        container.style.overflowY = 'auto';
+        container.style.paddingRight = '5px';
+        container.style.paddingBottom = '20px';
+    }
     
     const totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
     
@@ -1554,16 +1585,16 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         // Construir a parte do tempo destacada
         let timeDisplayHtml = '';
         if (marketTimeObj.type === 'days') {
-            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
         } else if (marketTimeObj.type === 'months') {
-            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingDays) {
-                timeDisplayHtml += ` e <strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: 0.9rem; color: ${marketStatus.color};">${marketTimeObj.remainingDays}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingDays !== 1 ? 'dias' : 'dia'}</span>`;
             }
         } else if (marketTimeObj.type === 'years') {
-            timeDisplayHtml = `<strong style="font-size: 1.1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.unit}</span>`;
+            timeDisplayHtml = `<strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.number}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.unit}</span>`;
             if (marketTimeObj.remainingMonths) {
-                timeDisplayHtml += ` e <strong style="font-size: 1rem; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.7rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
+                timeDisplayHtml += ` e <strong style="font-size: 0.9rem; color: ${marketStatus.color};">${marketTimeObj.remainingMonths}</strong> <span style="font-size: 0.65rem;">${marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês'}</span>`;
             }
         }
         
@@ -1629,7 +1660,7 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     
                     <!-- INDICADOR DE TEMPO DE MERCADO COM AMPULHETA E NÚMEROS DESTACADOS -->
                     <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
-                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: 0.85rem;"></i>
+                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: 0.8rem;"></i>
                         <strong style="color: ${marketStatus.color};">Tempo de Mercado:</strong>
                         <span style="color: ${marketStatus.color};">${marketStatus.text}</span>
                         <span style="display: inline-flex; align-items: baseline; gap: 0.1rem;">
@@ -1660,7 +1691,8 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
     
     if (totalPages > 1) {
         const paginationWrapper = document.createElement('div');
-        paginationWrapper.style.cssText = 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
+        // Reduzir margin-top no desktop
+        paginationWrapper.style.cssText = isDesktop ? 'margin-top: 0.25rem; padding-top: 0.25rem; border-top: 1px solid #e0e0e0;' : 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
         const paginationBottom = createPaginationControls(totalPages, page, itemsPerPage);
         paginationWrapper.appendChild(paginationBottom);
         container.appendChild(paginationWrapper);
