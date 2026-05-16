@@ -1,4 +1,4 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA E BANNER DISCRETO
+// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA E BANNER POSICIONADO POR ÚLTIMO
 console.log('✅ properties.js carregado - Com seleção múltipla de imóveis e banner discreto');
 
 window.properties = [];
@@ -169,13 +169,14 @@ window.loadSelectedPropertiesFromUrl = function() {
         if (container && window.propertyTemplates) {
             container.innerHTML = selectedPropertiesList.map(prop => window.propertyTemplates.generate(prop)).join('');
             
-            // ========== BANNER CORRIGIDO - MAIS DISCRETO E SEM "undefined" ==========
+            // ========== BANNER CORRIGIDO - POSICIONADO POR ÚLTIMO (APÓS OS IMÓVEIS) ==========
             const filterWarning = document.createElement('div');
             filterWarning.style.cssText = `
                 background: #f0f4f8;
                 border-left: 3px solid #94a3b8;
                 padding: 0.4rem 0.8rem;
-                margin-bottom: 0.8rem;
+                margin-top: 1rem;
+                margin-bottom: 0;
                 border-radius: 6px;
                 display: flex;
                 align-items: center;
@@ -197,13 +198,8 @@ window.loadSelectedPropertiesFromUrl = function() {
                 </a>
             `;
             
-            // Inserir o banner de forma discreta (após o título, antes dos cards)
-            const propertiesTitle = document.querySelector('.properties-header') || container.firstChild;
-            if (propertiesTitle && propertiesTitle !== container.firstChild) {
-                container.insertBefore(filterWarning, propertiesTitle.nextSibling);
-            } else {
-                container.insertBefore(filterWarning, container.firstChild);
-            }
+            // Adicionar o banner como ÚLTIMO elemento do container (após todos os cards)
+            container.appendChild(filterWarning);
         }
         
         return selectedPropertiesList;
@@ -214,7 +210,6 @@ window.loadSelectedPropertiesFromUrl = function() {
 };
 
 // Modificar loadPropertiesBasedOnUrl para suportar seleção múltipla
-const originalLoadPropertiesBasedOnUrl = window.loadPropertiesBasedOnUrl;
 window.loadPropertiesBasedOnUrl = function() {
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -1837,7 +1832,6 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
         // ========== INDICADOR DE TEMPO DE MERCADO ==========
         const marketDays = window.calculateMarketTime(property);
         const marketStatus = window.getMarketStatus(marketDays);
-        const marketTimeFormatted = window.formatMarketTimeText(marketDays);
         const marketTimeObj = window.formatMarketTime(marketDays);
         
         let firstImage = defaultImage;
