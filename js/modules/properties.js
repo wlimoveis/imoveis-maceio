@@ -1,5 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA DE IMÓVEIS
-console.log('✅ properties.js carregado - Com seleção múltipla de imóveis');
+// js/modules/properties.js - VERSÃO COMPLETA COM SELEÇÃO MÚLTIPLA E BANNER DISCRETO
+console.log('✅ properties.js carregado - Com seleção múltipla de imóveis e banner discreto');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -139,7 +139,7 @@ function updateSelectionCounter() {
     }
 }
 
-// Filtrar propriedades pelos IDs selecionados na URL
+// ========== FUNÇÃO CORRIGIDA PARA CARREGAR IMÓVEIS SELECIONADOS DA URL ==========
 window.loadSelectedPropertiesFromUrl = function() {
     const urlParams = new URLSearchParams(window.location.search);
     const selectedIdsParam = urlParams.get('selected_properties');
@@ -169,30 +169,41 @@ window.loadSelectedPropertiesFromUrl = function() {
         if (container && window.propertyTemplates) {
             container.innerHTML = selectedPropertiesList.map(prop => window.propertyTemplates.generate(prop)).join('');
             
-            // Adicionar aviso de filtro ativo
+            // ========== BANNER CORRIGIDO - MAIS DISCRETO E SEM "undefined" ==========
             const filterWarning = document.createElement('div');
             filterWarning.style.cssText = `
-                background: #e3f2fd;
-                border-left: 4px solid #2196f3;
-                padding: 0.75rem 1rem;
-                margin-bottom: 1rem;
-                border-radius: 8px;
+                background: #f0f4f8;
+                border-left: 3px solid #94a3b8;
+                padding: 0.4rem 0.8rem;
+                margin-bottom: 0.8rem;
+                border-radius: 6px;
                 display: flex;
                 align-items: center;
                 justify-content: space-between;
                 flex-wrap: wrap;
                 gap: 0.5rem;
+                font-size: 0.7rem;
+                color: #64748b;
             `;
             filterWarning.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 0.5rem;">
-                    <i class="fas fa-filter" style="color: #2196f3;"></i>
-                    <span><strong>Visualização personalizada:</strong> Exibindo ${selectedPropertiesList.lenŧth} imóvel(is) selecionado(s) especialmente para você.</span>
+                <div style="display: flex; align-items: center; gap: 0.4rem;">
+                    <i class="fas fa-link" style="color: #94a3b8; font-size: 0.65rem;"></i>
+                    <span>Link personalizado com <strong>${selectedPropertiesList.length}</strong> imóvel(is)</span>
                 </div>
-                <a href="./" style="background: #2196f3; color: white; padding: 0.3rem 0.8rem; border-radius: 20px; text-decoration: none; font-size: 0.75rem;">
-                    <i class="fas fa-times"></i> Limpar filtro
+                <a href="./" style="background: transparent; color: #64748b; padding: 0.2rem 0.5rem; border-radius: 15px; text-decoration: none; font-size: 0.65rem; border: 1px solid #cbd5e1; transition: all 0.2s ease;" 
+                   onmouseenter="this.style.background='#e2e8f0'; this.style.borderColor='#94a3b8'"
+                   onmouseleave="this.style.background='transparent'; this.style.borderColor='#cbd5e1'">
+                    <i class="fas fa-times"></i> Limpar
                 </a>
             `;
-            container.insertBefore(filterWarning, container.firstChild);
+            
+            // Inserir o banner de forma discreta (após o título, antes dos cards)
+            const propertiesTitle = document.querySelector('.properties-header') || container.firstChild;
+            if (propertiesTitle && propertiesTitle !== container.firstChild) {
+                container.insertBefore(filterWarning, propertiesTitle.nextSibling);
+            } else {
+                container.insertBefore(filterWarning, container.firstChild);
+            }
         }
         
         return selectedPropertiesList;
@@ -1907,38 +1918,27 @@ window.loadPropertyList = function(page = window.adminCurrentPage) {
                     </small>
                 </div>
                 <div style="font-size: 0.65rem; color: #666; display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.2rem;">
-                    <!-- Indicador ID -->
                     <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
                         <i class="fas fa-id-card"></i> ID: ${property.id}
                     </span>
-                    
-                    <!-- Indicador de Imagens -->
                     <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
                         <i class="fas fa-images"></i> Imagens: ${property.images ? property.images.split(',').filter(i => i && i.trim() && i !== 'EMPTY').length : 0}
                     </span>
-                    
-                    <!-- Indicador de PDFs -->
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `
                         <span style="background: #e9ecef; padding: 0.2rem 0.5rem; border-radius: 4px;">
                             <i class="fas fa-file-pdf"></i> PDFs: ${property.pdfs.split(',').filter(p => p && p.trim() && p !== 'EMPTY').length}
                         </span>
                     ` : ''}
-                    
-                    <!-- Indicador de Visualizações -->
                     <span style="background: #e3f2fd; padding: 0.2rem 0.5rem; border-radius: 4px;">
                         <i class="fas fa-eye" style="color: #1976d2;"></i>
                         <strong style="color: #1976d2;">Visualizações: ${viewCount}</strong>
                     </span>
-                    
-                    <!-- Indicador de Última Visualização -->
                     ${lastView ? `
                         <span style="background: #f3e5f5; padding: 0.2rem 0.5rem; border-radius: 4px;">
                             <i class="fas fa-clock" style="color: #7b1fa2;"></i>
                             <strong style="color: #7b1fa2;">Última: ${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
                         </span>
                     ` : ''}
-                    
-                    <!-- INDICADOR DE TEMPO DE MERCADO COM AMPULHETA E NÚMEROS DESTACADOS -->
                     <span style="background: ${marketStatus.bg}; padding: 0.2rem 0.5rem; border-radius: 4px; display: inline-flex; align-items: center; gap: 0.3rem;">
                         <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: 0.8rem;"></i>
                         <strong style="color: ${marketStatus.color};">Tempo de Mercado:</strong>
