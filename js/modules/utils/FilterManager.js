@@ -51,7 +51,7 @@ const FilterManager = (function() {
             expectedValues: ['MCMV'],
             requiredType: null,
             icon: 'fa-hand-holding-heart',
-            title: 'Minha Casa Minha Vida'
+            title: 'Incorporações & Empreendimentos'
         }
     };
 
