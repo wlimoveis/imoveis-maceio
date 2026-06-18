@@ -46,7 +46,7 @@ const FilterManager = (function() {
             icon: 'fa-tractor',
             title: 'Zona Rural'
         },
-        'Minha Casa Minha Vida': {
+        'Incorporacoes': {
             filterBy: 'badge',
             expectedValues: ['MCMV'],
             requiredType: null,
