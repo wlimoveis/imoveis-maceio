@@ -1133,7 +1133,7 @@ window.filterPropertiesByType = function(properties, filter) {
         'Residencial': p => p.type === 'residencial',
         'Comercial': p => p.type === 'comercial',
         'Rural': p => p.type === 'rural' || p.rural === true,
-        'Minha Casa Minha Vida': p => p.badge === 'MCMV'
+        'Incorporacoes': p => p.badge === 'MCMV'
     };
     const filterFn = filterMap[filter];
     return filterFn ? properties.filter(filterFn) : properties;
