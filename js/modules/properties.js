@@ -882,7 +882,7 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
         'Comercial': { filterBy: 'type', expectedValues: ['comercial'] },
         'Residencial': { filterBy: 'badge', expectedValues: ['Novo', 'Destaque', 'Luxo'], requiredType: 'residencial' },
         'Rural': { filterBy: 'badge', expectedValues: ['Fazenda', 'Chácara', 'Rural'], requiredType: 'rural' },
-        'Minha Casa Minha Vida': { filterBy: 'badge', expectedValues: ['MCMV'], requiredType: null }
+        'Incorporacoes': { filterBy: 'badge', expectedValues: ['MCMV'], requiredType: null }
     };
     
     const config = CATEGORY_CONFIG[category];
