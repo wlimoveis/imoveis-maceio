@@ -943,7 +943,7 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
             'Rural': p => p.type === 'rural' || p.rural === true,
             'Residencial': p => p.type === 'residencial',
             'Comercial': p => p.type === 'comercial',
-            'Minha Casa Minha Vida': p => p.badge === 'MCMV'
+            'Incorporacoes': p => p.badge === 'MCMV'
         };
         const filterFn = filterMap[category];
         if (filterFn) filtered = filtered.filter(filterFn);
