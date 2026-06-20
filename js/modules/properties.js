@@ -1,4 +1,4 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM AJUSTE PERFEITO DE ALTURA PARA DESKTOP (SEM BARRA DE ROLAGEM DESNECESSÁRIA)
+// js/modules/properties.js - VERSÃO COMPLETA COM CORREÇÃO DA DUPLICIDADE DA BADGE "NOVO"
 console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
 
 window.properties = [];
@@ -441,13 +441,8 @@ class PropertyTemplateEngine {
         return html;
     }
     
-    isNewProperty(createdAt) {
-        if (!createdAt) return false;
-        const createdDate = new Date(createdAt);
-        const now = new Date();
-        const diffDays = Math.floor((now - createdDate) / (1000 * 60 * 60 * 24));
-        return diffDays <= 7;
-    }
+    // Função isNewProperty removida - não é mais necessária
+    // A badge "NOVO" agora é controlada exclusivamente pelo campo property.badge
     
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
@@ -455,25 +450,11 @@ class PropertyTemplateEngine {
         const truncatedDesc = descriptionText.length > 120 
             ? descriptionText.substring(0, 120) + '...' 
             : descriptionText;
-        const showNewBadge = this.isNewProperty(property.created_at);
-        const newBadgeHtml = showNewBadge ? `
-            <div style="
-                position: absolute;
-                top: ${property.badge ? '45px' : '15px'};
-                right: 15px;
-                background: linear-gradient(135deg, #27ae60, #2ecc71);
-                color: white;
-                padding: 4px 10px;
-                border-radius: 20px;
-                font-size: 0.7rem;
-                font-weight: bold;
-                z-index: 15;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.2);
-                animation: pulse 1.5s infinite;
-            ">
-                <i class="fas fa-star"></i> NOVO
-            </div>
-        ` : '';
+        
+        // Badge "NOVO" removida do canto superior direito
+        // Agora usa apenas o campo badge do imóvel renderizado no método generateImageSection()
+        const newBadgeHtml = '';
+        
         const featuresHtml = this._renderFeaturesList(property.features, property.rural);
         
         const formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
