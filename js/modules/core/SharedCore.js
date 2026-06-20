@@ -8,7 +8,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
     supportModules: [
         'debug/ui/loading-manager.js',
         'debug/ui/media-ui-full.js',
-        'debug/ui/admin-list-ui.js',  // ← ADICIONAR ESTA LINHA
+        'debug/ui/admin-list-ui.js',
         'debug/core/diagnostic-registry.js',
         'performance/performance-system.js',
         'debug/utils/core-diagnostics.js',
