@@ -1,4 +1,5 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM CORREÇÃO DA DUPLICIDADE DA BADGE "NOVO"
+// js/modules/properties.js - VERSÃO COMPLETA COM CORREÇÃO DA BADGE "NOVO"
+// ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
 console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
 
 window.properties = [];
@@ -441,8 +442,8 @@ class PropertyTemplateEngine {
         return html;
     }
     
-    // Função isNewProperty removida - não é mais necessária
-    // A badge "NOVO" agora é controlada exclusivamente pelo campo property.badge
+    // Função removida: isNewProperty() - não é mais necessária
+    // A badge "NOVO" agora é controlada exclusivamente pelo campo 'badge' do imóvel
     
     _generateTemplate(property) {
         const displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
@@ -451,9 +452,9 @@ class PropertyTemplateEngine {
             ? descriptionText.substring(0, 120) + '...' 
             : descriptionText;
         
-        // Badge "NOVO" removida do canto superior direito
-        // Agora usa apenas o campo badge do imóvel renderizado no método generateImageSection()
-        const newBadgeHtml = '';
+        // CORREÇÃO: Badge "NOVO" removida do canto superior direito
+        // Agora usa apenas o campo 'badge' do imóvel (renderizado no generateImageSection)
+        const newBadgeHtml = ''; // Badge automática removida - agora usa apenas property.badge
         
         const featuresHtml = this._renderFeaturesList(property.features, property.rural);
         
@@ -550,8 +551,6 @@ class PropertyTemplateEngine {
                             ${this._safe(property.badge)}
                         </div>
                     ` : ''}
-                    
-                    ${newBadgeHtml}
                     
                     ${hasVideo ? `
                         <div class="video-indicator" style="
