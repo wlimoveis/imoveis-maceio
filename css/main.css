@@ -872,12 +872,63 @@ body {
     transform: translateY(-3px);
 }
 
+/* ========== COPYRIGHT (RODAPÉ PRINCIPAL) ========== */
 .copyright {
     text-align: center;
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
     color: #999;
+}
+
+.copyright p {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+/* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
+/* Adicionado conforme recomendação para dar crédito ao desenvolvedor de forma discreta e profissional */
+.developer-credits {
+    text-align: center;
+    padding: 0.8rem 1rem;
+    background-color: rgba(255, 255, 255, 0.03); /* Fundo quase transparente ou levemente diferente */
+    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Linha divisória sutil */
+    margin-top: 1rem; /* Espaço antes do copyright */
+}
+
+.developer-credits p {
+    margin: 0;
+    font-size: 0.75rem; /* Tamanho menor e discreto */
+    color: #888; /* Cor suave */
+    letter-spacing: 0.3px;
+}
+
+.developer-credits a {
+    color: #aaa; /* Cor do link mais suave */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.developer-credits a:hover {
+    color: #d4af37; /* Destaque dourado ao passar o mouse, alinhado com a identidade do site */
+    text-decoration: underline;
+}
+
+.developer-credits strong {
+    font-weight: 600;
+}
+
+/* Responsividade para o rodapé do desenvolvedor */
+@media (max-width: 768px) {
+    .developer-credits p {
+        font-size: 0.65rem;
+        line-height: 1.5;
+    }
+    
+    .developer-credits {
+        padding: 0.6rem 0.8rem;
+        margin-top: 0.8rem;
+    }
 }
 
 /* ========== ESTILOS PARA PDFs ========== */
