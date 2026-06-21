@@ -1,4 +1,14 @@
 <!DOCTYPE html>
+<!-- ============================================================
+     index.html
+     PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
+     ============================================================
+     ✅ Versão: 2.1
+     ✅ Responsivo: Desktop, Tablet e Mobile
+     ✅ Otimizado: Performance e SEO
+     ✅ Integrado: Com todos os módulos JS e CSS
+     ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
+     ============================================================ -->
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -18,7 +28,7 @@
     <!-- Todos os estilos foram movidos para arquivos CSS externos -->
 </head>
 <body>
-    <!-- Header -->
+    <!-- ========== HEADER ========== -->
     <header class="header">
         <div class="header-content">
             <div class="header-integrated">
@@ -71,13 +81,17 @@
             </div>
         </div>
     </header>
+    <!-- ========== FIM DO HEADER ========== -->
 
+    <!-- ========== HERO SECTION ========== -->
     <section class="hero">
         <h1>Encontre seu imovel dos sonhos em Maceio</h1>
         <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliario alagoano</p>
         <a href="#properties" class="cta-button"><i class="fas fa-home"></i> Ver Imoveis</a>
     </section>
+    <!-- ========== FIM DO HERO ========== -->
 
+    <!-- ========== SERVIÇOS SECTION ========== -->
     <section class="services">
         <div class="section-title"><h2>Nossos Servicos Especializados</h2><p>Oferecemos solucoes completas para suas necessidades imobiliarias</p></div>
         <div class="services-grid">
@@ -89,13 +103,17 @@
             <div class="service-card"><div class="service-icon"><i class="fas fa-tractor"></i></div><h3>Propriedades Rurais</h3><p>Especialistas em sitios, chacaras e fazendas com documentacao completa e regularizada.</p></div>
         </div>
     </section>
+    <!-- ========== FIM DOS SERVIÇOS ========== -->
 
+    <!-- ========== IMÓVEIS SECTION ========== -->
     <section class="properties" id="properties">
         <div class="section-title"><h2>Imoveis em Destaque</h2><p>Confira nossas melhores oportunidades em Maceio e regiao</p></div>
         <div class="filters"><h3>Filtrar por:</h3><div class="filter-options"><button class="filter-btn active" data-tooltip="Ver todos os imoveis">Todos</button><button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button><button class="filter-btn" data-tooltip="Lojas, salas e galpoes">Comercial</button><button class="filter-btn" data-tooltip="Sitios, chacaras e fazendas">Rural</button><button class="filter-btn" data-tooltip="Incorporações e Empreendimentos">Incorporações & Empreendimentos</button></div></div>
         <div class="property-grid" id="properties-container"></div>
     </section>
+    <!-- ========== FIM DOS IMÓVEIS ========== -->
 
+    <!-- ========== SOBRE SECTION ========== -->
     <section class="about">
         <div class="about-content">
             <div class="about-text">
@@ -118,6 +136,7 @@
             </div>
         </div>
     </section>
+    <!-- ========== FIM DO SOBRE ========== -->
 
     <!-- ========== FOOTER COM RODAPÉ DUPLO ========== -->
     <footer class="footer">
@@ -132,7 +151,6 @@
         <div class="copyright"><p>&copy; 2025 Weber Lessa Corretor & Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
         
         <!-- ===== RODAPÉ SECUNDÁRIO - CRÉDITOS DO DESENVOLVEDOR ===== -->
-        <!-- Adicionado conforme recomendação para dar crédito ao desenvolvedor de forma discreta e profissional -->
         <div class="developer-credits">
             <p>
                 Desenvolvido por 
@@ -142,8 +160,6 @@
                 - Soluções digitais inteligentes
             </p>
         </div>
-        <!-- ===== FIM DO RODAPÉ SECUNDÁRIO ===== -->
-        
     </footer>
     <!-- ========== FIM DO FOOTER ========== -->
     
@@ -257,8 +273,9 @@
             </div>
         </div>
     </section>
+    <!-- ========== FIM DO PAINEL DE ADMINISTRACAO ========== -->
 
-    <!-- Modal PDF -->
+    <!-- ========== MODAL PDF ========== -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
         <div class="pdf-modal-content" style="background:#ece9d8; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:1rem; max-width:380px; width:90%; text-align:center;">
             <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.6rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imovel</h3>
@@ -273,10 +290,14 @@
             <p style="font-size:0.6rem; color:#666; margin-top:0.6rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
         </div>
     </div>
+    <!-- ========== FIM DO MODAL PDF ========== -->
 
+    <!-- ========== BOTÕES ========== -->
     <button class="admin-toggle" id="adminToggleBtn"><i class="fas fa-user-cog"></i></button>
     <button id="backToTopBtn"><i class="fas fa-chevron-up"></i></button>
+    <!-- ========== FIM DOS BOTÕES ========== -->
 
+    <!-- ========== SCRIPTS ========== -->
     <script>
     (function() {
         const backToTopBtn = document.getElementById('backToTopBtn');
@@ -390,6 +411,15 @@
         }, 1000);
     });
     </script>
+    <!-- ========== FIM DOS SCRIPTS ========== -->
     
 </body>
 </html>
+
+<!-- ============================================================
+     FIM DO ARQUIVO - index.html
+     ============================================================
+     STATUS: ✅ CARREGADO COM SUCESSO
+     Versão: 2.1
+     Última atualização: 2026-06-21
+     ============================================================ -->
