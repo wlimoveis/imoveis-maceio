@@ -897,34 +897,36 @@ body {
 
 /* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
 /* ✅ CORREÇÃO: Adicionado conforme recomendação para dar crédito ao desenvolvedor */
+/* ✅ AJUSTE: Clareamento do texto para melhor legibilidade */
 .developer-credits {
     text-align: center;
     padding: 0.8rem 1rem;
-    background-color: rgba(255, 255, 255, 0.03);
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    background-color: rgba(255, 255, 255, 0.05); /* Fundo um pouco mais claro */
+    border-top: 1px solid rgba(255, 255, 255, 0.08); /* Linha divisória mais visível */
     margin-top: 1rem;
 }
 
 .developer-credits p {
     margin: 0;
     font-size: 0.75rem;
-    color: #888;
+    color: #aaa; /* COR CLAREADA: #888 → #aaa */
     letter-spacing: 0.3px;
 }
 
 .developer-credits a {
-    color: #aaa;
+    color: #c9b99a; /* COR CLAREADA: #aaa → #c9b99a (dourado suave) */
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .developer-credits a:hover {
-    color: #d4af37;
+    color: #d4af37; /* Destaque dourado ao passar o mouse */
     text-decoration: underline;
 }
 
 .developer-credits strong {
     font-weight: 600;
+    color: #c9b99a; /* COR CLAREADA: herdava de 'a', agora explícito */
 }
 
 /* Responsividade para o rodapé do desenvolvedor */
@@ -932,11 +934,20 @@ body {
     .developer-credits p {
         font-size: 0.65rem;
         line-height: 1.5;
+        color: #999; /* COR CLAREADA para mobile */
     }
     
     .developer-credits {
         padding: 0.6rem 0.8rem;
         margin-top: 0.8rem;
+    }
+    
+    .developer-credits a {
+        color: #b8a88a; /* COR CLAREADA para mobile */
+    }
+    
+    .developer-credits strong {
+        color: #b8a88a; /* COR CLAREADA para mobile */
     }
 }
 
