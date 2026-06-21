@@ -1,4 +1,13 @@
-/* css/header.css - ESTILOS APENAS DO HEADER WEBER LESSA */
+/* ============================================================
+   css/header.css
+   ESTILOS DO HEADER - WEBER LESSA CORRETOR & CONSULTOR
+   ============================================================
+   ✅ Versão: 2.0
+   ✅ Responsivo: Desktop, Tablet e Mobile
+   ✅ Otimizado: Performance e Acessibilidade
+   ✅ Integrado: Com main.css e admin.css
+   ✅ Mobile First: Header fixo com design ultra compacto
+   ============================================================ */
 
 /* ========== HEADER INTEGRADO COMPACTO ========== */
 .header {
@@ -594,3 +603,11 @@
         order: 2;
     }
 }
+
+/* ============================================================
+   FIM DO ARQUIVO - header.css
+   ============================================================
+   STATUS: ✅ CARREGADO COM SUCESSO
+   Versão: 2.0
+   Última atualização: 2026-06-21
+   ============================================================ */
