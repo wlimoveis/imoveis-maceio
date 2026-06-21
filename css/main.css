@@ -2,11 +2,12 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.1
+   ✅ Versão: 2.2
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
    ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
+   ✅ Ajuste: Cores clareadas para melhor legibilidade
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -897,36 +898,36 @@ body {
 
 /* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
 /* ✅ CORREÇÃO: Adicionado conforme recomendação para dar crédito ao desenvolvedor */
-/* ✅ AJUSTE: Clareamento do texto para melhor legibilidade */
+/* ✅ AJUSTE: Cores clareadas para melhor legibilidade */
 .developer-credits {
     text-align: center;
     padding: 0.8rem 1rem;
-    background-color: rgba(255, 255, 255, 0.05); /* Fundo um pouco mais claro */
-    border-top: 1px solid rgba(255, 255, 255, 0.08); /* Linha divisória mais visível */
+    background-color: rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     margin-top: 1rem;
 }
 
 .developer-credits p {
     margin: 0;
     font-size: 0.75rem;
-    color: #aaa; /* COR CLAREADA: #888 → #aaa */
+    color: #aaa;
     letter-spacing: 0.3px;
 }
 
 .developer-credits a {
-    color: #c9b99a; /* COR CLAREADA: #aaa → #c9b99a (dourado suave) */
+    color: #c9b99a;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .developer-credits a:hover {
-    color: #d4af37; /* Destaque dourado ao passar o mouse */
+    color: #d4af37;
     text-decoration: underline;
 }
 
 .developer-credits strong {
     font-weight: 600;
-    color: #c9b99a; /* COR CLAREADA: herdava de 'a', agora explícito */
+    color: #c9b99a;
 }
 
 /* Responsividade para o rodapé do desenvolvedor */
@@ -934,7 +935,7 @@ body {
     .developer-credits p {
         font-size: 0.65rem;
         line-height: 1.5;
-        color: #999; /* COR CLAREADA para mobile */
+        color: #999;
     }
     
     .developer-credits {
@@ -943,11 +944,11 @@ body {
     }
     
     .developer-credits a {
-        color: #b8a88a; /* COR CLAREADA para mobile */
+        color: #b8a88a;
     }
     
     .developer-credits strong {
-        color: #b8a88a; /* COR CLAREADA para mobile */
+        color: #b8a88a;
     }
 }
 
@@ -1286,6 +1287,6 @@ body {
    FIM DO ARQUIVO - main.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.1
-   Última atualização: $(date +%Y-%m-%d)
+   Versão: 2.2
+   Última atualização: 2026-06-21
    ============================================================ */
