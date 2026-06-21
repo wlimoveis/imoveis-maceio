@@ -1,10 +1,134 @@
-// js/modules/properties.js - VERSÃO COMPLETA COM CORREÇÃO DA BADGE "NOVO"
+// js/modules/properties.js - VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs
 // ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
+// ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
 console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
 
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
+
+// ========== CORREÇÃO DE URLs COM DOMÍNIO ANTIGO (NOVO v2.0) ==========
+/**
+ * CORRIGE URLs COM DOMÍNIO ANTIGO NO SUPABASE
+ * Esta função é executada automaticamente no carregamento
+ * e NÃO depende do Support System (princípio de autonomia do Core)
+ */
+window.fixPropertyUrls = function(property) {
+    if (!property) return { property: property, fixed: false };
+    
+    var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
+    var SUPABASE_URL = 'https://' + SUPABASE_DOMAIN;
+    var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
+    var BUCKET = 'properties';
+    
+    function reconstructUrl(url) {
+        if (!url || typeof url !== 'string') return url;
+        if (url === 'EMPTY' || url.trim() === '') return url;
+        
+        // Se já tem o domínio correto, retorna
+        if (url.includes(SUPABASE_DOMAIN)) return url;
+        
+        // Substituir domínios antigos
+        for (var i = 0; i < OLD_DOMAINS.length; i++) {
+            if (url.includes(OLD_DOMAINS[i])) {
+                return url.replace(OLD_DOMAINS[i], SUPABASE_DOMAIN);
+            }
+        }
+        
+        // Se é um nome de arquivo, reconstrói
+        if (!url.startsWith('http') && url.includes('_') && url.includes('.')) {
+            return SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + url;
+        }
+        
+        return url;
+    }
+    
+    var fixed = false;
+    
+    // Corrigir imagens
+    if (property.images && property.images !== 'EMPTY') {
+        var urls = property.images.split(',').filter(function(u) { return u && u.trim(); });
+        var fixedUrls = urls.map(function(u) { return reconstructUrl(u.trim()); });
+        var newImages = fixedUrls.join(',');
+        if (newImages !== property.images) {
+            property.images = newImages;
+            fixed = true;
+        }
+    }
+    
+    // Corrigir PDFs
+    if (property.pdfs && property.pdfs !== 'EMPTY') {
+        var pdfUrls = property.pdfs.split(',').filter(function(u) { return u && u.trim(); });
+        var fixedPdfUrls = pdfUrls.map(function(u) { return reconstructUrl(u.trim()); });
+        var newPdfs = fixedPdfUrls.join(',');
+        if (newPdfs !== property.pdfs) {
+            property.pdfs = newPdfs;
+            fixed = true;
+        }
+    }
+    
+    return { property: property, fixed: fixed };
+};
+
+/**
+ * CORRIGE TODAS AS PROPRIEDADES NO CARREGAMENTO
+ * Executa automaticamente após carregar os dados
+ */
+window.fixAllPropertiesOnLoad = function() {
+    console.log('🔄 [FIX] Verificando e corrigindo URLs das propriedades...');
+    
+    if (!window.properties || window.properties.length === 0) {
+        console.log('ℹ️ [FIX] Nenhuma propriedade para verificar');
+        return 0;
+    }
+    
+    var fixedCount = 0;
+    var domainFixed = 0;
+    var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
+    var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
+    
+    for (var i = 0; i < window.properties.length; i++) {
+        var prop = window.properties[i];
+        var originalImages = prop.images || '';
+        var result = window.fixPropertyUrls(prop);
+        if (result.fixed) {
+            fixedCount++;
+            window.properties[i] = result.property;
+            // Verificar se foi correção de domínio
+            if (originalImages && originalImages !== result.property.images) {
+                var hasOldDomain = false;
+                for (var j = 0; j < OLD_DOMAINS.length; j++) {
+                    if (originalImages.includes(OLD_DOMAINS[j])) {
+                        hasOldDomain = true;
+                        break;
+                    }
+                }
+                if (hasOldDomain) domainFixed++;
+            }
+        }
+    }
+    
+    if (fixedCount > 0) {
+        console.log('✅ [FIX] ' + fixedCount + ' propriedade(s) corrigida(s)');
+        if (domainFixed > 0) {
+            console.log('🔄 [FIX] ' + domainFixed + ' propriedade(s) com domínio(s) corrigido(s)');
+        }
+        // Salvar no localStorage para persistência
+        if (typeof window.savePropertiesToStorage === 'function') {
+            window.savePropertiesToStorage();
+            console.log('💾 [FIX] Propriedades salvas no localStorage');
+        }
+        // Re-renderizar
+        if (typeof window.renderProperties === 'function') {
+            window.renderProperties('todos', true);
+            console.log('🔄 [FIX] Interface re-renderizada');
+        }
+    } else {
+        console.log('✅ [FIX] Nenhuma propriedade precisou ser corrigida');
+    }
+    
+    return fixedCount;
+};
 
 // ========== SELEÇÃO MÚLTIPLA DE IMÓVEIS ==========
 window.selectedProperties = new Set();
@@ -1039,6 +1163,44 @@ window.loadPropertiesData = async function () {
         }
 
         window.properties = propertiesData || getInitialProperties();
+        
+        // ========== CORREÇÃO AUTOMÁTICA DE URLs (NOVO v2.0) ==========
+        // Aplicar correção IMEDIATAMENTE após carregar os dados
+        // Isso NÃO depende do Support System - é uma função nativa do Core
+        console.log('🔄 [LOAD] Aplicando correção de URLs...');
+        var fixedCount = 0;
+        var domainFixed = 0;
+        var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
+        var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
+        
+        for (var j = 0; j < window.properties.length; j++) {
+            var prop = window.properties[j];
+            var originalImages = prop.images || '';
+            var result = window.fixPropertyUrls(prop);
+            if (result.fixed) {
+                window.properties[j] = result.property;
+                fixedCount++;
+                // Verificar se foi correção de domínio
+                if (originalImages && originalImages !== result.property.images) {
+                    var hasOldDomain = false;
+                    for (var k = 0; k < OLD_DOMAINS.length; k++) {
+                        if (originalImages.includes(OLD_DOMAINS[k])) {
+                            hasOldDomain = true;
+                            break;
+                        }
+                    }
+                    if (hasOldDomain) domainFixed++;
+                }
+            }
+        }
+        
+        if (fixedCount > 0) {
+            console.log('✅ [LOAD] ' + fixedCount + ' propriedade(s) corrigida(s)');
+            if (domainFixed > 0) {
+                console.log('🔄 [LOAD] ' + domainFixed + ' propriedade(s) com domínio(s) corrigido(s)');
+            }
+        }
+        // ============================================================
         
         window.properties = window.properties.map(prop => ({
             ...prop,
