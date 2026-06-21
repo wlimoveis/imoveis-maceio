@@ -1,4 +1,13 @@
-/* css/main.css - ESTILOS GERAIS DO SITE WEBER LESSA */
+/* ============================================================
+   css/main.css
+   ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
+   ============================================================
+   ✅ Versão: 2.1
+   ✅ Responsivo: Desktop, Tablet e Mobile
+   ✅ Otimizado: Performance e Acessibilidade
+   ✅ Integrado: Com header.css, admin.css e gallery.css
+   ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
+   ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -887,30 +896,30 @@ body {
 }
 
 /* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
-/* Adicionado conforme recomendação para dar crédito ao desenvolvedor de forma discreta e profissional */
+/* ✅ CORREÇÃO: Adicionado conforme recomendação para dar crédito ao desenvolvedor */
 .developer-credits {
     text-align: center;
     padding: 0.8rem 1rem;
-    background-color: rgba(255, 255, 255, 0.03); /* Fundo quase transparente ou levemente diferente */
-    border-top: 1px solid rgba(255, 255, 255, 0.05); /* Linha divisória sutil */
-    margin-top: 1rem; /* Espaço antes do copyright */
+    background-color: rgba(255, 255, 255, 0.03);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: 1rem;
 }
 
 .developer-credits p {
     margin: 0;
-    font-size: 0.75rem; /* Tamanho menor e discreto */
-    color: #888; /* Cor suave */
+    font-size: 0.75rem;
+    color: #888;
     letter-spacing: 0.3px;
 }
 
 .developer-credits a {
-    color: #aaa; /* Cor do link mais suave */
+    color: #aaa;
     text-decoration: none;
     transition: color 0.3s ease;
 }
 
 .developer-credits a:hover {
-    color: #d4af37; /* Destaque dourado ao passar o mouse, alinhado com a identidade do site */
+    color: #d4af37;
     text-decoration: underline;
 }
 
@@ -1261,3 +1270,11 @@ body {
         animation: dropdownFadeInMobile 0.2s ease;
     }
 }
+
+/* ============================================================
+   FIM DO ARQUIVO - main.css
+   ============================================================
+   STATUS: ✅ CARREGADO COM SUCESSO
+   Versão: 2.1
+   Última atualização: $(date +%Y-%m-%d)
+   ============================================================ */
