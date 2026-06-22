@@ -1,0 +1,35 @@
+# robots.txt para weberlessaimoveis.com.br
+# Permite todos os robôs de busca
+
+User-agent: *
+Allow: /
+
+# Diretório onde está o sitemap
+Sitemap: https://weberlessaimoveis.com.br/sitemap.xml
+
+# Regras adicionais para melhor indexação
+# Permite acesso a todos os recursos essenciais
+Allow: /css/
+Allow: /js/
+Allow: /assets/
+
+# Bloqueia acesso a recursos não essenciais (opcional)
+Disallow: /css/admin.css
+Disallow: /js/modules/admin.js
+Disallow: /js/modules/supabase.js
+
+# Respeito a robots de busca
+# Googlebot (otimizado para desktop e mobile)
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 1
+
+# Bingbot
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 2
+
+# Todos os outros robôs
+User-agent: *
+Allow: /
+Crawl-delay: 2
