@@ -2,14 +2,14 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.3
+   ✅ Versão: 2.4
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
    ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
-   ✅ CORREÇÃO: Contraste melhorado para acessibilidade
-   ✅ CORREÇÃO: Animação whatsappPulse otimizada para performance
-   ✅ CORREÇÃO: Cores ajustadas para melhor legibilidade
+   ✅ CORREÇÃO: Contraste melhorado para acessibilidade (PageSpeed Insights)
+   ✅ CORREÇÃO: Contraste do CTA Button, Badges e Rural Tags
+   ✅ CORREÇÃO: Developer Credits com cores mais visíveis
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -214,7 +214,7 @@ body {
     justify-content: center;
 }
 
-/* ========== ESTILOS DOS BOTÕES DE FILTRO CORRIGIDOS ========== */
+/* ========== ESTILOS DOS BOTÕES DE FILTRO ========== */
 .filter-btn {
     background: white !important;
     border: 2px solid #d1d8dd !important;
@@ -439,7 +439,7 @@ body {
     background: linear-gradient(45deg, var(--green), #2ecc71);
 }
 
-/* ✅ CORREÇÃO: Contraste melhorado - badge com fundo mais escuro */
+/* ✅ CORREÇÃO: Property Badge com contraste melhorado */
 .property-badge {
     position: absolute;
     top: 15px;
@@ -450,11 +450,14 @@ body {
     border-radius: 20px;
     font-size: 0.8rem;
     font-weight: 700;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    z-index: 10;
 }
 
+/* ✅ CORREÇÃO: Rural Badge com contraste melhorado */
 .rural-badge {
     background: var(--green);
+    color: var(--white);
 }
 
 .property-content {
@@ -535,15 +538,16 @@ body {
     }
 }
 
+/* ✅ CORREÇÃO: Rural Tag com contraste melhorado */
 .rural-tag {
-    background: #e8f5e9;
-    border-color: #c8e6c9;
-    color: #1e8449 !important;
+    background: #d5f5e3;
+    border-color: #1e8449;
+    color: #0e4d2a !important; /* Verde escuro para melhor legibilidade */
 }
 
 .rural-tag:hover {
     background: #c8e6c9;
-    border-color: #81c784;
+    border-color: #1e8449;
 }
 
 .feature-tag.highlight {
@@ -586,7 +590,6 @@ body {
     }
 }
 
-/* ✅ CORREÇÃO: Contraste melhorado - fundo mais escuro */
 .contact-btn {
     background: var(--whatsapp);
     color: var(--white);
@@ -873,7 +876,7 @@ body {
 }
 
 .footer-section p, .footer-section a {
-    color: #ccc;
+    color: #cccccc;
     margin-bottom: 0.8rem;
     display: block;
     text-decoration: none;
@@ -912,7 +915,7 @@ body {
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
-    color: #aaa;
+    color: #aaaaaa;
 }
 
 .copyright p {
@@ -921,7 +924,7 @@ body {
 }
 
 /* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
-/* ✅ CORREÇÃO: Cores clareadas para melhor legibilidade */
+/* ✅ CORREÇÃO: Cores com melhor contraste e legibilidade */
 .developer-credits {
     text-align: center;
     padding: 0.8rem 1rem;
@@ -933,31 +936,36 @@ body {
 .developer-credits p {
     margin: 0;
     font-size: 0.75rem;
-    color: #aaa;
+    color: #cccccc;
     letter-spacing: 0.3px;
 }
 
 .developer-credits a {
-    color: #c9b99a;
+    color: #d4af37;
     text-decoration: none;
     transition: color 0.3s ease;
+    font-weight: 500;
 }
 
 .developer-credits a:hover {
-    color: #d4af37;
+    color: #f5d76e;
     text-decoration: underline;
 }
 
 .developer-credits strong {
-    font-weight: 600;
-    color: #c9b99a;
+    font-weight: 700;
+    color: #d4af37;
+}
+
+.developer-credits i {
+    color: #aaaaaa;
 }
 
 @media (max-width: 768px) {
     .developer-credits p {
         font-size: 0.65rem;
         line-height: 1.5;
-        color: #999;
+        color: #bbbbbb;
     }
     
     .developer-credits {
@@ -966,11 +974,11 @@ body {
     }
     
     .developer-credits a {
-        color: #b8a88a;
+        color: #c9b99a;
     }
     
     .developer-credits strong {
-        color: #b8a88a;
+        color: #c9b99a;
     }
 }
 
@@ -1300,6 +1308,6 @@ body {
    FIM DO ARQUIVO - main.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.3
+   Versão: 2.4
    Última atualização: 2026-06-23
    ============================================================ */
