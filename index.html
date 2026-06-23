@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.6
+     ✅ Versão: 2.7
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -11,13 +11,17 @@
      ✅ GitHub Actions: Com marcadores de carregamento
      ✅ PageSpeed Insights: Correções de SEO e Acessibilidade
      ✅ Google Analytics: Tag gtag.js instalada (G-BL8052BQ1L)
-     ✅ Google Search Console: Verificação via Analytics
+     ✅ Google Search Console: Dupla verificação (original + nova)
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <!-- ========== META TAG DO GOOGLE SEARCH CONSOLE ========== -->
+    <!-- ========== GOOGLE SEARCH CONSOLE - VERIFICAÇÃO ========== -->
+    <!-- Meta tag original (já funcionando) -->
     <meta name="google-site-verification" content="googled0231963aaa503d8" />
+    <!-- Meta tag solicitada pelo Search Console (verificação adicional) -->
+    <meta name="google-site-verification" content="Njr3tXSfxmNsGo9FhxoE0wCtqOKp5AsmNBC1CdEEMUg" />
+    <!-- ========== FIM GOOGLE SEARCH CONSOLE ========== -->
 
     <!-- ========== GOOGLE ANALYTICS - TAG INSTALADA ========== -->
     <!-- Google tag (gtag.js) -->
@@ -93,13 +97,13 @@
         // index.html - SCRIPT DE VALIDAÇÃO PARA GITHUB ACTIONS
         // ============================================================
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.6');
+        console.log('📊 [index.html] Versão: 2.7');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         // Sinalizar que o HTML foi carregado completamente
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.6';
+        window.__INDEX_HTML_VERSION = '2.7';
         window.__INDEX_HTML_STATUS = 'success';
 
         // Verificar se todos os CSS foram carregados
@@ -174,7 +178,6 @@
         <section class="hero">
             <h1>Encontre seu imóvel dos sonhos em Maceió</h1>
             <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliário alagoano</p>
-            <!-- ✅ CORREÇÃO: CLS - width: fit-content para evitar movimento -->
             <a href="#properties" class="cta-button" style="width: fit-content; margin: 0 auto; display: inline-block;">
                 <i class="fas fa-home" aria-hidden="true"></i> Ver Imóveis
             </a>
@@ -214,7 +217,6 @@
                 </div>
                 <div class="about-image">
                     <div class="image-container">
-                        <!-- ✅ CORREÇÃO: fetchpriority="high" para a imagem LCP -->
                         <img src="https://wlimoveis.github.io/imoveis-maceio/assets/equipe-weber-lessa.jpg" 
                              alt="Equipe Weber Lessa - Corretor &amp; Consultor com mais de 30 anos de experiência em Maceió" 
                              loading="lazy" 
@@ -555,7 +557,7 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.6
+         Versão: 2.7
          Última atualização: 2026-06-23
          ============================================================ -->
 </body>
