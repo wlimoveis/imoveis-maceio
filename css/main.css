@@ -2,13 +2,14 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.5
+   ✅ Versão: 2.6
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
    ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
    ✅ CORREÇÃO: Contraste FORÇADO com !important (PageSpeed Insights)
    ✅ CORREÇÃO: Contraste do CTA Button, Badges e Rural Tags
+   ✅ CORREÇÃO: Especificidade aumentada para sobrescrever estilos inline
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -68,8 +69,10 @@ body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
-/* ✅ CORREÇÃO: Contraste FORÇADO - fundo mais escuro, texto branco */
-.cta-button {
+/* ✅ CORREÇÃO DEFINITIVA: Contraste do CTA Button com !important e alta especificidade */
+a.cta-button,
+.cta-button,
+section.hero a.cta-button {
     display: inline-block;
     background: #d4a017 !important;
     color: #ffffff !important;
@@ -82,7 +85,9 @@ body {
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
-.cta-button:hover {
+a.cta-button:hover,
+.cta-button:hover,
+section.hero a.cta-button:hover {
     background: #b8941f !important;
     transform: translateY(-3px);
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
@@ -438,8 +443,10 @@ body {
     background: linear-gradient(45deg, var(--green), #2ecc71);
 }
 
-/* ✅ CORREÇÃO FORÇADA: Property Badge com contraste melhorado */
-.property-badge {
+/* ✅ CORREÇÃO DEFINITIVA: Property Badge com !important e alta especificidade */
+div.property-badge,
+.property-badge,
+.property-card .property-badge {
     position: absolute;
     top: 15px;
     left: 15px;
@@ -454,8 +461,9 @@ body {
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-/* ✅ CORREÇÃO FORÇADA: Rural Badge com contraste melhorado */
-.rural-badge {
+/* ✅ CORREÇÃO DEFINITIVA: Rural Badge com !important */
+.rural-badge,
+.property-card .rural-badge {
     background: #1e8449 !important;
     color: #ffffff !important;
 }
@@ -538,14 +546,18 @@ body {
     }
 }
 
-/* ✅ CORREÇÃO FORÇADA: Rural Tag com contraste melhorado */
-.rural-tag {
+/* ✅ CORREÇÃO DEFINITIVA: Rural Tag com !important */
+.rural-tag,
+span.rural-tag,
+.feature-tag.rural-tag {
     background: #d5f5e3 !important;
     border-color: #1e8449 !important;
     color: #0e4d2a !important;
 }
 
-.rural-tag:hover {
+.rural-tag:hover,
+span.rural-tag:hover,
+.feature-tag.rural-tag:hover {
     background: #c8e6c9 !important;
     border-color: #1e8449 !important;
 }
@@ -1304,9 +1316,59 @@ body {
 }
 
 /* ============================================================
+   CORREÇÕES DE CONTRASTE - FORÇADAS (PageSpeed Insights)
+   ============================================================ */
+
+/* ✅ CORREÇÃO DEFINITIVA: CTA Button - MAIS ESPECÍFICO */
+a.cta-button,
+.cta-button,
+section.hero a.cta-button,
+.hero .cta-button {
+    background: #d4a017 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+a.cta-button:hover,
+.cta-button:hover,
+section.hero a.cta-button:hover,
+.hero .cta-button:hover {
+    background: #b8941f !important;
+    color: #ffffff !important;
+}
+
+/* ✅ CORREÇÃO DEFINITIVA: Property Badge - MAIS ESPECÍFICO */
+div.property-badge,
+.property-badge,
+.property-card .property-badge,
+div.property-card .property-badge {
+    background: #d4a017 !important;
+    color: #ffffff !important;
+    font-weight: 700 !important;
+}
+
+/* ✅ CORREÇÃO DEFINITIVA: Rural Badge - MAIS ESPECÍFICO */
+.rural-badge,
+.property-card .rural-badge,
+div.rural-badge {
+    background: #1e8449 !important;
+    color: #ffffff !important;
+}
+
+/* ✅ CORREÇÃO DEFINITIVA: Rural Tag - MAIS ESPECÍFICO */
+.rural-tag,
+span.rural-tag,
+.feature-tag.rural-tag,
+span.feature-tag.rural-tag {
+    background: #d5f5e3 !important;
+    border-color: #1e8449 !important;
+    color: #0e4d2a !important;
+}
+
+/* ============================================================
    FIM DO ARQUIVO - main.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.5
+   Versão: 2.6
    Última atualização: 2026-06-23
    ============================================================ */
