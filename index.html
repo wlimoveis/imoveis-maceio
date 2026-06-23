@@ -1,15 +1,17 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.3
+     ✅ Versão: 2.4
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
-     ✅ Acessibilidade: lang, alt, aria-label
+     ✅ Acessibilidade: lang, alt, aria-label, main landmark
      ✅ Integrado: Com todos os módulos JS e CSS
      ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
      ✅ GitHub Actions: Com marcadores de carregamento
-     ✅ PageSpeed Insights: Correções de SEO e Performance
+     ✅ PageSpeed Insights: Correções de SEO e Acessibilidade
+     ✅ CORREÇÃO: Adicionado <main> para ponto de referência principal
+     ✅ CORREÇÃO: fetchpriority="high" na imagem LCP
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -22,20 +24,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 
     <!-- ========== META TITLE ========== -->
-    <title>Weber Lessa Corretor & Consultor - Imóveis em Maceió - CRECI 654/AL</title>
+    <title>Weber Lessa Corretor &amp; Consultor - Imóveis em Maceió - CRECI 654/AL</title>
 
     <!-- ========== META TAGS DE SEO ========== -->
-    <meta name="description" content="Encontre imóveis em Maceió com Weber Lessa Corretor & Consultor. Especialista em venda, compra e regularização de imóveis residenciais, comerciais e rurais. CRECI: 654/AL. +30 anos de experiência.">
+    <meta name="description" content="Encontre imóveis em Maceió com Weber Lessa Corretor &amp; Consultor. Especialista em venda, compra e regularização de imóveis residenciais, comerciais e rurais. CRECI: 654/AL. +30 anos de experiência.">
     <meta name="keywords" content="imóveis Maceió, corretor de imóveis, Weber Lessa, compra e venda, regularização de imóveis, CRECI 654, imóveis residenciais, imóveis comerciais, propriedades rurais, Maceió-AL">
     <meta name="robots" content="index, follow">
-    <meta name="author" content="Weber Lessa Corretor & Consultor">
+    <meta name="author" content="Weber Lessa Corretor &amp; Consultor">
     <meta name="geo.region" content="BR-AL">
     <meta name="geo.placename" content="Maceió">
     <meta name="geo.position" content="-9.649848;-35.708950">
     <meta name="ICBM" content="-9.649848, -35.708950">
 
     <!-- ========== OPEN GRAPH TAGS (Compartilhamento em Redes Sociais) ========== -->
-    <meta property="og:title" content="Weber Lessa Corretor & Consultor - Imóveis em Maceió">
+    <meta property="og:title" content="Weber Lessa Corretor &amp; Consultor - Imóveis em Maceió">
     <meta property="og:description" content="Encontre seu imóvel dos sonhos em Maceió com a expertise de Weber Lessa, CRECI: 654/AL. +30 anos de experiência no mercado imobiliário.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://weberlessaimoveis.com.br/">
@@ -43,11 +45,11 @@
     <meta property="og:image:width" content="880">
     <meta property="og:image:height" content="1184">
     <meta property="og:locale" content="pt_BR">
-    <meta property="og:site_name" content="Weber Lessa Corretor & Consultor">
+    <meta property="og:site_name" content="Weber Lessa Corretor &amp; Consultor">
 
     <!-- ========== TWITTER CARDS ========== -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Weber Lessa Corretor & Consultor - Imóveis em Maceió">
+    <meta name="twitter:title" content="Weber Lessa Corretor &amp; Consultor - Imóveis em Maceió">
     <meta name="twitter:description" content="Encontre seu imóvel dos sonhos em Maceió com a expertise de Weber Lessa, CRECI: 654/AL.">
     <meta name="twitter:image" content="https://weberlessaimoveis.com.br/assets/equipe-weber-lessa.jpg">
 
@@ -80,13 +82,13 @@
         // index.html - SCRIPT DE VALIDAÇÃO PARA GITHUB ACTIONS
         // ============================================================
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.3');
+        console.log('📊 [index.html] Versão: 2.4');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         // Sinalizar que o HTML foi carregado completamente
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.3';
+        window.__INDEX_HTML_VERSION = '2.4';
         window.__INDEX_HTML_STATUS = 'success';
 
         // Verificar se todos os CSS foram carregados
@@ -105,7 +107,7 @@
                 <div class="brand-section">
                     <div class="logo">
                         <span class="logo-wl">WL</span>
-                        <div class="logo-badge"><i class="fas fa-key"></i></div>
+                        <div class="logo-badge"><i class="fas fa-key" aria-hidden="true"></i></div>
                     </div>
                     <div class="brand-info">
                         <div class="brand-name-compact">
@@ -113,19 +115,19 @@
                             <span class="last-name-compact">LESSA</span>
                         </div>
                         <div class="creci-info-compact">
-                            <div class="creci-badge-compact"><i class="fas fa-shield-alt"></i><span class="creci-label-compact">CRECI</span><span class="creci-number-compact">654/AL</span></div>
-                            <div class="certified-badge-compact"><i class="fas fa-award"></i><span>CRECI CERTIFICADO</span></div>
+                            <div class="creci-badge-compact"><i class="fas fa-shield-alt" aria-hidden="true"></i><span class="creci-label-compact">CRECI</span><span class="creci-number-compact">654/AL</span></div>
+                            <div class="certified-badge-compact"><i class="fas fa-award" aria-hidden="true"></i><span>CRECI CERTIFICADO</span></div>
                         </div>
-                        <div class="specialty-compact"><i class="fas fa-home"></i><span class="specialty-title-compact">CORRETOR &amp; CONSULTOR</span><span class="specialty-subtitle-compact">IMOBILIARIO | JURIDICO</span></div>
+                        <div class="specialty-compact"><i class="fas fa-home" aria-hidden="true"></i><span class="specialty-title-compact">CORRETOR &amp; CONSULTOR</span><span class="specialty-subtitle-compact">IMOBILIARIO | JURIDICO</span></div>
                     </div>
                 </div>
                 <div class="contact-section">
                     <div class="phone-whatsapp-compact">
-                        <div class="phone-icons-compact"><i class="fas fa-mobile-alt"></i><i class="fab fa-whatsapp"></i></div>
+                        <div class="phone-icons-compact"><i class="fas fa-mobile-alt" aria-hidden="true"></i><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
                         <div class="phone-number-compact"><span class="phone-prefix-compact">(82)</span><span class="phone-main-compact">9.9604-4513</span></div>
                     </div>
                     <div class="address-compact">
-                        <i class="fas fa-map-marker-alt"></i>
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i>
                         <div class="address-text-compact">
                             <span class="address-line-1">Empresarial Sizi &amp; Neusa</span>
                             <span class="address-line-2">Praca Sao Vicente, 09</span>
@@ -138,75 +140,87 @@
                 <div class="mobile-row-1">
                     <div class="mobile-logo-mini"><span>WL</span></div>
                     <div class="mobile-name-mini"><span class="mobile-first-name-mini">WEBER</span><span class="mobile-last-name-mini">LESSA</span></div>
-                    <div class="mobile-phone-mini"><i class="fas fa-mobile-alt"></i><i class="fab fa-whatsapp"></i></div>
+                    <div class="mobile-phone-mini"><i class="fas fa-mobile-alt" aria-hidden="true"></i><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
                 </div>
                 <div class="mobile-row-2">
-                    <div class="mobile-creci-mini"><i class="fas fa-shield-alt"></i><span>CRECI 654/AL</span></div>
-                    <div class="mobile-specialty-mini"><i class="fas fa-home"></i><span>CORRETOR</span></div>
+                    <div class="mobile-creci-mini"><i class="fas fa-shield-alt" aria-hidden="true"></i><span>CRECI 654/AL</span></div>
+                    <div class="mobile-specialty-mini"><i class="fas fa-home" aria-hidden="true"></i><span>CORRETOR</span></div>
                 </div>
                 <div class="mobile-row-3">
-                    <div class="mobile-address-mini"><i class="fas fa-map-marker-alt"></i><span>Emp. Sizi &amp; Neusa</span></div>
-                    <div class="mobile-certified-mini"><i class="fas fa-award"></i><span>CERTIFICADO</span></div>
+                    <div class="mobile-address-mini"><i class="fas fa-map-marker-alt" aria-hidden="true"></i><span>Emp. Sizi &amp; Neusa</span></div>
+                    <div class="mobile-certified-mini"><i class="fas fa-award" aria-hidden="true"></i><span>CERTIFICADO</span></div>
                 </div>
             </div>
         </div>
     </header>
     <!-- ========== FIM DO HEADER ========== -->
 
-    <!-- ========== HERO SECTION ========== -->
-    <section class="hero">
-        <h1>Encontre seu imóvel dos sonhos em Maceió</h1>
-        <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliário alagoano</p>
-        <a href="#properties" class="cta-button"><i class="fas fa-home" aria-hidden="true"></i> Ver Imóveis</a>
-    </section>
-    <!-- ========== FIM DO HERO ========== -->
+    <!-- ========== CONTEÚDO PRINCIPAL ========== -->
+    <!-- ✅ CORREÇÃO: Adicionado <main> como ponto de referência principal -->
+    <main id="main-content">
 
-    <!-- ========== SERVIÇOS SECTION ========== -->
-    <section class="services">
-        <div class="section-title"><h2>Nossos Serviços Especializados</h2><p>Oferecemos soluções completas para suas necessidades imobiliárias</p></div>
-        <div class="services-grid">
-            <div class="service-card"><div class="service-icon"><i class="fas fa-users"></i></div><h3>Equipe de Corretagem</h3><p>Venda de lotes, imóveis residenciais, comerciais, sítios, incorporações, consultoria, avaliação de imóveis, chácaras e fazendas com equipe qualificada.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-building"></i></div><h3>Incorporacão Imobiliária</h3><p>Desenvolvemos empreendimentos de alto padrão com qualidade e inovação.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-usd"></i></div><h3>Financiamento Facilitado</h3><p>Linhas bancárias com boleto facilitado e condições especiais para sua aquisição.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-gavel"></i></div><h3>Regularização de Imóveis</h3><p>Usucapião, herança, inventário e toda documentação necessária para regularização.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-heart"></i></div><h3>Minha Casa Minha Vida</h3><p>Acesso facilitado ao programa governamental para realização do sonho da casa própria.</p></div>
-            <div class="service-card"><div class="service-icon"><i class="fas fa-tractor"></i></div><h3>Propriedades Rurais</h3><p>Especialistas em sítios, chácaras e fazendas com documentação completa e regularizada.</p></div>
-        </div>
-    </section>
-    <!-- ========== FIM DOS SERVIÇOS ========== -->
+        <!-- ========== HERO SECTION ========== -->
+        <section class="hero">
+            <h1>Encontre seu imóvel dos sonhos em Maceió</h1>
+            <p>Na orla mais bonita do Brasil, com a expertise de quem entende do mercado imobiliário alagoano</p>
+            <a href="#properties" class="cta-button"><i class="fas fa-home" aria-hidden="true"></i> Ver Imóveis</a>
+        </section>
+        <!-- ========== FIM DO HERO ========== -->
 
-    <!-- ========== IMÓVEIS SECTION ========== -->
-    <section class="properties" id="properties">
-        <div class="section-title"><h2>Imóveis em Destaque</h2><p>Confira nossas melhores oportunidades em Maceió e região</p></div>
-        <div class="filters"><h3>Filtrar por:</h3><div class="filter-options"><button class="filter-btn active" data-tooltip="Ver todos os imóveis">Todos</button><button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button><button class="filter-btn" data-tooltip="Lojas, salas e galpões">Comercial</button><button class="filter-btn" data-tooltip="Sítios, chácaras e fazendas">Rural</button><button class="filter-btn" data-tooltip="Incorporações e Empreendimentos">Incorporações &amp; Empreendimentos</button></div></div>
-        <div class="property-grid" id="properties-container"></div>
-    </section>
-    <!-- ========== FIM DOS IMÓVEIS ========== -->
-
-    <!-- ========== SOBRE SECTION ========== -->
-    <section class="about">
-        <div class="about-content">
-            <div class="about-text">
-                <h2>Sobre Weber Lessa</h2>
-                <p>Com mais de 30 anos de experiência no mercado imobiliário de Maceió, com formação Jurídica e especialização em Direito Imobiliário. <strong>Weber Lessa Corretor &amp; Consultor - CRECI: 654/AL</strong>, se consolidou como referência em soluções imobiliárias completas e personalizadas.</p>
-                <p>Nossa equipe especializada atua em todas as fases do processo: desde a assessoria na compra e venda, passando pela regularização documental, até o financiamento e incorporação de empreendimentos.</p>
-                <p>Localizados no Empresarial Sizi &amp; Neusa, no coração de Maceió, estamos prontos para ajudar você a realizar o sonho do imóvel próprio com segurança, transparência e expertise.</p>
+        <!-- ========== SERVIÇOS SECTION ========== -->
+        <section class="services">
+            <div class="section-title"><h2>Nossos Serviços Especializados</h2><p>Oferecemos soluções completas para suas necessidades imobiliárias</p></div>
+            <div class="services-grid">
+                <div class="service-card"><div class="service-icon"><i class="fas fa-users" aria-hidden="true"></i></div><h3>Equipe de Corretagem</h3><p>Venda de lotes, imóveis residenciais, comerciais, sítios, incorporações, consultoria, avaliação de imóveis, chácaras e fazendas com equipe qualificada.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-building" aria-hidden="true"></i></div><h3>Incorporacão Imobiliária</h3><p>Desenvolvemos empreendimentos de alto padrão com qualidade e inovação.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-usd" aria-hidden="true"></i></div><h3>Financiamento Facilitado</h3><p>Linhas bancárias com boleto facilitado e condições especiais para sua aquisição.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-gavel" aria-hidden="true"></i></div><h3>Regularização de Imóveis</h3><p>Usucapião, herança, inventário e toda documentação necessária para regularização.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-hand-holding-heart" aria-hidden="true"></i></div><h3>Minha Casa Minha Vida</h3><p>Acesso facilitado ao programa governamental para realização do sonho da casa própria.</p></div>
+                <div class="service-card"><div class="service-icon"><i class="fas fa-tractor" aria-hidden="true"></i></div><h3>Propriedades Rurais</h3><p>Especialistas em sítios, chácaras e fazendas com documentação completa e regularizada.</p></div>
             </div>
-            <div class="about-image">
-                <div class="image-container">
-                    <img src="https://wlimoveis.github.io/imoveis-maceio/assets/equipe-weber-lessa.jpg" alt="Equipe Weber Lessa - Corretor & Consultor com mais de 30 anos de experiência em Maceió" loading="lazy" width="880" height="1184" onerror="this.style.display='none'; this.parentElement.querySelector('.image-fallback').style.display='flex';">
-                    <div class="image-overlay">
-                        <div class="overlay-content"><i class="fas fa-star"></i><span>+30 anos de experiência</span><i class="fas fa-star"></i></div>
-                        <div class="overlay-content"><i class="fas fa-home"></i><span>+500 imóveis negociados</span><i class="fas fa-home"></i></div>
-                        <div class="overlay-content"><i class="fas fa-smile"></i><span>Clientes satisfeitos</span><i class="fas fa-smile"></i></div>
-                    </div>
-                    <div class="image-fallback" style="display: none;"><i class="fas fa-users"></i><p>Equipe Weber Lessa</p><p class="subtitle">Corretor &amp; Consultor</p></div>
+        </section>
+        <!-- ========== FIM DOS SERVIÇOS ========== -->
+
+        <!-- ========== IMÓVEIS SECTION ========== -->
+        <section class="properties" id="properties">
+            <div class="section-title"><h2>Imóveis em Destaque</h2><p>Confira nossas melhores oportunidades em Maceió e região</p></div>
+            <div class="filters"><h3>Filtrar por:</h3><div class="filter-options"><button class="filter-btn active" data-tooltip="Ver todos os imóveis">Todos</button><button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button><button class="filter-btn" data-tooltip="Lojas, salas e galpões">Comercial</button><button class="filter-btn" data-tooltip="Sítios, chácaras e fazendas">Rural</button><button class="filter-btn" data-tooltip="Incorporações e Empreendimentos">Incorporações &amp; Empreendimentos</button></div></div>
+            <div class="property-grid" id="properties-container"></div>
+        </section>
+        <!-- ========== FIM DOS IMÓVEIS ========== -->
+
+        <!-- ========== SOBRE SECTION ========== -->
+        <section class="about">
+            <div class="about-content">
+                <div class="about-text">
+                    <h2>Sobre Weber Lessa</h2>
+                    <p>Com mais de 30 anos de experiência no mercado imobiliário de Maceió, com formação Jurídica e especialização em Direito Imobiliário. <strong>Weber Lessa Corretor &amp; Consultor - CRECI: 654/AL</strong>, se consolidou como referência em soluções imobiliárias completas e personalizadas.</p>
+                    <p>Nossa equipe especializada atua em todas as fases do processo: desde a assessoria na compra e venda, passando pela regularização documental, até o financiamento e incorporação de empreendimentos.</p>
+                    <p>Localizados no Empresarial Sizi &amp; Neusa, no coração de Maceió, estamos prontos para ajudar você a realizar o sonho do imóvel próprio com segurança, transparência e expertise.</p>
                 </div>
-                <div class="image-caption"><i class="fas fa-quote-left"></i><p><strong>Equipe Weber Lessa</strong> — Profissionais comprometidos com o seu sonho de morar bem em Maceió</p><i class="fas fa-quote-right"></i></div>
+                <div class="about-image">
+                    <div class="image-container">
+                        <img src="https://wlimoveis.github.io/imoveis-maceio/assets/equipe-weber-lessa.jpg" 
+                             alt="Equipe Weber Lessa - Corretor &amp; Consultor com mais de 30 anos de experiência em Maceió" 
+                             loading="lazy" 
+                             width="880" 
+                             height="1184" 
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.image-fallback').style.display='flex';">
+                        <div class="image-overlay">
+                            <div class="overlay-content"><i class="fas fa-star" aria-hidden="true"></i><span>+30 anos de experiência</span><i class="fas fa-star" aria-hidden="true"></i></div>
+                            <div class="overlay-content"><i class="fas fa-home" aria-hidden="true"></i><span>+500 imóveis negociados</span><i class="fas fa-home" aria-hidden="true"></i></div>
+                            <div class="overlay-content"><i class="fas fa-smile" aria-hidden="true"></i><span>Clientes satisfeitos</span><i class="fas fa-smile" aria-hidden="true"></i></div>
+                        </div>
+                        <div class="image-fallback" style="display: none;"><i class="fas fa-users" aria-hidden="true"></i><p>Equipe Weber Lessa</p><p class="subtitle">Corretor &amp; Consultor</p></div>
+                    </div>
+                    <div class="image-caption"><i class="fas fa-quote-left" aria-hidden="true"></i><p><strong>Equipe Weber Lessa</strong> — Profissionais comprometidos com o seu sonho de morar bem em Maceió</p><i class="fas fa-quote-right" aria-hidden="true"></i></div>
+                </div>
             </div>
-        </div>
-    </section>
-    <!-- ========== FIM DO SOBRE ========== -->
+        </section>
+        <!-- ========== FIM DO SOBRE ========== -->
+
+    </main>
+    <!-- ========== FIM DO CONTEÚDO PRINCIPAL ========== -->
 
     <!-- ========== FOOTER COM RODAPÉ DUPLO ========== -->
     <footer class="footer">
@@ -272,17 +286,17 @@
 
     <!-- ========== PAINEL DE ADMINISTRACAO ========== -->
     <section class="admin-panel" id="adminPanel">
-        <h3 style="text-align: center; color: #1a5276; margin-bottom: 0.8rem;"><i class="fas fa-cog"></i> Painel do Corretor - Weber Lessa</h3>
+        <h3 style="text-align: center; color: #1a5276; margin-bottom: 0.8rem;"><i class="fas fa-cog" aria-hidden="true"></i> Painel do Corretor - Weber Lessa</h3>
 
         <div class="admin-tabs">
-            <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-database"></i> GERENCIAR</button>
-            <button class="admin-tab" data-tab="form-tab"><i class="fas fa-file-code"></i> INCLUIR/EDITAR</button>
+            <button class="admin-tab active" data-tab="manage-tab"><i class="fas fa-database" aria-hidden="true"></i> GERENCIAR</button>
+            <button class="admin-tab" data-tab="form-tab"><i class="fas fa-file-code" aria-hidden="true"></i> INCLUIR/EDITAR</button>
         </div>
 
         <div id="manage-tab" class="admin-tab-content active">
             <div style="background: white; padding: 0.4rem 0;">
                 <div class="section-title-windows">
-                    <i class="fas fa-archive"></i> GERENCIAR IMÓVEIS EXISTENTES
+                    <i class="fas fa-archive" aria-hidden="true"></i> GERENCIAR IMÓVEIS EXISTENTES
                     <small>total: <strong id="propertyCount">0</strong></small>
                 </div>
                 <div id="propertyList" class="manage-container"></div>
@@ -292,41 +306,41 @@
         <div id="form-tab" class="admin-tab-content form-compact">
             <div style="background: white; padding: 0.4rem 0;">
                 <div class="section-title-windows">
-                    <i class="fas fa-edit"></i> ADICIONAR NOVO IMÓVEL
+                    <i class="fas fa-edit" aria-hidden="true"></i> ADICIONAR NOVO IMÓVEL
                     <small>preencha todos os campos obrigatórios *</small>
                 </div>
                 <form id="propertyForm">
                     <div class="form-row-2cols">
                         <div class="form-group">
-                            <label><i class="fas fa-font"></i> TÍTULO *</label>
+                            <label><i class="fas fa-font" aria-hidden="true"></i> TÍTULO *</label>
                             <input type="text" id="propTitle" placeholder="Ex: Apartamento Vista Mar" required>
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-tag"></i> PREÇO *</label>
+                            <label><i class="fas fa-tag" aria-hidden="true"></i> PREÇO *</label>
                             <input type="text" id="propPrice" placeholder="Ex: R$ 450.000" required>
                         </div>
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-map-marker-alt"></i> LOCALIZAÇÃO *</label>
+                        <label><i class="fas fa-map-marker-alt" aria-hidden="true"></i> LOCALIZAÇÃO *</label>
                         <input type="text" id="propLocation" placeholder="Digite o bairro (ex: Ponta Verde)" required>
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-align-left"></i> DESCRIÇÃO</label>
+                        <label><i class="fas fa-align-left" aria-hidden="true"></i> DESCRIÇÃO</label>
                         <textarea id="propDescription" placeholder="Descreva o imóvel..." rows="2"></textarea>
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-list"></i> CARACTERÍSTICAS</label>
+                        <label><i class="fas fa-list" aria-hidden="true"></i> CARACTERÍSTICAS</label>
                         <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina">
                         <small style="display:block; margin-top:0.15rem; font-family:'Courier New', monospace; font-size:0.55rem;">Separe por vírgulas</small>
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-file-pdf"></i> DOCUMENTOS PDF</label>
+                        <label><i class="fas fa-file-pdf" aria-hidden="true"></i> DOCUMENTOS PDF</label>
                         <div id="pdfUploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i> Arraste ou clique para adicionar PDFs
+                            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i> Arraste ou clique para adicionar PDFs
                             <small style="display:block;">Max: 5 arquivos • 10MB</small>
                         </div>
                         <input type="file" id="pdfFileInput" multiple accept=".pdf,application/pdf" style="display:none;">
@@ -334,9 +348,9 @@
                     </div>
 
                     <div class="form-group">
-                        <label><i class="fas fa-images"></i> FOTOS E VÍDEOS</label>
+                        <label><i class="fas fa-images" aria-hidden="true"></i> FOTOS E VÍDEOS</label>
                         <div id="uploadArea">
-                            <i class="fas fa-cloud-upload-alt"></i> Clique ou arraste fotos e vídeos
+                            <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i> Clique ou arraste fotos e vídeos
                             <small style="display:block;">Fotos (JPG, PNG) • Vídeos (MP4) • Max: 10 arquivos • 5MB</small>
                         </div>
                         <input type="file" id="fileInput" multiple accept="image/*,video/*" style="display:none;">
@@ -345,7 +359,7 @@
 
                     <div class="form-row-2cols">
                         <div class="form-group">
-                            <label><i class="fas fa-building"></i> TIPO</label>
+                            <label><i class="fas fa-building" aria-hidden="true"></i> TIPO</label>
                             <select id="propType">
                                 <option value="residencial">Residencial</option>
                                 <option value="comercial">Comercial</option>
@@ -353,7 +367,7 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label><i class="fas fa-star"></i> DESTAQUE</label>
+                            <label><i class="fas fa-star" aria-hidden="true"></i> DESTAQUE</label>
                             <select id="propBadge">
                                 <option value="Novo">Novo</option>
                                 <option value="Destaque">Destaque</option>
@@ -368,13 +382,13 @@
                     <div class="form-group">
                         <label style="display:flex; align-items:center; gap:0.5rem; cursor:pointer;">
                             <input type="checkbox" id="propHasVideo">
-                            <span><i class="fas fa-video"></i> ESTE IMÓVEL TEM VÍDEO?</span>
+                            <span><i class="fas fa-video" aria-hidden="true"></i> ESTE IMÓVEL TEM VÍDEO?</span>
                         </label>
                     </div>
 
                     <div style="display: flex; gap: 0.5rem; margin-top: 0.6rem;">
-                        <button type="submit"><i class="fas fa-save"></i> Adicionar Imóvel ao Site</button>
-                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="display:none;"><i class="fas fa-times"></i> Cancelar</button>
+                        <button type="submit"><i class="fas fa-save" aria-hidden="true"></i> Adicionar Imóvel ao Site</button>
+                        <button type="button" id="cancelEditBtn" onclick="cancelEdit()" style="display:none;"><i class="fas fa-times" aria-hidden="true"></i> Cancelar</button>
                     </div>
                 </form>
             </div>
@@ -385,29 +399,29 @@
     <!-- ========== MODAL PDF ========== -->
     <div id="pdfModal" class="pdf-modal" style="display: none;">
         <div class="pdf-modal-content" style="background:#ece9d8; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:1rem; max-width:380px; width:90%; text-align:center;">
-            <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.6rem 0;"><i class="fas fa-file-pdf"></i> Documentos do Imóvel</h3>
+            <h3 id="pdfModalTitle" style="color:#1a5276; margin:0 0 0.6rem 0;"><i class="fas fa-file-pdf" aria-hidden="true"></i> Documentos do Imóvel</h3>
             <form id="pdfPasswordForm">
                 <div id="pdfPreview" style="margin:0.6rem 0; padding:0.4rem; background:#ffffff; border:1px solid #808080; border-radius:0px;"><p>Digite a senha para visualizar</p></div>
                 <input type="password" id="pdfPassword" placeholder="Senha" style="width:100%; padding:0.4rem; border:1px solid #808080; border-top-color:#404040; border-left-color:#404040; border-radius:0px;" autocomplete="off" required>
                 <div style="display:flex; gap:0.5rem; margin-top:0.6rem;">
-                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-lock-open"></i> Acessar</button>
-                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-times"></i> Fechar</button>
+                    <button type="submit" id="pdfAccessBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-lock-open" aria-hidden="true"></i> Acessar</button>
+                    <button type="button" id="pdfCloseBtn" style="flex:1; background:#ece9d8; color:#000000; border:1px solid #808080; border-top-color:#ffffff; border-left-color:#ffffff; border-radius:0px; padding:0.4rem; cursor:pointer;"><i class="fas fa-times" aria-hidden="true"></i> Fechar</button>
                 </div>
             </form>
-            <p style="font-size:0.6rem; color:#666; margin-top:0.6rem;"><i class="fas fa-info-circle"></i> Solicite a senha ao corretor</p>
+            <p style="font-size:0.6rem; color:#666; margin-top:0.6rem;"><i class="fas fa-info-circle" aria-hidden="true"></i> Solicite a senha ao corretor</p>
         </div>
     </div>
     <!-- ========== FIM DO MODAL PDF ========== -->
 
     <!-- ========== BOTÕES ========== -->
-    <button class="admin-toggle" id="adminToggleBtn" aria-label="Abrir Painel do Corretor"><i class="fas fa-user-cog"></i></button>
-    <button id="backToTopBtn" aria-label="Voltar ao topo da página"><i class="fas fa-chevron-up"></i></button>
+    <button class="admin-toggle" id="adminToggleBtn" aria-label="Abrir Painel do Corretor"><i class="fas fa-user-cog" aria-hidden="true"></i></button>
+    <button id="backToTopBtn" aria-label="Voltar ao topo da página"><i class="fas fa-chevron-up" aria-hidden="true"></i></button>
     <!-- ========== FIM DOS BOTÕES ========== -->
 
     <!-- ========== SCRIPTS ========== -->
     <script>
         (function() {
-            const backToTopBtn = document.getElementById('backToTopBtn');
+            var backToTopBtn = document.getElementById('backToTopBtn');
             if (!backToTopBtn) return;
 
             window.addEventListener('scroll', function() {
@@ -416,33 +430,33 @@
                     backToTopBtn.style.opacity = '0.9';
                 } else {
                     backToTopBtn.style.opacity = '0';
-                    setTimeout(() => { if (window.scrollY <= 300) backToTopBtn.style.display = 'none'; }, 300);
+                    setTimeout(function() { if (window.scrollY <= 300) backToTopBtn.style.display = 'none'; }, 300);
                 }
             });
             backToTopBtn.addEventListener('click', function() { window.scrollTo({ top: 0, behavior: 'smooth' }); });
         })();
 
         document.addEventListener('DOMContentLoaded', function() {
-            const tabs = document.querySelectorAll('.admin-tab');
-            const contents = document.querySelectorAll('.admin-tab-content');
-            tabs.forEach(tab => {
+            var tabs = document.querySelectorAll('.admin-tab');
+            var contents = document.querySelectorAll('.admin-tab-content');
+            tabs.forEach(function(tab) {
                 tab.addEventListener('click', function() {
-                    const targetId = this.getAttribute('data-tab');
-                    tabs.forEach(t => t.classList.remove('active'));
-                    contents.forEach(c => c.classList.remove('active'));
+                    var targetId = this.getAttribute('data-tab');
+                    tabs.forEach(function(t) { t.classList.remove('active'); });
+                    contents.forEach(function(c) { c.classList.remove('active'); });
                     this.classList.add('active');
                     document.getElementById(targetId).classList.add('active');
                 });
             });
 
-            const toggleBtn = document.getElementById('adminToggleBtn');
-            const adminPanel = document.getElementById('adminPanel');
+            var toggleBtn = document.getElementById('adminToggleBtn');
+            var adminPanel = document.getElementById('adminPanel');
             if (toggleBtn) {
                 toggleBtn.onclick = function() {
                     if (typeof window.toggleAdminPanel === 'function') {
                         window.toggleAdminPanel();
                     } else {
-                        const password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
+                        var password = prompt("Acesso ao Painel do Corretor\n\nDigite a senha:");
                         if (password === "wl654") {
                             if (adminPanel) {
                                 window.scrollTo(0, 0);
@@ -452,7 +466,7 @@
                                     history.pushState("", document.title, window.location.pathname + window.location.search);
                                 }
                                 adminPanel.classList.add('admin-panel-highlight');
-                                setTimeout(() => adminPanel.classList.remove('admin-panel-highlight'), 1000);
+                                setTimeout(function() { adminPanel.classList.remove('admin-panel-highlight'); }, 1000);
                                 if (typeof window.loadPropertyList === 'function') {
                                     setTimeout(window.loadPropertyList, 100);
                                 }
@@ -481,28 +495,28 @@
     <script src="js/modules/admin.js" defer></script>
 
     <script>
-        (() => {
-            const waitForConfig = setInterval(() => {
+        (function() {
+            var waitForConfig = setInterval(function() {
                 if (window.SYSTEM_CONFIG) {
                     clearInterval(waitForConfig);
                     loadSupportModules();
                 }
             }, 100);
-            setTimeout(() => { if (!window.SYSTEM_CONFIG) console.error('SYSTEM_CONFIG nao encontrado.'); }, 3000);
+            setTimeout(function() { if (!window.SYSTEM_CONFIG) console.error('SYSTEM_CONFIG nao encontrado.'); }, 3000);
 
             function loadSupportModules() {
-                const config = window.SYSTEM_CONFIG;
+                var config = window.SYSTEM_CONFIG;
                 if (!config || !config.shouldLoadSupport()) { console.log('Modo producao - sem suporte'); return; }
                 if (window.supportModulesLoaded) return;
                 window.supportModulesLoaded = true;
-                let loadedCount = 0;
-                const totalModules = config.supportModules.length;
-                config.supportModules.forEach(modulePath => {
-                    const script = document.createElement('script');
+                var loadedCount = 0;
+                var totalModules = config.supportModules.length;
+                config.supportModules.forEach(function(modulePath) {
+                    var script = document.createElement('script');
                     script.src = config.getSupportUrl(modulePath);
                     script.defer = true;
-                    script.onload = () => { loadedCount++; if (loadedCount === totalModules) console.log('Todos modulos carregados'); };
-                    script.onerror = () => console.error('Falha ao carregar:', modulePath);
+                    script.onload = function() { loadedCount++; if (loadedCount === totalModules) console.log('Todos modulos carregados'); };
+                    script.onerror = function() { console.error('Falha ao carregar:', modulePath); };
                     document.head.appendChild(script);
                 });
             }
@@ -512,7 +526,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
             console.log('Site carregado');
-            setTimeout(async () => {
+            setTimeout(async function() {
                 if (typeof window.initializeProperties === 'function') await window.initializeProperties();
                 if (typeof window.setupFilters === 'function') window.setupFilters();
                 console.log('Sistema inicializado');
@@ -525,7 +539,7 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.3
+         Versão: 2.4
          Última atualização: 2026-06-23
          ============================================================ -->
 </body>
