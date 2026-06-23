@@ -1,6 +1,7 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
 // ✅ Funções de visualização delegadas ao SharedCore
 // ✅ CORREÇÃO: Removido bloco duplicado com Illegal return statement (linhas 635-660)
+// ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -151,45 +152,52 @@ window.createVideoThumbnail = function(videoUrl, index, propertyId) {
         <div class="gallery-video-item" 
              data-video-url="${videoUrl}"
              data-index="${index}"
+             aria-label="Vídeo do imóvel - miniatura"
              style="position:relative; cursor:pointer; width:100%; height:100%;">
             <div style="position:relative; width:100%; height:100%; background:#1a1a2e;">
                 <div style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); 
                             background:rgba(0,0,0,0.7); border-radius:50%; width:50px; height:50px;
                             display:flex; align-items:center; justify-content:center; z-index:10;">
-                    <i class="fas fa-play" style="color:white; font-size:24px; margin-left:4px;"></i>
+                    <i class="fas fa-play" style="color:white; font-size:24px; margin-left:4px;" aria-hidden="true"></i>
                 </div>
                 <video style="width:100%; height:100%; object-fit:cover; filter:brightness(0.7);" 
-                       preload="metadata" muted>
+                       preload="metadata" muted
+                       aria-label="Vídeo do imóvel">
                     <source src="${videoUrl}" type="video/mp4">
                     <source src="${videoUrl}" type="video/quicktime">
                 </video>
                 <div style="position:absolute; bottom:5px; right:5px; background:rgba(0,0,0,0.6); 
                             color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                    <i class="fas fa-video"></i> Vídeo
+                    <i class="fas fa-video" aria-hidden="true"></i> Vídeo
                 </div>
             </div>
         </div>
     `;
 };
 
-// ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM (COM LAZY LOADING) ==========
-window.createImageThumbnail = function(imageUrl, index) {
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM (COM LAZY LOADING E ALT) ==========
+// ✅ CORREÇÃO: Adicionado alt com informação do imóvel
+window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel') {
+    const safeTitle = propertyTitle || 'Imóvel';
     return `
         <div class="gallery-image-item" data-index="${index}" style="width:100%; height:100%;">
             <img src="${imageUrl}" 
                  loading="lazy"
+                 alt="${safeTitle} - imagem ${index + 1} da galeria"
                  style="width:100%; height:100%; object-fit:cover;"
                  onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
         </div>
     `;
 };
 
-// ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
+// ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS (COM ACESSIBILIDADE) ==========
+// ✅ CORREÇÃO: Adicionado aria-label, aria-hidden nos ícones
 function createNavigationArrows(propertyId, totalItems, currentIndex) {
     if (totalItems <= 1) return '';
     
     return `
         <button class="gallery-nav-arrow gallery-nav-prev" 
+                aria-label="Imagem anterior"
                 onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${propertyId}, 'prev')"
                 style="position:absolute; left:10px; top:50%; transform:translateY(-50%); 
                        width:40px; height:40px; border-radius:50%; 
@@ -199,9 +207,10 @@ function createNavigationArrows(propertyId, totalItems, currentIndex) {
                        color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
                        font-size:18px; transition:all 0.3s ease; z-index:25;
                        box-shadow:0 2px 10px rgba(0,0,0,0.2);">
-            <i class="fas fa-chevron-left"></i>
+            <i class="fas fa-chevron-left" aria-hidden="true"></i>
         </button>
         <button class="gallery-nav-arrow gallery-nav-next" 
+                aria-label="Próxima imagem"
                 onclick="event.stopPropagation(); event.preventDefault(); navigatePropertyGallery(${propertyId}, 'next')"
                 style="position:absolute; right:10px; top:50%; transform:translateY(-50%); 
                        width:40px; height:40px; border-radius:50%; 
@@ -211,7 +220,7 @@ function createNavigationArrows(propertyId, totalItems, currentIndex) {
                        color:white; cursor:pointer; display:flex; align-items:center; justify-content:center;
                        font-size:18px; transition:all 0.3s ease; z-index:25;
                        box-shadow:0 2px 10px rgba(0,0,0,0.2);">
-            <i class="fas fa-chevron-right"></i>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
         </button>
     `;
 }
@@ -268,7 +277,9 @@ function updateCardMedia(propertyId, newIndex) {
         if (isVideo) {
             mainContent.outerHTML = window.createVideoThumbnail(mediaUrl, newIndex, propertyId);
         } else {
-            mainContent.outerHTML = window.createImageThumbnail(mediaUrl, newIndex);
+            // ✅ CORREÇÃO: Passar o título do imóvel para o alt
+            const propertyTitle = property.title || 'Imóvel';
+            mainContent.outerHTML = window.createImageThumbnail(mediaUrl, newIndex, propertyTitle);
         }
     }
     
@@ -302,13 +313,16 @@ window.createPropertyGallery = function(property) {
         'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80';
     
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
+    const propertyTitle = property.title || 'Imóvel';
     
     const dotsHtml = allMediaUrls.map((url, idx) => {
         const isVideo = window.isVideoUrl(url);
-        const icon = isVideo ? '<i class="fas fa-video" style="font-size:0.6rem;"></i>' : '';
+        const icon = isVideo ? '<i class="fas fa-video" style="font-size:0.6rem;" aria-hidden="true"></i>' : '';
         return `
             <div class="gallery-dot ${idx === 0 ? 'active' : ''}" 
                  data-index="${idx}"
+                 role="button"
+                 aria-label="Ir para imagem ${idx + 1} de ${totalMediaCount}"
                  onclick="event.stopPropagation(); event.preventDefault(); updateCardMedia(${property.id}, ${idx})"
                  style="${isVideo ? 'background:#9b59b6;' : ''}">
                 ${icon}
@@ -319,8 +333,8 @@ window.createPropertyGallery = function(property) {
     const arrowsHtml = totalMediaCount > 1 ? createNavigationArrows(property.id, totalMediaCount, currentIndex) : '';
     
     const viewCounterHtml = `
-    <div class="gallery-view-counter">
-        <i class="fas fa-eye"></i>
+    <div class="gallery-view-counter" aria-label="${viewCount} visualizações">
+        <i class="fas fa-eye" aria-hidden="true"></i>
         <span>${viewCount}</span>
     </div>
 `;
@@ -336,13 +350,13 @@ window.createPropertyGallery = function(property) {
                 
                 ${firstIsVideo ? 
                     window.createVideoThumbnail(firstMediaUrl, 0, property.id) :
-                    window.createImageThumbnail(firstMediaUrl, 0)
+                    window.createImageThumbnail(firstMediaUrl, 0, propertyTitle)
                 }
                 
                 ${arrowsHtml}
                 
-                <div class="gallery-indicator-mobile">
-                    <i class="fas fa-images"></i>
+                <div class="gallery-indicator-mobile" aria-label="Indicador de imagens">
+                    <i class="fas fa-images" aria-hidden="true"></i>
                     <span>1/${totalMediaCount}</span>
                 </div>
                 
@@ -352,8 +366,11 @@ window.createPropertyGallery = function(property) {
                     </div>
                 ` : ''}
                 
-                <div class="gallery-expand-icon" onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
-                    <i class="fas fa-expand"></i>
+                <div class="gallery-expand-icon" 
+                     role="button"
+                     aria-label="Expandir galeria"
+                     onclick="event.stopPropagation(); openGalleryAtCurrentIndex(${property.id})">
+                    <i class="fas fa-expand" aria-hidden="true"></i>
                 </div>
                 
                 ${viewCounterHtml}
@@ -362,14 +379,16 @@ window.createPropertyGallery = function(property) {
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
             ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
-                <i class="fas fa-video"></i> Vídeo
+                <i class="fas fa-video" aria-hidden="true"></i> Vídeo
             </div>` : ''}
             
             ${hasImages && property.pdfs && property.pdfs !== 'EMPTY' ? 
-                `<button class="pdf-access" onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
-                    style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.15);"
+                `<button class="pdf-access" 
+                        aria-label="Documentos PDF do imóvel"
+                        onclick="event.stopPropagation(); event.preventDefault(); window.PdfSystem.showModal(${property.id});"
+                        style="position: absolute; bottom: 2px; right: 35px; background: rgba(255,255,255,0.95); border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #1a5276; transition: all 0.3s ease; z-index: 15; box-shadow: 0 2px 6px rgba(0,0,0,0.3); border: 1px solid rgba(0,0,0,0.15);"
                     title="Documentos do imóvel (senha: doc123)">
-                    <i class="fas fa-file-pdf"></i>
+                    <i class="fas fa-file-pdf" aria-hidden="true"></i>
                 </button>` : ''}
         </div>
     `;
@@ -378,6 +397,7 @@ window.createPropertyGallery = function(property) {
 };
 
 // ========== ABRIR GALERIA COM REGISTRO DE VISUALIZAÇÃO ==========
+// ✅ CORREÇÃO: Adicionado aria-label nos botões do modal
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -399,6 +419,9 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
     if (!galleryModal) {
         galleryModal = document.createElement('div');
         galleryModal.id = 'propertyGalleryModal';
+        galleryModal.setAttribute('role', 'dialog');
+        galleryModal.setAttribute('aria-modal', 'true');
+        galleryModal.setAttribute('aria-label', 'Galeria de imagens');
         galleryModal.style.cssText = `
             position: fixed;
             top: 0;
@@ -419,17 +442,28 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
                 </div>
                 
                 <div style="position:fixed; bottom:20px; left:0; right:0; display:flex; justify-content:center; gap:20px; z-index:200001;">
-                    <button class="gallery-modal-btn" onclick="prevGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
-                        <i class="fas fa-chevron-left"></i>
+                    <button class="gallery-modal-btn" 
+                            aria-label="Imagem anterior"
+                            onclick="prevGalleryImage()" 
+                            style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
+                        <i class="fas fa-chevron-left" aria-hidden="true"></i>
                     </button>
-                    <div id="galleryCounter" class="gallery-counter" style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">${currentIndex + 1} / ${window.currentGalleryImages.length}</div>
-                    <button class="gallery-modal-btn" onclick="nextGalleryImage()" style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
-                        <i class="fas fa-chevron-right"></i>
+                    <div id="galleryCounter" class="gallery-counter" 
+                         aria-label="Imagem ${currentIndex + 1} de ${window.currentGalleryImages.length}"
+                         style="background:rgba(0,0,0,0.7); color:white; padding:12px 20px; border-radius:25px; font-size:16px;">${currentIndex + 1} / ${window.currentGalleryImages.length}</div>
+                    <button class="gallery-modal-btn" 
+                            aria-label="Próxima imagem"
+                            onclick="nextGalleryImage()" 
+                            style="background:rgba(0,0,0,0.7); color:white; border:none; width:50px; height:50px; border-radius:50%; cursor:pointer; font-size:24px;">
+                        <i class="fas fa-chevron-right" aria-hidden="true"></i>
                     </button>
                 </div>
                 
-                <button class="gallery-modal-close" onclick="closeGallery()" style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.7); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; z-index:200001;">
-                    <i class="fas fa-times"></i>
+                <button class="gallery-modal-close" 
+                        aria-label="Fechar galeria"
+                        onclick="closeGallery()" 
+                        style="position:fixed; top:20px; right:20px; background:rgba(0,0,0,0.7); color:white; border:none; width:45px; height:45px; border-radius:50%; cursor:pointer; font-size:20px; z-index:200001;">
+                    <i class="fas fa-times" aria-hidden="true"></i>
                 </button>
             </div>
         `;
@@ -438,6 +472,7 @@ window.openGalleryAtCurrentIndex = function(propertyId) {
         const counterElement = document.getElementById('galleryCounter');
         if (counterElement) {
             counterElement.textContent = `${currentIndex + 1} / ${window.currentGalleryImages.length}`;
+            counterElement.setAttribute('aria-label', `Imagem ${currentIndex + 1} de ${window.currentGalleryImages.length}`);
         }
     }
     
@@ -464,7 +499,8 @@ function updateGalleryModalMedia() {
                        autoplay
                        loop
                        controls
-                       controlslist="nodownload">
+                       controlslist="nodownload"
+                       aria-label="Vídeo do imóvel">
                     <source src="${currentUrl}" type="video/mp4">
                     <source src="${currentUrl}" type="video/quicktime">
                     Seu navegador não suporta vídeo.
@@ -482,6 +518,7 @@ function updateGalleryModalMedia() {
             <div style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; background:#000;">
                 <img src="${currentUrl}" 
                      loading="lazy"
+                     alt="Imagem ${window.currentGalleryIndex + 1} da galeria"
                      style="width:100%; height:100%; object-fit:contain;"
                      onerror="this.src='https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80'">
             </div>
@@ -490,6 +527,7 @@ function updateGalleryModalMedia() {
     
     if (counterElement) {
         counterElement.textContent = `${window.currentGalleryIndex + 1} / ${window.currentGalleryImages.length}`;
+        counterElement.setAttribute('aria-label', `Imagem ${window.currentGalleryIndex + 1} de ${window.currentGalleryImages.length}`);
     }
 }
 
@@ -641,3 +679,4 @@ console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
 console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll');
 console.log('✅ Funções de visualização delegadas ao SharedCore');
 console.log('✅ CORREÇÃO: Bloco duplicado removido - Illegal return statement corrigido');
+console.log('✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden adicionados');
