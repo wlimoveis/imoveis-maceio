@@ -1,10 +1,13 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.0
+// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.1
 // ============================================================
 // ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
 // ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
 // ✅ CORREÇÃO: Suporte para múltiplos domínios antigos
+// ✅ CORREÇÃO: Acessibilidade - alt descritivo nas imagens (PageSpeed Insights)
+// ✅ CORREÇÃO: Contraste do botão "Compartilhar" (PageSpeed Insights)
+// ✅ CORREÇÃO: aria-hidden em ícones decorativos (PageSpeed Insights)
 // ============================================================
 
 console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
@@ -104,7 +107,7 @@ window.fixAllPropertiesOnLoad = function() {
             if (originalImages && originalImages !== result.property.images) {
                 var hasOldDomain = false;
                 for (var j = 0; j < OLD_DOMAINS.length; j++) {
-                    if (originalImages.includes(OLD_DOMAINS[j])) {
+                    if (originalImages.indexOf(OLD_DOMAINS[j]) !== -1) {
                         hasOldDomain = true;
                         break;
                     }
@@ -277,7 +280,7 @@ window.loadSelectedPropertiesFromUrl = function() {
         
         console.log('🔗 Link com seleção de ' + ids.length + ' imóvel(is): ' + ids.join(', '));
         
-        var selectedPropertiesList = window.properties.filter(function(p) { return ids.includes(p.id); });
+        var selectedPropertiesList = window.properties.filter(function(p) { return ids.indexOf(p.id) !== -1; });
         
         if (selectedPropertiesList.length === 0) {
             console.warn('⚠️ Nenhum imóvel encontrado com os IDs fornecidos');
@@ -306,13 +309,13 @@ window.loadSelectedPropertiesFromUrl = function() {
             `;
             filterWarning.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 0.4rem;">
-                    <i class="fas fa-link" style="color: #94a3b8; font-size: 0.65rem;"></i>
+                    <i class="fas fa-link" style="color: #94a3b8; font-size: 0.65rem;" aria-hidden="true"></i>
                     <span>Link personalizado com <strong>${selectedPropertiesList.length}</strong> imóvel(is)</span>
                 </div>
                 <a href="./" style="background: transparent; color: #64748b; padding: 0.2rem 0.5rem; border-radius: 15px; text-decoration: none; font-size: 0.65rem; border: 1px solid #cbd5e1; transition: all 0.2s ease;" 
                    onmouseenter="this.style.background='#e2e8f0'; this.style.borderColor='#94a3b8'"
                    onmouseleave="this.style.background='transparent'; this.style.borderColor='#cbd5e1'">
-                    <i class="fas fa-times"></i> Limpar
+                    <i class="fas fa-times" aria-hidden="true"></i> Limpar
                 </a>
             `;
             container.appendChild(filterWarning);
@@ -573,9 +576,6 @@ class PropertyTemplateEngine {
         return html;
     }
     
-    // Função removida: isNewProperty() - não é mais necessária
-    // A badge "NOVO" agora é controlada exclusivamente pelo campo 'badge' do imóvel
-    
     _generateTemplate(property) {
         var displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
         var descriptionText = property.description || 'Descrição não disponível.';
@@ -583,14 +583,14 @@ class PropertyTemplateEngine {
             ? descriptionText.substring(0, 120) + '...' 
             : descriptionText;
         
-        // CORREÇÃO: Badge "NOVO" removida do canto superior direito
-        // Agora usa apenas o campo 'badge' do imóvel (renderizado no generateImageSection)
-        var newBadgeHtml = ''; // Badge automática removida - agora usa apenas property.badge
+        var newBadgeHtml = '';
         
         var featuresHtml = this._renderFeaturesList(property.features, property.rural);
         
         var formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
-
+        
+        // ✅ CORREÇÃO: Botão "Compartilhar" com contraste melhorado (usando var(--primary))
+        // ✅ CORREÇÃO: aria-hidden nos ícones
         var html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${this._safe(property.title)}">
                 ${this.generateImageSection(property, newBadgeHtml)}
@@ -598,7 +598,7 @@ class PropertyTemplateEngine {
                     <div class="property-price" data-price-field>${formattedPrice}</div>
                     <h3 class="property-title" data-title-field>${this._safe(property.title) || 'Sem título'}</h3>
                     <div class="property-location" data-location-field>
-                        <i class="fas fa-map-marker-alt"></i> ${this._safe(property.location) || 'Local não informado'}
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${this._safe(property.location) || 'Local não informado'}
                     </div>
                     <p data-description-field>${this._safe(truncatedDesc)}</p>
                     ${displayFeatures ? `
@@ -607,24 +607,11 @@ class PropertyTemplateEngine {
                         </div>
                     ` : ''}
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button class="contact-btn" onclick="contactAgent(${property.id})" style="flex: 2;">
-                            <i class="fab fa-whatsapp"></i> Entrar em Contato
+                        <button class="contact-btn" onclick="contactAgent(${property.id})" style="flex: 2;" aria-label="Entrar em contato sobre ${this._safe(property.title)}">
+                            <i class="fab fa-whatsapp" aria-hidden="true"></i> Entrar em Contato
                         </button>
-                        <button class="share-btn" onclick="shareProperty(${property.id})" style="
-                            background: #3498db;
-                            color: white;
-                            border: none;
-                            padding: 0.8rem;
-                            border-radius: 8px;
-                            cursor: pointer;
-                            flex: 1;
-                            display: flex;
-                            align-items: center;
-                            justify-content: center;
-                            gap: 5px;
-                            transition: all 0.3s ease;
-                        ">
-                            <i class="fas fa-share-alt"></i>
+                        <button class="share-btn" onclick="shareProperty(${property.id})" aria-label="Compartilhar ${this._safe(property.title)}">
+                            <i class="fas fa-share-alt" aria-hidden="true"></i>
                             <span style="font-size: 0.8rem;">Compartilhar</span>
                         </button>
                     </div>
@@ -634,6 +621,7 @@ class PropertyTemplateEngine {
         return html;
     }
 
+    // ✅ CORREÇÃO: Alt descritivo com título, localização e indicador de imagem
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -652,6 +640,9 @@ class PropertyTemplateEngine {
         }
         
         var firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
+        var safeTitle = this._safe(property.title) || 'Imóvel';
+        var safeLocation = this._safe(property.location) || '';
+        var altText = safeTitle + (safeLocation ? ' - ' + safeLocation : '') + ' - foto do imóvel';
         
         return `
             <div class="property-image ${property.rural ? 'rural-image' : ''}" 
@@ -663,7 +654,7 @@ class PropertyTemplateEngine {
                     <img src="${firstImageUrl}" 
                          loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
-                         alt="${this._safe(property.title)}"
+                         alt="${altText}"
                          data-original-src="${firstImageUrl}"
                          onerror="this.src='${this.imageFallback}'">
                     
@@ -672,7 +663,7 @@ class PropertyTemplateEngine {
                             position: absolute; 
                             top: 15px; 
                             left: 15px; 
-                            background: var(--gold, #FFD700); 
+                            background: var(--gold, #d4a017); 
                             color: white; 
                             padding: 0.4rem 1rem; 
                             border-radius: 20px; 
@@ -701,7 +692,7 @@ class PropertyTemplateEngine {
                             backdrop-filter: blur(4px);
                             border: 1px solid rgba(255,255,255,0.2);
                         ">
-                            <i class="fas fa-video" style="color: #FFD700;"></i>
+                            <i class="fas fa-video" style="color: #FFD700;" aria-hidden="true"></i>
                             <span>TEM VÍDEO</span>
                         </div>
                     ` : ''}
@@ -720,12 +711,13 @@ class PropertyTemplateEngine {
                             z-index: 10;
                             box-shadow: 0 2px 6px rgba(0,0,0,0.5);
                         ">
-                            <i class="fas fa-images"></i> ${imageCount}
+                            <i class="fas fa-images" aria-hidden="true"></i> ${imageCount}
                         </div>
                     ` : ''}
                     
                     <div class="gallery-expand-icon" 
                          onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
+                         aria-label="Expandir galeria de ${safeTitle}"
                          style="
                             position: absolute; 
                             bottom: 10px; 
@@ -743,12 +735,14 @@ class PropertyTemplateEngine {
                             transition: all 0.3s ease; 
                             z-index: 10;
                          ">
-                        <i class="fas fa-expand"></i>
+                        <i class="fas fa-expand" aria-hidden="true"></i>
                     </div>
                 </div>
                 
                 ${hasPdfs ? `
-                    <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" style="
+                    <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
+                            aria-label="Documentos PDF do imóvel ${safeTitle}"
+                            style="
                         position: absolute;
                         bottom: 2px;
                         right: 35px;
@@ -768,7 +762,7 @@ class PropertyTemplateEngine {
                         box-shadow: 0 2px 6px rgba(0,0,0,0.3);
                         border: 1px solid rgba(0,0,0,0.15);
                     ">
-                        <i class="fas fa-file-pdf"></i>
+                        <i class="fas fa-file-pdf" aria-hidden="true"></i>
                     </button>
                 ` : ''}
             </div>
@@ -804,7 +798,7 @@ class PropertyTemplateEngine {
             if (propertyData.location !== undefined) {
                 var locationElement = card.querySelector('[data-location-field]');
                 if (locationElement) {
-                    locationElement.innerHTML = '<i class="fas fa-map-marker-alt"></i> ' + this._safe(propertyData.location);
+                    locationElement.innerHTML = '<i class="fas fa-map-marker-alt" aria-hidden="true"></i> ' + this._safe(propertyData.location);
                 }
             }
             
@@ -864,7 +858,7 @@ class PropertyTemplateEngine {
                                 backdrop-filter: blur(4px);
                                 border: 1px solid rgba(255,255,255,0.2);
                             ">
-                                <i class="fas fa-video" style="color: #FFD700;"></i>
+                                <i class="fas fa-video" style="color: #FFD700;" aria-hidden="true"></i>
                                 <span>TEM VÍDEO</span>
                             </div>
                         `;
@@ -951,13 +945,13 @@ window.FeatureIconMapper = {
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
-            if (normalizedText === normalizedKeyword || normalizedText.includes(normalizedKeyword) || normalizedKeyword.includes(normalizedText)) {
+            if (normalizedText === normalizedKeyword || normalizedText.indexOf(normalizedKeyword) !== -1 || normalizedKeyword.indexOf(normalizedText) !== -1) {
                 return true;
             }
             var words = normalizedText.split(/\s+/);
             for (var j = 0; j < words.length; j++) {
                 var word = words[j];
-                if (word === normalizedKeyword || (normalizedKeyword.length > 2 && word.includes(normalizedKeyword))) {
+                if (word === normalizedKeyword || (normalizedKeyword.length > 2 && word.indexOf(normalizedKeyword) !== -1)) {
                     return true;
                 }
             }
@@ -983,7 +977,7 @@ window.FeatureIconMapper = {
         var ruralClass = isRural ? 'rural-tag' : '';
         return `
             <span class="feature-tag ${ruralClass}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0f0f0; border-radius: 20px; font-size: 0.75rem;">
-                <i class="fas ${iconData.icon}" style="color: ${iconData.color}; font-size: 0.7rem;"></i>
+                <i class="fas ${iconData.icon}" style="color: ${iconData.color}; font-size: 0.7rem;" aria-hidden="true"></i>
                 <span>${window.SharedCore.escapeHtml(featureText) || featureText}</span>
             </span>
         `;
@@ -1181,8 +1175,6 @@ window.loadPropertiesData = async function () {
         window.properties = propertiesData || getInitialProperties();
         
         // ========== CORREÇÃO AUTOMÁTICA DE URLs (NOVO v2.0) ==========
-        // Aplicar correção IMEDIATAMENTE após carregar os dados
-        // Isso NÃO depende do Support System - é uma função nativa do Core
         console.log('🔄 [LOAD] Aplicando correção de URLs...');
         var fixedCount = 0;
         var domainFixed = 0;
@@ -1196,7 +1188,6 @@ window.loadPropertiesData = async function () {
             if (result.fixed) {
                 window.properties[j] = result.property;
                 fixedCount++;
-                // Verificar se foi correção de domínio
                 if (originalImages && originalImages !== result.property.images) {
                     var hasOldDomain = false;
                     for (var k = 0; k < OLD_DOMAINS.length; k++) {
@@ -1387,7 +1378,13 @@ window.addNewProperty = async function(propertyData) {
             } catch (error) { console.error('❌ Erro no Supabase:', error); }
         }
 
-        var newId = (supabaseSuccess && supabaseId) ? supabaseId : (Math.max.apply(null, window.properties.map(function(p) { return parseInt(p.id) || 0; })) + 1);
+        var maxId = 0;
+        for (var i = 0; i < window.properties.length; i++) {
+            var pId = parseInt(window.properties[i].id) || 0;
+            if (pId > maxId) maxId = pId;
+        }
+        var newId = (supabaseSuccess && supabaseId) ? supabaseId : (maxId + 1);
+        
         var newProperty = {
             id: newId, title: propertyData.title, price: propertyData.price, location: propertyData.location,
             description: propertyData.description || '', features: propertyData.features,
@@ -1857,12 +1854,12 @@ window.loadPropertyList = function(page) {
     selectAllContainer.style.cssText = 'display: flex; align-items: center; gap: 0.3rem; color: white; cursor: pointer; font-size: 0.7rem;';
     selectAllContainer.innerHTML = `
         <input type="checkbox" id="selectAllCheckbox" style="width: 13px; height: 13px; cursor: pointer;">
-        <span><i class="fas fa-check-double"></i> Selecionar Todos</span>
+        <span><i class="fas fa-check-double" aria-hidden="true"></i> Selecionar Todos</span>
     `;
     selectionLeft.appendChild(selectAllContainer);
     
     var clearBtn = document.createElement('button');
-    clearBtn.innerHTML = '<i class="fas fa-times"></i> Limpar';
+    clearBtn.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i> Limpar';
     clearBtn.style.cssText = `
         background: rgba(255,255,255,0.2);
         color: white;
@@ -1896,7 +1893,7 @@ window.loadPropertyList = function(page) {
     
     var generateLinkBtn = document.createElement('button');
     generateLinkBtn.id = 'generateShareLinkBtn';
-    generateLinkBtn.innerHTML = '<i class="fas fa-share-alt"></i> Link';
+    generateLinkBtn.innerHTML = '<i class="fas fa-share-alt" aria-hidden="true"></i> Link';
     generateLinkBtn.style.cssText = `
         background: #27ae60;
         color: white;
@@ -1929,17 +1926,17 @@ window.loadPropertyList = function(page) {
     
     var viewsSpan = document.createElement('span');
     viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
-    viewsSpan.innerHTML = '<i class="fas fa-eye"></i> <strong>Views:</strong> ' + totalViews;
+    viewsSpan.innerHTML = '<i class="fas fa-eye" aria-hidden="true"></i> <strong>Views:</strong> ' + totalViews;
     statsContainer.appendChild(viewsSpan);
     
     var itemsSpan = document.createElement('span');
     itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
-    itemsSpan.innerHTML = '<i class="fas fa-building"></i> <strong>Total:</strong> ' + totalItems;
+    itemsSpan.innerHTML = '<i class="fas fa-building" aria-hidden="true"></i> <strong>Total:</strong> ' + totalItems;
     statsContainer.appendChild(itemsSpan);
     
     var showingSpan = document.createElement('span');
     showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
-    showingSpan.innerHTML = '<i class="fas fa-list"></i> <strong>Exibindo:</strong> ' + (startIndex + 1) + '-' + endIndex;
+    showingSpan.innerHTML = '<i class="fas fa-list" aria-hidden="true"></i> <strong>Exibindo:</strong> ' + (startIndex + 1) + '-' + endIndex;
     statsContainer.appendChild(showingSpan);
     
     statsHeader.appendChild(statsContainer);
@@ -2022,14 +2019,14 @@ window.loadPropertyList = function(page) {
                  title="Clique para abrir galeria">
                 ${isVideo ? `
                     <div style="position: relative; width: 100%; height: 100%; background: linear-gradient(135deg, #1a5276, #2c3e50); display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-video" style="font-size: 0.9rem; color: rgba(255,255,255,0.8);"></i>
+                        <i class="fas fa-video" style="font-size: 0.9rem; color: rgba(255,255,255,0.8);" aria-hidden="true"></i>
                     </div>
                 ` : `
                     <img src="${firstImage}" 
                          loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
-                         onerror="this.src='${defaultImage}'; this.onerror=null;"
-                         alt="${escapeTitle}">
+                         alt="${escapeTitle}"
+                         onerror="this.src='${defaultImage}'; this.onerror=null;">
                 `}
             </div>
             <div style="flex: 3; min-width: 140px;">
@@ -2038,36 +2035,36 @@ window.loadPropertyList = function(page) {
                 </strong>
                 <div style="display: flex; flex-wrap: wrap; gap: 0.25rem; margin-bottom: 0.1rem;">
                     <small style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px; font-size: ${priceFontSize};">
-                        <i class="fas fa-tag"></i> ${property.price}
+                        <i class="fas fa-tag" aria-hidden="true"></i> ${property.price}
                     </small>
                     <small style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px; font-size: ${priceFontSize};">
-                        <i class="fas fa-map-marker-alt"></i> ${property.location.substring(0, 30)}${property.location.length > 30 ? '...' : ''}
+                        <i class="fas fa-map-marker-alt" aria-hidden="true"></i> ${property.location.substring(0, 30)}${property.location.length > 30 ? '...' : ''}
                     </small>
                 </div>
                 <div style="font-size: ${indicatorFontSize}; color: #666; display: flex; flex-wrap: wrap; gap: 0.25rem; margin-top: 0.05rem;">
                     <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
-                        <i class="fas fa-id-card"></i> ${property.id}
+                        <i class="fas fa-id-card" aria-hidden="true"></i> ${property.id}
                     </span>
                     <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
-                        <i class="fas fa-images"></i> ${property.images ? property.images.split(',').filter(function(i) { return i && i.trim() && i !== 'EMPTY'; }).length : 0}
+                        <i class="fas fa-images" aria-hidden="true"></i> ${property.images ? property.images.split(',').filter(function(i) { return i && i.trim() && i !== 'EMPTY'; }).length : 0}
                     </span>
                     ${property.pdfs && property.pdfs !== 'EMPTY' ? `
                         <span style="background: #e9ecef; padding: 0.08rem 0.3rem; border-radius: 3px;">
-                            <i class="fas fa-file-pdf"></i> ${property.pdfs.split(',').filter(function(p) { return p && p.trim() && p !== 'EMPTY'; }).length}
+                            <i class="fas fa-file-pdf" aria-hidden="true"></i> ${property.pdfs.split(',').filter(function(p) { return p && p.trim() && p !== 'EMPTY'; }).length}
                         </span>
                     ` : ''}
                     <span style="background: #e3f2fd; padding: 0.08rem 0.3rem; border-radius: 3px;">
-                        <i class="fas fa-eye" style="color: #1976d2;"></i>
+                        <i class="fas fa-eye" style="color: #1976d2;" aria-hidden="true"></i>
                         <strong style="color: #1976d2;">${viewCount}</strong>
                     </span>
                     ${lastView ? `
                         <span style="background: #f3e5f5; padding: 0.08rem 0.3rem; border-radius: 3px;">
-                            <i class="fas fa-clock" style="color: #7b1fa2;"></i>
+                            <i class="fas fa-clock" style="color: #7b1fa2;" aria-hidden="true"></i>
                             <strong style="color: #7b1fa2;">${new Date(lastView).toLocaleDateString('pt-BR')}</strong>
                         </span>
                     ` : ''}
                     <span style="background: ${marketStatus.bg}; padding: 0.08rem 0.3rem; border-radius: 3px; display: inline-flex; align-items: center; gap: 0.1rem;">
-                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: ${iconFontSize};"></i>
+                        <i class="fas ${marketStatus.icon}" style="color: ${marketStatus.iconColor}; font-size: ${iconFontSize};" aria-hidden="true"></i>
                         <strong style="color: ${marketStatus.color};">Tempo:</strong>
                         <span style="color: ${marketStatus.color};">${marketStatus.text}</span>
                         <span style="display: inline-flex; align-items: baseline; gap: 0.05rem;">
@@ -2079,15 +2076,15 @@ window.loadPropertyList = function(page) {
             <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; flex-shrink: 0;">
                 <button onclick="editProperty(${property.id})" 
                         style="background: var(--accent); color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
-                    <i class="fas fa-edit"></i> Editar
+                    <i class="fas fa-edit" aria-hidden="true"></i> Editar
                 </button>
                 <button onclick="if(window.resetGalleryViews) window.resetGalleryViews(${property.id}, '${escapeTitle.replace(/'/g, "\\'").replace(/"/g, '&quot;')}')" 
                         style="background: #e67e22; color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
-                    <i class="fas fa-eye-slash"></i> Zerar
+                    <i class="fas fa-eye-slash" aria-hidden="true"></i> Zerar
                 </button>
                 <button onclick="deleteProperty(${property.id})" 
                         style="background: #e74c3c; color: white; border: none; padding: 0.2rem 0.45rem; border-radius: 3px; cursor: pointer; font-size: 0.6rem;">
-                    <i class="fas fa-trash"></i> Excluir
+                    <i class="fas fa-trash" aria-hidden="true"></i> Excluir
                 </button>
             </div>
         `;
@@ -2139,5 +2136,6 @@ if (document.readyState === 'loading') {
 // FIM DO ARQUIVO - properties.js
 // ============================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 2.0
+// Versão: 2.1
+// Última atualização: 2026-06-23
 // ============================================================
