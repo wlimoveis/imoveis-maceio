@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.5
+     ✅ Versão: 2.6
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -10,16 +10,25 @@
      ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
      ✅ GitHub Actions: Com marcadores de carregamento
      ✅ PageSpeed Insights: Correções de SEO e Acessibilidade
-     ✅ CORREÇÃO: Adicionado <main> para ponto de referência principal
-     ✅ CORREÇÃO: fetchpriority="high" na imagem LCP
-     ✅ CORREÇÃO: CLS - width: fit-content no CTA button
-     ✅ CORREÇÃO: aria-hidden="true" em ícones decorativos
+     ✅ Google Analytics: Tag gtag.js instalada (G-BL8052BQ1L)
+     ✅ Google Search Console: Verificação via Analytics
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <!-- ========== META TAG DO GOOGLE SEARCH CONSOLE ========== -->
     <meta name="google-site-verification" content="googled0231963aaa503d8" />
+
+    <!-- ========== GOOGLE ANALYTICS - TAG INSTALADA ========== -->
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-BL8052BQ1L"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'G-BL8052BQ1L');
+    </script>
+    <!-- ========== FIM GOOGLE ANALYTICS ========== -->
 
     <!-- ========== META TAGS ESSENCIAIS ========== -->
     <meta charset="UTF-8">
@@ -84,13 +93,13 @@
         // index.html - SCRIPT DE VALIDAÇÃO PARA GITHUB ACTIONS
         // ============================================================
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.5');
+        console.log('📊 [index.html] Versão: 2.6');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         // Sinalizar que o HTML foi carregado completamente
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.5';
+        window.__INDEX_HTML_VERSION = '2.6';
         window.__INDEX_HTML_STATUS = 'success';
 
         // Verificar se todos os CSS foram carregados
@@ -546,7 +555,7 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.5
+         Versão: 2.6
          Última atualização: 2026-06-23
          ============================================================ -->
 </body>
