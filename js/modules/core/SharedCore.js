@@ -1,5 +1,6 @@
-// js/modules/core/SharedCore.js - VERSÃO OTIMIZADA (código morto removido)
-console.log('🔧 SharedCore.js carregado - Versão Otimizada (código morto removido)');
+// js/modules/core/SharedCore.js - VERSÃO OTIMIZADA COM SEGURANÇA
+// ✅ CORREÇÃO DE SEGURANÇA: Senhas e chaves NÃO são mais exibidas no console
+console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -30,7 +31,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/diagnostics/diagnostics62.js',
         'debug/diagnostics/diagnostics63.js',
         'debug/diagnostics/diagnostics64.js',
-        'debug/diagnostics/diagnostics65.js',  // ← ADICIONAR
+        'debug/diagnostics/diagnostics65.js',
         'debug/function-verifier.js',
         'debug/media-logger.js',
         'debug/media-recovery.js', 
@@ -74,10 +75,17 @@ if (typeof SUPABASE_CONSTANTS === 'undefined') {
     console.log('✅ SUPABASE_CONSTANTS já definido por outro módulo');
 }
 
+// ✅ CORREÇÃO DE SEGURANÇA: NÃO exibe senhas ou chaves no console
 Object.entries(window.SUPABASE_CONSTANTS).forEach(([key, value]) => {
     if (typeof window[key] === 'undefined' || window[key] === 'undefined') {
         window[key] = value;
-        console.log(`✅ ${key} definida:`, key.includes('KEY') ? '✅ Disponível' : value.substring(0, 50) + '...');
+        // Log seguro - oculta informações sensíveis
+        const isSensitive = key.includes('KEY') || key.includes('PASSWORD');
+        if (isSensitive) {
+            console.log(`✅ ${key} definida: 🔒 (oculto por segurança)`);
+        } else {
+            console.log(`✅ ${key} definida: ${value.substring(0, 30)}...`);
+        }
     }
 });
 
@@ -672,10 +680,16 @@ setTimeout(() => {
         if (!available) allAvailable = false;
     });
     
+    // ✅ CORREÇÃO DE SEGURANÇA: Validação segura - NÃO exibe valores sensíveis
     const essentialConstants = ['SUPABASE_URL', 'SUPABASE_KEY', 'ADMIN_PASSWORD', 'PDF_PASSWORD'];
     essentialConstants.forEach(constant => {
         const exists = window[constant] !== undefined;
-        console.log(`${exists ? '✅' : '❌'} ${constant} definida`);
+        const isSensitive = constant.includes('KEY') || constant.includes('PASSWORD');
+        if (isSensitive) {
+            console.log(`${exists ? '✅' : '❌'} ${constant} definida: 🔒 (oculto)`);
+        } else {
+            console.log(`${exists ? '✅' : '❌'} ${constant} definida`);
+        }
         if (!exists) allAvailable = false;
     });
     
@@ -683,4 +697,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada (código morto removido)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (código morto removido)`);
