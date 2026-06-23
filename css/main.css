@@ -2,12 +2,14 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.2
+   ✅ Versão: 2.3
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
    ✅ Rodapé Duplo: Copyright + Créditos do Desenvolvedor
-   ✅ Ajuste: Cores clareadas para melhor legibilidade
+   ✅ CORREÇÃO: Contraste melhorado para acessibilidade
+   ✅ CORREÇÃO: Animação whatsappPulse otimizada para performance
+   ✅ CORREÇÃO: Cores ajustadas para melhor legibilidade
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -15,12 +17,17 @@
     --primary: #1a5276;
     --secondary: #2980b9;
     --accent: #3498db;
-    --gold: #f39c12;
-    --green: #27ae60;
+    --gold: #d4a017;      /* Dourado mais escuro para melhor contraste */
+    --gold-light: #f39c12;
+    --green: #1e8449;     /* Verde mais escuro para melhor contraste */
+    --green-light: #27ae60;
     --text: #2c3e50;
     --light: #ecf0f1;
     --dark: #2c3e50;
-    --success: #27ae60;
+    --success: #1e8449;
+    --white: #ffffff;
+    --whatsapp: #075e54;  /* WhatsApp mais escuro para contraste */
+    --whatsapp-hover: #0a7a6b;
 }
 
 /* ========== RESET E ESTILOS GERAIS ========== */
@@ -62,22 +69,24 @@ body {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
 }
 
+/* ✅ CORREÇÃO: Contraste melhorado - fundo mais escuro, texto branco */
 .cta-button {
     display: inline-block;
     background: var(--gold);
-    color: white;
+    color: var(--white);
     padding: 0.9rem 2rem;
     border-radius: 50px;
     font-size: 1.1rem;
-    font-weight: bold;
+    font-weight: 700;
     text-decoration: none;
     transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(243, 156, 18, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .cta-button:hover {
+    background: #b8941f;
     transform: translateY(-3px);
-    box-shadow: 0 6px 20px rgba(243, 156, 18, 0.6);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
 
 /* ========== SERVIÇOS SECTION ========== */
@@ -98,7 +107,7 @@ body {
 }
 
 .section-title p {
-    color: var(--dark);
+    color: var(--text);
     max-width: 700px;
     margin: 0 auto;
     font-size: 1rem;
@@ -144,7 +153,7 @@ body {
 }
 
 .service-card p {
-    color: var(--dark);
+    color: var(--text);
     font-size: 0.9rem;
     line-height: 1.4;
     margin-bottom: 0;
@@ -220,7 +229,6 @@ body {
 }
 
 /* ========== TOOLTIP NOS BOTÕES DE FILTRO ========== */
-/* Tooltip que aparece ao passar o mouse */
 .filter-btn::before {
     content: attr(data-tooltip);
     position: absolute;
@@ -242,7 +250,6 @@ body {
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-/* Seta do tooltip */
 .filter-btn::after {
     content: '';
     position: absolute;
@@ -264,7 +271,6 @@ body {
     visibility: visible;
 }
 
-/* Tooltip para botões ativos */
 .filter-btn.active::before {
     background: #d4af37;
     color: #1a5276;
@@ -274,7 +280,6 @@ body {
     border-color: #d4af37 transparent transparent transparent;
 }
 
-/* Responsividade: esconder tooltips em mobile */
 @media (max-width: 768px) {
     .filter-btn::before,
     .filter-btn::after {
@@ -282,7 +287,6 @@ body {
     }
 }
 
-/* ESTILO PARA BOTÃO ATIVO (CLICADO) */
 .filter-btn.active {
     background: var(--primary) !important;
     border-color: var(--primary) !important;
@@ -292,7 +296,6 @@ body {
     transform: scale(1.02) !important;
 }
 
-/* ESTILO PARA BOTÃO INATIVO COM HOVER */
 .filter-btn:not(.active):hover {
     background: #e8f4f8 !important;
     border-color: var(--accent) !important;
@@ -301,7 +304,6 @@ body {
     box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2) !important;
 }
 
-/* ESTILO PARA BOTÃO ATIVO COM HOVER */
 .filter-btn.active:hover {
     background: #0e3d5c !important;
     border-color: #0e3d5c !important;
@@ -309,7 +311,6 @@ body {
     box-shadow: 0 6px 14px rgba(26, 82, 118, 0.4) !important;
 }
 
-/* Indicador de dropdown (seta) */
 .filter-btn.has-dropdown::after {
     content: "▼" !important;
     font-size: 0.6rem !important;
@@ -324,7 +325,6 @@ body {
     opacity: 1 !important;
 }
 
-/* Botão ativo com seta */
 .filter-btn.active.has-dropdown::after {
     color: white !important;
     opacity: 1 !important;
@@ -360,7 +360,6 @@ body {
     border-radius: 3px;
 }
 
-/* Mobile para dropdown */
 @media (max-width: 768px) {
     .filter-dropdown {
         position: fixed !important;
@@ -383,7 +382,6 @@ body {
 }
 
 /* ========== PROPERTY GRID ========== */
-/* ALTERADO: auto-fit -> auto-fill, minmax(350px,1fr) -> minmax(320px,380px), adicionado justify-content:center */
 .property-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(320px, 380px));
@@ -407,7 +405,6 @@ body {
     box-shadow: 0 15px 35px rgba(0,0,0,0.15);
 }
 
-/* ========== DESTAQUE DO CARD EM EDIÇÃO ========== */
 @keyframes editPulse {
     0% { box-shadow: 0 0 0 0 rgba(243, 156, 18, 0.7); }
     70% { box-shadow: 0 0 0 10px rgba(243, 156, 18, 0); }
@@ -419,7 +416,6 @@ body {
     border-left: 4px solid #f39c12;
 }
 
-/* ========== ANIMAÇÃO PULSE PARA BADGE "NOVO" ========== */
 @keyframes pulse {
     0% { transform: scale(1); opacity: 1; }
     50% { transform: scale(1.05); opacity: 0.9; }
@@ -443,16 +439,18 @@ body {
     background: linear-gradient(45deg, var(--green), #2ecc71);
 }
 
+/* ✅ CORREÇÃO: Contraste melhorado - badge com fundo mais escuro */
 .property-badge {
     position: absolute;
     top: 15px;
     left: 15px;
     background: var(--gold);
-    color: white;
+    color: var(--white);
     padding: 0.4rem 1rem;
     border-radius: 20px;
     font-size: 0.8rem;
-    font-weight: bold;
+    font-weight: 700;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .rural-badge {
@@ -525,7 +523,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Ajuste para dispositivos móveis */
 @media (max-width: 768px) {
     .feature-tag {
         padding: 0.5rem 1rem;
@@ -538,11 +535,10 @@ body {
     }
 }
 
-/* Estilo para tags rurais */
 .rural-tag {
     background: #e8f5e9;
     border-color: #c8e6c9;
-    color: #2e7d32 !important;
+    color: #1e8449 !important;
 }
 
 .rural-tag:hover {
@@ -550,11 +546,10 @@ body {
     border-color: #81c784;
 }
 
-/* Estilo para tags de destaque */
 .feature-tag.highlight {
     background: #fff8e1;
     border-color: #ffe082;
-    color: #f57c00 !important;
+    color: #b86f00 !important;
 }
 
 .feature-tag.highlight:hover {
@@ -562,7 +557,6 @@ body {
     border-color: #ffb74d;
 }
 
-/* Responsividade para features */
 @media (max-width: 480px) {
     .feature-tag {
         padding: 0.4rem 0.8rem;
@@ -575,26 +569,32 @@ body {
     }
 }
 
-/* ========== BOTÃO WHATSAPP COM EFEITO PULSANTE ========== */
+/* ========== BOTÃO WHATSAPP - OTIMIZADO PARA PERFORMANCE ========== */
+/* ✅ CORREÇÃO: Animação usa transform + opacity em vez de box-shadow */
 @keyframes whatsappPulse {
     0% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.4);
+        transform: scale(1);
+        opacity: 1;
     }
-    70% {
-        box-shadow: 0 0 0 10px rgba(37, 211, 102, 0);
+    50% {
+        transform: scale(1.02);
+        opacity: 0.95;
     }
     100% {
-        box-shadow: 0 0 0 0 rgba(37, 211, 102, 0);
+        transform: scale(1);
+        opacity: 1;
     }
 }
 
+/* ✅ CORREÇÃO: Contraste melhorado - fundo mais escuro */
 .contact-btn {
-    background: #128C7E;
-    color: white;
+    background: var(--whatsapp);
+    color: var(--white);
     border: none;
     padding: 0.8rem 1.5rem;
     border-radius: 8px;
     font-size: 1rem;
+    font-weight: 600;
     cursor: pointer;
     width: 100%;
     transition: all 0.3s ease;
@@ -603,17 +603,46 @@ body {
     justify-content: center;
     gap: 8px;
     animation: whatsappPulse 2s infinite;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
 }
 
 .contact-btn:hover {
-    background: #20B038;
+    background: var(--whatsapp-hover);
     transform: scale(1.02);
-    box-shadow: 0 5px 15px rgba(0, 119, 182, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
     animation: none;
 }
 
 .contact-btn:active {
     transform: scale(0.98);
+}
+
+/* ========== BOTÃO COMPARTILHAR - CONTRASTE MELHORADO ========== */
+.share-btn {
+    background: var(--primary) !important;
+    color: var(--white) !important;
+    border: none;
+    padding: 0.8rem;
+    border-radius: 8px;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    transition: all 0.3s ease;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}
+
+.share-btn:hover {
+    background: #0e3d5c !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25);
+}
+
+.share-btn span {
+    font-size: 0.8rem;
 }
 
 /* ========== ANIMAÇÕES DO SISTEMA ========== */
@@ -659,7 +688,6 @@ body {
     line-height: 1.7;
 }
 
-/* Container da imagem com overlay */
 .about-image {
     background: linear-gradient(45deg, var(--accent), var(--secondary));
     border-radius: 15px;
@@ -690,7 +718,6 @@ body {
     transform: scale(1.05);
 }
 
-/* OVERLAY SOBRE A IMAGEM (ESTATÍSTICAS) */
 .image-overlay {
     position: absolute;
     bottom: 0;
@@ -720,7 +747,7 @@ body {
 }
 
 .overlay-content i {
-    color: var(--gold);
+    color: var(--gold-light);
     font-size: 0.8rem;
 }
 
@@ -732,7 +759,6 @@ body {
     color: var(--accent);
 }
 
-/* CAPTION ABAIXO DA FOTO */
 .image-caption {
     background: linear-gradient(135deg, var(--primary), var(--secondary));
     padding: 12px 20px;
@@ -746,7 +772,7 @@ body {
 }
 
 .image-caption i {
-    color: var(--gold);
+    color: var(--gold-light);
     font-size: 0.9rem;
     opacity: 0.8;
 }
@@ -760,11 +786,10 @@ body {
 }
 
 .image-caption strong {
-    color: var(--gold);
+    color: var(--gold-light);
     font-weight: 700;
 }
 
-/* Fallback */
 .image-fallback {
     flex-direction: column;
     align-items: center;
@@ -777,7 +802,7 @@ body {
 .image-fallback i {
     font-size: 3rem;
     margin-bottom: 1rem;
-    color: var(--gold);
+    color: var(--gold-light);
 }
 
 .image-fallback p {
@@ -790,7 +815,6 @@ body {
     opacity: 0.9;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .about-content {
         grid-template-columns: 1fr;
@@ -845,11 +869,11 @@ body {
 .footer-section h3 {
     font-size: 1.3rem;
     margin-bottom: 1.5rem;
-    color: var(--gold);
+    color: var(--gold-light);
 }
 
 .footer-section p, .footer-section a {
-    color: #bbb;
+    color: #ccc;
     margin-bottom: 0.8rem;
     display: block;
     text-decoration: none;
@@ -888,7 +912,7 @@ body {
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid rgba(255,255,255,0.1);
-    color: #999;
+    color: #aaa;
 }
 
 .copyright p {
@@ -897,8 +921,7 @@ body {
 }
 
 /* ===== RODAPÉ DO DESENVOLVEDOR (SECUNDÁRIO) ===== */
-/* ✅ CORREÇÃO: Adicionado conforme recomendação para dar crédito ao desenvolvedor */
-/* ✅ AJUSTE: Cores clareadas para melhor legibilidade */
+/* ✅ CORREÇÃO: Cores clareadas para melhor legibilidade */
 .developer-credits {
     text-align: center;
     padding: 0.8rem 1rem;
@@ -930,7 +953,6 @@ body {
     color: #c9b99a;
 }
 
-/* Responsividade para o rodapé do desenvolvedor */
 @media (max-width: 768px) {
     .developer-credits p {
         font-size: 0.65rem;
@@ -1090,7 +1112,6 @@ body {
     border-color: rgba(255, 255, 255, 0.4);
 }
 
-/* Responsividade para mobile */
 @media (max-width: 768px) {
     #backToTopBtn {
         bottom: 70px;
@@ -1105,9 +1126,7 @@ body {
     }
 }
 
-/* ========== ESTILOS DO DROPDOWN DE FILTROS (extraídos do FilterManager.js) ========== */
-
-/* Container do dropdown */
+/* ========== ESTILOS DO DROPDOWN DE FILTROS ========== */
 .filter-dropdown {
     position: absolute;
     z-index: 10000;
@@ -1136,7 +1155,6 @@ body {
     }
 }
 
-/* Cabeçalho do dropdown */
 .filter-dropdown-header {
     padding: 10px 12px;
     background: var(--primary);
@@ -1166,7 +1184,6 @@ body {
     transform: scale(1.1);
 }
 
-/* Opção "Todos os bairros" */
 .filter-dropdown-all {
     padding: 10px 12px;
     cursor: pointer;
@@ -1192,7 +1209,6 @@ body {
     color: var(--accent);
 }
 
-/* Opção de bairro individual */
 .filter-dropdown-item {
     padding: 8px 12px;
     cursor: pointer;
@@ -1221,7 +1237,6 @@ body {
     width: 16px;
 }
 
-/* Footer do dropdown */
 .filter-dropdown-footer {
     padding: 8px 12px;
     background: #f8f9fa;
@@ -1238,7 +1253,6 @@ body {
     margin-right: 4px;
 }
 
-/* Scrollbar do dropdown */
 .filter-dropdown::-webkit-scrollbar {
     width: 6px;
 }
@@ -1257,7 +1271,6 @@ body {
     background: var(--secondary);
 }
 
-/* Mobile para dropdown */
 @media (max-width: 768px) {
     .filter-dropdown {
         position: fixed !important;
@@ -1287,6 +1300,6 @@ body {
    FIM DO ARQUIVO - main.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.2
-   Última atualização: 2026-06-21
+   Versão: 2.3
+   Última atualização: 2026-06-23
    ============================================================ */
