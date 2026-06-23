@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.1
+// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.2
 // ============================================================
 // ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
 // ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
@@ -8,6 +8,7 @@
 // ✅ CORREÇÃO: Acessibilidade - alt descritivo nas imagens (PageSpeed Insights)
 // ✅ CORREÇÃO: Contraste do botão "Compartilhar" (PageSpeed Insights)
 // ✅ CORREÇÃO: aria-hidden em ícones decorativos (PageSpeed Insights)
+// ✅ CORREÇÃO: ARIA proibido - div com aria-label substituído por button (v2.2)
 // ============================================================
 
 console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
@@ -35,17 +36,17 @@ window.fixPropertyUrls = function(property) {
         if (url === 'EMPTY' || url.trim() === '') return url;
         
         // Se já tem o domínio correto, retorna
-        if (url.includes(SUPABASE_DOMAIN)) return url;
+        if (url.indexOf(SUPABASE_DOMAIN) !== -1) return url;
         
         // Substituir domínios antigos
         for (var i = 0; i < OLD_DOMAINS.length; i++) {
-            if (url.includes(OLD_DOMAINS[i])) {
+            if (url.indexOf(OLD_DOMAINS[i]) !== -1) {
                 return url.replace(OLD_DOMAINS[i], SUPABASE_DOMAIN);
             }
         }
         
         // Se é um nome de arquivo, reconstrói
-        if (!url.startsWith('http') && url.includes('_') && url.includes('.')) {
+        if (url.indexOf('http') !== 0 && url.indexOf('_') !== -1 && url.indexOf('.') !== -1) {
             return SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + url;
         }
         
@@ -589,8 +590,6 @@ class PropertyTemplateEngine {
         
         var formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
         
-        // ✅ CORREÇÃO: Botão "Compartilhar" com contraste melhorado (usando var(--primary))
-        // ✅ CORREÇÃO: aria-hidden nos ícones
         var html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${this._safe(property.title)}">
                 ${this.generateImageSection(property, newBadgeHtml)}
@@ -621,7 +620,7 @@ class PropertyTemplateEngine {
         return html;
     }
 
-    // ✅ CORREÇÃO: Alt descritivo com título, localização e indicador de imagem
+    // ✅ CORREÇÃO: ARIA proibido - gallery-expand-icon agora é um button com role
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -715,28 +714,31 @@ class PropertyTemplateEngine {
                         </div>
                     ` : ''}
                     
-                    <div class="gallery-expand-icon" 
-                         onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
-                         aria-label="Expandir galeria de ${safeTitle}"
-                         style="
-                            position: absolute; 
-                            bottom: 10px; 
-                            right: 10px; 
-                            background: rgba(0,0,0,0.7); 
-                            color: white; 
-                            width: 28px; 
-                            height: 28px; 
-                            border-radius: 50%; 
-                            display: flex; 
-                            align-items: center; 
-                            justify-content: center; 
-                            font-size: 0.8rem; 
-                            cursor: pointer; 
-                            transition: all 0.3s ease; 
-                            z-index: 10;
-                         ">
+                    <!-- ✅ CORREÇÃO: ARIA proibido corrigido - div com aria-label substituído por button -->
+                    <button class="gallery-expand-icon" 
+                            aria-label="Expandir galeria de ${safeTitle}"
+                            role="button"
+                            onclick="event.stopPropagation(); if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})"
+                            style="
+                                position: absolute; 
+                                bottom: 10px; 
+                                right: 10px; 
+                                background: rgba(0,0,0,0.7); 
+                                color: white; 
+                                width: 28px; 
+                                height: 28px; 
+                                border-radius: 50%; 
+                                border: 1px solid rgba(255,255,255,0.3);
+                                display: flex; 
+                                align-items: center; 
+                                justify-content: center; 
+                                font-size: 0.8rem; 
+                                cursor: pointer; 
+                                transition: all 0.3s ease; 
+                                z-index: 10;
+                            ">
                         <i class="fas fa-expand" aria-hidden="true"></i>
-                    </div>
+                    </button>
                 </div>
                 
                 ${hasPdfs ? `
@@ -841,7 +843,7 @@ class PropertyTemplateEngine {
                         var imageCountEl = imageSection.querySelector('.image-count');
                         var topPosition = imageCountEl ? '35px' : '10px';
                         
-                        imageSection.innerHTML += `
+                        var videoHtml = `
                             <div class="video-indicator" style="
                                 position: absolute;
                                 top: ${topPosition};
@@ -862,6 +864,13 @@ class PropertyTemplateEngine {
                                 <span>TEM VÍDEO</span>
                             </div>
                         `;
+                        // Inserir antes do gallery-expand-icon
+                        var expandIcon = imageSection.querySelector('.gallery-expand-icon');
+                        if (expandIcon) {
+                            expandIcon.insertAdjacentHTML('beforebegin', videoHtml);
+                        } else {
+                            imageSection.innerHTML += videoHtml;
+                        }
                     }
                 } else if (!hasVideo && videoIndicator) {
                     videoIndicator.remove();
@@ -872,11 +881,13 @@ class PropertyTemplateEngine {
                 window.TemplateCache.invalidate(propertyId);
             } else if (this._localCache) {
                 var pattern = 'prop_' + propertyId + '_';
+                var keysToDelete = [];
                 for (var key of this._localCache.keys()) {
-                    if (key.startsWith(pattern)) {
-                        this._localCache.delete(key);
+                    if (key.indexOf(pattern) === 0) {
+                        keysToDelete.push(key);
                     }
                 }
+                keysToDelete.forEach(function(key) { this._localCache.delete(key); }.bind(this));
             }
             
             card.classList.add('highlighted');
@@ -1174,7 +1185,7 @@ window.loadPropertiesData = async function () {
 
         window.properties = propertiesData || getInitialProperties();
         
-        // ========== CORREÇÃO AUTOMÁTICA DE URLs (NOVO v2.0) ==========
+        // ========== CORREÇÃO AUTOMÁTICA DE URLs ==========
         console.log('🔄 [LOAD] Aplicando correção de URLs...');
         var fixedCount = 0;
         var domainFixed = 0;
@@ -1611,7 +1622,7 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO - ULTRA COMPACTA PARA DESKTOP ==========
+// ========== FUNÇÃO DE PAGINAÇÃO ==========
 function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     itemsPerPage = itemsPerPage || null;
     var paginationDiv = document.createElement('div');
@@ -1780,7 +1791,7 @@ function createPerPageSelect(currentItemsPerPage, isDesktop) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST COM AJUSTE PERFEITO DE ALTURA (SEM ROLAGEM EXTRA) ==========
+// ========== LOAD PROPERTY LIST ==========
 window.loadPropertyList = function(page) {
     page = page || window.adminCurrentPage;
     
@@ -1817,7 +1828,6 @@ window.loadPropertyList = function(page) {
         return;
     }
     
-    // No desktop: altura automática baseada no conteúdo (sem rolagem extra)
     if (isDesktop) {
         container.style.maxHeight = 'none';
         container.style.overflowY = 'visible';
@@ -1917,7 +1927,7 @@ window.loadPropertyList = function(page) {
     selectionBar.appendChild(selectionRight);
     container.appendChild(selectionBar);
     
-    // ESTATÍSTICAS - mais compactas
+    // ESTATÍSTICAS
     var statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.3rem; border-radius: 8px; margin-bottom: 0.4rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.3rem;';
     
@@ -2136,6 +2146,6 @@ if (document.readyState === 'loading') {
 // FIM DO ARQUIVO - properties.js
 // ============================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 2.1
+// Versão: 2.2
 // Última atualização: 2026-06-23
 // ============================================================
