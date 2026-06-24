@@ -1,42 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Página inicial -->
-  <url>
-    <loc>https://weberlessaimoveis.com.br/</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  
-  <!-- Seção de Imóveis -->
-  <url>
-    <loc>https://weberlessaimoveis.com.br/#properties</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  
-  <!-- Seção de Serviços -->
-  <url>
-    <loc>https://weberlessaimoveis.com.br/#services</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- Seção Sobre -->
-  <url>
-    <loc>https://weberlessaimoveis.com.br/#about</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <!-- Painel Administrativo -->
-  <url>
-    <loc>https://weberlessaimoveis.com.br/#adminPanel</loc>
-    <lastmod>2026-06-22</lastmod>
-    <changefreq>never</changefreq>
-    <priority>0.1</priority>
-  </url>
-</urlset>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sitemap Dinâmico</title>
+    <script src="js/modules/sitemap-dynamic.js"></script>
+</head>
+<body>
+    <!-- O JavaScript vai gerar o sitemap.xml dinamicamente -->
+    <p>Carregando sitemap...</p>
+</body>
+</html>
