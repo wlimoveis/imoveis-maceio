@@ -2,13 +2,24 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Sitemap</title>
-    <script>
-        // Redirecionar para o sitemap dinâmico
-        window.location.href = 'sitemap-dynamic.xml';
-    </script>
+    <title>Sitemap Dinâmico - Weber Lessa Imóveis</title>
+    <!-- ========== CARREGAMENTO DAS DEPENDÊNCIAS ========== -->
+    <!-- Supabase Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Módulo Supabase -->
+    <script src="js/modules/supabase.js"></script>
+    <!-- SharedCore (configurações e utilitários) -->
+    <script src="js/modules/core/SharedCore.js"></script>
+    <!-- Properties (dados dos imóveis) -->
+    <script src="js/modules/properties.js"></script>
+    <!-- Sitemap Dinâmico (gerador) -->
+    <script src="js/modules/sitemap-dynamic.js"></script>
 </head>
 <body>
-    <p>Redirecionando para o sitemap...</p>
+    <!-- O conteúdo será substituído pelo XML gerado -->
+    <p style="font-family: Arial, sans-serif; text-align: center; padding: 2rem; color: #666;">
+        <strong>🗺️ Gerando sitemap...</strong><br>
+        <span style="font-size: 0.8rem;">Aguarde o carregamento dos imóveis.</span>
+    </p>
 </body>
 </html>
