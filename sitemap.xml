@@ -2,11 +2,13 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Sitemap Dinâmico</title>
-    <script src="js/modules/sitemap-dynamic.js"></script>
+    <title>Sitemap</title>
+    <script>
+        // Redirecionar para o sitemap dinâmico
+        window.location.href = 'sitemap-dynamic.xml';
+    </script>
 </head>
 <body>
-    <!-- O JavaScript vai gerar o sitemap.xml dinamicamente -->
-    <p>Carregando sitemap...</p>
+    <p>Redirecionando para o sitemap...</p>
 </body>
 </html>
