@@ -1,25 +1,42 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <title>Sitemap Dinâmico - Weber Lessa Imóveis</title>
-    <!-- ========== CARREGAMENTO DAS DEPENDÊNCIAS ========== -->
-    <!-- Supabase Client -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- Módulo Supabase -->
-    <script src="js/modules/supabase.js"></script>
-    <!-- SharedCore (configurações e utilitários) -->
-    <script src="js/modules/core/SharedCore.js"></script>
-    <!-- Properties (dados dos imóveis) -->
-    <script src="js/modules/properties.js"></script>
-    <!-- Sitemap Dinâmico (gerador) -->
-    <script src="js/modules/sitemap-dynamic.js"></script>
-</head>
-<body>
-    <!-- O conteúdo será substituído pelo XML gerado -->
-    <p style="font-family: Arial, sans-serif; text-align: center; padding: 2rem; color: #666;">
-        <strong>🗺️ Gerando sitemap...</strong><br>
-        <span style="font-size: 0.8rem;">Aguarde o carregamento dos imóveis.</span>
-    </p>
-</body>
-</html>
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <!-- Página inicial -->
+  <url>
+    <loc>https://weberlessaimoveis.com.br/</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Seção de Imóveis -->
+  <url>
+    <loc>https://weberlessaimoveis.com.br/#properties</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.9</priority>
+  </url>
+  
+  <!-- Seção de Serviços -->
+  <url>
+    <loc>https://weberlessaimoveis.com.br/#services</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- Seção Sobre -->
+  <url>
+    <loc>https://weberlessaimoveis.com.br/#about</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  
+  <!-- Painel Administrativo -->
+  <url>
+    <loc>https://weberlessaimoveis.com.br/#adminPanel</loc>
+    <lastmod>2026-06-22</lastmod>
+    <changefreq>never</changefreq>
+    <priority>0.1</priority>
+  </url>
+</urlset>
