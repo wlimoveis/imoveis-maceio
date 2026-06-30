@@ -621,6 +621,7 @@ class PropertyTemplateEngine {
     }
 
     // ✅ CORREÇÃO: ARIA proibido - gallery-expand-icon agora é um button com role
+// ========== FUNÇÃO GENERATE IMAGE SECTION (CORRIGIDA) ==========
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -673,7 +674,9 @@ class PropertyTemplateEngine {
                             ${this._safe(property.badge)}
                         </div>
                     ` : ''}
-                      
+                    
+                    <!-- ✅ INDICADOR DE VÍDEO REMOVIDO - AGORA GERADO APENAS PELO GALLERY.JS -->
+                    
                     ${hasGallery ? `
                         <div class="image-count" style="
                             position: absolute;
@@ -692,7 +695,6 @@ class PropertyTemplateEngine {
                         </div>
                     ` : ''}
                     
-                    <!-- ✅ CORREÇÃO: ARIA proibido corrigido - div com aria-label substituído por button -->
                     <button class="gallery-expand-icon" 
                             aria-label="Expandir galeria de ${safeTitle}"
                             role="button"
