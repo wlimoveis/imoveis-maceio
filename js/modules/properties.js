@@ -621,7 +621,7 @@ class PropertyTemplateEngine {
     }
 
     // ✅ CORREÇÃO: ARIA proibido - gallery-expand-icon agora é um button com role
-// ========== FUNÇÃO GENERATE IMAGE SECTION (CORRIGIDA) ==========
+// ========== FUNÇÃO GENERATE IMAGE SECTION (CORRIGIDA - SEM VIDEO-INDICATOR) ==========
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -629,7 +629,7 @@ class PropertyTemplateEngine {
         var imageCount = imageUrls.length;
         var hasGallery = imageCount > 1;
         var hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        var hasVideo = window.SharedCore.ensureBooleanVideo(property.has_video);
+        // ⚠️ NÃO USAMOS mais hasVideo aqui - removido completamente
         
         if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
@@ -674,8 +674,6 @@ class PropertyTemplateEngine {
                             ${this._safe(property.badge)}
                         </div>
                     ` : ''}
-                    
-                    <!-- ✅ INDICADOR DE VÍDEO REMOVIDO - AGORA GERADO APENAS PELO GALLERY.JS -->
                     
                     ${hasGallery ? `
                         <div class="image-count" style="
