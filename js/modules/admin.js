@@ -1,8 +1,9 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.4
+// js/modules/admin.js - Versão ESTÁVEL v2.4 COM DIAGNÓSTICO DE DUPLICIDADE
 // CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
 // SEM scroll, apenas exibição direta e carregamento da lista
+// 🔍 DIAGNÓSTICO: Verificação de duplicidade de video-indicator
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4 (OK funciona instantaneamente)');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4 (com diagnóstico de duplicidade)');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -589,5 +590,177 @@ window.stopHealthCheck = stopHealthCheck;
 window.switchToManageTab = switchToManageTab;
 window.switchToFormTab = switchToFormTab;
 
+// ============================================================
+// 🔍 DIAGNÓSTICO DE DUPLICIDADE DE VIDEO-INDICATOR
+// ============================================================
+window.diagnoseVideoIndicatorDuplicates = function() {
+    console.group('🔍 [ADMIN-DIAG] DIAGNÓSTICO DE DUPLICIDADE DE VIDEO-INDICATOR');
+    
+    // 1. Contar todos os indicadores
+    const allIndicators = document.querySelectorAll('.video-indicator');
+    console.log(`📊 Total de indicadores no DOM: ${allIndicators.length}`);
+    
+    if (allIndicators.length === 0) {
+        console.log('✅ Nenhum indicador de vídeo encontrado');
+        console.groupEnd();
+        return { total: 0, duplicates: 0, fixed: false };
+    }
+    
+    // 2. Analisar cada indicador
+    let duplicatesFound = 0;
+    let insideContainer = 0;
+    let outsideContainer = 0;
+    
+    allIndicators.forEach((el, idx) => {
+        const isInContainer = !!el.closest('.property-gallery-container');
+        const isInImage = !!el.closest('.property-image');
+        const isInCard = !!el.closest('.property-card');
+        const parent = el.parentElement;
+        const position = el.style.position || 'N/A';
+        const top = el.style.top || 'N/A';
+        const right = el.style.right || 'N/A';
+        
+        console.log(`\n📍 Indicador ${idx + 1}:`);
+        console.log(`  - Parent: ${parent?.tagName || 'N/A'} ${parent?.className || ''}`);
+        console.log(`  - Dentro do property-gallery-container? ${isInContainer ? '✅ SIM' : '❌ NÃO'}`);
+        console.log(`  - Dentro do property-image? ${isInImage ? '✅ SIM' : '❌ NÃO'}`);
+        console.log(`  - Dentro do property-card? ${isInCard ? '✅ SIM' : '❌ NÃO'}`);
+        console.log(`  - Position: ${position}, Top: ${top}, Right: ${right}`);
+        console.log(`  - HTML: ${el.outerHTML.substring(0, 150)}...`);
+        
+        if (isInContainer) insideContainer++;
+        else outsideContainer++;
+    });
+    
+    console.log(`\n📊 Resumo:`);
+    console.log(`  - Dentro do container: ${insideContainer}`);
+    console.log(`  - Fora do container: ${outsideContainer}`);
+    
+    // 3. Verificar duplicatas dentro do mesmo container
+    const cards = document.querySelectorAll('.property-card');
+    cards.forEach(card => {
+        const container = card.querySelector('.property-gallery-container');
+        if (container) {
+            const indicators = container.querySelectorAll('.video-indicator');
+            if (indicators.length > 1) {
+                duplicatesFound += indicators.length - 1;
+                console.warn(`⚠️ DUPLICIDADE DETECTADA no card ${card.dataset.propertyId}: ${indicators.length} indicadores dentro do container`);
+                indicators.forEach((el, idx) => {
+                    console.log(`  - Indicador ${idx + 1}: ${el.outerHTML.substring(0, 100)}...`);
+                });
+            }
+        }
+    });
+    
+    // 4. Verificar se há indicadores fora do container
+    const outsideIndicators = document.querySelectorAll('.property-image > .video-indicator, .property-image .video-indicator:not(.property-gallery-container .video-indicator)');
+    if (outsideIndicators.length > 0) {
+        console.warn(`⚠️ ${outsideIndicators.length} indicador(es) fora do container encontrados`);
+        outsideIndicators.forEach((el, idx) => {
+            console.log(`  - Fora do container ${idx + 1}: ${el.outerHTML.substring(0, 100)}...`);
+        });
+    }
+    
+    console.log(`\n📊 Total de duplicatas encontradas: ${duplicatesFound + outsideIndicators.length}`);
+    
+    // 5. Verificar se o admin.js está gerando indicadores
+    const adminPanel = document.getElementById('adminPanel');
+    if (adminPanel) {
+        const adminIndicators = adminPanel.querySelectorAll('.video-indicator');
+        if (adminIndicators.length > 0) {
+            console.warn(`⚠️ ADMIN.JS está gerando ${adminIndicators.length} indicador(es) de vídeo no painel!`);
+            adminIndicators.forEach((el, idx) => {
+                console.log(`  - Admin indicador ${idx + 1}: ${el.outerHTML.substring(0, 100)}...`);
+            });
+        } else {
+            console.log('✅ ADMIN.JS NÃO está gerando indicadores de vídeo no painel');
+        }
+    }
+    
+    // 6. Verificar se o Support System está carregando algo
+    const isDebug = window.location.search.includes('debug=true');
+    console.log(`\n🔍 Modo debug ativo? ${isDebug ? '✅ SIM' : '❌ NÃO'}`);
+    
+    if (window.SYSTEM_CONFIG) {
+        console.log('📦 Módulos do Support System carregados:', window.SYSTEM_CONFIG.supportModules?.length || 0);
+        const supportScripts = document.querySelectorAll('script[src*="weberlessa-support"]');
+        console.log(`📄 Scripts do Support System: ${supportScripts.length}`);
+        supportScripts.forEach((script, idx) => {
+            console.log(`  - Script ${idx + 1}: ${script.src}`);
+        });
+    }
+    
+    console.groupEnd();
+    
+    return {
+        total: allIndicators.length,
+        insideContainer: insideContainer,
+        outsideContainer: outsideContainer,
+        duplicatesFound: duplicatesFound + outsideIndicators.length,
+        isDebug: isDebug,
+        supportScripts: document.querySelectorAll('script[src*="weberlessa-support"]').length
+    };
+};
+
+// ============================================================
+// 🔧 CORREÇÃO AUTOMÁTICA DE DUPLICATAS
+// ============================================================
+window.fixVideoIndicatorDuplicates = function() {
+    console.group('🔧 [ADMIN-FIX] CORRIGINDO DUPLICATAS DE VIDEO-INDICATOR');
+    
+    let removedCount = 0;
+    
+    // 1. Remover indicadores fora do container
+    const outsideIndicators = document.querySelectorAll('.property-image > .video-indicator, .property-image .video-indicator:not(.property-gallery-container .video-indicator)');
+    outsideIndicators.forEach(el => {
+        console.log('🗑️ Removendo indicador fora do container');
+        el.remove();
+        removedCount++;
+    });
+    
+    // 2. Remover duplicatas dentro do mesmo container (manter apenas o primeiro)
+    const cards = document.querySelectorAll('.property-card');
+    cards.forEach(card => {
+        const container = card.querySelector('.property-gallery-container');
+        if (container) {
+            const indicators = container.querySelectorAll('.video-indicator');
+            if (indicators.length > 1) {
+                indicators.forEach((el, idx) => {
+                    if (idx > 0) {
+                        console.log(`🗑️ Removendo indicador duplicado ${idx + 1} do container`);
+                        el.remove();
+                        removedCount++;
+                    }
+                });
+            }
+        }
+    });
+    
+    // 3. Verificar resultado
+    const remaining = document.querySelectorAll('.video-indicator').length;
+    console.log(`✅ ${removedCount} indicador(es) removido(s)`);
+    console.log(`📊 ${remaining} indicador(es) restante(s)`);
+    
+    console.groupEnd();
+    return { removed: removedCount, remaining: remaining };
+};
+
+// ============================================================
+// AUTO-DIAGNÓSTICO NA INICIALIZAÇÃO
+// ============================================================
+setTimeout(() => {
+    console.log('🔍 [ADMIN] Executando auto-diagnóstico de duplicidade...');
+    const result = window.diagnoseVideoIndicatorDuplicates();
+    
+    if (result.duplicatesFound > 0) {
+        console.warn(`⚠️ [ADMIN] ${result.duplicatesFound} duplicata(s) encontrada(s). Aplicando correção...`);
+        window.fixVideoIndicatorDuplicates();
+    } else {
+        console.log('✅ [ADMIN] Nenhuma duplicata encontrada');
+    }
+}, 1500);
+
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
+
+console.log('✅ admin.js - Diagnóstico de duplicidade adicionado');
