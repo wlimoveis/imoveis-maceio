@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.2
+// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.3
 // ============================================================
 // ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
 // ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
@@ -9,9 +9,10 @@
 // ✅ CORREÇÃO: Contraste do botão "Compartilhar" (PageSpeed Insights)
 // ✅ CORREÇÃO: aria-hidden em ícones decorativos (PageSpeed Insights)
 // ✅ CORREÇÃO: ARIA proibido - div com aria-label substituído por button (v2.2)
+// ✅ CORREÇÃO: Removido video-indicator duplicado - agora gerenciado APENAS pelo gallery.js
 // ============================================================
 
-console.log('✅ properties.js carregado - Com altura otimizada para desktop (sem rolagem extra)');
+console.log('✅ properties.js carregado - Versão v2.3 (video-indicator removido)');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -577,6 +578,8 @@ class PropertyTemplateEngine {
         return html;
     }
     
+    // ========== FUNÇÃO _generateTemplate CORRIGIDA ==========
+    // ✅ REMOVIDO: video-indicator - agora gerenciado APENAS pelo gallery.js
     _generateTemplate(property) {
         var displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
         var descriptionText = property.description || 'Descrição não disponível.';
@@ -585,9 +588,7 @@ class PropertyTemplateEngine {
             : descriptionText;
         
         var newBadgeHtml = '';
-        
         var featuresHtml = this._renderFeaturesList(property.features, property.rural);
-        
         var formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
         
         var html = `
@@ -620,8 +621,8 @@ class PropertyTemplateEngine {
         return html;
     }
 
-    // ✅ CORREÇÃO: ARIA proibido - gallery-expand-icon agora é um button com role
-// ========== FUNÇÃO GENERATE IMAGE SECTION (CORRIGIDA - SEM VIDEO-INDICATOR) ==========
+    // ========== FUNÇÃO generateImageSection CORRIGIDA ==========
+    // ✅ REMOVIDO COMPLETAMENTE: video-indicator - agora gerenciado APENAS pelo gallery.js
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -629,7 +630,6 @@ class PropertyTemplateEngine {
         var imageCount = imageUrls.length;
         var hasGallery = imageCount > 1;
         var hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
-        // ⚠️ NÃO USAMOS mais hasVideo aqui - removido completamente
         
         if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
@@ -749,6 +749,8 @@ class PropertyTemplateEngine {
         `;
     }
     
+    // ========== FUNÇÃO updateCardContent CORRIGIDA ==========
+    // ✅ REMOVIDO: Lógica de recriação do video-indicator
     updateCardContent(propertyId, propertyData) {
         console.log('🔍 Atualizando conteúdo do card ' + propertyId, propertyData);
         
@@ -811,49 +813,8 @@ class PropertyTemplateEngine {
                 }
             }
             
-            if (propertyData.has_video !== undefined) {
-                var videoIndicator = card.querySelector('.video-indicator');
-                var hasVideo = window.SharedCore.ensureBooleanVideo(propertyData.has_video);
-                
-                if (hasVideo && !videoIndicator) {
-                    var imageSection = card.querySelector('.property-image');
-                    if (imageSection) {
-                        var imageCountEl = imageSection.querySelector('.image-count');
-                        var topPosition = imageCountEl ? '35px' : '10px';
-                        
-                        var videoHtml = `
-                            <div class="video-indicator" style="
-                                position: absolute;
-                                top: ${topPosition};
-                                right: 10px;
-                                background: rgba(0, 0, 0, 0.8);
-                                color: white;
-                                padding: 6px 12px;
-                                border-radius: 6px;
-                                font-size: 12px;
-                                display: flex;
-                                align-items: center;
-                                gap: 6px;
-                                z-index: 9;
-                                backdrop-filter: blur(4px);
-                                border: 1px solid rgba(255,255,255,0.2);
-                            ">
-                                <i class="fas fa-video" style="color: #FFD700;" aria-hidden="true"></i>
-                                <span>TEM VÍDEO</span>
-                            </div>
-                        `;
-                        // Inserir antes do gallery-expand-icon
-                        var expandIcon = imageSection.querySelector('.gallery-expand-icon');
-                        if (expandIcon) {
-                            expandIcon.insertAdjacentHTML('beforebegin', videoHtml);
-                        } else {
-                            imageSection.innerHTML += videoHtml;
-                        }
-                    }
-                } else if (!hasVideo && videoIndicator) {
-                    videoIndicator.remove();
-                }
-            }
+            // ✅ REMOVIDO COMPLETAMENTE: Lógica de recriação do video-indicator
+            // O gallery.js é o único responsável por gerenciar o indicador de vídeo
             
             if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
                 window.TemplateCache.invalidate(propertyId);
@@ -2124,6 +2085,7 @@ if (document.readyState === 'loading') {
 // FIM DO ARQUIVO - properties.js
 // ============================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 2.2
-// Última atualização: 2026-06-23
+// Versão: 2.3
+// Última atualização: 2026-06-30
+// CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
 // ============================================================
