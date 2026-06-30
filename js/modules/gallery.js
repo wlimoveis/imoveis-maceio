@@ -2,7 +2,7 @@
 // ✅ Funções de visualização delegadas ao SharedCore
 // ✅ CORREÇÃO: Removido bloco duplicado com Illegal return statement (linhas 635-660)
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
-// ✅ CORREÇÃO: Removido indicador de vídeo duplicado (linhas 393-395)
+// ✅ CORREÇÃO: video-indicator duplicado removido - agora único e gerenciado por este arquivo
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -300,6 +300,7 @@ function updateCardMedia(propertyId, newIndex) {
 }
 
 // ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
+// ✅ ÚNICO local onde o video-indicator é gerado
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -340,7 +341,8 @@ window.createPropertyGallery = function(property) {
     </div>
 `;
 
-    // ✅ CORREÇÃO: Removido o bloco duplicado do video-indicator (linha 393-395)
+    // ✅ video-indicator: APENAS UM, dentro do property-gallery-container
+    // ✅ Removido qualquer bloco duplicado fora do container
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
@@ -380,7 +382,7 @@ window.createPropertyGallery = function(property) {
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
-            <!-- ✅ INDICADOR DE VÍDEO: APENAS UM, NA POSIÇÃO CORRETA (SUPERIOR) -->
+            <!-- ✅ INDICADOR DE VÍDEO: ÚNICO, DENTRO DO CONTAINER, POSIÇÃO SUPERIOR -->
             ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                 <i class="fas fa-video" aria-hidden="true"></i> Vídeo
             </div>` : ''}
@@ -683,4 +685,4 @@ console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll')
 console.log('✅ Funções de visualização delegadas ao SharedCore');
 console.log('✅ CORREÇÃO: Bloco duplicado removido - Illegal return statement corrigido');
 console.log('✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden adicionados');
-console.log('✅ CORREÇÃO: Indicador de vídeo duplicado removido');
+console.log('✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo');
