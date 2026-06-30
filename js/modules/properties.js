@@ -673,29 +673,7 @@ class PropertyTemplateEngine {
                             ${this._safe(property.badge)}
                         </div>
                     ` : ''}
-                    
-                    ${hasVideo ? `
-                        <div class="video-indicator" style="
-                            position: absolute;
-                            top: 10px;
-                            right: 10px;
-                            background: rgba(0, 0, 0, 0.8);
-                            color: white;
-                            padding: 6px 12px;
-                            border-radius: 6px;
-                            font-size: 12px;
-                            display: flex;
-                            align-items: center;
-                            gap: 6px;
-                            z-index: 9;
-                            backdrop-filter: blur(4px);
-                            border: 1px solid rgba(255,255,255,0.2);
-                        ">
-                            <i class="fas fa-video" style="color: #FFD700;" aria-hidden="true"></i>
-                            <span>TEM VÍDEO</span>
-                        </div>
-                    ` : ''}
-                    
+                      
                     ${hasGallery ? `
                         <div class="image-count" style="
                             position: absolute;
