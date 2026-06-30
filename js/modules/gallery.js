@@ -3,6 +3,7 @@
 // ✅ CORREÇÃO: Removido bloco duplicado com Illegal return statement (linhas 635-660)
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: Removido indicador de vídeo duplicado (linhas 393-395)
+// ✅ DIAGNÓSTICO: Adicionada verificação de duplicidade no createPropertyGallery
 console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -301,6 +302,74 @@ function updateCardMedia(propertyId, newIndex) {
 
 // ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
 window.createPropertyGallery = function(property) {
+    // ============================================================
+    // 🔍 DIAGNÓSTICO DE DUPLICIDADE
+    // ============================================================
+    console.group(`🔍 [GALLERY-DIAG] Criando galeria para imóvel ${property.id} - "${property.title}"`);
+    
+    // 1. Verificar se já existe uma galeria para este imóvel
+    const existingCard = document.querySelector(`.property-card[data-property-id="${property.id}"]`);
+    let existingGallery = null;
+    let hasDuplicate = false;
+    
+    if (existingCard) {
+        existingGallery = existingCard.querySelector('.property-gallery-container');
+        if (existingGallery) {
+            hasDuplicate = true;
+            console.warn(`⚠️ [GALLERY-DIAG] Card ${property.id} JÁ POSSUI galeria! Verificando duplicidade...`);
+            
+            // 2. Contar quantos video-indicators existem neste card
+            const videoIndicators = existingCard.querySelectorAll('.video-indicator');
+            console.log(`📊 [GALLERY-DIAG] Card ${property.id} possui ${videoIndicators.length} indicador(es) de vídeo`);
+            
+            if (videoIndicators.length > 1) {
+                console.warn(`⚠️ [GALLERY-DIAG] DUPLICIDADE DETECTADA! ${videoIndicators.length} indicadores encontrados.`);
+                
+                // 3. Analisar cada indicador
+                videoIndicators.forEach((el, idx) => {
+                    const isInsideContainer = el.closest('.property-gallery-container') !== null;
+                    const position = el.style.position || 'N/A';
+                    const top = el.style.top || 'N/A';
+                    const right = el.style.right || 'N/A';
+                    console.log(`  📍 Indicador ${idx + 1}: dentro do container? ${isInsideContainer ? '✅ SIM' : '❌ NÃO'}, pos: ${position}, top: ${top}, right: ${right}`);
+                    
+                    // 4. Remover indicadores duplicados que estão fora do container
+                    if (!isInsideContainer) {
+                        console.log(`  🗑️ [GALLERY-DIAG] Removendo indicador ${idx + 1} (fora do container)`);
+                        el.remove();
+                    }
+                });
+            }
+            
+            // 5. Verificar se há video-indicator duplicado dentro do container
+            const insideIndicators = existingCard.querySelectorAll('.property-gallery-container .video-indicator');
+            if (insideIndicators.length > 1) {
+                console.warn(`⚠️ [GALLERY-DIAG] DUPLICIDADE DENTRO DO CONTAINER! ${insideIndicators.length} indicadores.`);
+                // Manter apenas o primeiro
+                insideIndicators.forEach((el, idx) => {
+                    if (idx > 0) {
+                        console.log(`  🗑️ [GALLERY-DIAG] Removendo indicador ${idx + 1} (duplicado dentro do container)`);
+                        el.remove();
+                    }
+                });
+            }
+            
+            // 6. Verificar resultado final
+            const finalIndicators = existingCard.querySelectorAll('.video-indicator');
+            console.log(`✅ [GALLERY-DIAG] Após correção: ${finalIndicators.length} indicador(es) restante(s)`);
+            
+            console.log(`ℹ️ [GALLERY-DIAG] Retornando galeria existente (sem recriar)`);
+            console.groupEnd();
+            return existingGallery.outerHTML;
+        }
+    }
+    
+    console.log(`✅ [GALLERY-DIAG] Nenhuma galeria existente encontrada. Criando nova...`);
+    
+    // ============================================================
+    // FIM DO DIAGNÓSTICO - CONTINUAÇÃO DA FUNÇÃO ORIGINAL
+    // ============================================================
+    
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
     const allMediaUrls = hasImages ? property.images.split(',').filter(url => url.trim() !== '') : [];
@@ -340,7 +409,7 @@ window.createPropertyGallery = function(property) {
     </div>
 `;
 
-    // ✅ CORREÇÃO: Removido o bloco duplicado do video-indicator (linha 393-395)
+    // ✅ CORREÇÃO: Apenas UM video-indicator, dentro do property-gallery-container
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
@@ -380,7 +449,7 @@ window.createPropertyGallery = function(property) {
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
-            <!-- ✅ INDICADOR DE VÍDEO: APENAS UM, NA POSIÇÃO CORRETA (SUPERIOR) -->
+            <!-- ✅ INDICADOR DE VÍDEO: APENAS UM, NA POSIÇÃO CORRETA (SUPERIOR) DENTRO DO CONTAINER -->
             ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                 <i class="fas fa-video" aria-hidden="true"></i> Vídeo
             </div>` : ''}
@@ -396,6 +465,8 @@ window.createPropertyGallery = function(property) {
         </div>
     `;
     
+    console.log(`✅ [GALLERY-DIAG] Galeria criada com sucesso para imóvel ${property.id}`);
+    console.groupEnd();
     return containerHtml;
 };
 
@@ -684,3 +755,4 @@ console.log('✅ Funções de visualização delegadas ao SharedCore');
 console.log('✅ CORREÇÃO: Bloco duplicado removido - Illegal return statement corrigido');
 console.log('✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden adicionados');
 console.log('✅ CORREÇÃO: Indicador de vídeo duplicado removido');
+console.log('✅ DIAGNÓSTICO: Verificação de duplicidade adicionada ao createPropertyGallery');
