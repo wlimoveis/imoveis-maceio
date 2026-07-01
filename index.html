@@ -680,6 +680,120 @@
          })();
      </script>
      
+     <!-- ========== DIAGNÓSTICO: IDENTIFICAR INDICADOR INFERIOR ========== -->
+<script>
+    (function findBottomVideoIndicator() {
+        console.group('🔍 [VISUAL-DIAG] IDENTIFICANDO INDICADOR INFERIOR');
+        
+        // 1. Verificar todos os cards
+        const cards = document.querySelectorAll('.property-card');
+        console.log(`📊 ${cards.length} card(s) encontrado(s)`);
+        
+        cards.forEach((card, idx) => {
+            const title = card.dataset.propertyTitle || 'Sem título';
+            const id = card.dataset.propertyId || 'N/A';
+            console.log(`\n📍 Card ${idx + 1}: "${title}" (ID: ${id})`);
+            
+            // Verificar elementos dentro do card
+            const container = card.querySelector('.property-gallery-container');
+            const image = card.querySelector('.property-image');
+            
+            // 1. Verificar elementos com texto "Vídeo"
+            const allElements = card.querySelectorAll('*');
+            let videoTextElements = [];
+            allElements.forEach(el => {
+                if (el.textContent && el.textContent.includes('Vídeo') && el.children.length === 0) {
+                    videoTextElements.push(el);
+                }
+            });
+            
+            if (videoTextElements.length > 0) {
+                console.log(`  ⚠️ Encontrados ${videoTextElements.length} elemento(s) com texto "Vídeo":`);
+                videoTextElements.forEach((el, i) => {
+                    console.log(`    ${i+1}. Tag: ${el.tagName}, Classe: ${el.className || 'sem classe'}`);
+                    console.log(`       HTML: ${el.outerHTML.substring(0, 100)}...`);
+                    console.log(`       Posição: ${el.getBoundingClientRect().top}px`);
+                });
+            } else {
+                console.log('  ✅ Nenhum elemento com texto "Vídeo" encontrado');
+            }
+            
+            // 2. Verificar pseudo-elementos via CSS
+            if (container) {
+                const beforeContent = window.getComputedStyle(container, '::before').content;
+                const afterContent = window.getComputedStyle(container, '::after').content;
+                
+                if (beforeContent !== 'none' && beforeContent.includes('Vídeo')) {
+                    console.log(`  ⚠️ Pseudo-elemento ::before do container: "${beforeContent}"`);
+                }
+                if (afterContent !== 'none' && afterContent.includes('Vídeo')) {
+                    console.log(`  ⚠️ Pseudo-elemento ::after do container: "${afterContent}"`);
+                }
+            }
+            
+            // 3. Verificar vídeos
+            const videos = card.querySelectorAll('video');
+            if (videos.length > 0) {
+                console.log(`  🎬 ${videos.length} vídeo(s) encontrado(s)`);
+                videos.forEach((video, i) => {
+                    console.log(`    ${i+1}. src: ${video.src?.substring(0, 80)}...`);
+                    // Verificar se o vídeo tem overlay
+                    const parent = video.parentElement;
+                    if (parent) {
+                        const overlay = parent.querySelector('.play-overlay, .video-overlay, [style*="position:absolute"]');
+                        if (overlay) {
+                            console.log(`    ⚠️ Overlay encontrado: ${overlay.className || 'sem classe'}`);
+                        }
+                    }
+                });
+            }
+            
+            // 4. Verificar imagens (fallback)
+            const images = card.querySelectorAll('img');
+            images.forEach((img, i) => {
+                const alt = img.alt || '';
+                if (alt.includes('Vídeo') || alt.includes('video')) {
+                    console.log(`  ⚠️ Imagem com alt contendo "Vídeo": "${alt}"`);
+                }
+            });
+        });
+        
+        // 5. Verificar regras CSS que podem adicionar conteúdo
+        console.log('\n📊 VERIFICANDO REGRAS CSS COM CONTENT:');
+        try {
+            const sheets = document.styleSheets;
+            let contentRules = [];
+            for (let sheet of sheets) {
+                try {
+                    const rules = sheet.cssRules || sheet.rules;
+                    for (let rule of rules) {
+                        if (rule.style && rule.style.content && rule.style.content !== 'none') {
+                            contentRules.push({
+                                selector: rule.selectorText || 'desconhecido',
+                                content: rule.style.content
+                            });
+                        }
+                    }
+                } catch (e) {}
+            }
+            if (contentRules.length > 0) {
+                console.log('Regras com content:');
+                contentRules.forEach(rule => {
+                    if (rule.content.includes('Vídeo') || rule.content.includes('video')) {
+                        console.log(`  ⚠️ ${rule.selector}: ${rule.content}`);
+                    }
+                });
+            } else {
+                console.log('✅ Nenhuma regra com content encontrada');
+            }
+        } catch (e) {
+            console.log('⚠️ Não foi possível ler todas as folhas de estilo');
+        }
+        
+        console.groupEnd();
+    })();
+</script>
+     
     <!-- ========== FIM DOS SCRIPTS ========== -->
 
     <!-- ============================================================
