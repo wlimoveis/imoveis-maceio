@@ -147,7 +147,8 @@ function updateViewCounter(propertyId, count) {
     }
 }
 
-// ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO (CORRIGIDA) ==========
+// ✅ REMOVIDO: Indicador "Vídeo" na parte inferior - agora apenas o video-indicator superior é exibido
 window.createVideoThumbnail = function(videoUrl, index, propertyId) {
     return `
         <div class="gallery-video-item" 
@@ -167,10 +168,6 @@ window.createVideoThumbnail = function(videoUrl, index, propertyId) {
                     <source src="${videoUrl}" type="video/mp4">
                     <source src="${videoUrl}" type="video/quicktime">
                 </video>
-                <div style="position:absolute; bottom:5px; right:5px; background:rgba(0,0,0,0.6); 
-                            color:white; padding:2px 6px; border-radius:3px; font-size:0.7rem;">
-                    <i class="fas fa-video" aria-hidden="true"></i> Vídeo
-                </div>
             </div>
         </div>
     `;
