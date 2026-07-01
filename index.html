@@ -552,12 +552,19 @@
             }, 1000);
         });
     </script>
-<!-- ========== DIAGNÓSTICO: VERIFICAR CSS ========== -->
+
+<!-- ========== DIAGNÓSTICO COMPLETO: CSS + SUPPORT SYSTEM ========== -->
      <script>
-         (function checkCSSIndicators() {
-             console.group('🔍 [CSS-DIAG] VERIFICANDO SE CSS GERA OS INDICADORES');
+         (function fullDiagnostic() {
+             console.log('🔍 [FULL-DIAG] INICIANDO DIAGNÓSTICO COMPLETO');
+             console.log('═══════════════════════════════════════════════');
              
-             // 1. Verificar se há regras CSS para .video-indicator
+             // ============================================================
+             // PARTE 1: VERIFICAR CSS
+             // ============================================================
+             console.log('\n📌 PARTE 1: VERIFICANDO CSS');
+             console.log('─────────────────────────────');
+             
              let hasCSSRule = false;
              let cssRules = [];
              
@@ -575,68 +582,101 @@
                                  });
                              }
                          }
-                     } catch (e) {
-                         // Ignorar erros de CORS
-                     }
+                     } catch (e) {}
                  }
-             } catch (e) {
-                 console.warn('⚠️ Não foi possível acessar todas as folhas de estilo');
-             }
+             } catch (e) {}
              
              if (hasCSSRule) {
-                 console.log('📄 Regras CSS encontradas para .video-indicator:');
+                 console.log('⚠️ Regras CSS encontradas:');
                  cssRules.forEach(rule => {
                      console.log(`  - ${rule.selector}: ${rule.content}`);
                  });
-                 
-                 // Verificar se há pseudo-elementos ::before ou ::after
-                 const pseudoRules = cssRules.filter(r => 
-                     r.selector.includes('::before') || 
-                     r.selector.includes('::after') ||
-                     r.selector.includes(':before') ||
-                     r.selector.includes(':after')
-                 );
-                 
-                 if (pseudoRules.length > 0) {
-                     console.warn('⚠️ Pseudo-elementos encontrados! Eles podem gerar conteúdo visual:');
-                     pseudoRules.forEach(rule => {
-                         console.log(`  - ${rule.selector}: ${rule.content}`);
-                     });
-                 } else {
-                     console.log('✅ Nenhum pseudo-elemento encontrado');
-                 }
              } else {
-                 console.log('✅ Nenhuma regra CSS para .video-indicator encontrada');
+                 console.log('✅ Nenhuma regra CSS para .video-indicator');
              }
              
-             // 2. Verificar se algum elemento está usando pseudo-elementos para exibir "Vídeo"
-             const videoIndicators = document.querySelectorAll('.video-indicator');
-             if (videoIndicators.length > 0) {
-                 console.log(`📊 ${videoIndicators.length} indicadores no DOM`);
-                 
-                 // Verificar se o conteúdo "Vídeo" vem do CSS
-                 videoIndicators.forEach((el, idx) => {
-                     const computedStyle = window.getComputedStyle(el);
+             // ============================================================
+             // PARTE 2: VERIFICAR SUPPORT SYSTEM
+             // ============================================================
+             console.log('\n📌 PARTE 2: VERIFICANDO SUPPORT SYSTEM');
+             console.log('─────────────────────────────────────');
+             
+             const isDebug = window.location.search.includes('debug=true');
+             const isDiagnostics = window.location.search.includes('diagnostics=true');
+             
+             console.log(`Modo debug: ${isDebug ? '✅ ATIVO' : '❌ INATIVO'}`);
+             console.log(`Modo diagnostics: ${isDiagnostics ? '✅ ATIVO' : '❌ INATIVO'}`);
+             
+             const supportScripts = document.querySelectorAll('script[src*="weberlessa-support"]');
+             console.log(`Scripts do Support System: ${supportScripts.length}`);
+             
+             if (supportScripts.length > 0) {
+                 console.warn('⚠️ Support System está carregado!');
+                 supportScripts.forEach((script, idx) => {
+                     console.log(`  - Script ${idx + 1}: ${script.src}`);
+                 });
+             } else {
+                 console.log('✅ Support System NÃO está carregado');
+             }
+             
+             // ============================================================
+             // PARTE 3: ANALISAR INDICADORES
+             // ============================================================
+             console.log('\n📌 PARTE 3: ANALISANDO INDICADORES');
+             console.log('─────────────────────────────────');
+             
+             const indicators = document.querySelectorAll('.video-indicator');
+             console.log(`Total no DOM: ${indicators.length}`);
+             
+             if (indicators.length > 0) {
+                 indicators.forEach((el, idx) => {
+                     const isInContainer = !!el.closest('.property-gallery-container');
+                     const parent = el.parentElement?.className || 'N/A';
+                     console.log(`📍 Indicador ${idx + 1}:`);
+                     console.log(`  - Dentro do container: ${isInContainer ? '✅' : '❌'}`);
+                     console.log(`  - Parent: ${parent}`);
+                     console.log(`  - HTML: ${el.innerHTML.trim()}`);
+                     
+                     // Verificar se o conteúdo vem do CSS
                      const beforeContent = window.getComputedStyle(el, '::before').content;
                      const afterContent = window.getComputedStyle(el, '::after').content;
-                     const htmlContent = el.innerHTML;
-                     
-                     console.log(`📍 Indicador ${idx + 1}:`);
-                     console.log(`  - HTML interno: "${htmlContent.trim()}"`);
-                     console.log(`  - ::before content: "${beforeContent}"`);
-                     console.log(`  - ::after content: "${afterContent}"`);
-                     
                      if (beforeContent !== 'none' || afterContent !== 'none') {
                          console.warn('  ⚠️ Pseudo-elemento gerando conteúdo!');
                      }
                  });
              } else {
-                 console.log('✅ Nenhum indicador no DOM');
+                 console.log('✅ Nenhum indicador encontrado');
              }
              
+             // ============================================================
+             // RESUMO FINAL
+             // ============================================================
+             console.log('\n📊 RESUMO FINAL');
+             console.log('═══════════════════════════════════════════════');
+             console.log(`CSS com .video-indicator: ${hasCSSRule ? '❌ SIM' : '✅ NÃO'}`);
+             console.log(`Support System ativo: ${supportScripts.length > 0 ? '❌ SIM' : '✅ NÃO'}`);
+             console.log(`Indicadores no DOM: ${indicators.length}`);
+             console.log(`Indicadores FORA do container: ${indicators.length > 0 ? '❌ SIM' : '✅ NÃO'}`);
+             
+             if (indicators.length > 0) {
+                 console.warn('\n⚠️ PROBLEMA IDENTIFICADO:');
+                 console.warn('  Os indicadores estão FORA do property-gallery-container.');
+                 console.warn('  Isso indica que estão sendo gerados por DADOS ou por outro script.');
+                 console.warn('  Recomendação: Verificar os dados dos imóveis no localStorage.');
+             } else {
+                 console.log('\n✅ SISTEMA LIMPO: Nenhum indicador duplicado encontrado!');
+             }
+             
+             console.log('═══════════════════════════════════════════════');
              console.groupEnd();
              
-             return { hasCSSRule, cssRules, indicatorCount: videoIndicators.length };
+             return {
+                 hasCSSRule,
+                 supportScripts: supportScripts.length,
+                 indicators: indicators.length,
+                 isDebug,
+                 isDiagnostics
+             };
          })();
      </script>
      
