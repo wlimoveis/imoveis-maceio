@@ -552,6 +552,94 @@
             }, 1000);
         });
     </script>
+<!-- ========== DIAGNÓSTICO: VERIFICAR CSS ========== -->
+     <script>
+         (function checkCSSIndicators() {
+             console.group('🔍 [CSS-DIAG] VERIFICANDO SE CSS GERA OS INDICADORES');
+             
+             // 1. Verificar se há regras CSS para .video-indicator
+             let hasCSSRule = false;
+             let cssRules = [];
+             
+             try {
+                 const styleSheets = document.styleSheets;
+                 for (let sheet of styleSheets) {
+                     try {
+                         const rules = sheet.cssRules || sheet.rules;
+                         for (let rule of rules) {
+                             if (rule.selectorText && rule.selectorText.includes('video-indicator')) {
+                                 hasCSSRule = true;
+                                 cssRules.push({
+                                     selector: rule.selectorText,
+                                     content: rule.style.cssText
+                                 });
+                             }
+                         }
+                     } catch (e) {
+                         // Ignorar erros de CORS
+                     }
+                 }
+             } catch (e) {
+                 console.warn('⚠️ Não foi possível acessar todas as folhas de estilo');
+             }
+             
+             if (hasCSSRule) {
+                 console.log('📄 Regras CSS encontradas para .video-indicator:');
+                 cssRules.forEach(rule => {
+                     console.log(`  - ${rule.selector}: ${rule.content}`);
+                 });
+                 
+                 // Verificar se há pseudo-elementos ::before ou ::after
+                 const pseudoRules = cssRules.filter(r => 
+                     r.selector.includes('::before') || 
+                     r.selector.includes('::after') ||
+                     r.selector.includes(':before') ||
+                     r.selector.includes(':after')
+                 );
+                 
+                 if (pseudoRules.length > 0) {
+                     console.warn('⚠️ Pseudo-elementos encontrados! Eles podem gerar conteúdo visual:');
+                     pseudoRules.forEach(rule => {
+                         console.log(`  - ${rule.selector}: ${rule.content}`);
+                     });
+                 } else {
+                     console.log('✅ Nenhum pseudo-elemento encontrado');
+                 }
+             } else {
+                 console.log('✅ Nenhuma regra CSS para .video-indicator encontrada');
+             }
+             
+             // 2. Verificar se algum elemento está usando pseudo-elementos para exibir "Vídeo"
+             const videoIndicators = document.querySelectorAll('.video-indicator');
+             if (videoIndicators.length > 0) {
+                 console.log(`📊 ${videoIndicators.length} indicadores no DOM`);
+                 
+                 // Verificar se o conteúdo "Vídeo" vem do CSS
+                 videoIndicators.forEach((el, idx) => {
+                     const computedStyle = window.getComputedStyle(el);
+                     const beforeContent = window.getComputedStyle(el, '::before').content;
+                     const afterContent = window.getComputedStyle(el, '::after').content;
+                     const htmlContent = el.innerHTML;
+                     
+                     console.log(`📍 Indicador ${idx + 1}:`);
+                     console.log(`  - HTML interno: "${htmlContent.trim()}"`);
+                     console.log(`  - ::before content: "${beforeContent}"`);
+                     console.log(`  - ::after content: "${afterContent}"`);
+                     
+                     if (beforeContent !== 'none' || afterContent !== 'none') {
+                         console.warn('  ⚠️ Pseudo-elemento gerando conteúdo!');
+                     }
+                 });
+             } else {
+                 console.log('✅ Nenhum indicador no DOM');
+             }
+             
+             console.groupEnd();
+             
+             return { hasCSSRule, cssRules, indicatorCount: videoIndicators.length };
+         })();
+     </script>
+     
     <!-- ========== FIM DOS SCRIPTS ========== -->
 
     <!-- ============================================================
