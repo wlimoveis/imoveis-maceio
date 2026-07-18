@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.3
+// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.4
 // ============================================================
 // ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
 // ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
@@ -10,9 +10,10 @@
 // ✅ CORREÇÃO: aria-hidden em ícones decorativos (PageSpeed Insights)
 // ✅ CORREÇÃO: ARIA proibido - div com aria-label substituído por button (v2.2)
 // ✅ CORREÇÃO: Removido video-indicator duplicado - agora gerenciado APENAS pelo gallery.js
+// ✅ CORREÇÃO: Paginação melhorada - removido "três pontinhos" para navegação mais intuitiva
 // ============================================================
 
-console.log('✅ properties.js carregado - Versão v2.3');
+console.log('✅ properties.js carregado - Versão v2.4 (paginação melhorada)');
 
 window.properties = [];
 window.editingPropertyId = null;
@@ -1495,7 +1496,12 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÃO DE PAGINAÇÃO ==========
+// ========== FUNÇÕES DE PAGINAÇÃO MELHORADAS ==========
+// ✅ REMOVIDO: "três pontinhos" (...) - agora mostra números de página diretamente
+// ✅ MELHORADO: Mobile-friendly com scroll horizontal
+// ✅ MELHORADO: Indicador claro da página atual
+// ✅ MELHORADO: Botões "Anterior" e "Próximo" sempre visíveis
+
 function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     itemsPerPage = itemsPerPage || null;
     var paginationDiv = document.createElement('div');
@@ -1504,19 +1510,22 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     var isMobile = window.innerWidth <= 768;
     
     if (isDesktop) {
-        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.2rem; margin: 0.15rem 0 0 0; flex-wrap: wrap; padding: 0.05rem 0.1rem;';
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.4rem; margin: 0.5rem 0 0 0; flex-wrap: wrap; padding: 0.3rem 0.5rem;';
     } else {
-        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.5rem; margin: 1rem 0 0.5rem 0; flex-wrap: wrap; padding: 0.5rem 0.2rem;';
+        paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.3rem; margin: 0.8rem 0 0.3rem 0; flex-wrap: wrap; padding: 0.4rem 0.2rem; overflow-x: auto; -webkit-overflow-scrolling: touch;';
     }
     
     var currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
-    var maxVisible = isMobile ? 4 : 5;
+    var maxVisible = isMobile ? 5 : 8;
     
-    var firstBtn = createNavButton('<<', currentPage === 1, function() { window.loadPropertyList(1); }, isDesktop);
-    var prevBtn = createNavButton('<', currentPage === 1, function() { window.loadPropertyList(currentPage - 1); }, isDesktop);
-    paginationDiv.appendChild(firstBtn);
+    // Botão "Anterior"
+    var prevBtn = createNavButton('◀', currentPage === 1, function() { 
+        if (currentPage > 1) window.loadPropertyList(currentPage - 1); 
+    }, isDesktop);
+    prevBtn.title = 'Página anterior';
     paginationDiv.appendChild(prevBtn);
     
+    // Números de página
     var pagesToShow = [];
     
     if (totalPages <= maxVisible) {
@@ -1524,96 +1533,61 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
             pagesToShow.push(i);
         }
     } else {
-        pagesToShow.push(1);
+        var halfVisible = Math.floor((maxVisible - 1) / 2);
+        var startPage = Math.max(1, currentPage - halfVisible);
+        var endPage = Math.min(totalPages, currentPage + halfVisible);
         
-        var remainingSlots = maxVisible - 2;
-        var halfSlots = Math.floor(remainingSlots / 2);
-        
-        var startPage, endPage;
-        
-        if (currentPage <= halfSlots + 2) {
-            startPage = 2;
-            endPage = maxVisible - 1;
-            for (var i2 = startPage; i2 <= endPage && i2 < totalPages; i2++) {
-                pagesToShow.push(i2);
-            }
-            if (endPage < totalPages - 1) {
-                pagesToShow.push('...');
-            }
-        } 
-        else if (currentPage >= totalPages - halfSlots - 1) {
-            startPage = totalPages - (maxVisible - 2);
-            endPage = totalPages - 1;
-            if (startPage > 2) {
-                pagesToShow.push('...');
-            }
-            for (var i3 = startPage; i3 <= endPage; i3++) {
-                if (i3 !== 1 && i3 !== totalPages) {
-                    pagesToShow.push(i3);
-                }
-            }
+        if (currentPage <= halfVisible + 1) {
+            endPage = Math.min(totalPages, maxVisible);
         }
-        else {
-            startPage = currentPage - halfSlots;
-            endPage = currentPage + halfSlots;
-            
-            if (startPage < 2) startPage = 2;
-            if (endPage > totalPages - 1) endPage = totalPages - 1;
-            
-            if (startPage > 2) {
-                pagesToShow.push('...');
-            }
-            
-            for (var i4 = startPage; i4 <= endPage; i4++) {
-                if (i4 !== 1 && i4 !== totalPages) {
-                    pagesToShow.push(i4);
-                }
-            }
-            
-            if (endPage < totalPages - 1) {
-                pagesToShow.push('...');
+        
+        if (currentPage > totalPages - halfVisible) {
+            startPage = Math.max(1, totalPages - maxVisible + 1);
+        }
+        
+        if (endPage - startPage + 1 < maxVisible) {
+            if (startPage === 1) {
+                endPage = Math.min(totalPages, startPage + maxVisible - 1);
+            } else if (endPage === totalPages) {
+                startPage = Math.max(1, endPage - maxVisible + 1);
             }
         }
         
-        pagesToShow.push(totalPages);
-    }
-    
-    var uniquePages = [];
-    var lastWasEllipsis = false;
-    for (var i5 = 0; i5 < pagesToShow.length; i5++) {
-        var page = pagesToShow[i5];
-        if (page === '...') {
-            if (!lastWasEllipsis) {
-                uniquePages.push(page);
-                lastWasEllipsis = true;
-            }
-        } else {
-            uniquePages.push(page);
-            lastWasEllipsis = false;
+        for (var i = startPage; i <= endPage; i++) {
+            pagesToShow.push(i);
         }
     }
     
-    for (var i6 = 0; i6 < uniquePages.length; i6++) {
-        var pageNum = uniquePages[i6];
-        if (pageNum === '...') {
-            var ellipsis = document.createElement('span');
-            ellipsis.textContent = '...';
-            var ellipsisPadding = isDesktop ? '0.1rem 0.05rem' : '0.3rem 0.2rem';
-            var ellipsisFontSize = isDesktop ? '0.65rem' : '0.75rem';
-            ellipsis.style.cssText = 'padding: ' + ellipsisPadding + '; color: #666; font-size: ' + ellipsisFontSize + '; user-select: none; pointer-events: none;';
-            paginationDiv.appendChild(ellipsis);
-        } else {
-            var pageBtn = createPageButton(pageNum, currentPage, isDesktop);
-            paginationDiv.appendChild(pageBtn);
-        }
-    }
+    pagesToShow.forEach(function(pageNum) {
+        var pageBtn = createPageButton(pageNum, currentPage, isDesktop);
+        paginationDiv.appendChild(pageBtn);
+    });
     
-    var nextBtn = createNavButton('>', currentPage === totalPages, function() { window.loadPropertyList(currentPage + 1); }, isDesktop);
-    var lastBtn = createNavButton('>>', currentPage === totalPages, function() { window.loadPropertyList(totalPages); }, isDesktop);
+    // Botão "Próximo"
+    var nextBtn = createNavButton('▶', currentPage === totalPages, function() { 
+        if (currentPage < totalPages) window.loadPropertyList(currentPage + 1); 
+    }, isDesktop);
+    nextBtn.title = 'Próxima página';
     paginationDiv.appendChild(nextBtn);
-    paginationDiv.appendChild(lastBtn);
+    
+    // Indicador de página (mobile)
+    if (isMobile) {
+        var pageIndicator = document.createElement('span');
+        pageIndicator.textContent = currentPage + '/' + totalPages;
+        pageIndicator.style.cssText = `
+            font-size: 0.6rem;
+            color: #666;
+            padding: 0.2rem 0.5rem;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin-left: 0.2rem;
+            white-space: nowrap;
+        `;
+        paginationDiv.appendChild(pageIndicator);
+    }
     
     var perPageSelect = createPerPageSelect(currentItemsPerPage, isDesktop);
+    perPageSelect.title = 'Itens por página';
     paginationDiv.appendChild(perPageSelect);
     
     return paginationDiv;
@@ -1623,11 +1597,49 @@ function createNavButton(text, disabled, onClick, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
     btn.innerHTML = text;
-    var padding = isDesktop ? '0.1rem 0.35rem' : '0.4rem 0.8rem';
-    var fontSize = isDesktop ? '0.6rem' : '0.8rem';
-    btn.style.cssText = 'background: var(--primary); color: white; border: none; padding: ' + padding + '; border-radius: 4px; cursor: pointer; font-size: ' + fontSize + '; transition: all 0.2s ease;' + (disabled ? ' opacity: 0.5;' : '');
+    
+    var padding = isDesktop ? '0.3rem 0.6rem' : '0.4rem 0.7rem';
+    var fontSize = isDesktop ? '0.7rem' : '0.65rem';
+    var minWidth = isDesktop ? '32px' : '28px';
+    var height = isDesktop ? '32px' : '28px';
+    
+    btn.style.cssText = `
+        background: ${disabled ? '#e9ecef' : '#1a5276'};
+        color: ${disabled ? '#999' : 'white'};
+        border: 1px solid ${disabled ? '#ddd' : '#0e3d5c'};
+        padding: ${padding};
+        border-radius: 4px;
+        cursor: ${disabled ? 'not-allowed' : 'pointer'};
+        font-size: ${fontSize};
+        font-weight: 600;
+        min-width: ${minWidth};
+        height: ${height};
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        opacity: ${disabled ? '0.5' : '1'};
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    `;
+    
     btn.disabled = disabled;
-    if (!disabled) btn.onclick = onClick;
+    if (!disabled) {
+        btn.onclick = onClick;
+        btn.onmouseenter = function() {
+            this.style.background = '#0e3d5c';
+            this.style.transform = 'scale(1.05)';
+        };
+        btn.onmouseleave = function() {
+            this.style.background = '#1a5276';
+            this.style.transform = 'scale(1)';
+        };
+        btn.onmousedown = function() {
+            this.style.transform = 'scale(0.95)';
+        };
+        btn.onmouseup = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+    }
     return btn;
 }
 
@@ -1635,32 +1647,97 @@ function createPageButton(pageNum, currentPage, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
     btn.textContent = pageNum;
-    var padding = isDesktop ? '0.1rem 0.35rem' : '0.3rem 0.7rem';
-    var fontSize = isDesktop ? '0.6rem' : '0.8rem';
-    var minWidth = isDesktop ? '24px' : '32px';
-    btn.style.cssText = 'background: ' + (pageNum === currentPage ? 'var(--gold)' : '#e9ecef') + '; color: ' + (pageNum === currentPage ? 'white' : 'var(--text)') + '; border: none; padding: ' + padding + '; border-radius: 4px; cursor: pointer; font-size: ' + fontSize + '; font-weight: ' + (pageNum === currentPage ? 'bold' : 'normal') + '; min-width: ' + minWidth + ';';
+    
+    var isActive = pageNum === currentPage;
+    var padding = isDesktop ? '0.3rem 0.6rem' : '0.3rem 0.5rem';
+    var fontSize = isDesktop ? '0.75rem' : '0.65rem';
+    var minWidth = isDesktop ? '32px' : '26px';
+    var height = isDesktop ? '32px' : '26px';
+    
+    btn.style.cssText = `
+        background: ${isActive ? '#f39c12' : 'white'};
+        color: ${isActive ? 'white' : '#1a5276'};
+        border: 1px solid ${isActive ? '#d4a017' : '#d1d8dd'};
+        padding: ${padding};
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: ${fontSize};
+        font-weight: ${isActive ? '700' : '400'};
+        min-width: ${minWidth};
+        height: ${height};
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        box-shadow: ${isActive ? '0 2px 8px rgba(243, 156, 18, 0.3)' : 'none'};
+    `;
+    
     btn.onclick = function() { window.loadPropertyList(pageNum); };
+    
+    if (!isActive) {
+        btn.onmouseenter = function() {
+            this.style.background = '#e8f4f8';
+            this.style.borderColor = '#1a5276';
+            this.style.transform = 'scale(1.05)';
+        };
+        btn.onmouseleave = function() {
+            this.style.background = 'white';
+            this.style.borderColor = '#d1d8dd';
+            this.style.transform = 'scale(1)';
+        };
+        btn.onmousedown = function() {
+            this.style.transform = 'scale(0.95)';
+        };
+        btn.onmouseup = function() {
+            this.style.transform = 'scale(1.05)';
+        };
+    }
+    
+    btn.title = 'Ir para página ' + pageNum;
     return btn;
 }
 
 function createPerPageSelect(currentItemsPerPage, isDesktop) {
     isDesktop = isDesktop || false;
     var select = document.createElement('select');
-    var padding = isDesktop ? '0.1rem 0.2rem' : '0.3rem 0.5rem';
-    var fontSize = isDesktop ? '0.55rem' : '0.75rem';
-    var marginLeft = isDesktop ? '0.15rem' : '0.5rem';
-    select.style.cssText = 'background: white; border: 1px solid var(--primary); padding: ' + padding + '; border-radius: 4px; font-size: ' + fontSize + '; margin-left: ' + marginLeft + '; cursor: pointer;';
+    
+    var padding = isDesktop ? '0.2rem 0.3rem' : '0.2rem 0.2rem';
+    var fontSize = isDesktop ? '0.65rem' : '0.6rem';
+    var marginLeft = isDesktop ? '0.3rem' : '0.2rem';
+    
+    select.style.cssText = `
+        background: white;
+        border: 1px solid #d1d8dd;
+        padding: ${padding};
+        border-radius: 4px;
+        font-size: ${fontSize};
+        margin-left: ${marginLeft};
+        cursor: pointer;
+        height: ${isDesktop ? '32px' : '26px'};
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        color: #1a5276;
+        font-weight: 500;
+    `;
+    
     select.innerHTML = `
         <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3</option>
         <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4</option>
         <option value="8" ${currentItemsPerPage === 8 ? 'selected' : ''}>8</option>
         <option value="12" ${currentItemsPerPage === 12 ? 'selected' : ''}>12</option>
     `;
+    
+    select.title = 'Itens por página';
+    
     select.onchange = function(e) {
-        window.adminItemsPerPage = parseInt(e.target.value);
-        window.adminCurrentPage = 1;
-        window.loadPropertyList(1);
+        var newValue = parseInt(e.target.value);
+        if (!isNaN(newValue) && newValue > 0) {
+            window.adminItemsPerPage = newValue;
+            window.adminCurrentPage = 1;
+            window.loadPropertyList(1);
+        }
     };
+    
     return select;
 }
 
@@ -2016,7 +2093,9 @@ if (document.readyState === 'loading') {
 // ============================================================
 // FIM DO ARQUIVO - properties.js
 // ============================================================
-// STATUS: ✅ COMPLETO E FUNCIONAL// Versão: 2.3
+// STATUS: ✅ COMPLETO E FUNCIONAL
+// Versão: 2.4
 // Última atualização: 2026-07-18
 // CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
+// MELHORIA: Paginação sem "três pontinhos" - mais intuitiva
 // ============================================================
