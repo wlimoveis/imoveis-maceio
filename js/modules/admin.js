@@ -1,8 +1,7 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.5 COM DIAGNÓSTICO AVANÇADO
+// js/modules/admin.js - Versão ESTÁVEL v2.4
 // CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
-// 🔍 DIAGNÓSTICO AVANÇADO: Localiza EXATAMENTE a fonte do video-indicator
 
-console.log('✅ admin.js carregado - Versão v2.5 (com diagnóstico avançado)');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -10,23 +9,6 @@ window.editingPropertyId = null;
 // ========== SISTEMA DE DIAGNÓSTICO E ESTABILIDADE ==========
 window.AUTOCOMPLETE_ACTIVE = false;
 let autocompleteInitialized = false;
-
-window.diagnoseAutocomplete = function() {
-    console.group('🔍 DIAGNÓSTICO DO AUTOCOMPLETE');
-    const input = document.getElementById('propLocation');
-    const dropdown = document.querySelector('.admin-location-suggestions');
-    const resultados = {
-        'Campo existe': !!input,
-        'Campo visível': input ? input.getBoundingClientRect().bottom > 0 : false,
-        'Autocomplete inicializado': input ? input.hasAttribute('data-autocomplete-initialized') : false,
-        'Flag AUTOCOMPLETE_ACTIVE': window.AUTOCOMPLETE_ACTIVE,
-        'Dropdown existe': !!dropdown,
-        'Dropdown visível': dropdown ? dropdown.style.display !== 'none' : false
-    };
-    console.table(resultados);
-    console.groupEnd();
-    return resultados;
-};
 
 let healthCheckInterval = null;
 
@@ -64,7 +46,6 @@ function switchToFormTab() {
         if (manageContent) manageContent.classList.remove('active');
         formTab.classList.add('active');
         formContent.classList.add('active');
-        console.log('[ADMIN] ✅ Mudou para aba INCLUIR/EDITAR');
     }
 }
 
@@ -79,12 +60,10 @@ function switchToManageTab() {
         if (formContent) formContent.classList.remove('active');
         manageTab.classList.add('active');
         manageContent.classList.add('active');
-        console.log('[ADMIN] ✅ Mudou para aba GERENCIAR');
         
         if (typeof window.loadPropertyList === 'function') {
             setTimeout(function() {
                 window.loadPropertyList();
-                console.log('[ADMIN] 📋 Lista de imóveis carregada');
             }, 50);
         }
     }
@@ -92,22 +71,16 @@ function switchToManageTab() {
 
 // ========== FUNÇÃO PRINCIPAL: TOGGLE DO PAINEL ADMIN ==========
 window.toggleAdminPanel = function() {
-    console.log('[ADMIN] 🔑 Solicitando acesso ao painel...');
-    
     const password = prompt("🔒 Acesso ao Painel do Corretor\n\nDigite a senha:");
     
     if (!password) {
-        console.log('[ADMIN] ❌ Acesso cancelado pelo usuário');
         return;
     }
     
     if (password !== ADMIN_CONFIG.password) {
         alert('❌ Senha incorreta!');
-        console.log('[ADMIN] ❌ Senha incorreta');
         return;
     }
-    
-    console.log('[ADMIN] ✅ Senha correta! Abrindo painel...');
     
     const panel = document.getElementById(ADMIN_CONFIG.panelId);
     
@@ -122,7 +95,6 @@ window.toggleAdminPanel = function() {
     
     setTimeout(function() {
         panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        console.log('[ADMIN] ✅ Painel aberto com sucesso - Aba GERENCIAR ativa');
         panel.classList.add('admin-panel-highlight');
         setTimeout(function() {
             panel.classList.remove('admin-panel-highlight');
@@ -263,7 +235,6 @@ window.editProperty = function(id) {
 };
 
 window.saveProperty = async function() {
-    console.group('[ADMIN] 💾 SALVANDO IMÓVEL');
     try {
         const propertyData = {};
         const videoCheckbox = document.getElementById('propHasVideo');
@@ -331,7 +302,7 @@ window.saveProperty = async function() {
         console.error('[ADMIN] ❌ Erro ao salvar imóvel:', error);
         if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ Erro: ${error.message}`, 'error', 5000);
         else alert(`❌ Erro: ${error.message}`);
-    } finally { console.groupEnd(); }
+    }
 };
 
 // ========== AUTOCOMPLETE ==========
@@ -573,211 +544,10 @@ function initializeAdmin() {
     setTimeout(() => { ensureAutocomplete(5, 100); }, 600);
 }
 
-window.diagnoseAutocomplete = window.diagnoseAutocomplete;
 window.getAutocompleteStatus = () => window.AUTOCOMPLETE_ACTIVE;
 window.stopHealthCheck = stopHealthCheck;
 window.switchToManageTab = switchToManageTab;
 window.switchToFormTab = switchToFormTab;
 
-// ============================================================
-// 🔍 DIAGNÓSTICO AVANÇADO: LOCALIZAR FONTE DO VIDEO-INDICATOR
-// ============================================================
-
-window.findVideoIndicatorSource = function() {
-    console.group('🔍 [SOURCE-DIAG] LOCALIZANDO FONTE DO VIDEO-INDICATOR');
-    
-    // 1. Verificar no DOM quantos indicadores existem
-    const indicators = document.querySelectorAll('.video-indicator');
-    console.log(`📊 Total de indicadores no DOM: ${indicators.length}`);
-    
-    if (indicators.length === 0) {
-        console.log('✅ Nenhum indicador encontrado');
-        console.groupEnd();
-        return null;
-    }
-    
-    // 2. Analisar cada indicador e extrair informações
-    indicators.forEach((el, idx) => {
-        console.log(`\n📍 Indicador ${idx + 1}:`);
-        console.log(`  - HTML completo: ${el.outerHTML}`);
-        console.log(`  - Parent: ${el.parentElement?.tagName || 'N/A'} ${el.parentElement?.className || ''}`);
-        console.log(`  - Dentro do property-gallery-container? ${!!el.closest('.property-gallery-container')}`);
-        console.log(`  - Closest property-card: ${el.closest('.property-card')?.dataset?.propertyId || 'N/A'}`);
-    });
-    
-    // 3. Buscar no código fonte do properties.js
-    console.log('\n🔍 BUSCANDO NO properties.js...');
-    fetch('js/modules/properties.js')
-        .then(r => r.text())
-        .then(code => {
-            const lines = code.split('\n');
-            let found = [];
-            let contextLines = [];
-            
-            lines.forEach((line, idx) => {
-                if (line.includes('video-indicator')) {
-                    found.push({ 
-                        line: idx + 1, 
-                        content: line.trim(),
-                        context: lines.slice(Math.max(0, idx - 2), Math.min(lines.length, idx + 3))
-                    });
-                }
-            });
-            
-            console.log(`📄 Encontradas ${found.length} ocorrências de "video-indicator" em properties.js:`);
-            found.forEach(item => {
-                console.log(`\n  📍 Linha ${item.line}:`);
-                console.log(`  ──────────────────────────────`);
-                item.context.forEach((ctx, i) => {
-                    const prefix = (i === 2) ? '  >>> ' : '      ';
-                    console.log(`${prefix}${ctx.trim()}`);
-                });
-                console.log(`  ──────────────────────────────`);
-            });
-            
-            // 4. Buscar no gallery.js
-            console.log('\n🔍 BUSCANDO NO gallery.js...');
-            return fetch('js/modules/gallery.js');
-        })
-        .then(r => r.text())
-        .then(code => {
-            const lines = code.split('\n');
-            let found = [];
-            
-            lines.forEach((line, idx) => {
-                if (line.includes('video-indicator')) {
-                    found.push({ 
-                        line: idx + 1, 
-                        content: line.trim(),
-                        context: lines.slice(Math.max(0, idx - 2), Math.min(lines.length, idx + 3))
-                    });
-                }
-            });
-            
-            console.log(`📄 Encontradas ${found.length} ocorrências de "video-indicator" em gallery.js:`);
-            found.forEach(item => {
-                console.log(`\n  📍 Linha ${item.line}:`);
-                console.log(`  ──────────────────────────────`);
-                item.context.forEach((ctx, i) => {
-                    const prefix = (i === 2) ? '  >>> ' : '      ';
-                    console.log(`${prefix}${ctx.trim()}`);
-                });
-                console.log(`  ──────────────────────────────`);
-            });
-            
-            // 5. Resumo final
-            console.log('\n📊 RESUMO FINAL:');
-            console.log(`  - properties.js: ${found.length} ocorrências`);
-            console.log(`  - gallery.js: ${found.length} ocorrências`);
-            console.log(`  - Total no DOM: ${indicators.length}`);
-            
-            if (found.length === 0 && indicators.length > 0) {
-                console.warn('⚠️ INDICADORES NO DOM, MAS NENHUM ENCONTRADO NOS ARQUIVOS!');
-                console.warn('   Possível fonte: index.html, admin.js, ou Support System');
-            }
-            
-            console.groupEnd();
-        })
-        .catch(err => {
-            console.error('❌ Erro ao buscar arquivos:', err);
-            console.groupEnd();
-        });
-    
-    // 5. Verificar se há elementos no index.html
-    console.log('\n🔍 VERIFICANDO index.html...');
-    const htmlContent = document.documentElement.outerHTML;
-    const htmlMatches = htmlContent.match(/video-indicator/g);
-    console.log(`📄 index.html: ${htmlMatches ? htmlMatches.length : 0} ocorrências de "video-indicator"`);
-    if (htmlMatches && htmlMatches.length > 0) {
-        console.warn('⚠️ index.html contém video-indicator inline!');
-        const lines = htmlContent.split('\n');
-        lines.forEach((line, idx) => {
-            if (line.includes('video-indicator')) {
-                console.log(`  - Linha ${idx + 1}: ${line.trim().substring(0, 150)}...`);
-            }
-        });
-    }
-    
-    return indicators.length;
-};
-
-// ============================================================
-// 🔧 CORREÇÃO DEFINITIVA: REMOVER INDICADORES DUPLICADOS
-// ============================================================
-
-window.fixVideoIndicatorDuplicates = function() {
-    console.group('🔧 [ADMIN-FIX] CORRIGINDO DUPLICATAS DE VIDEO-INDICATOR');
-    
-    let removedCount = 0;
-    
-    // 1. Remover indicadores fora do container
-    const outsideIndicators = document.querySelectorAll('.property-image > .video-indicator, .property-image .video-indicator:not(.property-gallery-container .video-indicator)');
-    outsideIndicators.forEach(el => {
-        console.log('🗑️ Removendo indicador fora do container');
-        el.remove();
-        removedCount++;
-    });
-    
-    // 2. Remover duplicatas dentro do mesmo container (manter apenas o primeiro)
-    const cards = document.querySelectorAll('.property-card');
-    cards.forEach(card => {
-        const container = card.querySelector('.property-gallery-container');
-        if (container) {
-            const indicators = container.querySelectorAll('.video-indicator');
-            if (indicators.length > 1) {
-                indicators.forEach((el, idx) => {
-                    if (idx > 0) {
-                        console.log(`🗑️ Removendo indicador duplicado ${idx + 1} do container`);
-                        el.remove();
-                        removedCount++;
-                    }
-                });
-            }
-        }
-    });
-    
-    // 3. Verificar resultado
-    const remaining = document.querySelectorAll('.video-indicator').length;
-    console.log(`✅ ${removedCount} indicador(es) removido(s)`);
-    console.log(`📊 ${remaining} indicador(es) restante(s)`);
-    
-    console.groupEnd();
-    return { removed: removedCount, remaining: remaining };
-};
-
-// ============================================================
-// AUTO-DIAGNÓSTICO NA INICIALIZAÇÃO
-// ============================================================
-
-// Executar diagnóstico completo após carregamento
-setTimeout(() => {
-    console.log('🔍 [ADMIN] Executando diagnóstico avançado de duplicidade...');
-    window.findVideoIndicatorSource();
-    
-    // Verificar se há duplicatas e corrigir
-    setTimeout(() => {
-        const indicators = document.querySelectorAll('.video-indicator');
-        if (indicators.length > 1) {
-            console.warn(`⚠️ [ADMIN] ${indicators.length} indicadores encontrados. Aplicando correção...`);
-            window.fixVideoIndicatorDuplicates();
-        } else if (indicators.length === 1) {
-            console.log('✅ [ADMIN] Apenas 1 indicador encontrado - OK');
-        } else {
-            console.log('✅ [ADMIN] Nenhum indicador encontrado - OK');
-        }
-    }, 500);
-}, 1500);
-
-// ============================================================
-// EXPORTAÇÃO DE FUNÇÕES DE DIAGNÓSTICO
-// ============================================================
-
-window.findVideoIndicatorSource = window.findVideoIndicatorSource;
-window.fixVideoIndicatorDuplicates = window.fixVideoIndicatorDuplicates;
-
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
-
-console.log('✅ admin.js - Diagnóstico avançado de duplicidade adicionado');
-console.log('   📌 Use window.findVideoIndicatorSource() para localizar a fonte');
-console.log('   📌 Use window.fixVideoIndicatorDuplicates() para corrigir');
