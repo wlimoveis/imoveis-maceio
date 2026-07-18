@@ -1,4 +1,4 @@
-// ===========================================================
+// ============================================================
 // js/modules/properties.js
 // VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.3
 // ============================================================
@@ -12,13 +12,13 @@
 // ✅ CORREÇÃO: Removido video-indicator duplicado - agora gerenciado APENAS pelo gallery.js
 // ============================================================
 
-console.log('✅ properties.js carregado - Versão v2.3 (video-indicator removido)');
+console.log('✅ properties.js carregado - Versão v2.3');
 
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
 
-// ========== CORREÇÃO DE URLs COM DOMÍNIO ANTIGO (NOVO v2.0) ==========
+// ========== CORREÇÃO DE URLs COM DOMÍNIO ANTIGO ==========
 /**
  * CORRIGE URLs COM DOMÍNIO ANTIGO NO SUPABASE
  * Esta função é executada automaticamente no carregamento
@@ -36,17 +36,14 @@ window.fixPropertyUrls = function(property) {
         if (!url || typeof url !== 'string') return url;
         if (url === 'EMPTY' || url.trim() === '') return url;
         
-        // Se já tem o domínio correto, retorna
         if (url.indexOf(SUPABASE_DOMAIN) !== -1) return url;
         
-        // Substituir domínios antigos
         for (var i = 0; i < OLD_DOMAINS.length; i++) {
             if (url.indexOf(OLD_DOMAINS[i]) !== -1) {
                 return url.replace(OLD_DOMAINS[i], SUPABASE_DOMAIN);
             }
         }
         
-        // Se é um nome de arquivo, reconstrói
         if (url.indexOf('http') !== 0 && url.indexOf('_') !== -1 && url.indexOf('.') !== -1) {
             return SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + url;
         }
@@ -56,7 +53,6 @@ window.fixPropertyUrls = function(property) {
     
     var fixed = false;
     
-    // Corrigir imagens
     if (property.images && property.images !== 'EMPTY') {
         var urls = property.images.split(',').filter(function(u) { return u && u.trim(); });
         var fixedUrls = urls.map(function(u) { return reconstructUrl(u.trim()); });
@@ -67,7 +63,6 @@ window.fixPropertyUrls = function(property) {
         }
     }
     
-    // Corrigir PDFs
     if (property.pdfs && property.pdfs !== 'EMPTY') {
         var pdfUrls = property.pdfs.split(',').filter(function(u) { return u && u.trim(); });
         var fixedPdfUrls = pdfUrls.map(function(u) { return reconstructUrl(u.trim()); });
@@ -105,7 +100,6 @@ window.fixAllPropertiesOnLoad = function() {
         if (result.fixed) {
             fixedCount++;
             window.properties[i] = result.property;
-            // Verificar se foi correção de domínio
             if (originalImages && originalImages !== result.property.images) {
                 var hasOldDomain = false;
                 for (var j = 0; j < OLD_DOMAINS.length; j++) {
@@ -124,15 +118,11 @@ window.fixAllPropertiesOnLoad = function() {
         if (domainFixed > 0) {
             console.log('🔄 [FIX] ' + domainFixed + ' propriedade(s) com domínio(s) corrigido(s)');
         }
-        // Salvar no localStorage para persistência
         if (typeof window.savePropertiesToStorage === 'function') {
             window.savePropertiesToStorage();
-            console.log('💾 [FIX] Propriedades salvas no localStorage');
         }
-        // Re-renderizar
         if (typeof window.renderProperties === 'function') {
             window.renderProperties('todos', true);
-            console.log('🔄 [FIX] Interface re-renderizada');
         }
     } else {
         console.log('✅ [FIX] Nenhuma propriedade precisou ser corrigida');
@@ -155,8 +145,6 @@ window.generateShareLinkForSelected = function() {
     var baseUrl = window.location.origin + window.location.pathname;
     var idsParam = selectedIds.join(',');
     var shareUrl = new URL('?selected_properties=' + encodeURIComponent(idsParam), baseUrl).href;
-    
-    console.log('🔗 Link de compartilhamento gerado para ' + selectedIds.length + ' imóvel(is): ' + shareUrl);
     
     navigator.clipboard.writeText(shareUrl).then(function() {
         var toast = document.createElement('div');
@@ -280,8 +268,6 @@ window.loadSelectedPropertiesFromUrl = function() {
         
         if (ids.length === 0) return null;
         
-        console.log('🔗 Link com seleção de ' + ids.length + ' imóvel(is): ' + ids.join(', '));
-        
         var selectedPropertiesList = window.properties.filter(function(p) { return ids.indexOf(p.id) !== -1; });
         
         if (selectedPropertiesList.length === 0) {
@@ -351,7 +337,6 @@ window.loadPropertiesBasedOnUrl = function() {
         }
     }
     
-    console.log('🏠 Exibindo todos os imóveis.');
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos');
     }
@@ -421,7 +406,6 @@ window.formatMarketTimeText = function(days) {
 
 window.ensureSupabaseCredentials = function() {
     if (!window.SUPABASE_CONSTANTS) {
-        console.warn('⚠️ SUPABASE_CONSTANTS não definido, configurando...');
         window.SUPABASE_CONSTANTS = {
             URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
             KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
@@ -444,7 +428,6 @@ window.shareProperty = async function(id) {
     }
     
     var shareUrl = new URL('?property=' + id, window.location.href).href;
-    console.log('🔗 Link de compartilhamento gerado: ' + shareUrl);
     
     try {
         await navigator.clipboard.writeText(shareUrl);
@@ -495,8 +478,6 @@ window.shareProperty = async function(id) {
                 setTimeout(function() { toast.remove(); }, 300);
             }, 2000);
         }
-        
-        console.log('✅ Link copiado: ' + shareUrl);
     } catch (err) {
         console.error('❌ Erro ao copiar:', err);
         alert('⚠️ Não foi possível copiar o link. Copie manualmente da barra de endereços.');
@@ -578,8 +559,6 @@ class PropertyTemplateEngine {
         return html;
     }
     
-    // ========== FUNÇÃO _generateTemplate CORRIGIDA ==========
-    // ✅ REMOVIDO: video-indicator - agora gerenciado APENAS pelo gallery.js
     _generateTemplate(property) {
         var displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
         var descriptionText = property.description || 'Descrição não disponível.';
@@ -621,8 +600,6 @@ class PropertyTemplateEngine {
         return html;
     }
 
-    // ========== FUNÇÃO generateImageSection CORRIGIDA ==========
-    // ✅ REMOVIDO COMPLETAMENTE: video-indicator - agora gerenciado APENAS pelo gallery.js
     generateImageSection(property, newBadgeHtml) {
         newBadgeHtml = newBadgeHtml || '';
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
@@ -749,11 +726,7 @@ class PropertyTemplateEngine {
         `;
     }
     
-    // ========== FUNÇÃO updateCardContent CORRIGIDA ==========
-    // ✅ REMOVIDO: Lógica de recriação do video-indicator
     updateCardContent(propertyId, propertyData) {
-        console.log('🔍 Atualizando conteúdo do card ' + propertyId, propertyData);
-        
         var card = document.querySelector('.property-card[data-property-id="' + propertyId + '"]');
         if (!card) {
             console.warn('⚠️ Card ' + propertyId + ' não encontrado');
@@ -813,9 +786,6 @@ class PropertyTemplateEngine {
                 }
             }
             
-            // ✅ REMOVIDO COMPLETAMENTE: Lógica de recriação do video-indicator
-            // O gallery.js é o único responsável por gerenciar o indicador de vídeo
-            
             if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
                 window.TemplateCache.invalidate(propertyId);
             } else if (this._localCache) {
@@ -834,7 +804,6 @@ class PropertyTemplateEngine {
                 card.classList.remove('highlighted');
             }, 1000);
             
-            console.log('✅ Conteúdo do card ' + propertyId + ' atualizado');
             return true;
             
         } catch (error) {
@@ -849,7 +818,6 @@ class PropertyTemplateEngine {
         }
         var count = this._localCache.size;
         this._localCache.clear();
-        console.log('🧹 Cache local limpo: ' + count + ' entradas');
         return count;
     }
 }
@@ -936,8 +904,6 @@ window.FeatureIconMapper = {
 
 // ========== FILTER FUNCTIONS ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
-    console.log('🎯 Filtrando: categoria="' + category + '", bairro="' + bairro + '"');
-    
     if (!window.properties) return [];
     
     var CATEGORY_CONFIG = {
@@ -949,7 +915,6 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     
     var config = CATEGORY_CONFIG[category];
     if (!config) {
-        console.warn('⚠️ Categoria "' + category + '" não reconhecida, usando fallback');
         if (typeof window.renderProperties === 'function') window.renderProperties(category);
         return [];
     }
@@ -1125,7 +1090,6 @@ window.loadPropertiesData = async function () {
         window.properties = propertiesData || getInitialProperties();
         
         // ========== CORREÇÃO AUTOMÁTICA DE URLs ==========
-        console.log('🔄 [LOAD] Aplicando correção de URLs...');
         var fixedCount = 0;
         var domainFixed = 0;
         var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
@@ -1288,10 +1252,8 @@ window.contactAgent = function(id) {
 
 // ========== ADD NEW PROPERTY ==========
 window.addNewProperty = async function(propertyData) {
-    console.group('➕ ADICIONANDO NOVO IMÓVEL');
     if (!propertyData.title || !propertyData.price || !propertyData.location) {
         alert('❌ Preencha Título, Preço e Localização!');
-        console.groupEnd();
         return null;
     }
 
@@ -1352,27 +1314,23 @@ window.addNewProperty = async function(propertyData) {
         if (window.SmartCache?.invalidatePropertiesCache) window.SmartCache.invalidatePropertiesCache();
         if (typeof MediaSystem?.resetState === 'function') setTimeout(function() { MediaSystem.resetState(); }, 300);
 
-        console.log('✅ Imóvel ' + newId + ' cadastrado');
-        console.groupEnd();
         return newProperty;
     } catch (error) {
         console.error('❌ Erro ao adicionar imóvel:', error);
         alert('❌ Erro ao cadastrar imóvel:\n' + (error.message || 'Erro desconhecido'));
-        console.groupEnd();
         return null;
     }
 };
 
 // ========== UPDATE PROPERTY ==========
 window.updateProperty = async function(id, propertyData) {
-    console.group('📤 updateProperty');
     if (!id || id === 'null' || id === 'undefined') {
         if (window.editingPropertyId) id = window.editingPropertyId;
-        else { alert('❌ Não foi possível identificar o imóvel!'); console.groupEnd(); return { success: false, localOnly: true, error: 'ID inválido' }; }
+        else { alert('❌ Não foi possível identificar o imóvel!'); return { success: false, localOnly: true, error: 'ID inválido' }; }
     }
 
     var index = window.properties.findIndex(function(p) { return p.id == id; });
-    if (index === -1) { alert('❌ Imóvel não encontrado!'); console.groupEnd(); return { success: false, localOnly: true, error: 'Imóvel não encontrado' }; }
+    if (index === -1) { alert('❌ Imóvel não encontrado!'); return { success: false, localOnly: true, error: 'Imóvel não encontrado' }; }
 
     try {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
@@ -1408,11 +1366,9 @@ window.updateProperty = async function(id, propertyData) {
         }
 
         alert(supabaseSuccess ? '✅ Imóvel "' + updateData.title + '" atualizado PERMANENTEMENTE!' : '⚠️ Imóvel "' + updateData.title + '" atualizado apenas LOCALMENTE.');
-        console.groupEnd();
         return { success: true, localOnly: !supabaseSuccess, error: supabaseError };
     } catch (error) {
         console.error('❌ Erro ao atualizar imóvel:', error);
-        console.groupEnd();
         alert('❌ Erro: ' + error.message);
         return { success: false, localOnly: true, error: error.message };
     }
@@ -1432,17 +1388,13 @@ window.updateLocalProperty = function(propertyId, updatedData) {
 
 // ========== DELETE PROPERTY ==========
 window.deleteProperty = async function(id) {
-    console.group('🗑️ deleteProperty: ' + id);
     var property = window.properties.find(function(p) { return p.id === id; });
     if (!property) {
         alert('❌ Imóvel não encontrado!');
-        console.groupEnd();
         return false;
     }
     
     if (!confirm('⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"' + property.title + '"\n\nEsta ação NÃO pode ser desfeita.')) {
-        console.log('❌ Exclusão cancelada');
-        console.groupEnd();
         return false;
     }
 
@@ -1459,31 +1411,22 @@ window.deleteProperty = async function(id) {
         var allFileUrls = imageUrls.concat(pdfUrls);
 
         if (allFileUrls.length > 0) {
-            console.log('🗑️ Excluindo ' + allFileUrls.length + ' arquivo(s) físico(s) do Storage...');
             try {
                 var deletionResult = await MediaSystem.deleteFilesFromStorage(allFileUrls);
                 if (!deletionResult.success) {
-                    console.warn('⚠️ Falha ao excluir ' + deletionResult.failedCount + ' arquivo(s)');
                     mediaDeletionError = 'Falha ao excluir ' + deletionResult.failedCount + ' arquivo(s)';
                     mediaDeletionSuccess = false;
-                } else {
-                    console.log('✅ ' + deletionResult.deletedCount + ' arquivo(s) excluídos do Storage');
                 }
             } catch (error) {
-                console.error('❌ Erro ao excluir arquivos:', error);
                 mediaDeletionError = error.message;
                 mediaDeletionSuccess = false;
                 
                 var userConfirmed = confirm('⚠️ ERRO AO EXCLUIR ARQUIVOS:\n\n' + mediaDeletionError + '\n\nDeseja continuar com a exclusão do registro?');
                 if (!userConfirmed) {
-                    console.log('❌ Exclusão cancelada pelo usuário');
                     alert('❌ Exclusão cancelada');
-                    console.groupEnd();
                     return false;
                 }
             }
-        } else {
-            console.log('ℹ️ Nenhum arquivo de mídia associado a este imóvel');
         }
     }
 
@@ -1503,14 +1446,11 @@ window.deleteProperty = async function(id) {
 
             if (response.ok) {
                 supabaseSuccess = true;
-                console.log('✅ Registro excluído do Supabase');
             } else {
                 supabaseError = await response.text();
-                console.warn('⚠️ Erro no Supabase:', supabaseError);
             }
         } catch (error) {
             supabaseError = error.message;
-            console.error('❌ Erro ao excluir do Supabase:', error);
         }
     }
 
@@ -1521,18 +1461,14 @@ window.deleteProperty = async function(id) {
     if (!saved) {
         console.error('❌ Falha ao salvar após exclusão local');
         alert('⚠️ Erro ao salvar alterações localmente!');
-        console.groupEnd();
         return false;
     }
-    console.log('✅ Registro removido do armazenamento local');
 
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos', true);
-        console.log('🔄 Lista de imóveis re-renderizada');
     }
     if (typeof window.loadPropertyList === 'function') {
         setTimeout(function() { window.loadPropertyList(); }, 100);
-        console.log('🔄 Lista do admin agendada para recarregar');
     }
 
     var finalMessage = '';
@@ -1556,8 +1492,6 @@ window.deleteProperty = async function(id) {
     }
     alert(finalMessage);
 
-    console.log('✅ Exclusão do imóvel ' + id + ' concluída');
-    console.groupEnd();
     return supabaseSuccess;
 };
 
@@ -2062,8 +1996,6 @@ window.loadPropertyList = function(page) {
     }
     
     updateSelectionCounter();
-    
-    console.log('✅ Core - Página ' + page + '/' + totalPages + ' - ' + paginatedProperties.length + ' imóveis exibidos (' + itemsPerPage + ' por página, total: ' + totalItems + ')');
 };
 
 // ========== INICIALIZAÇÃO ==========
@@ -2084,8 +2016,7 @@ if (document.readyState === 'loading') {
 // ============================================================
 // FIM DO ARQUIVO - properties.js
 // ============================================================
-// STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 2.3
-// Última atualização: 2026-06-30
+// STATUS: ✅ COMPLETO E FUNCIONAL// Versão: 2.3
+// Última atualização: 2026-07-18
 // CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
 // ============================================================
