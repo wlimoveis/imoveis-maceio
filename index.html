@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.8
+     ✅ Versão: 2.9
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -18,14 +18,11 @@
 <html lang="pt-br">
 <head>
     <!-- ========== GOOGLE SEARCH CONSOLE - VERIFICAÇÃO ========== -->
-    <!-- Meta tag original (já funcionando) -->
     <meta name="google-site-verification" content="googled0231963aaa503d8" />
-    <!-- Meta tag solicitada pelo Search Console (verificação adicional) -->
     <meta name="google-site-verification" content="Njr3tXSfxmNsGo9FhxoE0wCtqOKp5AsmNBC1CdEEMUg" />
     <!-- ========== FIM GOOGLE SEARCH CONSOLE ========== -->
 
     <!-- ========== GOOGLE ANALYTICS - TAG INSTALADA ========== -->
-    <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-BL8052BQ1L"></script>
     <script>
         window.dataLayer = window.dataLayer || [];
@@ -52,7 +49,7 @@
     <meta name="geo.position" content="-9.649848;-35.708950">
     <meta name="ICBM" content="-9.649848, -35.708950">
 
-    <!-- ========== OPEN GRAPH TAGS (Compartilhamento em Redes Sociais) ========== -->
+    <!-- ========== OPEN GRAPH TAGS ========== -->
     <meta property="og:title" content="Weber Lessa Corretor &amp; Consultor - Imóveis em Maceió">
     <meta property="og:description" content="Encontre seu imóvel dos sonhos em Maceió com a expertise de Weber Lessa, CRECI: 654/AL. +30 anos de experiência no mercado imobiliário.">
     <meta property="og:type" content="website">
@@ -69,7 +66,7 @@
     <meta name="twitter:description" content="Encontre seu imóvel dos sonhos em Maceió com a expertise de Weber Lessa, CRECI: 654/AL.">
     <meta name="twitter:image" content="https://weberlessaimoveis.com.br/assets/equipe-weber-lessa.jpg">
 
-    <!-- ========== PRELOAD E PRECONNECT (Otimização de Performance) ========== -->
+    <!-- ========== PRELOAD E PRECONNECT ========== -->
     <link rel="preconnect" href="https://cdnjs.cloudflare.com">
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="preconnect" href="https://wxdiowpswepsvklumgvx.supabase.co">
@@ -94,25 +91,19 @@
 
     <!-- ========== SCRIPT DE DIAGNÓSTICO PARA GITHUB ACTIONS ========== -->
     <script>
-        // ============================================================
-        // index.html - SCRIPT DE VALIDAÇÃO PARA GITHUB ACTIONS
-        // ============================================================
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.8');
+        console.log('📊 [index.html] Versão: 2.9');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
-        // Sinalizar que o HTML foi carregado completamente
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.8';
+        window.__INDEX_HTML_VERSION = '2.9';
         window.__INDEX_HTML_STATUS = 'success';
 
-        // Verificar se todos os CSS foram carregados
         document.addEventListener('DOMContentLoaded', function() {
             console.log('✅ [index.html] DOM completamente carregado');
             console.log('📊 [index.html] Todos os recursos carregados com sucesso');
         });
-        // ============================================================
     </script>
 </head>
 <body>
@@ -172,7 +163,6 @@
     <!-- ========== FIM DO HEADER ========== -->
 
     <!-- ========== CONTEÚDO PRINCIPAL ========== -->
-    <!-- ✅ CORREÇÃO: Adicionado <main> como ponto de referência principal -->
     <main id="main-content">
 
         <!-- ========== HERO SECTION ========== -->
@@ -241,7 +231,7 @@
     </main>
     <!-- ========== FIM DO CONTEÚDO PRINCIPAL ========== -->
 
-    <!-- ========== FOOTER COM RODAPÉ DUPLO ========== -->
+    <!-- ========== FOOTER ========== -->
     <footer class="footer">
         <div class="footer-content">
             <div class="footer-section">
@@ -286,10 +276,8 @@
             </div>
         </div>
 
-        <!-- ===== RODAPÉ PRINCIPAL - COPYRIGHT ===== -->
         <div class="copyright"><p>&copy; 2026 Weber Lessa Corretor &amp; Consultor - CRECI: 654/AL. Todos os direitos reservados.</p></div>
 
-        <!-- ===== RODAPÉ SECUNDÁRIO - CRÉDITOS DO DESENVOLVEDOR ===== -->
         <div class="developer-credits">
             <p>
                 <i class="fas fa-code" aria-hidden="true" style="font-size: 0.6rem; color: #888; margin-right: 4px;"></i>
@@ -552,256 +540,14 @@
             }, 1000);
         });
     </script>
-
-<!-- ========== DIAGNÓSTICO COMPLETO: CSS + SUPPORT SYSTEM ========== -->
-     <script>
-         (function fullDiagnostic() {
-             console.log('🔍 [FULL-DIAG] INICIANDO DIAGNÓSTICO COMPLETO');
-             console.log('═══════════════════════════════════════════════');
-             
-             // ============================================================
-             // PARTE 1: VERIFICAR CSS
-             // ============================================================
-             console.log('\n📌 PARTE 1: VERIFICANDO CSS');
-             console.log('─────────────────────────────');
-             
-             let hasCSSRule = false;
-             let cssRules = [];
-             
-             try {
-                 const styleSheets = document.styleSheets;
-                 for (let sheet of styleSheets) {
-                     try {
-                         const rules = sheet.cssRules || sheet.rules;
-                         for (let rule of rules) {
-                             if (rule.selectorText && rule.selectorText.includes('video-indicator')) {
-                                 hasCSSRule = true;
-                                 cssRules.push({
-                                     selector: rule.selectorText,
-                                     content: rule.style.cssText
-                                 });
-                             }
-                         }
-                     } catch (e) {}
-                 }
-             } catch (e) {}
-             
-             if (hasCSSRule) {
-                 console.log('⚠️ Regras CSS encontradas:');
-                 cssRules.forEach(rule => {
-                     console.log(`  - ${rule.selector}: ${rule.content}`);
-                 });
-             } else {
-                 console.log('✅ Nenhuma regra CSS para .video-indicator');
-             }
-             
-             // ============================================================
-             // PARTE 2: VERIFICAR SUPPORT SYSTEM
-             // ============================================================
-             console.log('\n📌 PARTE 2: VERIFICANDO SUPPORT SYSTEM');
-             console.log('─────────────────────────────────────');
-             
-             const isDebug = window.location.search.includes('debug=true');
-             const isDiagnostics = window.location.search.includes('diagnostics=true');
-             
-             console.log(`Modo debug: ${isDebug ? '✅ ATIVO' : '❌ INATIVO'}`);
-             console.log(`Modo diagnostics: ${isDiagnostics ? '✅ ATIVO' : '❌ INATIVO'}`);
-             
-             const supportScripts = document.querySelectorAll('script[src*="weberlessa-support"]');
-             console.log(`Scripts do Support System: ${supportScripts.length}`);
-             
-             if (supportScripts.length > 0) {
-                 console.warn('⚠️ Support System está carregado!');
-                 supportScripts.forEach((script, idx) => {
-                     console.log(`  - Script ${idx + 1}: ${script.src}`);
-                 });
-             } else {
-                 console.log('✅ Support System NÃO está carregado');
-             }
-             
-             // ============================================================
-             // PARTE 3: ANALISAR INDICADORES
-             // ============================================================
-             console.log('\n📌 PARTE 3: ANALISANDO INDICADORES');
-             console.log('─────────────────────────────────');
-             
-             const indicators = document.querySelectorAll('.video-indicator');
-             console.log(`Total no DOM: ${indicators.length}`);
-             
-             if (indicators.length > 0) {
-                 indicators.forEach((el, idx) => {
-                     const isInContainer = !!el.closest('.property-gallery-container');
-                     const parent = el.parentElement?.className || 'N/A';
-                     console.log(`📍 Indicador ${idx + 1}:`);
-                     console.log(`  - Dentro do container: ${isInContainer ? '✅' : '❌'}`);
-                     console.log(`  - Parent: ${parent}`);
-                     console.log(`  - HTML: ${el.innerHTML.trim()}`);
-                     
-                     // Verificar se o conteúdo vem do CSS
-                     const beforeContent = window.getComputedStyle(el, '::before').content;
-                     const afterContent = window.getComputedStyle(el, '::after').content;
-                     if (beforeContent !== 'none' || afterContent !== 'none') {
-                         console.warn('  ⚠️ Pseudo-elemento gerando conteúdo!');
-                     }
-                 });
-             } else {
-                 console.log('✅ Nenhum indicador encontrado');
-             }
-             
-             // ============================================================
-             // RESUMO FINAL
-             // ============================================================
-             console.log('\n📊 RESUMO FINAL');
-             console.log('═══════════════════════════════════════════════');
-             console.log(`CSS com .video-indicator: ${hasCSSRule ? '❌ SIM' : '✅ NÃO'}`);
-             console.log(`Support System ativo: ${supportScripts.length > 0 ? '❌ SIM' : '✅ NÃO'}`);
-             console.log(`Indicadores no DOM: ${indicators.length}`);
-             console.log(`Indicadores FORA do container: ${indicators.length > 0 ? '❌ SIM' : '✅ NÃO'}`);
-             
-             if (indicators.length > 0) {
-                 console.warn('\n⚠️ PROBLEMA IDENTIFICADO:');
-                 console.warn('  Os indicadores estão FORA do property-gallery-container.');
-                 console.warn('  Isso indica que estão sendo gerados por DADOS ou por outro script.');
-                 console.warn('  Recomendação: Verificar os dados dos imóveis no localStorage.');
-             } else {
-                 console.log('\n✅ SISTEMA LIMPO: Nenhum indicador duplicado encontrado!');
-             }
-             
-             console.log('═══════════════════════════════════════════════');
-             console.groupEnd();
-             
-             return {
-                 hasCSSRule,
-                 supportScripts: supportScripts.length,
-                 indicators: indicators.length,
-                 isDebug,
-                 isDiagnostics
-             };
-         })();
-     </script>
-     
-     <!-- ========== DIAGNÓSTICO: IDENTIFICAR INDICADOR INFERIOR ========== -->
-<script>
-    (function findBottomVideoIndicator() {
-        console.group('🔍 [VISUAL-DIAG] IDENTIFICANDO INDICADOR INFERIOR');
-        
-        // 1. Verificar todos os cards
-        const cards = document.querySelectorAll('.property-card');
-        console.log(`📊 ${cards.length} card(s) encontrado(s)`);
-        
-        cards.forEach((card, idx) => {
-            const title = card.dataset.propertyTitle || 'Sem título';
-            const id = card.dataset.propertyId || 'N/A';
-            console.log(`\n📍 Card ${idx + 1}: "${title}" (ID: ${id})`);
-            
-            // Verificar elementos dentro do card
-            const container = card.querySelector('.property-gallery-container');
-            const image = card.querySelector('.property-image');
-            
-            // 1. Verificar elementos com texto "Vídeo"
-            const allElements = card.querySelectorAll('*');
-            let videoTextElements = [];
-            allElements.forEach(el => {
-                if (el.textContent && el.textContent.includes('Vídeo') && el.children.length === 0) {
-                    videoTextElements.push(el);
-                }
-            });
-            
-            if (videoTextElements.length > 0) {
-                console.log(`  ⚠️ Encontrados ${videoTextElements.length} elemento(s) com texto "Vídeo":`);
-                videoTextElements.forEach((el, i) => {
-                    console.log(`    ${i+1}. Tag: ${el.tagName}, Classe: ${el.className || 'sem classe'}`);
-                    console.log(`       HTML: ${el.outerHTML.substring(0, 100)}...`);
-                    console.log(`       Posição: ${el.getBoundingClientRect().top}px`);
-                });
-            } else {
-                console.log('  ✅ Nenhum elemento com texto "Vídeo" encontrado');
-            }
-            
-            // 2. Verificar pseudo-elementos via CSS
-            if (container) {
-                const beforeContent = window.getComputedStyle(container, '::before').content;
-                const afterContent = window.getComputedStyle(container, '::after').content;
-                
-                if (beforeContent !== 'none' && beforeContent.includes('Vídeo')) {
-                    console.log(`  ⚠️ Pseudo-elemento ::before do container: "${beforeContent}"`);
-                }
-                if (afterContent !== 'none' && afterContent.includes('Vídeo')) {
-                    console.log(`  ⚠️ Pseudo-elemento ::after do container: "${afterContent}"`);
-                }
-            }
-            
-            // 3. Verificar vídeos
-            const videos = card.querySelectorAll('video');
-            if (videos.length > 0) {
-                console.log(`  🎬 ${videos.length} vídeo(s) encontrado(s)`);
-                videos.forEach((video, i) => {
-                    console.log(`    ${i+1}. src: ${video.src?.substring(0, 80)}...`);
-                    // Verificar se o vídeo tem overlay
-                    const parent = video.parentElement;
-                    if (parent) {
-                        const overlay = parent.querySelector('.play-overlay, .video-overlay, [style*="position:absolute"]');
-                        if (overlay) {
-                            console.log(`    ⚠️ Overlay encontrado: ${overlay.className || 'sem classe'}`);
-                        }
-                    }
-                });
-            }
-            
-            // 4. Verificar imagens (fallback)
-            const images = card.querySelectorAll('img');
-            images.forEach((img, i) => {
-                const alt = img.alt || '';
-                if (alt.includes('Vídeo') || alt.includes('video')) {
-                    console.log(`  ⚠️ Imagem com alt contendo "Vídeo": "${alt}"`);
-                }
-            });
-        });
-        
-        // 5. Verificar regras CSS que podem adicionar conteúdo
-        console.log('\n📊 VERIFICANDO REGRAS CSS COM CONTENT:');
-        try {
-            const sheets = document.styleSheets;
-            let contentRules = [];
-            for (let sheet of sheets) {
-                try {
-                    const rules = sheet.cssRules || sheet.rules;
-                    for (let rule of rules) {
-                        if (rule.style && rule.style.content && rule.style.content !== 'none') {
-                            contentRules.push({
-                                selector: rule.selectorText || 'desconhecido',
-                                content: rule.style.content
-                            });
-                        }
-                    }
-                } catch (e) {}
-            }
-            if (contentRules.length > 0) {
-                console.log('Regras com content:');
-                contentRules.forEach(rule => {
-                    if (rule.content.includes('Vídeo') || rule.content.includes('video')) {
-                        console.log(`  ⚠️ ${rule.selector}: ${rule.content}`);
-                    }
-                });
-            } else {
-                console.log('✅ Nenhuma regra com content encontrada');
-            }
-        } catch (e) {
-            console.log('⚠️ Não foi possível ler todas as folhas de estilo');
-        }
-        
-        console.groupEnd();
-    })();
-</script>
-     
     <!-- ========== FIM DOS SCRIPTS ========== -->
 
     <!-- ============================================================
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.8
-         Última atualização: 2026-06-30
+         Versão: 2.9
+         Última atualização: 2026-07-18
          CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
          ============================================================ -->
 </body>
