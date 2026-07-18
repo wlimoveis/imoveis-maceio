@@ -1643,6 +1643,9 @@ function createNavButton(text, disabled, onClick, isDesktop) {
     return btn;
 }
 
+// ========== BOTÃO DE PÁGINA MELHORADO COM EFEITO "AFUNDADO" ==========
+// ✅ MELHORADO: Efeito "pressionado/afundado" para a página ativa
+// ✅ MELHORADO: Contraste visual claro entre ativo e inativo
 function createPageButton(pageNum, currentPage, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
@@ -1654,47 +1657,81 @@ function createPageButton(pageNum, currentPage, isDesktop) {
     var minWidth = isDesktop ? '32px' : '26px';
     var height = isDesktop ? '32px' : '26px';
     
-    btn.style.cssText = `
-        background: ${isActive ? '#f39c12' : 'white'};
-        color: ${isActive ? 'white' : '#1a5276'};
-        border: 1px solid ${isActive ? '#d4a017' : '#d1d8dd'};
-        padding: ${padding};
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: ${fontSize};
-        font-weight: ${isActive ? '700' : '400'};
-        min-width: ${minWidth};
-        height: ${height};
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        transition: all 0.2s ease;
-        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        box-shadow: ${isActive ? '0 2px 8px rgba(243, 156, 18, 0.3)' : 'none'};
-    `;
-    
-    btn.onclick = function() { window.loadPropertyList(pageNum); };
-    
-    if (!isActive) {
+    if (isActive) {
+        // ========== ESTILO ATIVO (pressionado/afundado) ==========
+        btn.style.cssText = `
+            background: #d4a017 !important;
+            color: white !important;
+            border: 1px solid #b8941f !important;
+            padding: ${padding};
+            border-radius: 4px;
+            cursor: default;
+            font-size: ${fontSize};
+            font-weight: 700;
+            min-width: ${minWidth};
+            height: ${height};
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.3), 
+                        inset 0 -1px 2px rgba(255,255,255,0.1),
+                        0 1px 2px rgba(0,0,0,0.1) !important;
+            transform: scale(0.95) !important;
+            transition: all 0.15s ease;
+            position: relative;
+            top: 1px;
+            pointer-events: none;
+        `;
+    } else {
+        // ========== ESTILO INATIVO ==========
+        btn.style.cssText = `
+            background: white;
+            color: #1a5276;
+            border: 1px solid #d1d8dd;
+            padding: ${padding};
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: ${fontSize};
+            font-weight: 400;
+            min-width: ${minWidth};
+            height: ${height};
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        `;
+        
         btn.onmouseenter = function() {
             this.style.background = '#e8f4f8';
             this.style.borderColor = '#1a5276';
             this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 2px 8px rgba(26, 82, 118, 0.15)';
         };
         btn.onmouseleave = function() {
             this.style.background = 'white';
             this.style.borderColor = '#d1d8dd';
             this.style.transform = 'scale(1)';
+            this.style.boxShadow = '0 1px 3px rgba(0,0,0,0.05)';
         };
         btn.onmousedown = function() {
             this.style.transform = 'scale(0.95)';
+            this.style.boxShadow = 'inset 0 2px 4px rgba(0,0,0,0.1)';
         };
         btn.onmouseup = function() {
             this.style.transform = 'scale(1.05)';
+            this.style.boxShadow = '0 2px 8px rgba(26, 82, 118, 0.15)';
+        };
+        
+        btn.onclick = function() { 
+            window.loadPropertyList(pageNum); 
         };
     }
     
-    btn.title = 'Ir para página ' + pageNum;
+    btn.title = isActive ? 'Página atual: ' + pageNum : 'Ir para página ' + pageNum;
+    
     return btn;
 }
 
