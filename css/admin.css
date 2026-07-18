@@ -5,6 +5,7 @@
 /* - Campos Título e Preço na mesma linha (mesmo durante edição) */
 /* - Espaçamento justo (estilo C/C++ skeuomorphism) preservado */
 /* - Aba GERENCIAR mantém 100% largura */
+/* ✅ MELHORIA: Barras de rolagem personalizadas para toque (10-12px) */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -459,23 +460,6 @@
     box-sizing: border-box !important;
 }
 
-#uploadPreview::-webkit-scrollbar,
-#pdfUploadPreview::-webkit-scrollbar {
-    height: 6px !important;
-}
-
-#uploadPreview::-webkit-scrollbar-track,
-#pdfUploadPreview::-webkit-scrollbar-track {
-    background: #e0e0e0 !important;
-    border-radius: 3px !important;
-}
-
-#uploadPreview::-webkit-scrollbar-thumb,
-#pdfUploadPreview::-webkit-scrollbar-thumb {
-    background: var(--primary) !important;
-    border-radius: 3px !important;
-}
-
 #uploadPreview > div,
 #pdfUploadPreview > div {
     position: relative !important;
@@ -653,20 +637,6 @@
     max-height: 650px;
     overflow-y: auto;
     scroll-behavior: smooth;
-}
-
-#propertyList::-webkit-scrollbar {
-    width: 6px;
-}
-
-#propertyList::-webkit-scrollbar-track {
-    background: #e0e0e0;
-    border-radius: 3px;
-}
-
-#propertyList::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 3px;
 }
 
 #propertyList button:not(:disabled):hover {
@@ -2094,5 +2064,227 @@ select {
     #form-tab.active label[for="propHasVideo"] {
         margin: 0 !important;
         padding: 0.1rem 0 !important;
+    }
+}
+
+/* ============================================================
+   BARRAS DE ROLAGEM PERSONALIZADAS - TOQUE AMIGÁVEL
+   ============================================================
+   Aumenta a espessura das barras de rolagem para facilitar
+   o uso em dispositivos móveis e touch.
+   ============================================================ */
+
+/* ========== CAMPO DESCRIÇÃO ========== */
+#propDescription {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #e8f4fd !important;
+}
+
+#propDescription::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#propDescription::-webkit-scrollbar-track {
+    background: #e8f4fd !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+#propDescription::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #e8f4fd !important;
+    min-height: 40px !important;
+}
+
+#propDescription::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+#propDescription::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== CAMPO CARACTERÍSTICAS ========== */
+#propFeatures {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #e8f4fd !important;
+}
+
+#propFeatures::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#propFeatures::-webkit-scrollbar-track {
+    background: #e8f4fd !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+#propFeatures::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #e8f4fd !important;
+    min-height: 40px !important;
+}
+
+#propFeatures::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+#propFeatures::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== ÁREA DE UPLOAD (FOTOS/VIDEOS) ========== */
+#uploadPreview {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #f0f0f0 !important;
+}
+
+#uploadPreview::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#uploadPreview::-webkit-scrollbar-track {
+    background: #f0f0f0 !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+#uploadPreview::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #f0f0f0 !important;
+    min-height: 40px !important;
+}
+
+#uploadPreview::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+#uploadPreview::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== ÁREA DE UPLOAD (PDFs) ========== */
+#pdfUploadPreview {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #fef9e6 !important;
+}
+
+#pdfUploadPreview::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#pdfUploadPreview::-webkit-scrollbar-track {
+    background: #fef9e6 !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+#pdfUploadPreview::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #fef9e6 !important;
+    min-height: 40px !important;
+}
+
+#pdfUploadPreview::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+#pdfUploadPreview::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== LISTA DE PROPRIEDADES (GERENCIAR) ========== */
+#propertyList {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #ece9d8 !important;
+}
+
+#propertyList::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+#propertyList::-webkit-scrollbar-track {
+    background: #ece9d8 !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+#propertyList::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #ece9d8 !important;
+    min-height: 40px !important;
+}
+
+#propertyList::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+#propertyList::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== DROPDOWN DE AUTOCOMPLETE ========== */
+.admin-location-suggestions {
+    scrollbar-width: 10px !important;
+    scrollbar-color: #1a5276 #f8f9fa !important;
+}
+
+.admin-location-suggestions::-webkit-scrollbar {
+    width: 10px !important;
+    height: 10px !important;
+}
+
+.admin-location-suggestions::-webkit-scrollbar-track {
+    background: #f8f9fa !important;
+    border-radius: 5px !important;
+    border: 1px solid #d1d8dd !important;
+}
+
+.admin-location-suggestions::-webkit-scrollbar-thumb {
+    background: #1a5276 !important;
+    border-radius: 5px !important;
+    border: 2px solid #f8f9fa !important;
+    min-height: 40px !important;
+}
+
+.admin-location-suggestions::-webkit-scrollbar-thumb:hover {
+    background: #0e3d5c !important;
+}
+
+.admin-location-suggestions::-webkit-scrollbar-thumb:active {
+    background: #0c2d48 !important;
+}
+
+/* ========== MOBILE - AINDA MAIS GROSSO ========== */
+@media (max-width: 768px) {
+    #propDescription::-webkit-scrollbar,
+    #propFeatures::-webkit-scrollbar,
+    #uploadPreview::-webkit-scrollbar,
+    #pdfUploadPreview::-webkit-scrollbar,
+    #propertyList::-webkit-scrollbar,
+    .admin-location-suggestions::-webkit-scrollbar {
+        width: 12px !important;
+        height: 12px !important;
+    }
+    
+    #propDescription::-webkit-scrollbar-thumb,
+    #propFeatures::-webkit-scrollbar-thumb,
+    #uploadPreview::-webkit-scrollbar-thumb,
+    #pdfUploadPreview::-webkit-scrollbar-thumb,
+    #propertyList::-webkit-scrollbar-thumb,
+    .admin-location-suggestions::-webkit-scrollbar-thumb {
+        min-height: 50px !important;
+        border-width: 3px !important;
     }
 }
