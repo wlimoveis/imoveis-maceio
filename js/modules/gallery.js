@@ -1,9 +1,8 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
 // ✅ Funções de visualização delegadas ao SharedCore
-// ✅ CORREÇÃO: Removido bloco duplicado com Illegal return statement (linhas 635-660)
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
-// ✅ CORREÇÃO: video-indicator duplicado removido - agora único e gerenciado por este arquivo
-console.log('🚀 gallery.js carregado - Setas Liquid Glass + Contador Persistente com Timestamps');
+// ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
+console.log('🚀 gallery.js carregado');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -21,7 +20,6 @@ window.getGalleryViews = function(propertyId) {
     if (window.SharedCore && typeof window.SharedCore.getGalleryViews === 'function') {
         return window.SharedCore.getGalleryViews(propertyId);
     }
-    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getGalleryViews');
     try {
         const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
         return views[propertyId] || 0;
@@ -34,7 +32,6 @@ window.getTotalGalleryViews = function() {
     if (window.SharedCore && typeof window.SharedCore.getTotalGalleryViews === 'function') {
         return window.SharedCore.getTotalGalleryViews();
     }
-    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getTotalGalleryViews');
     try {
         const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
         let total = 0;
@@ -53,7 +50,6 @@ window.getLastGalleryView = function(propertyId) {
     if (window.SharedCore && typeof window.SharedCore.getLastGalleryView === 'function') {
         return window.SharedCore.getLastGalleryView(propertyId);
     }
-    console.warn('[Gallery] SharedCore não disponível, usando fallback local para getLastGalleryView');
     try {
         const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
         return lastViews[propertyId] || null;
@@ -70,7 +66,6 @@ window.resetAllGalleryViews = function() {
         }
         return result;
     }
-    console.error('[Gallery] SharedCore não disponível para resetAllGalleryViews. Operação não realizada.');
     alert('❌ Sistema de visualizações não disponível. Recarregue a página.');
     return false;
 };
@@ -102,7 +97,6 @@ window.resetGalleryViews = function(propertyId, propertyTitle) {
         }
         return true;
     } catch (error) {
-        console.error('Erro ao zerar visualizações:', error);
         alert('❌ Erro ao zerar visualizações!');
         return false;
     }
@@ -128,10 +122,8 @@ window.registerGalleryView = function(propertyId) {
             }
         }
         
-        console.log(`👁️ Visualização registrada para imóvel ${propertyId}: ${views[propertyId]} total`);
         return views[propertyId];
     } catch (error) {
-        console.error('Erro ao registrar visualização:', error);
         return 0;
     }
 };
@@ -147,8 +139,7 @@ function updateViewCounter(propertyId, count) {
     }
 }
 
-// ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO (CORRIGIDA) ==========
-// ✅ REMOVIDO: Indicador "Vídeo" na parte inferior - agora apenas o video-indicator superior é exibido
+// ========== FUNÇÃO PARA CRIAR MINIATURA DE VÍDEO ==========
 window.createVideoThumbnail = function(videoUrl, index, propertyId) {
     return `
         <div class="gallery-video-item" 
@@ -174,7 +165,6 @@ window.createVideoThumbnail = function(videoUrl, index, propertyId) {
 };
 
 // ========== FUNÇÃO PARA CRIAR MINIATURA DE IMAGEM (COM LAZY LOADING E ALT) ==========
-// ✅ CORREÇÃO: Adicionado alt com informação do imóvel
 window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel') {
     const safeTitle = propertyTitle || 'Imóvel';
     return `
@@ -188,8 +178,7 @@ window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel
     `;
 };
 
-// ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS (COM ACESSIBILIDADE) ==========
-// ✅ CORREÇÃO: Adicionado aria-label, aria-hidden nos ícones
+// ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
 function createNavigationArrows(propertyId, totalItems, currentIndex) {
     if (totalItems <= 1) return '';
     
@@ -275,7 +264,6 @@ function updateCardMedia(propertyId, newIndex) {
         if (isVideo) {
             mainContent.outerHTML = window.createVideoThumbnail(mediaUrl, newIndex, propertyId);
         } else {
-            // ✅ CORREÇÃO: Passar o título do imóvel para o alt
             const propertyTitle = property.title || 'Imóvel';
             mainContent.outerHTML = window.createImageThumbnail(mediaUrl, newIndex, propertyTitle);
         }
@@ -297,7 +285,6 @@ function updateCardMedia(propertyId, newIndex) {
 }
 
 // ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
-// ✅ ÚNICO local onde o video-indicator é gerado
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -338,8 +325,6 @@ window.createPropertyGallery = function(property) {
     </div>
 `;
 
-    // ✅ video-indicator: APENAS UM, dentro do property-gallery-container
-    // ✅ Removido qualquer bloco duplicado fora do container
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
              style="position: relative; height: 250px;"
@@ -379,7 +364,6 @@ window.createPropertyGallery = function(property) {
             
             ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
-            <!-- ✅ INDICADOR DE VÍDEO: ÚNICO, DENTRO DO CONTAINER, POSIÇÃO SUPERIOR -->
             ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                 <i class="fas fa-video" aria-hidden="true"></i> Vídeo
             </div>` : ''}
@@ -399,7 +383,6 @@ window.createPropertyGallery = function(property) {
 };
 
 // ========== ABRIR GALERIA COM REGISTRO DE VISUALIZAÇÃO ==========
-// ✅ CORREÇÃO: Adicionado aria-label nos botões do modal
 window.openGalleryAtCurrentIndex = function(propertyId) {
     const property = window.properties.find(p => p.id === propertyId);
     if (!property) return;
@@ -579,7 +562,7 @@ window.handleTouchEnd = function(event) {
     event.stopPropagation();
 };
 
-// ========== CONFIGURAR EVENTOS (COM DEBOUNCE E THROTTLE) ==========
+// ========== CONFIGURAR EVENTOS ==========
 window.setupGalleryEvents = function() {
     document.addEventListener('click', function(event) {
         const galleryModal = document.getElementById('propertyGalleryModal');
@@ -609,7 +592,6 @@ window.setupGalleryEvents = function() {
                     currentVideo.style.maxHeight = window.innerHeight * 0.8 + 'px';
                 }
             }
-            console.log('🖼️ Galeria ajustada após resize (debounced)');
         }, 250);
     });
     
@@ -631,8 +613,6 @@ window.setupGalleryEvents = function() {
             lastScrollPosition = currentScroll;
         }, 100);
     });
-    
-    console.log('✅ Throttle de scroll configurado');
     
     const style = document.createElement('style');
     style.textContent = `
@@ -676,10 +656,3 @@ if (document.readyState === 'loading') {
 
 // ========== EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS ==========
 window.openGallery = window.openGalleryAtCurrentIndex;
-
-console.log('✅ gallery.js carregado - Contador Persistente com Timestamps!');
-console.log('✅ Otimizações: lazy loading, debounce resize, throttle scroll');
-console.log('✅ Funções de visualização delegadas ao SharedCore');
-console.log('✅ CORREÇÃO: Bloco duplicado removido - Illegal return statement corrigido');
-console.log('✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden adicionados');
-console.log('✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo');
