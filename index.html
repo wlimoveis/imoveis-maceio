@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.9
+     ✅ Versão: 2.10
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -13,6 +13,7 @@
      ✅ Google Analytics: Tag gtag.js instalada (G-BL8052BQ1L)
      ✅ Google Search Console: Dupla verificação (original + nova)
      ✅ CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
+     ✅ MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -92,12 +93,12 @@
     <!-- ========== SCRIPT DE DIAGNÓSTICO PARA GITHUB ACTIONS ========== -->
     <script>
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.9');
+        console.log('📊 [index.html] Versão: 2.10');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.9';
+        window.__INDEX_HTML_VERSION = '2.10';
         window.__INDEX_HTML_STATUS = 'success';
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -333,15 +334,28 @@
                         <input type="text" id="propLocation" placeholder="Digite o bairro (ex: Ponta Verde)" required>
                     </div>
 
+                    <!-- ========== DESCRIÇÃO - MELHORADA ========== -->
                     <div class="form-group">
                         <label><i class="fas fa-align-left" aria-hidden="true"></i> DESCRIÇÃO</label>
-                        <textarea id="propDescription" placeholder="Descreva o imóvel..." rows="2"></textarea>
+                        <textarea id="propDescription" 
+                                  placeholder="Descreva o imóvel com detalhes..." 
+                                  rows="4"
+                                  style="resize: vertical; min-height: 80px; max-height: 200px; width: 100%; overflow-y: auto; overflow-x: hidden; word-wrap: break-word; white-space: pre-wrap; box-sizing: border-box; padding: 0.5rem; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.85rem; line-height: 1.5; border: 2px solid; border-color: #404040 #ffffff #ffffff #404040; background: #ffffff; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);"></textarea>
+                        <small style="display:block; margin-top:0.15rem; font-family:'Courier New', monospace; font-size:0.55rem; color:#666;">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i> Descreva o imóvel com detalhes. Use quebras de linha para organizar.
+                        </small>
                     </div>
 
+                    <!-- ========== CARACTERÍSTICAS - MELHORADA ========== -->
                     <div class="form-group">
                         <label><i class="fas fa-list" aria-hidden="true"></i> CARACTERÍSTICAS</label>
-                        <input type="text" id="propFeatures" placeholder="Ex: 2 Quartos, 1 Vaga, Piscina">
-                        <small style="display:block; margin-top:0.15rem; font-family:'Courier New', monospace; font-size:0.55rem;">Separe por vírgulas</small>
+                        <textarea id="propFeatures" 
+                                  placeholder="Ex: 2 Quartos, 1 Vaga, Piscina, Churrasqueira..." 
+                                  rows="3"
+                                  style="resize: vertical; min-height: 60px; max-height: 150px; width: 100%; overflow-y: auto; overflow-x: hidden; word-wrap: break-word; white-space: pre-wrap; box-sizing: border-box; padding: 0.5rem; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 0.85rem; line-height: 1.5; border: 2px solid; border-color: #404040 #ffffff #ffffff #404040; background: #ffffff; box-shadow: inset 2px 2px 5px rgba(0,0,0,0.1);"></textarea>
+                        <small style="display:block; margin-top:0.15rem; font-family:'Courier New', monospace; font-size:0.55rem; color:#666;">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i> Separe por vírgulas. Ex: "2 Quartos, 1 Vaga, Piscina"
+                        </small>
                     </div>
 
                     <div class="form-group">
@@ -546,9 +560,10 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.9
+         Versão: 2.10
          Última atualização: 2026-07-18
          CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
+         MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
          ============================================================ -->
 </body>
 </html>
