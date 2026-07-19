@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.10
+     ✅ Versão: 2.11
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -14,6 +14,7 @@
      ✅ Google Search Console: Dupla verificação (original + nova)
      ✅ CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
      ✅ MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
+     ✅ MELHORIA: Logo substituído por imagem (desktop e mobile)
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -93,12 +94,12 @@
     <!-- ========== SCRIPT DE DIAGNÓSTICO PARA GITHUB ACTIONS ========== -->
     <script>
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.10');
+        console.log('📊 [index.html] Versão: 2.11');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.10';
+        window.__INDEX_HTML_VERSION = '2.11';
         window.__INDEX_HTML_STATUS = 'success';
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -113,10 +114,22 @@
         <div class="header-content">
             <div class="header-integrated">
                 <div class="brand-section">
+                    <!-- ========== LOGO COM IMAGEM (DESKTOP) ========== -->
                     <div class="logo">
-                        <span class="logo-wl">WL</span>
+                        <img src="assets/logo-weber-lessa.png" 
+                             alt="Weber Lessa Corretor &amp; Consultor" 
+                             class="logo-image"
+                             loading="lazy"
+                             width="70" 
+                             height="70"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='flex';">
+                        <div class="logo-fallback" style="display: none;">
+                            <span class="logo-wl">WL</span>
+                        </div>
                         <div class="logo-badge"><i class="fas fa-key" aria-hidden="true"></i></div>
                     </div>
+                    <!-- ========== FIM DO LOGO ========== -->
+                    
                     <div class="brand-info">
                         <div class="brand-name-compact">
                             <span class="first-name-compact">WEBER</span>
@@ -144,9 +157,24 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- ========== MOBILE HEADER ========== -->
             <div class="mobile-header-ultimate">
                 <div class="mobile-row-1">
-                    <div class="mobile-logo-mini"><span>WL</span></div>
+                    <!-- ========== LOGO COM IMAGEM (MOBILE) ========== -->
+                    <div class="mobile-logo-mini">
+                        <img src="assets/logo-weber-lessa-mini.png" 
+                             alt="Weber Lessa" 
+                             class="mobile-logo-image"
+                             loading="lazy"
+                             width="40" 
+                             height="40"
+                             onerror="this.style.display='none'; this.parentElement.querySelector('.mobile-logo-fallback').style.display='flex';">
+                        <div class="mobile-logo-fallback" style="display: none;">
+                            <span>WL</span>
+                        </div>
+                    </div>
+                    <!-- ========== FIM DO LOGO MOBILE ========== -->
                     <div class="mobile-name-mini"><span class="mobile-first-name-mini">WEBER</span><span class="mobile-last-name-mini">LESSA</span></div>
                     <div class="mobile-phone-mini"><i class="fas fa-mobile-alt" aria-hidden="true"></i><i class="fab fa-whatsapp" aria-hidden="true"></i></div>
                 </div>
@@ -159,6 +187,7 @@
                     <div class="mobile-certified-mini"><i class="fas fa-award" aria-hidden="true"></i><span>CERTIFICADO</span></div>
                 </div>
             </div>
+            <!-- ========== FIM DO MOBILE HEADER ========== -->
         </div>
     </header>
     <!-- ========== FIM DO HEADER ========== -->
@@ -560,10 +589,11 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.10
-         Última atualização: 2026-07-18
+         Versão: 2.11
+         Última atualização: 2026-07-19
          CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
          MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
+         MELHORIA: Logo substituído por imagem (desktop e mobile)
          ============================================================ -->
 </body>
 </html>
