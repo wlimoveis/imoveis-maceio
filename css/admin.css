@@ -6,6 +6,7 @@
 /* - Espaçamento justo (estilo C/C++ skeuomorphism) preservado */
 /* - Aba GERENCIAR mantém 100% largura */
 /* ✅ MELHORIA: Barras de rolagem personalizadas para toque (10-12px) */
+/* ✅ MELHORIA: Efeito de zoom nas barras de rolagem ao interagir */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
 :root {
@@ -18,6 +19,9 @@
     --light: #ecf0f1;
     --dark: #2c3e50;
     --success: #27ae60;
+    --scrollbar-color: #1a5276;
+    --scrollbar-track: #e8f4fd;
+    --scrollbar-radius: 5px;
 }
 
 /* ========== ESTILOS DO PAINEL ADMIN ========== */
@@ -2072,6 +2076,7 @@ select {
    ============================================================
    Aumenta a espessura das barras de rolagem para facilitar
    o uso em dispositivos móveis e touch.
+   Efeito de "zoom" ao interagir para melhor usabilidade.
    ============================================================ */
 
 /* ========== CAMPO DESCRIÇÃO ========== */
@@ -2096,14 +2101,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #e8f4fd !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 #propDescription::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 #propDescription::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== CAMPO CARACTERÍSTICAS ========== */
@@ -2128,14 +2141,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #e8f4fd !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 #propFeatures::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 #propFeatures::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== ÁREA DE UPLOAD (FOTOS/VIDEOS) ========== */
@@ -2160,14 +2181,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #f0f0f0 !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 #uploadPreview::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 #uploadPreview::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== ÁREA DE UPLOAD (PDFs) ========== */
@@ -2192,14 +2221,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #fef9e6 !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 #pdfUploadPreview::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 #pdfUploadPreview::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== LISTA DE PROPRIEDADES (GERENCIAR) ========== */
@@ -2224,14 +2261,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #ece9d8 !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 #propertyList::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 #propertyList::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== DROPDOWN DE AUTOCOMPLETE ========== */
@@ -2256,14 +2301,22 @@ select {
     border-radius: 5px !important;
     border: 2px solid #f8f9fa !important;
     min-height: 40px !important;
+    transition: all 0.3s ease !important;
 }
 
+/* EFEITO DE ZOOM - EXPANDE A BARRA AO PASSAR O MOUSE/TOQUE */
 .admin-location-suggestions::-webkit-scrollbar-thumb:hover {
     background: #0e3d5c !important;
+    transform: scale(1.3) !important;
+    border-width: 3px !important;
+    min-height: 50px !important;
 }
 
 .admin-location-suggestions::-webkit-scrollbar-thumb:active {
     background: #0c2d48 !important;
+    transform: scale(1.4) !important;
+    border-width: 4px !important;
+    min-height: 55px !important;
 }
 
 /* ========== MOBILE - AINDA MAIS GROSSO ========== */
@@ -2286,5 +2339,28 @@ select {
     .admin-location-suggestions::-webkit-scrollbar-thumb {
         min-height: 50px !important;
         border-width: 3px !important;
+    }
+    
+    /* EFEITO DE ZOOM MAIS AGRESSIVO EM MOBILE */
+    #propDescription::-webkit-scrollbar-thumb:hover,
+    #propFeatures::-webkit-scrollbar-thumb:hover,
+    #uploadPreview::-webkit-scrollbar-thumb:hover,
+    #pdfUploadPreview::-webkit-scrollbar-thumb:hover,
+    #propertyList::-webkit-scrollbar-thumb:hover,
+    .admin-location-suggestions::-webkit-scrollbar-thumb:hover {
+        transform: scale(1.4) !important;
+        min-height: 60px !important;
+        border-width: 4px !important;
+    }
+    
+    #propDescription::-webkit-scrollbar-thumb:active,
+    #propFeatures::-webkit-scrollbar-thumb:active,
+    #uploadPreview::-webkit-scrollbar-thumb:active,
+    #pdfUploadPreview::-webkit-scrollbar-thumb:active,
+    #propertyList::-webkit-scrollbar-thumb:active,
+    .admin-location-suggestions::-webkit-scrollbar-thumb:active {
+        transform: scale(1.5) !important;
+        min-height: 65px !important;
+        border-width: 4px !important;
     }
 }
