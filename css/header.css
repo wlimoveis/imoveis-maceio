@@ -7,7 +7,7 @@
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com main.css e admin.css
    ✅ Mobile First: Header fixo com design ultra compacto
-   ✅ MELHORIA: Logo substituído por imagem (desktop e mobile)
+   ✅ MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
    ✅ CORREÇÃO: Badge da chave sobrepondo o logo (z-index)
    ✅ MELHORIA: Chave sem contêiner, maior e proporcional
    ============================================================ */
@@ -47,7 +47,7 @@
     flex: 1;
 }
 
-/* ========== LOGO COM IMAGEM (DESKTOP) ========== */
+/* ========== LOGO COM DETECÇÃO AUTOMÁTICA (DESKTOP) ========== */
 .logo {
     position: relative;
     width: 70px;
@@ -105,22 +105,22 @@
     position: absolute;
     bottom: -6px;
     right: -6px;
-    width: auto; /* ✅ Remove o contêiner */
-    height: auto; /* ✅ Remove o contêiner */
-    background: transparent !important; /* ✅ Fundo transparente */
-    border-radius: 0; /* ✅ Remove arredondamento */
+    width: auto;
+    height: auto;
+    background: transparent !important;
+    border-radius: 0;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #d4af37; /* ✅ Cor dourada para a chave */
-    font-size: 1.1rem; /* ✅ Aumentado para melhor visibilidade */
-    box-shadow: none; /* ✅ Remove sombra */
-    border: none; /* ✅ Remove borda */
+    color: #d4af37;
+    font-size: 1.1rem;
+    box-shadow: none;
+    border: none;
     z-index: 10 !important;
     pointer-events: none;
-    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); /* ✅ Sombra para destacar */
-    padding: 0; /* ✅ Remove padding */
-    margin: 0; /* ✅ Remove margin */
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5);
+    padding: 0;
+    margin: 0;
 }
 
 /* ========== FIM DO LOGO ========== */
@@ -374,7 +374,7 @@
     }
 }
 
-/* ========== LOGO COM IMAGEM (MOBILE) ========== */
+/* ========== LOGO MOBILE COM DETECÇÃO AUTOMÁTICA ========== */
 .mobile-logo-mini {
     width: 40px;
     height: 40px;
@@ -681,7 +681,7 @@
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.3
    Última atualização: 2026-07-19
-   MELHORIA: Logo substituído por imagem (desktop e mobile)
+   MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
    CORREÇÃO: Badge da chave sobrepondo o logo (z-index)
    MELHORIA: Chave sem contêiner, maior e proporcional
    ============================================================ */
