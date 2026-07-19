@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.11
+     ✅ Versão: 2.12
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -14,7 +14,7 @@
      ✅ Google Search Console: Dupla verificação (original + nova)
      ✅ CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
      ✅ MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
-     ✅ MELHORIA: Logo substituído por imagem (desktop e mobile)
+     ✅ MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -94,12 +94,12 @@
     <!-- ========== SCRIPT DE DIAGNÓSTICO PARA GITHUB ACTIONS ========== -->
     <script>
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.11');
+        console.log('📊 [index.html] Versão: 2.12');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.11';
+        window.__INDEX_HTML_VERSION = '2.12';
         window.__INDEX_HTML_STATUS = 'success';
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -114,15 +114,15 @@
         <div class="header-content">
             <div class="header-integrated">
                 <div class="brand-section">
-                    <!-- ========== LOGO COM IMAGEM (DESKTOP) ========== -->
+                    <!-- ========== LOGO COM DETECÇÃO AUTOMÁTICA (DESKTOP) ========== -->
                     <div class="logo">
-                        <img src="assets/logo-weber-lessa.png" 
+                        <img src="assets/logo-weber-lessa.svg" 
                              alt="Weber Lessa Corretor &amp; Consultor" 
                              class="logo-image"
-                             loading="lazy"
                              width="70" 
                              height="70"
-                             onerror="this.style.display='none'; this.parentElement.querySelector('.logo-fallback').style.display='flex';">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='assets/logo-weber-lessa.png'; this.alt='Weber Lessa Corretor &amp; Consultor (PNG)'">
                         <div class="logo-fallback" style="display: none;">
                             <span class="logo-wl">WL</span>
                         </div>
@@ -161,15 +161,15 @@
             <!-- ========== MOBILE HEADER ========== -->
             <div class="mobile-header-ultimate">
                 <div class="mobile-row-1">
-                    <!-- ========== LOGO COM IMAGEM (MOBILE) ========== -->
+                    <!-- ========== LOGO MOBILE COM DETECÇÃO AUTOMÁTICA ========== -->
                     <div class="mobile-logo-mini">
-                        <img src="assets/logo-weber-lessa-mini.png" 
+                        <img src="assets/logo-weber-lessa.svg" 
                              alt="Weber Lessa" 
                              class="mobile-logo-image"
-                             loading="lazy"
                              width="40" 
                              height="40"
-                             onerror="this.style.display='none'; this.parentElement.querySelector('.mobile-logo-fallback').style.display='flex';">
+                             loading="lazy"
+                             onerror="this.onerror=null; this.src='assets/logo-weber-lessa-mini.png'; this.alt='Weber Lessa (PNG)'">
                         <div class="mobile-logo-fallback" style="display: none;">
                             <span>WL</span>
                         </div>
@@ -589,11 +589,11 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.11
+         Versão: 2.12
          Última atualização: 2026-07-19
          CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
          MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
-         MELHORIA: Logo substituído por imagem (desktop e mobile)
+         MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
          ============================================================ -->
 </body>
 </html>
