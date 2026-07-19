@@ -2,13 +2,14 @@
    css/header.css
    ESTILOS DO HEADER - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.2
+   ✅ Versão: 2.3
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com main.css e admin.css
    ✅ Mobile First: Header fixo com design ultra compacto
    ✅ MELHORIA: Logo substituído por imagem (desktop e mobile)
    ✅ CORREÇÃO: Badge da chave sobrepondo o logo (z-index)
+   ✅ MELHORIA: Chave sem contêiner, maior e proporcional
    ============================================================ */
 
 /* ========== HEADER INTEGRADO COMPACTO ========== */
@@ -59,7 +60,7 @@
     box-shadow: 0 4px 12px rgba(26, 82, 118, 0.2);
     border: 2px solid rgba(212, 175, 55, 0.3);
     flex-shrink: 0;
-    overflow: visible !important; /* ✅ Permite que o badge ultrapasse */
+    overflow: visible !important;
 }
 
 .logo-image {
@@ -99,24 +100,27 @@
     display: none;
 }
 
-/* ========== BADGE DA CHAVE - SOBREPOR A IMAGEM ========== */
+/* ========== BADGE DA CHAVE - SEM CONTÊINER ========== */
 .logo-badge {
     position: absolute;
     bottom: -6px;
     right: -6px;
-    width: 22px;
-    height: 22px;
-    background: linear-gradient(135deg, #d4af37, #b8941f);
-    border-radius: 50%;
+    width: auto; /* ✅ Remove o contêiner */
+    height: auto; /* ✅ Remove o contêiner */
+    background: transparent !important; /* ✅ Fundo transparente */
+    border-radius: 0; /* ✅ Remove arredondamento */
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #ffffff;
-    font-size: 0.7rem;
-    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-    border: 2px solid #ffffff;
-    z-index: 10 !important; /* ✅ Garantir que fique por cima da imagem */
-    pointer-events: none; /* Não interfere em cliques */
+    color: #d4af37; /* ✅ Cor dourada para a chave */
+    font-size: 1.1rem; /* ✅ Aumentado para melhor visibilidade */
+    box-shadow: none; /* ✅ Remove sombra */
+    border: none; /* ✅ Remove borda */
+    z-index: 10 !important;
+    pointer-events: none;
+    text-shadow: 0 2px 6px rgba(0, 0, 0, 0.5); /* ✅ Sombra para destacar */
+    padding: 0; /* ✅ Remove padding */
+    margin: 0; /* ✅ Remove margin */
 }
 
 /* ========== FIM DO LOGO ========== */
@@ -675,8 +679,9 @@
    FIM DO ARQUIVO - header.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.2
+   Versão: 2.3
    Última atualização: 2026-07-19
    MELHORIA: Logo substituído por imagem (desktop e mobile)
    CORREÇÃO: Badge da chave sobrepondo o logo (z-index)
+   MELHORIA: Chave sem contêiner, maior e proporcional
    ============================================================ */
