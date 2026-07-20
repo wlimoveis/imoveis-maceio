@@ -8,6 +8,13 @@
       <stop offset="100%" style="stop-color:#C88700"/>
     </linearGradient>
     
+    <!-- Gradiente dourado escuro para contraste -->
+    <linearGradient id="goldDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#C88700"/>
+      <stop offset="40%" style="stop-color:#F2B21A"/>
+      <stop offset="100%" style="stop-color:#A06700"/>
+    </linearGradient>
+    
     <!-- Sombra suave para profundidade -->
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
       <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#6B4200" flood-opacity="0.25"/>
@@ -29,12 +36,9 @@
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
     <!-- ========== PERNA 1 (BRANCA) - COM CABEÇA/CHAPÉU ========== -->
-    <!-- Cabeça/chapéu (traço horizontal grosso) -->
-    <path d="M 45 73 L 55 73 L 55 78 L 45 78 Z" fill="#FFFFFF" opacity="0.95"/>
-    <!-- Corpo/Pescoço -->
-    <path d="M 50 78 L 55 98 L 50 98 L 45 78 Z" fill="#FFFFFF" opacity="0.95"/>
-    <!-- Corpo (descida) -->
-    <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF" opacity="0.95"/>
+    <path d="M 45 73 L 55 73 L 55 78 L 45 78 Z" fill="#FFFFFF"/>
+    <path d="M 50 78 L 55 98 L 50 98 L 45 78 Z" fill="#FFFFFF"/>
+    <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF"/>
     
     <!-- ========== PERNA 2 (DOURADA) - SEM CABEÇA (BASE) ========== -->
     <path d="M 78 98 
@@ -42,15 +46,19 @@
              L 80 128 
              L 73 98 
              Z" 
-          fill="url(#goldGrad)" opacity="0.7"/>
+          fill="url(#goldDark)" opacity="0.9"/>
     
-    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA/CHAPÉU MAIS COMPRIDO ========== -->
-    <!-- Cabeça/chapéu mais comprido (alongado para a esquerda) -->
-    <path d="M 58 73 L 71 73 L 71 78 L 58 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
-    <!-- Corpo/Pescoço (ajustado para a nova posição da cabeça) -->
-    <path d="M 66 78 L 71 98 L 66 98 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA/CHAPÉU (CORRIGIDA) ========== -->
+    <!-- 
+      CORREÇÃO: Opacidade = 1.0, cores mais fortes para garantir 
+      que a cor dourada seja visível
+    -->
+    <!-- Cabeça/chapéu -->
+    <path d="M 58 73 L 71 73 L 71 78 L 58 78 Z" fill="url(#goldGrad)" stroke="#C88700" stroke-width="0.5"/>
+    <!-- Corpo/Pescoço -->
+    <path d="M 66 78 L 71 98 L 66 98 L 61 78 Z" fill="url(#goldGrad)" stroke="#C88700" stroke-width="0.5"/>
     <!-- Corpo (descida) -->
-    <path d="M 66 98 L 66 128 L 61 128 L 61 98 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <path d="M 66 98 L 66 128 L 61 128 L 61 98 Z" fill="url(#goldGrad)" stroke="#C88700" stroke-width="0.5"/>
     
     <!-- ========== PERNA 4 (DOURADA) - SEM CABEÇA ========== -->
     <path d="M 60 128 
@@ -58,7 +66,7 @@
              L 61 98 
              L 55 128 
              Z" 
-          fill="url(#goldGrad)" opacity="0.7"/>
+          fill="url(#goldDark)" opacity="0.9"/>
     
     <!-- ========== LETRA L - BRANCA ========== -->
     <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
@@ -70,7 +78,7 @@
              L 154 123 
              L 118 123 
              Z" 
-          fill="url(#goldGrad)" opacity="0.9"/>
+          fill="url(#goldDark)" opacity="0.9"/>
     
   </g>
   
