@@ -15,41 +15,41 @@
   </defs>
   
   <!-- ==================== ANEL EXTERNO ==================== -->
-  <circle cx="100" cy="100" r="94" fill="none" stroke="url(#goldGrad)" stroke-width="4"/>
-  <circle cx="100" cy="100" r="92" fill="none" stroke="#6B4200" stroke-width="0.5" opacity="0.5"/>
+  <circle cx="100" cy="100" r="95" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+  <circle cx="100" cy="100" r="93" fill="none" stroke="#6B4200" stroke-width="0.5" opacity="0.5"/>
   
-  <!-- ==================== ANEL CENTRAL (BRANCO - REDUZIDO) ==================== -->
-  <circle cx="100" cy="100" r="75" fill="none" stroke="#FFFFFF" stroke-width="10"/>
+  <!-- ==================== ANEL CENTRAL (BRANCO) - DISTÂNCIA MÍNIMA ==================== -->
+  <circle cx="100" cy="100" r="85" fill="none" stroke="#FFFFFF" stroke-width="8"/>
   
   <!-- ==================== ANEL INTERNO ==================== -->
-  <circle cx="100" cy="100" r="68" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
-  <circle cx="100" cy="100" r="66" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
+  <circle cx="100" cy="100" r="79" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <circle cx="100" cy="100" r="77" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== MONOGRAMA WL ==================== -->
+  <!-- ==================== MONOGRAMA WL - GRANDE E CENTRALIZADO ==================== -->
   <g filter="url(#shadow)">
-    <!-- Letra W - Branca -->
-    <text x="76" y="100" font-family="'Times New Roman', Georgia, serif" font-size="75" font-weight="bold" 
+    <!-- Letra W - Branca (ocupando ~75% do espaço) -->
+    <text x="80" y="100" font-family="'Times New Roman', Georgia, serif" font-size="82" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
     <!-- Segunda perna do W (dourada) -->
-    <path d="M 90 100 L 98 128" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M 95 100 L 102 128" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
     
     <!-- Quarta perna do W (dourada) -->
-    <path d="M 76 128 L 62 100" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
+    <path d="M 80 128 L 66 100" stroke="url(#goldGrad)" stroke-width="4.5" stroke-linecap="round" fill="none"/>
     
-    <!-- Letra L - Branca (posicionada ao lado, sem tocar o W) -->
-    <text x="120" y="100" font-family="'Times New Roman', Georgia, serif" font-size="75" font-weight="bold" 
+    <!-- Letra L - Branca -->
+    <text x="122" y="100" font-family="'Times New Roman', Georgia, serif" font-size="82" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">L</text>
     
     <!-- Pé do L (dourado) -->
-    <path d="M 106 128 L 134 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M 108 128 L 136 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
   </g>
   
   <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
-  <path d="M 62 140 Q 100 132 138 140" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
+  <path d="M 64 140 Q 100 133 136 140" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
   
   <!-- ==================== TEXTO "IMÓVEIS" ==================== -->
-  <text x="100" y="163" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="bold" 
+  <text x="100" y="162" font-family="Arial, Helvetica, sans-serif" font-size="14" font-weight="bold" 
         fill="#F2B21A" text-anchor="middle" letter-spacing="5" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.3">
     IMÓVEIS
