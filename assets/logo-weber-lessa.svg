@@ -29,13 +29,13 @@
     <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- ========== PERNA 1 (BRANCA) - COM CABEÇA ========== -->
-    <!-- Cabeça (topo horizontal) -->
-    <path d="M 45 75 L 55 75 L 55 78 L 45 78 Z" fill="#FFFFFF" opacity="0.9"/>
+    <!-- ========== PERNA 1 (BRANCA) - COM CABEÇA/CHAPÉU ========== -->
+    <!-- Cabeça/chapéu (traço horizontal grosso) -->
+    <path d="M 45 73 L 55 73 L 55 78 L 45 78 Z" fill="#FFFFFF" opacity="0.95"/>
     <!-- Corpo/Pescoço -->
-    <path d="M 50 78 L 55 98 L 50 98 L 45 78 Z" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M 50 78 L 55 98 L 50 98 L 45 78 Z" fill="#FFFFFF" opacity="0.95"/>
     <!-- Corpo (descida) -->
-    <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF" opacity="0.9"/>
+    <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF" opacity="0.95"/>
     
     <!-- ========== PERNA 2 (DOURADA) - SEM CABEÇA (BASE) ========== -->
     <!-- Apenas corpo/pescoço, sem cabeça -->
@@ -46,9 +46,9 @@
              Z" 
           fill="url(#goldGrad)" opacity="0.7"/>
     
-    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA (CÓPIA DA PERNA 1) ========== -->
-    <!-- Cabeça (topo horizontal) - IGUAL À PERNA 1 -->
-    <path d="M 61 75 L 71 75 L 71 78 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA/CHAPÉU ========== -->
+    <!-- Cabeça/chapéu (traço horizontal grosso) - IGUAL À PERNA 1 -->
+    <path d="M 61 73 L 71 73 L 71 78 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
     <!-- Corpo/Pescoço - IGUAL À PERNA 1 -->
     <path d="M 66 78 L 71 98 L 66 98 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
     <!-- Corpo (descida) - IGUAL À PERNA 1 -->
