@@ -25,7 +25,6 @@
   <g filter="url(#shadow)">
     
     <!-- ========== LETRA W - BRANCA (FUNDO) ========== -->
-    <!-- A fonte fornece a estrutura base do W -->
     <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
@@ -38,7 +37,6 @@
     <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF" opacity="0.95"/>
     
     <!-- ========== PERNA 2 (DOURADA) - SEM CABEÇA (BASE) ========== -->
-    <!-- Apenas corpo/pescoço, sem cabeça -->
     <path d="M 78 98 
              L 85 128 
              L 80 128 
@@ -46,16 +44,15 @@
              Z" 
           fill="url(#goldGrad)" opacity="0.7"/>
     
-    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA/CHAPÉU ========== -->
-    <!-- Cabeça/chapéu (traço horizontal grosso) - IGUAL À PERNA 1 -->
-    <path d="M 61 73 L 71 73 L 71 78 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
-    <!-- Corpo/Pescoço - IGUAL À PERNA 1 -->
+    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA/CHAPÉU MAIS COMPRIDO ========== -->
+    <!-- Cabeça/chapéu mais comprido (alongado para a esquerda) -->
+    <path d="M 58 73 L 71 73 L 71 78 L 58 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- Corpo/Pescoço (ajustado para a nova posição da cabeça) -->
     <path d="M 66 78 L 71 98 L 66 98 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
-    <!-- Corpo (descida) - IGUAL À PERNA 1 -->
+    <!-- Corpo (descida) -->
     <path d="M 66 98 L 66 128 L 61 128 L 61 98 Z" fill="url(#goldGrad)" opacity="0.95"/>
     
     <!-- ========== PERNA 4 (DOURADA) - SEM CABEÇA ========== -->
-    <!-- Apenas corpo/pescoço, sem cabeça (espelhada da perna 2) -->
     <path d="M 60 128 
              L 66 98 
              L 61 98 
