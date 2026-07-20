@@ -25,46 +25,43 @@
   <g filter="url(#shadow)">
     
     <!-- ========== LETRA W - BRANCA (FUNDO) ========== -->
+    <!-- A fonte fornece a estrutura base do W -->
     <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- ========== SEGUNDA PERNA DO W (DOURADA - BASE) ========== -->
-    <!-- Inclinação: da esquerda para o centro (\/) -->
+    <!-- ========== PERNA 1 (BRANCA) - COM CABEÇA ========== -->
+    <!-- Cabeça (topo horizontal) -->
+    <path d="M 45 75 L 55 75 L 55 78 L 45 78 Z" fill="#FFFFFF" opacity="0.9"/>
+    <!-- Corpo/Pescoço -->
+    <path d="M 50 78 L 55 98 L 50 98 L 45 78 Z" fill="#FFFFFF" opacity="0.9"/>
+    <!-- Corpo (descida) -->
+    <path d="M 50 98 L 50 128 L 45 128 L 45 98 Z" fill="#FFFFFF" opacity="0.9"/>
+    
+    <!-- ========== PERNA 2 (DOURADA) - SEM CABEÇA (BASE) ========== -->
+    <!-- Apenas corpo/pescoço, sem cabeça -->
     <path d="M 78 98 
              L 85 128 
              L 80 128 
              L 73 98 
              Z" 
-          fill="url(#goldGrad)" opacity="0.8"/>
+          fill="url(#goldGrad)" opacity="0.7"/>
     
-    <!-- ========== TERCEIRA PERNA DO W (DOURADA - CÓPIA FIEL DA PRIMEIRA) ========== -->
-    <!-- 
-      Esta perna é uma CÓPIA FIEL DA PRIMEIRA PERNA, incluindo:
-      - Corpo (parte vertical)
-      - Pescoço (parte inclinada)
-      - Cabeça (topo que se conecta ao "W")
-      
-      A primeira perna do "W" original tem este formato:
-      - Começa no topo do "W" (y≈75)
-      - Desce inclinada até o meio (y≈98)
-      - Desce reta até a base (y≈128)
-    -->
-    <path d="M 66 75
-             L 72 98
-             L 72 128
-             L 67 128
-             L 67 98
-             L 61 75
-             Z" 
-          fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- ========== PERNA 3 (DOURADA) - COM CABEÇA (CÓPIA DA PERNA 1) ========== -->
+    <!-- Cabeça (topo horizontal) - IGUAL À PERNA 1 -->
+    <path d="M 61 75 L 71 75 L 71 78 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- Corpo/Pescoço - IGUAL À PERNA 1 -->
+    <path d="M 66 78 L 71 98 L 66 98 L 61 78 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- Corpo (descida) - IGUAL À PERNA 1 -->
+    <path d="M 66 98 L 66 128 L 61 128 L 61 98 Z" fill="url(#goldGrad)" opacity="0.95"/>
     
-    <!-- ========== QUARTA PERNA DO W (DOURADA - BASE) ========== -->
+    <!-- ========== PERNA 4 (DOURADA) - SEM CABEÇA ========== -->
+    <!-- Apenas corpo/pescoço, sem cabeça (espelhada da perna 2) -->
     <path d="M 60 128 
              L 66 98 
              L 61 98 
              L 55 128 
              Z" 
-          fill="url(#goldGrad)" opacity="0.8"/>
+          fill="url(#goldGrad)" opacity="0.7"/>
     
     <!-- ========== LETRA L - BRANCA ========== -->
     <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
