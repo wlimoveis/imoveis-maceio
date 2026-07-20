@@ -78,14 +78,8 @@
   <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
   <path d="M 62 142 Q 100 134 138 142" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
   
-  <!-- ==================== TEXTO "IMÓVEIS" (AJUSTADO) ==================== -->
-  <!-- 
-    AJUSTES:
-    - Posição Y: de 166 para 163 (subiu 3px)
-    - Tamanho da fonte: de 16 para 18 (aumentou 2px)
-    - letter-spacing: mantido em 1
-  -->
-  <text x="100" y="163" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="bold" 
+  <!-- ==================== TEXTO "IMÓVEIS" (FONTE MAIOR) ==================== -->
+  <text x="100" y="163" font-family="Arial, Helvetica, sans-serif" font-size="22" font-weight="bold" 
         fill="#F2B21A" text-anchor="middle" letter-spacing="1" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.3">
     IMÓVEIS
