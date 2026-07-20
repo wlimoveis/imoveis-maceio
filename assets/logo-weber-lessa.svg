@@ -25,24 +25,31 @@
   <circle cx="100" cy="100" r="89" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
   <circle cx="100" cy="100" r="88" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== MONOGRAMA WL - ESPAÇAMENTO MÁXIMO ==================== -->
+  <!-- ==================== MONOGRAMA WL ==================== -->
   <g filter="url(#shadow)">
-    <!-- Letra W - Branca (movida mais para esquerda) -->
+    
+    <!-- ========== LETRA W - BRANCA ========== -->
     <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- Segunda perna do W (dourada) -->
-    <path d="M 81 98 L 88 128" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- ========== SEGUNDA PERNA DO W (DOURADA) ========== -->
+    <!-- Desenha a segunda perna (esquerda) como base -->
+    <path d="M 81 98 L 88 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
     
-    <!-- Quarta perna do W (dourada) - bem à esquerda, longe do L -->
-    <path d="M 66 128 L 52 98" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- ========== TERCEIRA PERNA DO W (DOURADA - SOBREPOSTA) ========== -->
+    <!-- Desenha a terceira perna (meio) sobrepondo a segunda -->
+    <path d="M 66 98 L 72 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
     
-    <!-- Letra L - Branca (movida mais para direita) -->
+    <!-- ========== QUARTA PERNA DO W (DOURADA) ========== -->
+    <path d="M 66 128 L 52 98" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    
+    <!-- ========== LETRA L - BRANCA ========== -->
     <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">L</text>
     
-    <!-- Pé do L (dourado) - bem à direita -->
+    <!-- ========== PÉ DO L (DOURADO) ========== -->
     <path d="M 122 128 L 154 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    
   </g>
   
   <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
