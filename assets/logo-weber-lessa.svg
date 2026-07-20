@@ -1,17 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="200" height="200" viewBox="0 0 200 200"
+ preserveAspectRatio="xMidYMid meet">
+
   <defs>
-    <style>
-      @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&amp;display=swap');
-      
-      .fonte-wl {
-        font-family: 'Cinzel', 'Times New Roman', Georgia, serif;
-      }
-      
-      .fonte-imoveis {
-        font-family: 'Cinzel', 'Arial', Helvetica, sans-serif;
-      }
-    </style>
-    
     <!-- Gradiente dourado principal -->
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#F2B21A"/>
@@ -23,33 +17,47 @@
     <!-- Gradiente dourado escuro -->
     <linearGradient id="goldDark" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#C88700"/>
-      <stop offset="50%" style="stop-color:#F2B21A"/>
-      <stop offset="100%" style="stop-color:#C88700"/>
+      <stop offset="40%" style="stop-color:#F2B21A"/>
+      <stop offset="100%" style="stop-color:#A06700"/>
     </linearGradient>
     
     <!-- Sombra para profundidade -->
-    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="2" flood-color="#6B4200" flood-opacity="0.3"/>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#6B4200" flood-opacity="0.25"/>
     </filter>
   </defs>
   
-  <!-- ==================== ANEL EXTERNO ==================== -->
+  <!-- ========================================== -->
+  <!-- ANEL EXTERNO - Dourado metálico            -->
+  <!-- ========================================== -->
   <circle cx="100" cy="100" r="97" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
-  <circle cx="100" cy="100" r="95.5" fill="none" stroke="#6B4200" stroke-width="0.4" opacity="0.5"/>
+  <circle cx="100" cy="100" r="95.5" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== ANEL CENTRAL (BRANCO) ==================== -->
+  <!-- ========================================== -->
+  <!-- ANEL CENTRAL - Branco                      -->
+  <!-- ========================================== -->
   <circle cx="100" cy="100" r="91" fill="none" stroke="#FFFFFF" stroke-width="5"/>
   
-  <!-- ==================== ANEL INTERNO ==================== -->
+  <!-- ========================================== -->
+  <!-- ANEL INTERNO - Dourado metálico            -->
+  <!-- ========================================== -->
   <circle cx="100" cy="100" r="87" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
   <circle cx="100" cy="100" r="85.5" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== MONOGRAMA WL ==================== -->
+  <!-- ========================================== -->
+  <!-- ELEMENTO DOURADO "V" (do EPS)              -->
+  <!-- ========================================== -->
+  <path d="M 82 95 L 100 108 L 118 95" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.5"/>
+  
+  <!-- ========================================== -->
+  <!-- MONOGRAMA WL - Versão do EPS               -->
+  <!-- ========================================== -->
   <g filter="url(#shadow)">
     
     <!-- LETRA W - Branca -->
-    <text x="68" y="98" class="fonte-wl" font-size="86" font-weight="bold" 
-          fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
+    <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" 
+          font-size="88" font-weight="bold" fill="#FFFFFF" 
+          text-anchor="middle" dominant-baseline="central">W</text>
     
     <!-- PERNA 1 - Branca -->
     <path d="M 45 73 L 55 73 L 55 78 L 45 78 Z" fill="#FFFFFF"/>
@@ -68,23 +76,26 @@
     <path d="M 60 128 L 66 98 L 61 98 L 55 128 Z" fill="url(#goldDark)" opacity="0.9"/>
     
     <!-- LETRA L - Branca -->
-    <text x="136" y="98" class="fonte-wl" font-size="86" font-weight="bold" 
-          fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">L</text>
+    <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" 
+          font-size="88" font-weight="bold" fill="#FFFFFF" 
+          text-anchor="middle" dominant-baseline="central">L</text>
     
     <!-- PÉ DO L - Dourado -->
     <path d="M 118 128 L 154 128 L 154 123 L 118 123 Z" fill="url(#goldDark)" opacity="0.9"/>
     
   </g>
   
-  <!-- ==================== ELEMENTO DOURADO "V" ==================== -->
-  <path d="M 82 95 L 100 108 L 118 95" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.5"/>
-  
-  <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
+  <!-- ========================================== -->
+  <!-- TRAÇO DIVISÓRIO ARQUEADO                   -->
+  <!-- ========================================== -->
   <path d="M 60 142 Q 100 133 140 142" fill="none" stroke="url(#goldGrad)" stroke-width="2.5"/>
   
-  <!-- ==================== TEXTO "IMÓVEIS" ==================== -->
-  <text x="100" y="163" class="fonte-imoveis" font-size="22" font-weight="bold" 
-        fill="#F2B21A" text-anchor="middle" letter-spacing="2" dominant-baseline="central"
+  <!-- ========================================== -->
+  <!-- TEXTO "IMÓVEIS"                            -->
+  <!-- ========================================== -->
+  <text x="100" y="163" font-family="Arial, Helvetica, sans-serif" 
+        font-size="22" font-weight="bold" fill="#F2B21A" 
+        text-anchor="middle" letter-spacing="2" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.3">
     IMÓVEIS
   </text>
