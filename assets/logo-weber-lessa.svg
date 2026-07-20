@@ -25,24 +25,24 @@
   <circle cx="100" cy="100" r="89" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
   <circle cx="100" cy="100" r="88" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== MONOGRAMA WL - ESPAÇAMENTO AMPLO ==================== -->
+  <!-- ==================== MONOGRAMA WL - ESPAÇAMENTO MÁXIMO ==================== -->
   <g filter="url(#shadow)">
     <!-- Letra W - Branca (movida mais para esquerda) -->
-    <text x="72" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
+    <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
     <!-- Segunda perna do W (dourada) -->
-    <path d="M 87 98 L 94 128" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <path d="M 81 98 L 88 128" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
     
-    <!-- Quarta perna do W (dourada) - bem à esquerda -->
-    <path d="M 72 128 L 58 98" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
+    <!-- Quarta perna do W (dourada) - bem à esquerda, longe do L -->
+    <path d="M 66 128 L 52 98" stroke="url(#goldGrad)" stroke-width="4" stroke-linecap="round" fill="none"/>
     
     <!-- Letra L - Branca (movida mais para direita) -->
-    <text x="130" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
+    <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">L</text>
     
     <!-- Pé do L (dourado) - bem à direita -->
-    <path d="M 114 128 L 146 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
+    <path d="M 122 128 L 154 128" stroke="url(#goldGrad)" stroke-width="5" stroke-linecap="round" fill="none"/>
   </g>
   
   <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
