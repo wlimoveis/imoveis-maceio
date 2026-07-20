@@ -1,5 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
   <defs>
+    <!-- Gradiente dourado principal -->
     <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#F2B21A"/>
       <stop offset="40%" style="stop-color:#FFD66A"/>
@@ -7,47 +8,78 @@
       <stop offset="100%" style="stop-color:#C88700"/>
     </linearGradient>
     
+    <!-- Sombra suave para profundidade -->
     <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
       <feDropShadow dx="0" dy="1" stdDeviation="2" flood-color="#6B4200" flood-opacity="0.25"/>
     </filter>
   </defs>
   
-  <!-- Círculos -->
+  <!-- ==================== CÍRCULOS ==================== -->
   <circle cx="100" cy="100" r="97" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
   <circle cx="100" cy="100" r="96" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   <circle cx="100" cy="100" r="92" fill="none" stroke="#FFFFFF" stroke-width="4"/>
   <circle cx="100" cy="100" r="89" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
   <circle cx="100" cy="100" r="88" fill="none" stroke="#6B4200" stroke-width="0.3" opacity="0.4"/>
   
-  <!-- ==================== MONOGRAMA WL COM SOBREPOSIÇÃO ==================== -->
+  <!-- ==================== MONOGRAMA WL ==================== -->
   <g filter="url(#shadow)">
     
-    <!-- W desenhado com paths para controle total da sobreposição -->
-    <!-- Primeira perna (branca) -->
-    <path d="M 45 128 L 55 98 L 60 98 L 50 128 Z" fill="#FFFFFF"/>
+    <!-- ========== LETRA W - BRANCA (FUNDO) ========== -->
+    <!-- A fonte fornece a estrutura base do W -->
+    <text x="66" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
+          fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- Segunda perna (dourada - base) -->
-    <path d="M 60 128 L 73 98 L 78 98 L 65 128 Z" fill="url(#goldGrad)" opacity="0.8"/>
+    <!-- ========== SEGUNDA PERNA DO W (DOURADA - BASE) ========== -->
+    <!-- Inclinação: da esquerda para o centro (\/) -->
+    <path d="M 78 98 
+             L 85 128 
+             L 80 128 
+             L 73 98 
+             Z" 
+          fill="url(#goldGrad)" opacity="0.8"/>
     
-    <!-- Terceira perna (dourada - SOBREPOSTA) -->
-    <!-- Esta perna cruza sobre a segunda -->
-    <path d="M 68 98 L 75 128 L 70 128 L 63 98 Z" fill="url(#goldGrad)" opacity="0.95"/>
+    <!-- ========== TERCEIRA PERNA DO W (DOURADA - CÓPIA DA PRIMEIRA) ========== -->
+    <!-- Esta perna é UMA CÓPIA FIEL DA PRIMEIRA PERNA (branca) -->
+    <!-- Inclinação: da esquerda para o centro, mesma da primeira -->
+    <!-- POSICIONADA SOBRE A SEGUNDA PERNA (sobreposição) -->
+    <path d="M 66 98 
+             L 72 128 
+             L 67 128 
+             L 61 98 
+             Z" 
+          fill="url(#goldGrad)" opacity="0.95"/>
     
-    <!-- Quarta perna (dourada) -->
-    <path d="M 63 128 L 52 98 L 47 98 L 58 128 Z" fill="url(#goldGrad)" opacity="0.8"/>
+    <!-- ========== QUARTA PERNA DO W (DOURADA - BASE) ========== -->
+    <!-- Inclinação: da direita para o centro (/\)
+          É uma cópia espelhada da primeira -->
+    <path d="M 60 128 
+             L 66 98 
+             L 61 98 
+             L 55 128 
+             Z" 
+          fill="url(#goldGrad)" opacity="0.8"/>
     
-    <!-- Letra L - Branca -->
+    <!-- ========== LETRA L - BRANCA ========== -->
     <text x="138" y="98" font-family="'Times New Roman', Georgia, serif" font-size="88" font-weight="bold" 
           fill="#FFFFFF" text-anchor="middle" dominant-baseline="central">L</text>
     
-    <!-- Pé do L (dourado) -->
-    <path d="M 118 128 L 154 128 L 154 123 L 118 123 Z" fill="url(#goldGrad)" opacity="0.9"/>
+    <!-- ========== PÉ DO L (DOURADO) ========== -->
+    <path d="M 118 128 
+             L 154 128 
+             L 154 123 
+             L 118 123 
+             Z" 
+          fill="url(#goldGrad)" opacity="0.9"/>
     
   </g>
   
-  <!-- Traço e texto -->
+  <!-- ==================== TRAÇO DIVISÓRIO ARQUEADO ==================== -->
   <path d="M 62 142 Q 100 134 138 142" fill="none" stroke="url(#goldGrad)" stroke-width="2"/>
+  
+  <!-- ==================== TEXTO "IMÓVEIS" ==================== -->
   <text x="100" y="166" font-family="Arial, Helvetica, sans-serif" font-size="16" font-weight="bold" 
         fill="#F2B21A" text-anchor="middle" letter-spacing="6" dominant-baseline="central"
-        stroke="#C88700" stroke-width="0.3">IMÓVEIS</text>
+        stroke="#C88700" stroke-width="0.3">
+    IMÓVEIS
+  </text>
 </svg>
