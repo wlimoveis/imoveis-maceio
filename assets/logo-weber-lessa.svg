@@ -45,19 +45,19 @@
   <!-- ========================================== -->
   <!-- ELEMENTO DOURADO "V" (Ajustado para cima)  -->
   <!-- ========================================== -->
-  <path d="M 27 29.5 L 37 34 L 47 29.5" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+  <path d="M 27 28.5 L 37 33 L 47 28.5" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
   
   <!-- ========================================== -->
-  <!-- MONOGRAMA WL (SUBiu e DESLOCADO para DIREITA) -->
+  <!-- MONOGRAMA WL (SUBiu novamente)             -->
   <!-- ========================================== -->
   <g filter="url(#shadow)">
-    <!-- Letra W - Máxima 44px, subiu para y=30.5 -->
-    <text x="24" y="30.5" font-family="'Times New Roman', Georgia, serif" 
+    <!-- Letra W - Máxima 44px, subiu para y=29.5 -->
+    <text x="24" y="29.5" font-family="'Times New Roman', Georgia, serif" 
           font-size="44" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- Letra L - Máxima 44px, subiu para y=30.5 -->
-    <text x="52" y="30.5" font-family="'Times New Roman', Georgia, serif" 
+    <!-- Letra L - Máxima 44px, subiu para y=29.5 -->
+    <text x="52" y="29.5" font-family="'Times New Roman', Georgia, serif" 
           font-size="44" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">L</text>
   </g>
