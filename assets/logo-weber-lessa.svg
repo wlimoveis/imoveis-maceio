@@ -53,7 +53,7 @@
   </g>
   
   <!-- TRAÇO ARQUEADO -->
-  <path d="M 15 53 Q 15 47 53 53" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
+  <path d="M 15 45 Q 15 47 45 45" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
   
   <!-- TEXTO IMÓVEIS -->
   <text x="35" y="53" font-family="Arial, Helvetica, sans-serif" 
