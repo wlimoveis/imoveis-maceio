@@ -37,7 +37,7 @@
   <circle cx="35" cy="35" r="29.5" fill="none" stroke="#6B4200" stroke-width="0.2" opacity="0.4"/>
   
   <!-- ELEMENTO "V" -->
-  <path d="M 28 33 L 35 38 L 42 33" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+  <path d="M 16 49 Q 35 47 49 49" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
   
   <!-- MONOGRAMA WL -->
   <g filter="url(#shadow)">
