@@ -57,7 +57,7 @@
   
   <!-- TEXTO IMÓVEIS -->
   <text x="35" y="56" font-family="Arial, Helvetica, sans-serif" 
-        font-size="7.5" font-weight="bold" fill="#F2B21A" 
+        font-size="8.5" font-weight="bold" fill="#F2B21A" 
         text-anchor="middle" letter-spacing="1" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.15">
     IMÓVEIS
