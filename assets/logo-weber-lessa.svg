@@ -56,7 +56,7 @@
   <path d="M 21 49 Q 35 47 49 49" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
   
   <!-- TEXTO IMÓVEIS -->
-  <text x="35" y="48" font-family="Arial, Helvetica, sans-serif" 
+  <text x="35" y="53" font-family="Arial, Helvetica, sans-serif" 
         font-size="9.5" font-weight="bold" fill="#F2B21A" 
         text-anchor="middle" letter-spacing="1" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.15">
