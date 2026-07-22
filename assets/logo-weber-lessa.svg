@@ -25,40 +25,54 @@
     </filter>
   </defs>
   
-  <!-- ANEL EXTERNO -->
+  <!-- ========================================== -->
+  <!-- ANEL EXTERNO                               -->
+  <!-- ========================================== -->
   <circle cx="35" cy="35" r="34" fill="none" stroke="url(#goldGrad)" stroke-width="1.2"/>
   <circle cx="35" cy="35" r="33.5" fill="none" stroke="#6B4200" stroke-width="0.2" opacity="0.4"/>
   
-  <!-- ANEL CENTRAL -->
+  <!-- ========================================== -->
+  <!-- ANEL CENTRAL (BRANCO)                      -->
+  <!-- ========================================== -->
   <circle cx="35" cy="35" r="31.5" fill="none" stroke="#FFFFFF" stroke-width="2.5"/>
   
-  <!-- ANEL INTERNO -->
+  <!-- ========================================== -->
+  <!-- ANEL INTERNO                               -->
+  <!-- ========================================== -->
   <circle cx="35" cy="35" r="30" fill="none" stroke="url(#goldGrad)" stroke-width="1.2"/>
   <circle cx="35" cy="35" r="29.5" fill="none" stroke="#6B4200" stroke-width="0.2" opacity="0.4"/>
   
-  <!-- ELEMENTO "V" -->
-  <path d="M 16 49 Q 35 47 49 49" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+  <!-- ========================================== -->
+  <!-- ELEMENTO DOURADO "V"                       -->
+  <!-- ========================================== -->
+  <path d="M 28 32 L 35 36.5 L 42 32" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
   
-  <!-- MONOGRAMA WL -->
+  <!-- ========================================== -->
+  <!-- MONOGRAMA WL                               -->
+  <!-- ========================================== -->
   <g filter="url(#shadow)">
     <!-- Letra W -->
-    <text x="23" y="35" font-family="'Times New Roman', Georgia, serif" 
+    <text x="23" y="33.5" font-family="'Times New Roman', Georgia, serif" 
           font-size="30" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">W</text>
     
     <!-- Letra L -->
-    <text x="47" y="35" font-family="'Times New Roman', Georgia, serif" 
+    <text x="47" y="33.5" font-family="'Times New Roman', Georgia, serif" 
           font-size="30" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">L</text>
   </g>
   
-  <!-- TRAÇO ARQUEADO -->
-  <path d="M 25 49 Q 15 47 45 45" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
+  <!-- ========================================== -->
+  <!-- TRAÇO DIVISÓRIO ARQUEADO                   -->
+  <!-- ========================================== -->
+  <path d="M 21 47 Q 35 45 49 47" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
   
-  <!-- TEXTO IMÓVEIS -->
-  <text x="38" y="58" font-family="Arial, Helvetica, sans-serif" 
+  <!-- ========================================== -->
+  <!-- TEXTO IMÓVEIS (Ajustado para cima)         -->
+  <!-- ========================================== -->
+  <text x="35" y="54" font-family="Arial, Helvetica, sans-serif" 
         font-size="9.5" font-weight="bold" fill="#F2B21A" 
-        text-anchor="middle" letter-spacing="1" dominant-baseline="central"
+        text-anchor="middle" letter-spacing="1.2" dominant-baseline="central"
         stroke="#C88700" stroke-width="0.15">
     IMÓVEIS
   </text>
