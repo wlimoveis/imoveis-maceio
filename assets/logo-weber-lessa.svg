@@ -45,20 +45,20 @@
   <!-- ========================================== -->
   <!-- ELEMENTO DOURADO "V"                       -->
   <!-- ========================================== -->
-  <path d="M 28 31 L 35 35.5 L 42 31" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+  <path d="M 27 31 L 35 35.5 L 43 31" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
   
   <!-- ========================================== -->
-  <!-- MONOGRAMA WL                               -->
+  <!-- MONOGRAMA WL (AUMENTADO)                   -->
   <!-- ========================================== -->
   <g filter="url(#shadow)">
-    <!-- Letra W -->
-    <text x="23" y="32.5" font-family="'Times New Roman', Georgia, serif" 
-          font-size="30" font-weight="bold" fill="#FFFFFF" 
+    <!-- Letra W - Aumentada para 38px -->
+    <text x="22" y="32.5" font-family="'Times New Roman', Georgia, serif" 
+          font-size="38" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- Letra L -->
-    <text x="47" y="32.5" font-family="'Times New Roman', Georgia, serif" 
-          font-size="30" font-weight="bold" fill="#FFFFFF" 
+    <!-- Letra L - Aumentada para 38px -->
+    <text x="48" y="32.5" font-family="'Times New Roman', Georgia, serif" 
+          font-size="38" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">L</text>
   </g>
   
@@ -68,7 +68,7 @@
   <path d="M 21 45.5 Q 35 43.5 49 45.5" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
   
   <!-- ========================================== -->
-  <!-- TEXTO IMÓVEIS (Subiu mais)                 -->
+  <!-- TEXTO IMÓVEIS                              -->
   <!-- ========================================== -->
   <text x="35" y="52" font-family="Arial, Helvetica, sans-serif" 
         font-size="9.5" font-weight="bold" fill="#F2B21A" 
