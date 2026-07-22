@@ -43,27 +43,27 @@
   <circle cx="35" cy="35" r="29.5" fill="none" stroke="#6B4200" stroke-width="0.2" opacity="0.4"/>
   
   <!-- ========================================== -->
-  <!-- ELEMENTO DOURADO "V"                       -->
+  <!-- ELEMENTO DOURADO "V" (Ajustado para esquerda) -->
   <!-- ========================================== -->
-  <path d="M 27 31 L 35 35.5 L 43 31" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
+  <path d="M 25 31 L 33 35.5 L 41 31" fill="none" stroke="url(#goldGrad)" stroke-width="0.8" opacity="0.5"/>
   
   <!-- ========================================== -->
-  <!-- MONOGRAMA WL (AUMENTADO)                   -->
+  <!-- MONOGRAMA WL (MAIOR e DESLOCADO para ESQUERDA) -->
   <!-- ========================================== -->
   <g filter="url(#shadow)">
-    <!-- Letra W - Aumentada para 38px -->
-    <text x="22" y="32.5" font-family="'Times New Roman', Georgia, serif" 
-          font-size="38" font-weight="bold" fill="#FFFFFF" 
+    <!-- Letra W - Aumentada para 42px e deslocada para esquerda -->
+    <text x="20" y="32.5" font-family="'Times New Roman', Georgia, serif" 
+          font-size="42" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">W</text>
     
-    <!-- Letra L - Aumentada para 38px -->
+    <!-- Letra L - Aumentada para 42px e deslocada para esquerda -->
     <text x="48" y="32.5" font-family="'Times New Roman', Georgia, serif" 
-          font-size="38" font-weight="bold" fill="#FFFFFF" 
+          font-size="42" font-weight="bold" fill="#FFFFFF" 
           text-anchor="middle" dominant-baseline="central">L</text>
   </g>
   
   <!-- ========================================== -->
-  <!-- TRAÇO DIVISÓRIO ARQUEADO                   -->
+  <!-- TRAÇO DIVISÓRIO ARQUEADO (Ajustado)        -->
   <!-- ========================================== -->
   <path d="M 21 45.5 Q 35 43.5 49 45.5" fill="none" stroke="url(#goldGrad)" stroke-width="1"/>
   
