@@ -12,6 +12,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/ui/admin-list-ui.js',
         'debug/core/diagnostic-registry.js',
         'performance/performance-system.js',
+        'debug/utils/image-recovery.js',  // Versão para recuperação inteligente
         'debug/utils/core-diagnostics.js',
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
