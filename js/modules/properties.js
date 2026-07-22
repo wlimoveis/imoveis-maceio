@@ -1,136 +1,20 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO COMPLETA COM CORREÇÃO AUTOMÁTICA DE URLs v2.4
+// VERSÃO 3.0 - LEVE E FOCADA (SRP)
 // ============================================================
-// ✅ Correção: Badge "NOVO" agora aparece apenas uma vez (canto superior esquerdo)
-// ✅ CORREÇÃO: Fallback automático para URLs com domínio antigo (v2.0)
-// ✅ CORREÇÃO: Suporte para múltiplos domínios antigos
-// ✅ CORREÇÃO: Acessibilidade - alt descritivo nas imagens (PageSpeed Insights)
-// ✅ CORREÇÃO: Contraste do botão "Compartilhar" (PageSpeed Insights)
-// ✅ CORREÇÃO: aria-hidden em ícones decorativos (PageSpeed Insights)
-// ✅ CORREÇÃO: ARIA proibido - div com aria-label substituído por button (v2.2)
-// ✅ CORREÇÃO: Removido video-indicator duplicado - agora gerenciado APENAS pelo gallery.js
-// ✅ CORREÇÃO: Paginação melhorada - removido "três pontinhos" para navegação mais intuitiva
+// ✅ Responsabilidade Única: Gerenciamento de imóveis
+// ✅ CRUD completo (Create, Read, Update, Delete)
+// ✅ Renderização e estado
+// ✅ Carregamento de dados do Supabase
+// ✅ Correção de URLs delegada ao ImageUtils
 // ============================================================
 
-console.log('✅ properties.js carregado - Versão v2.4 (paginação melhorada)');
+console.log('✅ properties.js v3.0 carregado - Gerenciamento de Imóveis');
 
+// ========== ESTADO GLOBAL ==========
 window.properties = [];
 window.editingPropertyId = null;
 window.currentFilter = 'todos';
-
-// ========== CORREÇÃO DE URLs COM DOMÍNIO ANTIGO ==========
-/**
- * CORRIGE URLs COM DOMÍNIO ANTIGO NO SUPABASE
- * Esta função é executada automaticamente no carregamento
- * e NÃO depende do Support System (princípio de autonomia do Core)
- */
-window.fixPropertyUrls = function(property) {
-    if (!property) return { property: property, fixed: false };
-    
-    var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
-    var SUPABASE_URL = 'https://' + SUPABASE_DOMAIN;
-    var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
-    var BUCKET = 'properties';
-    
-    function reconstructUrl(url) {
-        if (!url || typeof url !== 'string') return url;
-        if (url === 'EMPTY' || url.trim() === '') return url;
-        
-        if (url.indexOf(SUPABASE_DOMAIN) !== -1) return url;
-        
-        for (var i = 0; i < OLD_DOMAINS.length; i++) {
-            if (url.indexOf(OLD_DOMAINS[i]) !== -1) {
-                return url.replace(OLD_DOMAINS[i], SUPABASE_DOMAIN);
-            }
-        }
-        
-        if (url.indexOf('http') !== 0 && url.indexOf('_') !== -1 && url.indexOf('.') !== -1) {
-            return SUPABASE_URL + '/storage/v1/object/public/' + BUCKET + '/' + url;
-        }
-        
-        return url;
-    }
-    
-    var fixed = false;
-    
-    if (property.images && property.images !== 'EMPTY') {
-        var urls = property.images.split(',').filter(function(u) { return u && u.trim(); });
-        var fixedUrls = urls.map(function(u) { return reconstructUrl(u.trim()); });
-        var newImages = fixedUrls.join(',');
-        if (newImages !== property.images) {
-            property.images = newImages;
-            fixed = true;
-        }
-    }
-    
-    if (property.pdfs && property.pdfs !== 'EMPTY') {
-        var pdfUrls = property.pdfs.split(',').filter(function(u) { return u && u.trim(); });
-        var fixedPdfUrls = pdfUrls.map(function(u) { return reconstructUrl(u.trim()); });
-        var newPdfs = fixedPdfUrls.join(',');
-        if (newPdfs !== property.pdfs) {
-            property.pdfs = newPdfs;
-            fixed = true;
-        }
-    }
-    
-    return { property: property, fixed: fixed };
-};
-
-/**
- * CORRIGE TODAS AS PROPRIEDADES NO CARREGAMENTO
- * Executa automaticamente após carregar os dados
- */
-window.fixAllPropertiesOnLoad = function() {
-    console.log('🔄 [FIX] Verificando e corrigindo URLs das propriedades...');
-    
-    if (!window.properties || window.properties.length === 0) {
-        console.log('ℹ️ [FIX] Nenhuma propriedade para verificar');
-        return 0;
-    }
-    
-    var fixedCount = 0;
-    var domainFixed = 0;
-    var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
-    var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
-    
-    for (var i = 0; i < window.properties.length; i++) {
-        var prop = window.properties[i];
-        var originalImages = prop.images || '';
-        var result = window.fixPropertyUrls(prop);
-        if (result.fixed) {
-            fixedCount++;
-            window.properties[i] = result.property;
-            if (originalImages && originalImages !== result.property.images) {
-                var hasOldDomain = false;
-                for (var j = 0; j < OLD_DOMAINS.length; j++) {
-                    if (originalImages.indexOf(OLD_DOMAINS[j]) !== -1) {
-                        hasOldDomain = true;
-                        break;
-                    }
-                }
-                if (hasOldDomain) domainFixed++;
-            }
-        }
-    }
-    
-    if (fixedCount > 0) {
-        console.log('✅ [FIX] ' + fixedCount + ' propriedade(s) corrigida(s)');
-        if (domainFixed > 0) {
-            console.log('🔄 [FIX] ' + domainFixed + ' propriedade(s) com domínio(s) corrigido(s)');
-        }
-        if (typeof window.savePropertiesToStorage === 'function') {
-            window.savePropertiesToStorage();
-        }
-        if (typeof window.renderProperties === 'function') {
-            window.renderProperties('todos', true);
-        }
-    } else {
-        console.log('✅ [FIX] Nenhuma propriedade precisou ser corrigida');
-    }
-    
-    return fixedCount;
-};
 
 // ========== SELEÇÃO MÚLTIPLA DE IMÓVEIS ==========
 window.selectedProperties = new Set();
@@ -343,9 +227,20 @@ window.loadPropertiesBasedOnUrl = function() {
     }
 };
 
-window.adminCurrentPage = 1;
-var isMobileForPagination = window.innerWidth <= 768;
-window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
+// ========== UTILITÁRIOS ==========
+window.ensureSupabaseCredentials = function() {
+    if (!window.SUPABASE_CONSTANTS) {
+        window.SUPABASE_CONSTANTS = {
+            URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
+            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
+            ADMIN_PASSWORD: "wl654",
+            PDF_PASSWORD: "doc123"
+        };
+    }
+    if (!window.SUPABASE_URL) window.SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
+    if (!window.SUPABASE_KEY) window.SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
+    return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
+};
 
 window.calculateMarketTime = function(property) {
     var startDate;
@@ -403,22 +298,6 @@ window.formatMarketTimeText = function(days) {
         return formatted.number + ' ' + formatted.unit + ' e ' + formatted.remainingMonths + ' ' + (formatted.remainingMonths !== 1 ? 'meses' : 'mês');
     }
     return formatted.number + ' ' + formatted.unit;
-};
-
-window.ensureSupabaseCredentials = function() {
-    if (!window.SUPABASE_CONSTANTS) {
-        window.SUPABASE_CONSTANTS = {
-            URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
-            KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind4ZGlvd3Bzd2Vwc3ZrbHVtZ3Z4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI0MTExNzksImV4cCI6MjA4Nzk4NzE3OX0.QsUHE_w5m5-pz3LcwdREuwmwvCiX3Hz8FYv8SAwhD6U',
-            ADMIN_PASSWORD: "wl654",
-            PDF_PASSWORD: "doc123"
-        };
-    }
-    
-    if (!window.SUPABASE_URL) window.SUPABASE_URL = window.SUPABASE_CONSTANTS.URL;
-    if (!window.SUPABASE_KEY) window.SUPABASE_KEY = window.SUPABASE_CONSTANTS.KEY;
-    
-    return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
 window.shareProperty = async function(id) {
@@ -506,6 +385,93 @@ window.filterPropertyById = function(propertyId) {
     return foundProperty;
 };
 
+// ========== CARREGAR PROPRIEDADES ==========
+window.loadPropertiesData = async function() {
+    var loading = window.LoadingManager?.show?.('Carregando imóveis...', 'Buscando as melhores oportunidades em Maceió', { variant: 'processing' });
+    
+    try {
+        window.ensureSupabaseCredentials();
+        
+        var loadStrategies = [
+            function() { return window.supabaseLoadProperties?.()?.then(function(r) { return r?.data?.length ? r.data : null; }); },
+            function() { return window.supabaseFetch?.('/properties?select=*')?.then(function(r) { return r.ok ? r.data : null; }); },
+            function() { var stored = localStorage.getItem('properties'); return stored ? JSON.parse(stored) : null; },
+            function() { return getInitialProperties(); }
+        ];
+
+        var propertiesData = null;
+        
+        setTimeout(function() { loading?.updateMessage?.('Encontre seu imóvel dos sonhos em Maceió 🌴'); }, 800);
+        
+        for (var i = 0; i < loadStrategies.length; i++) {
+            try {
+                propertiesData = await loadStrategies[i]();
+                if (propertiesData && propertiesData.length > 0) break;
+            } catch (e) { console.warn('⚠️ Estratégia ' + (i+1) + ' falhou:', e.message); }
+        }
+
+        window.properties = propertiesData || getInitialProperties();
+        
+        // ========== 🔥 CORREÇÃO AUTOMÁTICA DE URLs (AGORA NO ImageUtils) ==========
+        if (window.ImageUtils && typeof window.ImageUtils.fixAllProperties === 'function') {
+            console.log('🔄 [LOAD] Aplicando correção de URLs via ImageUtils...');
+            var result = window.ImageUtils.fixAllProperties();
+            if (result.fixedCount > 0) {
+                console.log('✅ [LOAD] ' + result.fixedCount + ' propriedade(s) corrigida(s)');
+                if (result.domainFixed > 0) {
+                    console.log('🔄 [LOAD] ' + result.domainFixed + ' domínio(s) corrigido(s)');
+                }
+            }
+        } else {
+            // Fallback: se ImageUtils não estiver disponível, tenta a função antiga
+            console.warn('⚠️ [LOAD] ImageUtils não disponível, tentando fallback...');
+            if (typeof window.fixAllPropertiesOnLoad === 'function') {
+                window.fixAllPropertiesOnLoad();
+            }
+        }
+        // ============================================================
+        
+        window.properties = window.properties.map(function(prop) {
+            return {
+                ...prop,
+                has_video: window.SharedCore.ensureBooleanVideo(prop.has_video),
+                features: window.SharedCore.parseFeaturesForStorage(prop.features),
+                images: prop.images || '',
+                pdfs: prop.pdfs || ''
+            };
+        });
+        
+        window.savePropertiesToStorage();
+        loading?.setVariant?.('success');
+        
+        var propertyCount = window.properties.length;
+        var finalMessage = propertyCount === 0 ? 'Pronto para começar! 🏠' :
+                          propertyCount === 1 ? '✨ 1 imóvel disponível!' :
+                          propertyCount <= 5 ? '✨ ' + propertyCount + ' opções incríveis!' :
+                          propertyCount <= 20 ? '🏘️ ' + propertyCount + ' oportunidades em Maceió!' :
+                          '🏆 ' + propertyCount + ' imóveis disponíveis!';
+        
+        loading?.updateMessage?.(finalMessage);
+        
+        if (typeof window.loadPropertiesBasedOnUrl === 'function') {
+            window.loadPropertiesBasedOnUrl();
+        } else if (typeof window.renderProperties === 'function') {
+            window.renderProperties('todos');
+        }
+        
+        if (window.SmartCache?.invalidatePropertiesCache) window.SmartCache.invalidatePropertiesCache();
+        
+    } catch (error) {
+        console.error('❌ Erro no carregamento:', error);
+        loading?.setVariant?.('error');
+        loading?.updateMessage?.('⚠️ Erro ao carregar imóveis');
+        window.properties = getInitialProperties();
+        if (typeof window.renderProperties === 'function') window.renderProperties('todos');
+    } finally {
+        setTimeout(function() { loading?.hide?.(); }, 1200);
+    }
+};
+
 // ========== PROPERTY TEMPLATE ENGINE ==========
 class PropertyTemplateEngine {
     constructor() {
@@ -570,10 +536,13 @@ class PropertyTemplateEngine {
         var newBadgeHtml = '';
         var featuresHtml = this._renderFeaturesList(property.features, property.rural);
         var formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
+        var safeTitle = this._safe(property.title) || 'Imóvel';
+        var safeLocation = this._safe(property.location) || '';
+        var altText = safeTitle + (safeLocation ? ' - ' + safeLocation : '') + ' - foto do imóvel';
         
         var html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${this._safe(property.title)}">
-                ${this.generateImageSection(property, newBadgeHtml)}
+                ${this.generateImageSection(property, newBadgeHtml, altText)}
                 <div class="property-content">
                     <div class="property-price" data-price-field>${formattedPrice}</div>
                     <h3 class="property-title" data-title-field>${this._safe(property.title) || 'Sem título'}</h3>
@@ -587,10 +556,10 @@ class PropertyTemplateEngine {
                         </div>
                     ` : ''}
                     <div style="display: flex; gap: 8px; margin-top: 10px;">
-                        <button class="contact-btn" onclick="contactAgent(${property.id})" style="flex: 2;" aria-label="Entrar em contato sobre ${this._safe(property.title)}">
+                        <button class="contact-btn" onclick="contactAgent(${property.id})" style="flex: 2;" aria-label="Entrar em contato sobre ${safeTitle}">
                             <i class="fab fa-whatsapp" aria-hidden="true"></i> Entrar em Contato
                         </button>
-                        <button class="share-btn" onclick="shareProperty(${property.id})" aria-label="Compartilhar ${this._safe(property.title)}">
+                        <button class="share-btn" onclick="shareProperty(${property.id})" aria-label="Compartilhar ${safeTitle}">
                             <i class="fas fa-share-alt" aria-hidden="true"></i>
                             <span style="font-size: 0.8rem;">Compartilhar</span>
                         </button>
@@ -601,13 +570,22 @@ class PropertyTemplateEngine {
         return html;
     }
 
-    generateImageSection(property, newBadgeHtml) {
+    generateImageSection(property, newBadgeHtml, altText) {
         newBadgeHtml = newBadgeHtml || '';
+        altText = altText || (this._safe(property.title) || 'Imóvel') + ' - foto do imóvel';
+        
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
         var imageUrls = hasImages ? property.images.split(',').filter(function(url) { return url && url.trim() !== ''; }) : [];
         var imageCount = imageUrls.length;
         var hasGallery = imageCount > 1;
         var hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
+        var safeTitle = this._safe(property.title) || 'Imóvel';
+        
+        // Usar ImageUtils para gerar fallback se disponível
+        var fallbackUrl = this.imageFallback;
+        if (window.ImageUtils && typeof window.ImageUtils.getFallbackUrl === 'function') {
+            fallbackUrl = window.ImageUtils.getFallbackUrl(property.title);
+        }
         
         if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
@@ -617,10 +595,7 @@ class PropertyTemplateEngine {
             }
         }
         
-        var firstImageUrl = imageCount > 0 ? imageUrls[0] : this.imageFallback;
-        var safeTitle = this._safe(property.title) || 'Imóvel';
-        var safeLocation = this._safe(property.location) || '';
-        var altText = safeTitle + (safeLocation ? ' - ' + safeLocation : '') + ' - foto do imóvel';
+        var firstImageUrl = imageCount > 0 ? imageUrls[0] : fallbackUrl;
         
         return `
             <div class="property-image ${property.rural ? 'rural-image' : ''}" 
@@ -634,7 +609,7 @@ class PropertyTemplateEngine {
                          style="width: 100%; height: 100%; object-fit: cover;"
                          alt="${altText}"
                          data-original-src="${firstImageUrl}"
-                         onerror="this.src='${this.imageFallback}'">
+                         onerror="this.src='${fallbackUrl}'">
                     
                     ${property.badge ? `
                         <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="
@@ -1063,108 +1038,6 @@ window.runLowPriority = function(callback) {
     }
 };
 
-// ========== LOAD PROPERTIES DATA ==========
-window.loadPropertiesData = async function () {
-    var loading = window.LoadingManager?.show?.('Carregando imóveis...', 'Buscando as melhores oportunidades em Maceió', { variant: 'processing' });
-    
-    try {
-        window.ensureSupabaseCredentials();
-        
-        var loadStrategies = [
-            function() { return window.supabaseLoadProperties?.()?.then(function(r) { return r?.data?.length ? r.data : null; }); },
-            function() { return window.supabaseFetch?.('/properties?select=*')?.then(function(r) { return r.ok ? r.data : null; }); },
-            function() { var stored = localStorage.getItem('properties'); return stored ? JSON.parse(stored) : null; },
-            function() { return getInitialProperties(); }
-        ];
-
-        var propertiesData = null;
-        
-        setTimeout(function() { loading?.updateMessage?.('Encontre seu imóvel dos sonhos em Maceió 🌴'); }, 800);
-        
-        for (var i = 0; i < loadStrategies.length; i++) {
-            try {
-                propertiesData = await loadStrategies[i]();
-                if (propertiesData && propertiesData.length > 0) break;
-            } catch (e) { console.warn('⚠️ Estratégia ' + (i+1) + ' falhou:', e.message); }
-        }
-
-        window.properties = propertiesData || getInitialProperties();
-        
-        // ========== CORREÇÃO AUTOMÁTICA DE URLs ==========
-        var fixedCount = 0;
-        var domainFixed = 0;
-        var OLD_DOMAINS = ['syztbxvpdaplpetmixmt.supabase.co', 'wlimoveis.supabase.co'];
-        var SUPABASE_DOMAIN = 'wxdiowpswepsvklumgvx.supabase.co';
-        
-        for (var j = 0; j < window.properties.length; j++) {
-            var prop = window.properties[j];
-            var originalImages = prop.images || '';
-            var result = window.fixPropertyUrls(prop);
-            if (result.fixed) {
-                window.properties[j] = result.property;
-                fixedCount++;
-                if (originalImages && originalImages !== result.property.images) {
-                    var hasOldDomain = false;
-                    for (var k = 0; k < OLD_DOMAINS.length; k++) {
-                        if (originalImages.indexOf(OLD_DOMAINS[k]) !== -1) {
-                            hasOldDomain = true;
-                            break;
-                        }
-                    }
-                    if (hasOldDomain) domainFixed++;
-                }
-            }
-        }
-        
-        if (fixedCount > 0) {
-            console.log('✅ [LOAD] ' + fixedCount + ' propriedade(s) corrigida(s)');
-            if (domainFixed > 0) {
-                console.log('🔄 [LOAD] ' + domainFixed + ' propriedade(s) com domínio(s) corrigido(s)');
-            }
-        }
-        // ============================================================
-        
-        window.properties = window.properties.map(function(prop) {
-            return {
-                ...prop,
-                has_video: window.SharedCore.ensureBooleanVideo(prop.has_video),
-                features: window.SharedCore.parseFeaturesForStorage(prop.features),
-                images: prop.images || '',
-                pdfs: prop.pdfs || ''
-            };
-        });
-        
-        window.savePropertiesToStorage();
-        loading?.setVariant?.('success');
-        
-        var propertyCount = window.properties.length;
-        var finalMessage = propertyCount === 0 ? 'Pronto para começar! 🏠' :
-                          propertyCount === 1 ? '✨ 1 imóvel disponível!' :
-                          propertyCount <= 5 ? '✨ ' + propertyCount + ' opções incríveis!' :
-                          propertyCount <= 20 ? '🏘️ ' + propertyCount + ' oportunidades em Maceió!' :
-                          '🏆 ' + propertyCount + ' imóveis disponíveis!';
-        
-        loading?.updateMessage?.(finalMessage);
-        
-        if (typeof window.loadPropertiesBasedOnUrl === 'function') {
-            window.loadPropertiesBasedOnUrl();
-        } else if (typeof window.renderProperties === 'function') {
-            window.renderProperties('todos');
-        }
-        
-        if (window.SmartCache?.invalidatePropertiesCache) window.SmartCache.invalidatePropertiesCache();
-        
-    } catch (error) {
-        console.error('❌ Erro no carregamento:', error);
-        loading?.setVariant?.('error');
-        loading?.updateMessage?.('⚠️ Erro ao carregar imóveis');
-        window.properties = getInitialProperties();
-        if (typeof window.renderProperties === 'function') window.renderProperties('todos');
-    } finally {
-        setTimeout(function() { loading?.hide?.(); }, 1200);
-    }
-};
-
 // ========== INITIAL PROPERTIES ==========
 function getInitialProperties() {
     return [
@@ -1251,7 +1124,7 @@ window.contactAgent = function(id) {
     window.open('https://wa.me/5582996044513?text=' + encodeURIComponent(message), '_blank');
 };
 
-// ========== ADD NEW PROPERTY ==========
+// ========== CRUD OPERATIONS ==========
 window.addNewProperty = async function(propertyData) {
     if (!propertyData.title || !propertyData.price || !propertyData.location) {
         alert('❌ Preencha Título, Preço e Localização!');
@@ -1323,7 +1196,6 @@ window.addNewProperty = async function(propertyData) {
     }
 };
 
-// ========== UPDATE PROPERTY ==========
 window.updateProperty = async function(id, propertyData) {
     if (!id || id === 'null' || id === 'undefined') {
         if (window.editingPropertyId) id = window.editingPropertyId;
@@ -1387,7 +1259,6 @@ window.updateLocalProperty = function(propertyId, updatedData) {
     return true;
 };
 
-// ========== DELETE PROPERTY ==========
 window.deleteProperty = async function(id) {
     var property = window.properties.find(function(p) { return p.id === id; });
     if (!property) {
@@ -1496,11 +1367,10 @@ window.deleteProperty = async function(id) {
     return supabaseSuccess;
 };
 
-// ========== FUNÇÕES DE PAGINAÇÃO MELHORADAS ==========
-// ✅ REMOVIDO: "três pontinhos" (...) - agora mostra números de página diretamente
-// ✅ MELHORADO: Mobile-friendly com scroll horizontal
-// ✅ MELHORADO: Indicador claro da página atual
-// ✅ MELHORADO: Botões "Anterior" e "Próximo" sempre visíveis
+// ========== PAGINAÇÃO ==========
+window.adminCurrentPage = 1;
+var isMobileForPagination = window.innerWidth <= 768;
+window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
 
 function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     itemsPerPage = itemsPerPage || null;
@@ -1518,14 +1388,12 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     var currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     var maxVisible = isMobile ? 5 : 8;
     
-    // Botão "Anterior"
     var prevBtn = createNavButton('◀', currentPage === 1, function() { 
         if (currentPage > 1) window.loadPropertyList(currentPage - 1); 
     }, isDesktop);
     prevBtn.title = 'Página anterior';
     paginationDiv.appendChild(prevBtn);
     
-    // Números de página
     var pagesToShow = [];
     
     if (totalPages <= maxVisible) {
@@ -1563,14 +1431,12 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
         paginationDiv.appendChild(pageBtn);
     });
     
-    // Botão "Próximo"
     var nextBtn = createNavButton('▶', currentPage === totalPages, function() { 
         if (currentPage < totalPages) window.loadPropertyList(currentPage + 1); 
     }, isDesktop);
     nextBtn.title = 'Próxima página';
     paginationDiv.appendChild(nextBtn);
     
-    // Indicador de página (mobile)
     if (isMobile) {
         var pageIndicator = document.createElement('span');
         pageIndicator.textContent = currentPage + '/' + totalPages;
@@ -1643,9 +1509,6 @@ function createNavButton(text, disabled, onClick, isDesktop) {
     return btn;
 }
 
-// ========== BOTÃO DE PÁGINA MELHORADO COM EFEITO "AFUNDADO" ==========
-// ✅ MELHORADO: Efeito "pressionado/afundado" para a página ativa
-// ✅ MELHORADO: Contraste visual claro entre ativo e inativo
 function createPageButton(pageNum, currentPage, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
@@ -1658,7 +1521,6 @@ function createPageButton(pageNum, currentPage, isDesktop) {
     var height = isDesktop ? '32px' : '26px';
     
     if (isActive) {
-        // ========== ESTILO ATIVO (pressionado/afundado) ==========
         btn.style.cssText = `
             background: #d4a017 !important;
             color: white !important;
@@ -1684,7 +1546,6 @@ function createPageButton(pageNum, currentPage, isDesktop) {
             pointer-events: none;
         `;
     } else {
-        // ========== ESTILO INATIVO ==========
         btn.style.cssText = `
             background: white;
             color: #1a5276;
@@ -1778,7 +1639,6 @@ function createPerPageSelect(currentItemsPerPage, isDesktop) {
     return select;
 }
 
-// ========== LOAD PROPERTY LIST ==========
 window.loadPropertyList = function(page) {
     page = page || window.adminCurrentPage;
     
@@ -2128,11 +1988,11 @@ if (document.readyState === 'loading') {
 }
 
 // ============================================================
-// FIM DO ARQUIVO - properties.js
+// FIM DO ARQUIVO - properties.js v3.0
 // ============================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 2.4
-// Última atualização: 2026-07-18
-// CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
-// MELHORIA: Paginação sem "três pontinhos" - mais intuitiva
+// Versão: 3.0
+// Última atualização: 2026-07-22
+// ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
+// ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
 // ============================================================
