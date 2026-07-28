@@ -814,7 +814,7 @@ window.FeatureIconMapper = {
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
                 // ========== LOCAÇÃO DE SALAS COMERCIAIS (ESPECÍFICO PRIMEIRO) ==========
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas', 'finalidade locação', 'locação comercial'], icon: 'fas fa-handshake', color: '#00b894', label: 'Locação' },
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'office', 'coworking', 'sala de trabalho'], icon: 'fas fa-door-open', color: '#0984e3', label: 'Sala Comercial' },
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', icon: 'fas fa-door-open', color: '#0984e3', label: 'Sala Comercial' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
                 // ========== SHOPPING (CORRIGIDO) ==========
