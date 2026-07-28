@@ -812,6 +812,9 @@ window.FeatureIconMapper = {
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
                 // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
+                // ========== NOVAS ENTRADAS PARA ORLA E ACESSO RÁPIDO ==========
+        { keywords: ['orla', 'avenida', 'pajuçara', 'ponta verde', 'beira mar', 'beira-mar', 'litoral', 'praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Orla/Praia' },
+        { keywords: ['acesso rápido', 'acesso', 'rápido', 'proximidade orla', 'perto orla', 'acesso fácil'], icon: 'fa-bolt', color: '#e67e22', label: 'Acesso Rápido' },
         { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
