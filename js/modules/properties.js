@@ -815,6 +815,11 @@ window.FeatureIconMapper = {
           icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], 
           icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
+                // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
+        { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], 
+          icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
+        { keywords: ['distância', 'km', 'quilômetros', 'quilometros', 'proximidade'], 
+          icon: 'fa-route', color: '#2c3e50', label: 'Distância' },
         { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
