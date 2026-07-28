@@ -814,7 +814,6 @@ window.FeatureIconMapper = {
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
                 // ========== NOVAS ENTRADAS PARA ORLA E ACESSO RÁPIDO ==========
         { keywords: ['orla', 'avenida', 'pajuçara', 'ponta verde', 'beira mar', 'beira-mar', 'litoral', 'praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Orla/Praia' },
-        { keywords: ['acesso rápido', 'acesso', 'rápido', 'proximidade orla', 'perto orla', 'acesso fácil'], icon: 'fa-bolt', color: '#e67e22', label: 'Acesso Rápido' },
                 // ========== NOVAS ENTRADAS PARA PAVIMENTOS E ANDARES ==========
         { keywords: ['pavimento', 'pavimentos', 'andar', 'andares', 'piso', 'pisos', 'sobreloja'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
         { keywords: ['térreo', 'terreo', 'r/c', 'rc', 'res-do-chão', 'res do chão'], icon: 'fa-ground', color: '#00b894', label: 'Térreo' },
