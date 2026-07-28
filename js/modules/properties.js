@@ -804,6 +804,17 @@ window.propertyTemplates = new PropertyTemplateEngine();
 window.FeatureIconMapper = {
     mappings: [
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
+                // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
+        { keywords: ['transporte público', 'ônibus', 'bus', 'ponto de ônibus', 'transporte'], 
+          icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
+        { keywords: ['uber', '99', 'aplicativo', 'taxi', 'táxi', 'carro de aplicativo', 'aplicativos'], 
+          icon: 'fa-taxi', color: '#f39c12', label: 'Aplicativos de Transporte' },
+        { keywords: ['metrô', 'metro', 'trem', 'vlt'], 
+          icon: 'fa-subway', color: '#e74c3c', label: 'Metrô/Trem' },
+        { keywords: ['bicicleta', 'bike', 'ciclovia', 'bicicletário'], 
+          icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
+        { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], 
+          icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
         { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
