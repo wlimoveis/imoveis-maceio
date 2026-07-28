@@ -829,6 +829,13 @@ window.FeatureIconMapper = {
                 // ========== NOVAS ENTRADAS PARA PAVIMENTOS E ANDARES ==========
         { keywords: ['pavimento', 'pavimentos', 'andar', 'andares', 'piso', 'pisos', 'sobreloja'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
         { keywords: ['térreo', 'terreo', 'r/c', 'rc', 'res-do-chão', 'res do chão'], icon: 'fa-ground', color: '#00b894', label: 'Térreo' },
+                // ========== ÁREA PRIVATIVA E CARACTERÍSTICAS ==========
+        { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util'], 
+          icon: 'fa-vector-square', color: '#6c5ce7', label: 'Área Privativa' },
+        { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], 
+          icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], 
+          icon: 'fa-car', color: '#3498db', label: 'Garagem' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
