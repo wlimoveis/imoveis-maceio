@@ -812,6 +812,9 @@ window.FeatureIconMapper = {
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
                 // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
+                // ========== LOCAÇÃO DE SALAS COMERCIAIS ==========
+        { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'office', 'coworking'], icon: 'fa-door-open', color: '#0984e3', label: 'Sala Comercial' },        { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
                 // ========== SHOPPING (CORRIGIDO) ==========
@@ -822,9 +825,6 @@ window.FeatureIconMapper = {
                 // ========== NOVAS ENTRADAS PARA PAVIMENTOS E ANDARES ==========
         { keywords: ['pavimento', 'pavimentos', 'andar', 'andares', 'piso', 'pisos', 'sobreloja'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
         { keywords: ['térreo', 'terreo', 'r/c', 'rc', 'res-do-chão', 'res do chão'], icon: 'fa-ground', color: '#00b894', label: 'Térreo' },
-                // ========== LOCAÇÃO DE SALAS COMERCIAIS ==========
-        { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'office', 'coworking'], icon: 'fa-door-open', color: '#0984e3', label: 'Sala Comercial' },        { keywords: ['quarto', 'dormitório', 'dormitorio', 'suíte', 'suite', 'quartos', 'qtos', 'qto', 'qts'], icon: 'fa-bed', color: '#e74c3c', label: 'Quarto' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
