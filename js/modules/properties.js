@@ -814,8 +814,9 @@ window.FeatureIconMapper = {
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
-        { keywords: ['shopping', 'maceió shopping', 'shopping center', 'mall', 'centro comercial', 'shopping maceió'], 
-          icon: 'fa-shopping-mall', color: '#8e44ad', label: 'Shopping Center' },
+                // ========== SHOPPING (CORRIGIDO) ==========
+        // ✅ CORREÇÃO: fa-shopping-mall não existe, substituído por fa-shopping-bag
+        { keywords: ['shopping', 'maceió shopping', 'shopping center', 'mall', 'centro comercial', 'shopping maceió', 'shopping center maceió'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
                 // ========== NOVAS ENTRADAS PARA ORLA E ACESSO RÁPIDO ==========
         { keywords: ['orla', 'avenida', 'pajuçara', 'ponta verde', 'beira mar', 'beira-mar', 'litoral', 'praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Orla/Praia' },
                 // ========== NOVAS ENTRADAS PARA PAVIMENTOS E ANDARES ==========
