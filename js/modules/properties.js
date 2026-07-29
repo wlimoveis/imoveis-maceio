@@ -812,20 +812,20 @@ window.FeatureIconMapper = {
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
                 // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
-                // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'office', 'coworking', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], 
-          icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
-               // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
+                // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], 
           icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
         { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], 
           icon: 'fa-door-open', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['comercial', 'comerciais', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], 
           icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
-        // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
+                // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'office', 'coworking', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], 
+          icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
+                // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
                 // ========== SHOPPING (CORRIGIDO) ==========
-        // ✅ CORREÇÃO: fa-shopping-mall não existe, substituído por fa-shopping-bag
+                // ✅ CORREÇÃO: fa-shopping-mall não existe, substituído por fa-shopping-bag
         { keywords: ['shopping', 'maceió shopping', 'shopping center', 'mall', 'centro comercial', 'shopping maceió', 'shopping center maceió'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
                 // ========== NOVAS ENTRADAS PARA ORLA E ACESSO RÁPIDO ==========
         { keywords: ['orla', 'avenida', 'pajuçara', 'ponta verde', 'beira mar', 'beira-mar', 'litoral', 'praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Orla/Praia' },
