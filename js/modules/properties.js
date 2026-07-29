@@ -803,6 +803,11 @@ window.propertyTemplates = new PropertyTemplateEngine();
 // ========== FEATURE ICON MAPPER ==========
 window.FeatureIconMapper = {
     mappings: [
+                        // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
+        { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
+        { keywords: ['comercial', 'comerciais', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
+                // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
         { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
@@ -820,11 +825,6 @@ window.FeatureIconMapper = {
         { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
-                // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
-        { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-        { keywords: ['comercial', 'comerciais', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
-                // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
                 // ========== SHOPPING (CORRIGIDO) ==========
                 // ✅ CORREÇÃO: fa-shopping-mall não existe, substituído por fa-shopping-bag
         { keywords: ['shopping', 'maceió shopping', 'shopping center', 'mall', 'centro comercial', 'shopping maceió', 'shopping center maceió'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
