@@ -838,7 +838,7 @@ window.FeatureIconMapper = {
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
-        { keywords: ['varanda', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+        { keywords: ['varanda', varanda gourmet, 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
         { keywords: ['churrasqueira', 'churrasco'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
         { keywords: ['ar condicionado', 'ar-condicionado'], icon: 'fa-snowflake', color: '#1abc9c', label: 'Ar Condicionado' },
@@ -2031,4 +2031,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ===========================================================
+// ==========================================================
