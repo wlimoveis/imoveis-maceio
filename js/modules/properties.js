@@ -804,7 +804,7 @@ window.propertyTemplates = new PropertyTemplateEngine();
 window.FeatureIconMapper = {
     mappings: [
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
-        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dce', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-washing-machine', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dce', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
                   // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
         { keywords: ['transporte público', 'ônibus', 'bus', 'ponto de ônibus', 'transporte'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
         { keywords: ['uber', '99', 'aplicativo', 'taxi', 'táxi', 'carro de aplicativo', 'aplicativos'], icon: 'fa-taxi', color: '#f39c12', label: 'Aplicativos de Transporte' },
@@ -2030,4 +2030,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ========================================================
+// =======================================================
