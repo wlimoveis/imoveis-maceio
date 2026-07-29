@@ -836,6 +836,7 @@ window.FeatureIconMapper = {
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], 
           icon: 'fa-car', color: '#3498db', label: 'Garagem' },
         { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
+        { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
         { keywords: ['varanda', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
