@@ -807,6 +807,7 @@ window.FeatureIconMapper = {
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
         { keywords: ['comercial', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
                 // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
+        { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
         { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
@@ -814,7 +815,6 @@ window.FeatureIconMapper = {
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
         { keywords: ['banheiro', 'wc', 'dce', 'lavabo', 'Banheiro da DCE', 'banheiros', 'wc serviço', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dependência de serviço', 'dependencia de serviço'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
-        { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
                 // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
         { keywords: ['transporte público', 'ônibus', 'bus', 'ponto de ônibus', 'transporte'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
         { keywords: ['uber', '99', 'aplicativo', 'taxi', 'táxi', 'carro de aplicativo', 'aplicativos'], icon: 'fa-taxi', color: '#f39c12', label: 'Aplicativos de Transporte' },
