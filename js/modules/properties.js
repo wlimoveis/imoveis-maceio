@@ -823,7 +823,8 @@ window.FeatureIconMapper = {
         { keywords: ['metrô', 'metro', 'trem', 'vlt'], icon: 'fa-subway', color: '#e74c3c', label: 'Metrô/Trem' },
         { keywords: ['bicicleta', 'bike', 'ciclovia', 'bicicletário'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
-                 // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
+        { keywords: ['varanda', 'varanda gourmet', 'sacada', 'varanda gourmet com vista para o mar', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+                // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
@@ -839,7 +840,6 @@ window.FeatureIconMapper = {
         { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
-        { keywords: ['varanda', 'varanda gourmet', 'sacada', 'varanda gourmet com vista para o mar', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
         { keywords: ['churrasqueira', 'churrasco'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
         { keywords: ['ar condicionado', 'ar-condicionado'], icon: 'fa-snowflake', color: '#1abc9c', label: 'Ar Condicionado' },
