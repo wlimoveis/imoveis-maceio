@@ -813,8 +813,8 @@ window.FeatureIconMapper = {
         { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
                  // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
         { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
-        { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
+        { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas c/wc', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'salas c/wc', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
                 // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
