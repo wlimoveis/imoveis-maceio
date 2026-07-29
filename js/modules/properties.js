@@ -854,6 +854,10 @@ window.FeatureIconMapper = {
         { keywords: ['lazer'], icon: 'fa-gamepad', color: '#9b59b6', label: 'Lazer' },
         { keywords: ['playground', 'parquinho'], icon: 'fa-child', color: '#f39c12', label: 'Playground' },
         { keywords: ['mobiliado', 'mobília'], icon: 'fa-couch', color: '#e67e22', label: 'Mobiliado' },
+                // ========== POSIÇÃO SOLAR / ORIENTAÇÃO ==========
+        { keywords: ['nascente', 'leste', 'nascer do sol', 'posição solar', 'sol da manhã', 'iluminação natural', 'sol nascente'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
+        { keywords: ['poente', 'oeste', 'pôr do sol', 'sol da tarde', 'sol poente'], icon: 'fa-sun', color: '#e67e22', label: 'Poente (Oeste)' },
+        { keywords: ['posição', 'orientação', 'direção', 'norte', 'sul', 'vista', 'posição da unidade'], icon: 'fa-compass', color: '#6c5ce7', label: 'Posição/Orientação' },
         { keywords: ['vista mar', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
         { keywords: ['perto praia', 'proximo praia'], icon: 'fa-umbrella-beach', color: '#f39c12', label: 'Perto da Praia' },
         { keywords: ['comércio', 'loja', 'comercial'], icon: 'fa-store', color: '#e74c3c', label: 'Comercial' },
