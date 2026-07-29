@@ -803,10 +803,11 @@ window.propertyTemplates = new PropertyTemplateEngine();
 // ========== FEATURE ICON MAPPER ==========
 window.FeatureIconMapper = {
     mappings: [
-                        // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
+                 // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
         { keywords: ['comercial', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
-                // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
+        { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+                 // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
         { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
         { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
@@ -846,7 +847,6 @@ window.FeatureIconMapper = {
         { keywords: ['portaria', '24h', 'segurança'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Segurança' },
         { keywords: ['jardim', 'paisagismo'], icon: 'fa-leaf', color: '#27ae60', label: 'Jardim' },
         { keywords: ['quintal', 'área externa'], icon: 'fa-tree', color: '#27ae60', label: 'Quintal' },
-        { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
                         // ========== COWORKING E ESPAÇO DE ESTUDOS (COM COMPUTADOR) ==========
         { keywords: ['coworking', 'home office', 'home-office', 'homeoffice', 'trabalho remoto', 'escritório compartilhado', 'espaço de trabalho', 'trabalho em casa', 'computador', 'notebook', 'laptop'], icon: 'fa-laptop', color: '#0984e3', label: 'Home Office/Coworking' },
         { keywords: ['espaço de estudos', 'espaço para estudos', 'estudos', 'estudar', 'biblioteca', 'sala de estudo', 'mesa de estudo', 'estudante'], icon: 'fa-book', color: '#f39c12', label: 'Espaço de Estudos' },
