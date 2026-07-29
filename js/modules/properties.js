@@ -804,7 +804,7 @@ window.propertyTemplates = new PropertyTemplateEngine();
 window.FeatureIconMapper = {
     mappings: [
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
-        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dependência de serviço', 'dependencia de serviço'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
                   // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
         { keywords: ['transporte público', 'ônibus', 'bus', 'ponto de ônibus', 'transporte'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
         { keywords: ['uber', '99', 'aplicativo', 'taxi', 'táxi', 'carro de aplicativo', 'aplicativos'], icon: 'fa-taxi', color: '#f39c12', label: 'Aplicativos de Transporte' },
@@ -836,7 +836,7 @@ window.FeatureIconMapper = {
         { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util', 'área construída', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
         { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
-        { keywords: ['banheiro', 'wc', 'dce', 'lavabo', 'Banheiro da DCE', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
+        { keywords: ['banheiro', 'wc', 'dce', 'lavabo', 'Banheiro da DCE', 'banheiros', 'wc serviço', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
         { keywords: ['varanda', 'varanda gourmet', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
