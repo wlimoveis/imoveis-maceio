@@ -804,14 +804,14 @@ window.propertyTemplates = new PropertyTemplateEngine();
 window.FeatureIconMapper = {
     mappings: [
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
-                // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
+        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dce', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-washing-machine', color: '#95a5a6', label: 'Área de Serviço' },
+                  // ========== NOVAS ENTRADAS PARA TRANSPORTE ==========
         { keywords: ['transporte público', 'ônibus', 'bus', 'ponto de ônibus', 'transporte'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
         { keywords: ['uber', '99', 'aplicativo', 'taxi', 'táxi', 'carro de aplicativo', 'aplicativos'], icon: 'fa-taxi', color: '#f39c12', label: 'Aplicativos de Transporte' },
         { keywords: ['metrô', 'metro', 'trem', 'vlt'], icon: 'fa-subway', color: '#e74c3c', label: 'Metrô/Trem' },
         { keywords: ['bicicleta', 'bike', 'ciclovia', 'bicicletário'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
-        { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dce', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-washing-machine', color: '#95a5a6', label: 'Área de Serviço' },
-                // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
+                 // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
         { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
@@ -847,8 +847,7 @@ window.FeatureIconMapper = {
         { keywords: ['jardim', 'paisagismo'], icon: 'fa-leaf', color: '#27ae60', label: 'Jardim' },
         { keywords: ['quintal', 'área externa'], icon: 'fa-tree', color: '#27ae60', label: 'Quintal' },
         { keywords: ['academia', 'ginásio'], icon: 'fa-dumbbell', color: '#e74c3c', label: 'Academia' },
-        { keywords: ['área de serviço', 'lavanderia'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Lavanderia' },
-                // ========== COWORKING E ESPAÇO DE ESTUDOS (COM COMPUTADOR) ==========
+                        // ========== COWORKING E ESPAÇO DE ESTUDOS (COM COMPUTADOR) ==========
         { keywords: ['coworking', 'home office', 'home-office', 'homeoffice', 'trabalho remoto', 'escritório compartilhado', 'espaço de trabalho', 'trabalho em casa', 'computador', 'notebook', 'laptop'], icon: 'fa-laptop', color: '#0984e3', label: 'Home Office/Coworking' },
         { keywords: ['espaço de estudos', 'espaço para estudos', 'estudos', 'estudar', 'biblioteca', 'sala de estudo', 'mesa de estudo', 'estudante'], icon: 'fa-book', color: '#f39c12', label: 'Espaço de Estudos' },
         { keywords: ['lazer'], icon: 'fa-gamepad', color: '#9b59b6', label: 'Lazer' },
