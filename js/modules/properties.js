@@ -805,8 +805,8 @@ window.FeatureIconMapper = {
     mappings: [
                  // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
-        { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas c/wc', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'salas c/wc', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
+        { keywords: ['sala comercial', 'salas comerciais',  'comerciais', 'salas comerciais c/wc', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas c/wc', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
+        { keywords: ['sala comercial', 'salas comerciais', 'salas comerciais c/wc', 'sala', 'salas', 'salas c/wc', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util', 'área construída', 'Studio', 'integrado', 'com 01 vaga de garagem', 'quarto / sala / escritório', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
         { keywords: ['banheiro', 'wc', 'dce', 'lavabo', 'Banheiro da DCE', 'banheiros', 'wc serviço', 'wc de empregada', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'dependência de serviço', 'dependencia de serviço'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
@@ -2030,4 +2030,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ===================================================
+// ==================================================
