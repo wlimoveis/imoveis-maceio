@@ -836,7 +836,7 @@ window.FeatureIconMapper = {
         { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util', 'área construída', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
         { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
-        { keywords: ['banheiro', 'wc', 'lavabo', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
+        { keywords: ['banheiro', 'wc', 'lavabo', 'Banheiro da DCE', 'banheiros'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
         { keywords: ['varanda', 'varanda gourmet', 'sacada', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['piscina'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
@@ -2030,4 +2030,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// =======================================================
+// ======================================================
