@@ -803,6 +803,7 @@ window.propertyTemplates = new PropertyTemplateEngine();
 // ========== FEATURE ICON MAPPER ==========
 window.FeatureIconMapper = {
     mappings: [
+        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['garagem', 'vaga', 'estacionamento', 'garagens', 'vagas'], icon: 'fa-car', color: '#3498db', label: 'Garagem/Vaga' },
                 // ========== COMÉRCIO, SERVIÇOS E SHOPPING ==========
         { keywords: ['comércio variado', 'comercio variado', 'bancos', 'órgãos públicos', 'orgãos públicos', 'orgaos publicos', 'bares', 'restaurantes', 'farmácias', 'farmácia', 'farmacia', 'serviços', 'servicos', 'comércio local', 'comercio local'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
@@ -821,7 +822,6 @@ window.FeatureIconMapper = {
         { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
                 // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-        { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'sala de trabalho'], icon: 'fa-building', color: '#0984e3', label: 'Sala Comercial' },
         { keywords: ['comercial', 'comerciais', 'negócios', 'negocio', 'business', 'corporativo', 'corporativa'], icon: 'fa-briefcase', color: '#e67e22', label: 'Comercial' },
                 // ========== SALAS COMERCIAIS / ESCRITÓRIOS ==========
         { keywords: ['sala comercial', 'salas comerciais', 'sala', 'salas', 'escritório', 'escritórios', 'sala de trabalho', 'sala para escritório', 'salas para empresas'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' }, 
