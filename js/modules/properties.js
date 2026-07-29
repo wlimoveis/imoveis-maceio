@@ -829,7 +829,7 @@ window.FeatureIconMapper = {
                 // ========== NOVAS ENTRADAS PARA PAVIMENTOS E ANDARES ==========
         { keywords: ['pavimento', 'pavimentos', 'andar', 'andares', 'piso', 'pisos', 'sobreloja'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
         { keywords: ['térreo', 'terreo', 'r/c', 'rc', 'res-do-chão', 'res do chão'], icon: 'fa-ground', color: '#00b894', label: 'Térreo' },
-                // ========== ÁREA PRIVATIVA E CARACTERÍSTICAS ==========
+                // ========== ÁREA PRIVATIVA (COM CASA) ==========
         { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util', 'área construída', 'area construida'], 
           icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
         { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], 
