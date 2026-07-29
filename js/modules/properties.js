@@ -814,7 +814,7 @@ window.FeatureIconMapper = {
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
         { keywords: ['cozinha americana integrada à sala', 'cozinha americana', 'cozinha integrada', 'cozinha integrada à sala', 'cozinha planejada americana', 'cozinha com ilha', 'cozinha integrada com sala'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
-        { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'varanda gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
+        { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
         { keywords: ['área de serviço', 'area de serviço', 'área de serviços', 'area de servicos', 'lavanderia', 'área de lavanderia', 'serviço', 'dce', 'dependência de serviço', 'dependencia de serviço', 'wc serviço', 'wc de serviço'], icon: 'fa-washing-machine', color: '#95a5a6', label: 'Área de Serviço' },
                // ========== LOCAÇÃO DE SALAS COMERCIAIS (COMPLETA) ==========
         { keywords: ['locação', 'locacao', 'locar', 'aluguel', 'alugar', 'arrendamento', 'leasing', 'locação de salas', 'aluguel de salas'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
