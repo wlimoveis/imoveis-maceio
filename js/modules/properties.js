@@ -823,8 +823,7 @@ window.FeatureIconMapper = {
         { keywords: ['metrô', 'metro', 'trem', 'vlt'], icon: 'fa-subway', color: '#e74c3c', label: 'Metrô/Trem' },
         { keywords: ['bicicleta', 'bike', 'ciclovia', 'bicicletário'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         { keywords: ['estacionamento', 'vaga coberta', 'garagem coberta'], icon: 'fa-parking', color: '#8e44ad', label: 'Estacionamento' },
-        { keywords: ['varanda', 'varanda gourmet', 'sacada', 'varanda gourmet com vista para o mar', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
-                // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
+                        // ========== NOVAS ENTRADAS PARA AEROPORTO E DISTÂNCIA ==========
         { keywords: ['aeroporto', 'airport', 'zumbi dos palmares', 'mcz', 'mc zumbi'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
         { keywords: ['cozinha', 'copa', 'cozinha americana'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha' },
         { keywords: ['espaço gourmet', 'gourmet', 'área gourmet', 'churrasqueira gourmet', 'cozinha gourmet', 'gourmet com churrasqueira', 'gourmet com forno', 'gourmet com pizza', 'gourmet com adega'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
@@ -837,6 +836,7 @@ window.FeatureIconMapper = {
         { keywords: ['pavimento', 'pavimentos', 'andar', 'andares', 'piso', 'pisos', 'sobreloja'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
         { keywords: ['térreo', 'terreo', 'r/c', 'rc', 'res-do-chão', 'res do chão'], icon: 'fa-ground', color: '#00b894', label: 'Térreo' },
                 // ========== ÁREA PRIVATIVA (COM CASA) ==========
+        { keywords: ['varanda', 'varanda gourmet', 'sacada', 'varanda gourmet com vista para o mar', 'terraço'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['suíte', 'suítes', 'suite', 'suites', 'suíte master', 'master suite', 'suíte com banheiro', 'quarto suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         { keywords: ['vaga', 'vagas', 'garagem', 'garagens', 'estacionamento', 'vgs', 'vaga de garagem', 'garagem coberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
         { keywords: ['sala', 'estar', 'living', 'salao'], icon: 'fa-couch', color: '#9b59b6', label: 'Sala' },
