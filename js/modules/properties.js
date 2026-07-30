@@ -809,29 +809,30 @@ window.FeatureIconMapper = {
 
         // FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
                 { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-                
+                        
         // ================================================================
-        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO)
+        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO - TEXTO NORMALIZADO)
         // ================================================================
         
         // SALAS COMERCIAIS
-        { keywords: ['área privativa: m² (04 salas comerciais c/wc)', 'salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
+        { keywords: ['area privativa: m² (04 salas comerciais c/wc)', 'salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
         
-        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima)
-        { keywords: ['área privativa: m² (03 suítes com 03 vagas de garagem)', 'área privativa: m² (03 suítes com 03 vgs. de gar.)', 'área privativa: m² (03 suítes com 03 vgs)', 'área privativa 03 suítes 03 vagas', 'área privativa 03 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
+        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima - COM TEXTO NORMALIZADO)
+        { keywords: ['area privativa: m² (03 suites com 03 vagas de garagem)', 'area privativa: m² (03 suites com 03 vgs. de gar.)', 'area privativa: m² (03 suites com 03 vgs)', 'area privativa 03 suites 03 vagas', 'area privativa 03 suites'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
         
-        { keywords: ['área privativa: m² (04 suítes com 04 vagas de garagem)', 'área privativa: m² (04 suítes com 04 vgs. de gar.)', 'área privativa: m² (04 suítes com 04 vgs)', 'área privativa 04 suítes 04 vagas', 'área privativa 04 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
+        { keywords: ['area privativa: m² (04 suites com 04 vagas de garagem)', 'area privativa: m² (04 suites com 04 vgs. de gar.)', 'area privativa: m² (04 suites com 04 vgs)', 'area privativa 04 suites 04 vagas', 'area privativa 04 suites'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
         
-        { keywords: ['cobertura garden: área privativa: m² (04 suítes com 04 vagas de garagem)', 'cobertura garden: área privativa: m² (04 suítes com 04 vgs. de gar.)', 'cobertura garden área privativa 04 suítes', 'cobertura garden 04 suítes 04 vagas', 'cobertura garden 04 suítes', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
+        { keywords: ['cobertura garden: area privativa: m² (04 suites com 04 vagas de garagem)', 'cobertura garden: area privativa: m² (04 suites com 04 vgs. de gar.)', 'cobertura garden area privativa 04 suites', 'cobertura garden 04 suites 04 vagas', 'cobertura garden 04 suites', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
         
         // STUDIOS
-        { keywords: ['área privativa: m² (studio) com 01 qts integrado', 'studio com 01 qts integrado'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
+        { keywords: ['area privativa: m² (studio) com 01 qts integrado', 'studio com 01 qts integrado'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
         
         // APARTAMENTOS 02 QUARTOS (TINTORETTO)
-        { keywords: ['área privativa: m² (02 qts com 01 vaga de garagem)', '02 qts com 01 vaga'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
+        { keywords: ['area privativa: m² (02 qts com 01 vaga de garagem)', '02 qts com 01 vaga'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
         
         // LOTE / ÁREA CONSTRUÍDA
-        { keywords: ['área construída: m² em um lote com', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
+        { keywords: ['area construida: m² em um lote com', 'lote com area total', 'area total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
+
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
@@ -943,14 +944,14 @@ window.FeatureIconMapper = {
         { keywords: ['vista para o mar: sim; conforme disponibilidade da unidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
-        // 21. SUÍTES / QUARTOS (CORRIGIDO - apenas descrições isoladas)
+        // 21. SUÍTES / QUARTOS (CORRIGIDO - TEXTO NORMALIZADO)
         // ================================================================
         
-        // SUÍTES ESPECÍFICAS (descrições isoladas, sem "área privativa")
-        { keywords: ['04 suítes (todas com closet)', 'suíte master com hidromassagem', 'suíte master', 'suítes com closet', 'master suite', 'hidromassagem na suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        // SUÍTES ESPECÍFICAS (descrições isoladas, sem "area privativa")
+        { keywords: ['04 suites (todas com closet)', 'suite master com hidromassagem', 'suite master', 'suites com closet', 'master suite', 'hidromassagem na suite'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         
         // FALLBACK - SUÍTES (apenas se aparecer sozinha)
-        { keywords: ['03 suítes', '04 suítes'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        { keywords: ['03 suites', '04 suites'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
         
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
@@ -987,10 +988,10 @@ window.FeatureIconMapper = {
         { keywords: ['varanda'], icon: 'fa-window-frame', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
-        // 27. FALLBACK GERAL (para descrições não mapeadas)
+        // 27. FALLBACK GERAL (para descrições não mapeadas - SEM "suítes")
         // ================================================================
         
-        { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área útil', 'area util', 'área construída', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' },
+        { keywords: ['area privativa', 'area privativa:', 'area construida', 'area util', 'm²', 'm2', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' },        
         
     ],
     
