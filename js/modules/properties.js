@@ -928,7 +928,7 @@ window.FeatureIconMapper = {
         // 18. ÁREA DE SERVIÇO / LAVANDERIA
         // ================================================================
 
-        { keywords: ['área de serviço', 'lavanderia (pay-per-use) compartilhada', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-washing-machine', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'lavanderia (pay-per-use) compartilhada', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
 
         // ================================================================
         // 19. POSIÇÃO / NASCENTE
