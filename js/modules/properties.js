@@ -899,6 +899,11 @@ window.FeatureIconMapper = {
         { keywords: ['cozinha americana integrada à sala', 'cozinha integrada à sala', 'cozinha americana integrada'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
 
         // ================================================================
+        // 12.1. MÓVEIS PLANEJADOS (fa-kitchen-set)
+        // ================================================================
+        { keywords: ['móveis planejados', 'moveis planejados', 'cozinha planejada', 'quarto planejado', 'wc planejado', 'móveis planejados cozinha'], icon: 'fa-kitchen-set', color: '#e67e22', label: 'Móveis Planejados' },
+        
+        // ================================================================
         // 13. COWORKING / HOME OFFICE / ESPAÇO DE ESTUDOS
         // ================================================================
         { keywords: ['coworking home office', 'coworking', 'espaço de estudos', 'home office', 'espaço coworking'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
