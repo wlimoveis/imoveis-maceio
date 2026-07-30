@@ -954,7 +954,7 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // DEPÓSITO / ADMINISTRAÇÃO (prioridade máxima)
-        { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Depósito / Administração' },
+        { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-bed-front', color: '#7f8c8d', label: 'Depósito / Administração' },
         
         // RECEPÇÃO / ATENDIMENTO
         { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
