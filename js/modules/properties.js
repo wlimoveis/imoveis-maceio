@@ -887,8 +887,7 @@ window.FeatureIconMapper = {
         { keywords: ['lavabo wc social', 'wc social', 'lavabo social'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
         // Para "Vestiários / Banheiros"
         { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
-        // WC / BANHEIROS (Material Icons)
-        { keywords: ['wc masculino', 'wc feminino', 'wc de apoio', 'wc social', 'banheiro', 'toalete'], icon: 'ic-baseline-wc', color: '#1abc9c', label: 'WC' },
+
         // ================================================================
         // 12. COZINHA / COZINHA AMERICANA
         // ================================================================
