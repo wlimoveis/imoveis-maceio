@@ -899,10 +899,14 @@ window.FeatureIconMapper = {
         // ================================================================
         { keywords: ['Piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
 
-        // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
         // ================================================================
         { keywords: ['espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
+        
+        // ================================================================
+        // 17.1. SALÃO DE FESTAS / EVENTOS (NOVO)
+        // ================================================================
+        { keywords: ['salão de festas', 'salao de festas', 'eventos', 'celebração', 'comemoração', 'festas', 'salão de eventos', 'espaço para eventos'], icon: 'fa-glass-cheers', color: '#e84393', label: 'Salão de Festas' },
 
         // ================================================================
         // 18. ÁREA DE SERVIÇO / LAVANDERIA
