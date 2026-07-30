@@ -923,7 +923,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 19. POSIÇÃO / NASCENTE
         // ================================================================
-        { keywords: ['posição nascente leste', 'nascente leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
+        { keywords: ['Posição/Nascente', 'posição nascente leste', 'nascente leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
 
         // ================================================================
         // 20. VISTA PARA O MAR
