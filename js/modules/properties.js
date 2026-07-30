@@ -958,7 +958,7 @@ window.FeatureIconMapper = {
         { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
         
         // Para "Depósito" / "Administração"
-        { keywords: ['sala para administração', 'depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse-alt', color: '#7f8c8d', label: 'Depósito / Administração' },
+        { keywords: ['Sala para administração', 'Depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse-alt', color: '#7f8c8d', label: 'Depósito / Administração' },
         
         // ================================================================
         // 24. CHURRASQUEIRA
