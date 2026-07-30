@@ -881,11 +881,16 @@ window.FeatureIconMapper = {
         { keywords: ['elevador', 'elevadores', 'elevador social', 'elevador de serviço'], icon: 'fa-elevator', color: '#7f8c8d', label: 'Elevador' },
         
         // ================================================================
-        // 11. BANHEIROS / LAVABO / WC
+        // 11. BANHEIROS / LAVABO / WC (fa-shower)
         // ================================================================
-        { keywords: ['banheiro da dce', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'WC Serviço' },
-        { keywords: ['lavabo wc social', 'wc social', 'lavabo social'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
-        // Para "Vestiários / Banheiros"
+        
+        // BANHEIROS EM GERAL (inclui WC, banheiro da DCE, banheiro de apoio)
+        { keywords: ['banheiro da dce', 'banheiro de serviço', 'banheiro apoio', 'wc de serviço', 'wc social', 'wc apoio', 'banheiro'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
+        
+        // LAVABO SOCIAL
+        { keywords: ['lavabo wc social', 'lavabo social', 'lavabo'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
+        
+        // VESTIÁRIOS (mantido com fa-restroom, pois é mais específico)
         { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
 
         // ================================================================
