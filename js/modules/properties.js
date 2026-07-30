@@ -809,20 +809,20 @@ window.FeatureIconMapper = {
 
         // FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
                 { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-        
+                
         // ================================================================
-        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO)
+        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO - com "vagas de garagem")
         // ================================================================
         
         // SALAS COMERCIAIS
         { keywords: ['área privativa: m² (04 salas comerciais c/wc)', 'salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
         
-        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima)
-        { keywords: ['área privativa: m² (03 suítes com 03 vgs. de gar.)', 'área privativa: m² (03 suítes com 03 vgs)', '03 suítes com 03 vgs', 'área privativa 03 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
+        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima - com variações de "vagas de garagem")
+        { keywords: ['área privativa: m² (03 suítes com 03 vagas de garagem)', 'área privativa: m² (03 suítes com 03 vgs. de gar.)', 'área privativa: m² (03 suítes com 03 vgs)', 'área privativa 03 suítes 03 vagas', 'área privativa 03 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
         
-        { keywords: ['área privativa: m² (04 suítes com 04 vgs. de gar.)', 'área privativa: m² (04 suítes com 04 vgs)', '04 suítes com 04 vgs', 'área privativa 04 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
+        { keywords: ['área privativa: m² (04 suítes com 04 vagas de garagem)', 'área privativa: m² (04 suítes com 04 vgs. de gar.)', 'área privativa: m² (04 suítes com 04 vgs)', 'área privativa 04 suítes 04 vagas', 'área privativa 04 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
         
-        { keywords: ['cobertura garden: área privativa: m² (04 suítes com 04 vgs. de gar.)', 'cobertura garden área privativa', 'cobertura garden 04 suítes', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
+        { keywords: ['cobertura garden: área privativa: m² (04 suítes com 04 vagas de garagem)', 'cobertura garden: área privativa: m² (04 suítes com 04 vgs. de gar.)', 'cobertura garden área privativa 04 suítes', 'cobertura garden 04 suítes 04 vagas', 'cobertura garden 04 suítes', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },        
         
         // STUDIOS
         { keywords: ['área privativa: m² (studio) com 01 qts integrado', 'studio com 01 qts integrado'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
@@ -869,10 +869,10 @@ window.FeatureIconMapper = {
         { keywords: ['condomínio e iptu: já incluso no valor da locação', 'condomínio incluso', 'iptu incluso', 'taxas inclusas'], icon: 'fa-handshake', color: '#00b894', label: 'Condomínio/IPTU Incluso' },
 
         // ================================================================
-        // 9. GARAGEM / ESTACIONAMENTO
+        // 9. GARAGEM / ESTACIONAMENTO (CORRIGIDO - apenas descrições específicas)
         // ================================================================
-
-        { keywords: ['vagas de garagem: 03 vagas cobertas (para 03 suítes)', 'vagas de garagem: 04 vagas cobertas (para 04 suítes', '04 vagas de garagem (2 cobertas e 2 descobertas)', 'vagas de garagem: até 01 vaga', 'vagas de garagem'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
+        
+        { keywords: ['vagas de garagem: 03 vagas cobertas (para 03 suítes)', 'vagas de garagem: 04 vagas cobertas (para 04 suítes', '04 vagas de garagem (2 cobertas e 2 descobertas)', 'vagas de garagem: até 01 vaga', 'vaga de garagem: até 01', 'vagas cobertas', 'vagas descobertas', 'vaga coberta', 'vaga descoberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
 
         // ================================================================
         // 10. VARANDA
