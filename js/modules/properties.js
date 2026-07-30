@@ -907,7 +907,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 18. ÁREA DE SERVIÇO / LAVANDERIA
         // ================================================================
-        { keywords: ['área de serviço', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'lavanderia', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
 
         // ================================================================
         // 19. POSIÇÃO / NASCENTE
@@ -2117,9 +2117,9 @@ if (document.readyState === 'loading') {
     });
 }
 
-// =======================================================
+// ======================================================
 // FIM DO ARQUIVO - properties.js v3.0
-// =======================================================
+// ======================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
