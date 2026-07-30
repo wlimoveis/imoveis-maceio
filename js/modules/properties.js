@@ -873,6 +873,11 @@ window.FeatureIconMapper = {
         { keywords: ['Varanda', 'varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
+        // 10.1. ELEVADOR (NOVO)
+        // ================================================================
+        { keywords: ['elevador', 'elevadores', 'elevador social', 'elevador de serviço'], icon: 'fa-elevator', color: '#7f8c8d', label: 'Elevador' },
+        
+        // ================================================================
         // 11. BANHEIROS / LAVABO / WC
         // ================================================================
         { keywords: ['banheiro da dce', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'WC Serviço' },
