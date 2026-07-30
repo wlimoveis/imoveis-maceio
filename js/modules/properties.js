@@ -821,7 +821,7 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima)
-        { keywords: ['(studio)', '(studio master)', 'studio com', 'studio master', 'studio)', 'aparthotel', 'condohotel'], icon: 'fa-building-unlock', color: '#0984e3', label: 'Studio' },
+        { keywords: ['(studio)', '(studio master)', 'studio com', 'studio master', 'studio)', 'aparthotel', 'condohotel'], icon: 'fa-building-lock', color: '#0984e3', label: 'Studio' },
         
         // COBERTURA
         { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
@@ -2135,7 +2135,7 @@ if (document.readyState === 'loading') {
 
 // ===================================================
 // FIM DO ARQUIVO - properties.js v3.0
-// ===================================================
+// ==================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
