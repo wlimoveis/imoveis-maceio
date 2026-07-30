@@ -886,6 +886,9 @@ window.FeatureIconMapper = {
         { keywords: ['banheiro da dce', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'WC Serviço' },
         { keywords: ['lavabo wc social', 'wc social', 'lavabo social'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
 
+        // Para "Vestiários / Banheiros"
+        { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
+      
         // ================================================================
         // 12. COZINHA / COZINHA AMERICANA
         // ================================================================
