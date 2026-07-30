@@ -820,18 +820,21 @@ window.FeatureIconMapper = {
         // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
         // ================================================================
         
-        // COBERTURA (inclui cobertura duplex)
+        // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima)
+        { keywords: ['(studio)', '(studio master)', 'studio com', 'studio master', 'studio)', 'aparthotel', 'condohotel'], icon: 'fa-building-unlock', color: '#0984e3', label: 'Studio' },
+        
+        // COBERTURA
         { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
         
-        // APARTAMENTO (fa-building) - descrições de área privativa
+        // APARTAMENTO (fa-building)
         { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
         
         // ÁREA CONSTRUÍDA / LOTE (fa-home)
         { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
         
         // SALAS COMERCIAIS
-        { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
-        
+        { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },        
+
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
@@ -2130,9 +2133,9 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ====================================================
+// ===================================================
 // FIM DO ARQUIVO - properties.js v3.0
-// ====================================================
+// ===================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
