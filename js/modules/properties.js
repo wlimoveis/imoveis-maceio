@@ -954,6 +954,12 @@ window.FeatureIconMapper = {
         // ================================================================
         { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
 
+        // Para "Recepção" / "Atendimento"
+        { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
+        
+        // Para "Depósito" / "Administração"
+        { keywords: ['depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse-alt', color: '#7f8c8d', label: 'Depósito / Administração' },
+        
         // ================================================================
         // 24. CHURRASQUEIRA
         // ================================================================
