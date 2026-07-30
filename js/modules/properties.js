@@ -820,6 +820,9 @@ window.FeatureIconMapper = {
         // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
         // ================================================================
 
+        // COBERTURA (NOVO - prioridade máxima)
+        { keywords: ['cobertura garden', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
+        
         // SALAS COMERCIAIS (NÃO contém números)
         { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
 
