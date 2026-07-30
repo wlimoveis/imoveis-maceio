@@ -819,25 +819,19 @@ window.FeatureIconMapper = {
         // ================================================================
         // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
         // ================================================================
-
-        // COBERTURA (NOVO - prioridade máxima)
-        { keywords: ['cobertura garden', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
         
-        // SALAS COMERCIAIS (NÃO contém números)
+        // COBERTURA (inclui cobertura duplex)
+        { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
+        
+        // APARTAMENTO (fa-building) - descrições de área privativa
+        { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
+        
+        // ÁREA CONSTRUÍDA / LOTE (fa-home)
+        { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
+        
+        // SALAS COMERCIAIS
         { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
-
-        // ÁREA PRIVATIVA - APARTAMENTOS (captura POR CONTEXTO, sem números)
-        { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
-
-        // COBERTURA GARDEN (captura POR CONTEXTO, sem números)
-        { keywords: ['cobertura garden:', 'cobertura garden area', 'cobertura garden com'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
-
-        // STUDIO (captura POR CONTEXTO, sem números)
-        { keywords: ['studio com qts integrado', 'area privativa studio'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
-
-        // LOTE / ÁREA CONSTRUÍDA
-        { keywords: ['area construida em um lote', 'lote com area total', 'area total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
-
+        
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
