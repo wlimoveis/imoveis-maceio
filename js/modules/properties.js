@@ -866,7 +866,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 10. VARANDA
         // ================================================================
-        { keywords: ['varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+        { keywords: ['Varanda', 'varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
         // 11. BANHEIROS / LAVABO / WC
@@ -2117,7 +2117,7 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ======================================================
+// =====================================================
 // FIM DO ARQUIVO - properties.js v3.0
 // ======================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
