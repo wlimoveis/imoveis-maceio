@@ -811,18 +811,18 @@ window.FeatureIconMapper = {
                 { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
                 
         // ================================================================
-        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO - com "vagas de garagem")
+        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO)
         // ================================================================
         
         // SALAS COMERCIAIS
         { keywords: ['área privativa: m² (04 salas comerciais c/wc)', 'salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
         
-        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima - com variações de "vagas de garagem")
+        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima)
         { keywords: ['área privativa: m² (03 suítes com 03 vagas de garagem)', 'área privativa: m² (03 suítes com 03 vgs. de gar.)', 'área privativa: m² (03 suítes com 03 vgs)', 'área privativa 03 suítes 03 vagas', 'área privativa 03 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
         
         { keywords: ['área privativa: m² (04 suítes com 04 vagas de garagem)', 'área privativa: m² (04 suítes com 04 vgs. de gar.)', 'área privativa: m² (04 suítes com 04 vgs)', 'área privativa 04 suítes 04 vagas', 'área privativa 04 suítes'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
         
-        { keywords: ['cobertura garden: área privativa: m² (04 suítes com 04 vagas de garagem)', 'cobertura garden: área privativa: m² (04 suítes com 04 vgs. de gar.)', 'cobertura garden área privativa 04 suítes', 'cobertura garden 04 suítes 04 vagas', 'cobertura garden 04 suítes', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },        
+        { keywords: ['cobertura garden: área privativa: m² (04 suítes com 04 vagas de garagem)', 'cobertura garden: área privativa: m² (04 suítes com 04 vgs. de gar.)', 'cobertura garden área privativa 04 suítes', 'cobertura garden 04 suítes 04 vagas', 'cobertura garden 04 suítes', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
         
         // STUDIOS
         { keywords: ['área privativa: m² (studio) com 01 qts integrado', 'studio com 01 qts integrado'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
@@ -943,10 +943,15 @@ window.FeatureIconMapper = {
         { keywords: ['vista para o mar: sim; conforme disponibilidade da unidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
-        // 21. SUÍTES / QUARTOS (deve vir DEPOIS das entradas de Área Privativa)
+        // 21. SUÍTES / QUARTOS (CORRIGIDO - apenas descrições isoladas)
         // ================================================================
         
-        { keywords: ['04 suítes (todas com closet)', 'suíte master com hidromassagem', 'suíte', 'suítes'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        // SUÍTES ESPECÍFICAS (descrições isoladas, sem "área privativa")
+        { keywords: ['04 suítes (todas com closet)', 'suíte master com hidromassagem', 'suíte master', 'suítes com closet', 'master suite', 'hidromassagem na suíte'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        
+        // FALLBACK - SUÍTES (apenas se aparecer sozinha)
+        { keywords: ['03 suítes', '04 suítes'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
         // ================================================================
