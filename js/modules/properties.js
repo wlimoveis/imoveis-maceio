@@ -803,160 +803,130 @@ window.propertyTemplates = new PropertyTemplateEngine();
 // ========== FEATURE ICON MAPPER ==========
 window.FeatureIconMapper = {
     mappings: [
-// ================================================================
-        // 1. INFORMAÇÕES GERAIS / TIPO DE IMÓVEL
+        
+        // ================================================================
+        // 1. FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
+        // ================================================================
+        { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
+
+        // ================================================================
+        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
         // ================================================================
 
-        // FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
-                { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-                        
-        // ================================================================
-        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA (CORRIGIDO - TEXTO NORMALIZADO)
-        // ================================================================
-        
-        // SALAS COMERCIAIS
-        { keywords: ['area privativa: m² (04 salas comerciais c/wc)', 'salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
-        
-        // ÁREA PRIVATIVA - APARTAMENTOS (prioridade máxima - COM TEXTO NORMALIZADO)
-        { keywords: ['area privativa: m² (03 suites com 03 vagas de garagem)', 'area privativa: m² (03 suites com 03 vgs. de gar.)', 'area privativa: m² (03 suites com 03 vgs)', 'area privativa 03 suites 03 vagas', 'area privativa 03 suites'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 03 Suítes' },
-        
-        { keywords: ['area privativa: m² (04 suites com 04 vagas de garagem)', 'area privativa: m² (04 suites com 04 vgs. de gar.)', 'area privativa: m² (04 suites com 04 vgs)', 'area privativa 04 suites 04 vagas', 'area privativa 04 suites'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa - 04 Suítes' },
-        
-        { keywords: ['cobertura garden: area privativa: m² (04 suites com 04 vagas de garagem)', 'cobertura garden: area privativa: m² (04 suites com 04 vgs. de gar.)', 'cobertura garden area privativa 04 suites', 'cobertura garden 04 suites 04 vagas', 'cobertura garden 04 suites', 'cobertura garden 04 vgs'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
-        
-        // STUDIOS
-        { keywords: ['area privativa: m² (studio) com 01 qts integrado', 'studio com 01 qts integrado'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
-        
-        // APARTAMENTOS 02 QUARTOS (TINTORETTO)
-        { keywords: ['area privativa: m² (02 qts com 01 vaga de garagem)', '02 qts com 01 vaga'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
-        
+        // SALAS COMERCIAIS (NÃO contém números)
+        { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },
+
+        // ÁREA PRIVATIVA - APARTAMENTOS (captura POR CONTEXTO, sem números)
+        { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Privativa' },
+
+        // COBERTURA GARDEN (captura POR CONTEXTO, sem números)
+        { keywords: ['cobertura garden:', 'cobertura garden area', 'cobertura garden com'], icon: 'fa-home', color: '#6c5ce7', label: 'Cobertura Garden' },
+
+        // STUDIO (captura POR CONTEXTO, sem números)
+        { keywords: ['studio com qts integrado', 'area privativa studio'], icon: 'fas fa-house', color: '#6c5ce7', label: 'Studio' },
+
         // LOTE / ÁREA CONSTRUÍDA
-        { keywords: ['area construida: m² em um lote com', 'lote com area total', 'area total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
+        { keywords: ['area construida em um lote', 'lote com area total', 'area total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
 
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
-
-        { keywords: ['número de pavimentos: 02 e térreo', 'pavimentos: 02 e térreo', 'pavimento térreo e 2 andares'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
+        { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
 
         // ================================================================
         // 4. COMÉRCIO E SERVIÇOS
         // ================================================================
-
-        { keywords: ['acesso rápido à bancos', 'bancos / órgãos públicos / bares / restaurantes e farmácias', 'comércio e serviços: acesso rápido', 'bancos / órgãos públicos', 'bares / restaurantes / farmácias'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
+        { keywords: ['acesso rápido à bancos', 'bancos órgãos públicos', 'comércio e serviços', 'bares restaurantes farmácias'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
 
         // ================================================================
         // 5. TRANSPORTE / MOBILIDADE
         // ================================================================
-
-        { keywords: ['transporte público: fácil acesso a ônibus e transporte por aplicativo (uber / 99)', 'transporte público: fácil acesso a ônibus', 'ônibus e transporte por aplicativo', 'uber / 99'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
+        { keywords: ['transporte público fácil acesso', 'ônibus e transporte por aplicativo', 'uber / 99'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
 
         // ================================================================
         // 6. AEROPORTO
         // ================================================================
-
-        { keywords: ['aeroporto: distância fica a km do aeroporto zumbi dos palmares (mcz)', 'aeroporto zumbi dos palmares', 'zumbi dos palmares', 'mcz'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
+        { keywords: ['aeroporto zumbi dos palmares', 'zumbi dos palmares', 'mcz'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
 
         // ================================================================
         // 7. SHOPPING
         // ================================================================
-
-        { keywords: ['shopping: acesso rápido ao maceió shopping', 'maceió shopping', 'acesso rápido ao shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
+        { keywords: ['maceió shopping', 'acesso rápido ao shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
 
         // ================================================================
         // 8. CONDOMÍNIO E IPTU
         // ================================================================
-
-        { keywords: ['condomínio e iptu: já incluso no valor da locação', 'condomínio incluso', 'iptu incluso', 'taxas inclusas'], icon: 'fa-handshake', color: '#00b894', label: 'Condomínio/IPTU Incluso' },
+        { keywords: ['condomínio incluso', 'iptu incluso', 'taxas inclusas', 'condomínio e iptu'], icon: 'fa-handshake', color: '#00b894', label: 'Condomínio/IPTU Incluso' },
 
         // ================================================================
-        // 9. GARAGEM / ESTACIONAMENTO (CORRIGIDO - apenas descrições específicas)
+        // 9. GARAGEM / ESTACIONAMENTO
         // ================================================================
-        
-        { keywords: ['vagas de garagem: 03 vagas cobertas (para 03 suítes)', 'vagas de garagem: 04 vagas cobertas (para 04 suítes', '04 vagas de garagem (2 cobertas e 2 descobertas)', 'vagas de garagem: até 01 vaga', 'vaga de garagem: até 01', 'vagas cobertas', 'vagas descobertas', 'vaga coberta', 'vaga descoberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
+        { keywords: ['vagas de garagem:', 'vagas cobertas', 'vagas descobertas', 'vaga coberta', 'vaga descoberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
 
         // ================================================================
         // 10. VARANDA
         // ================================================================
-
-        { keywords: ['varanda: sim; varanda gourmet com vista para o mar', 'varanda gourmet com vista para o mar', 'varanda: sim; conforme disponibilidade da unidade', 'varanda com vista'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+        { keywords: ['varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
         // 11. BANHEIROS / LAVABO / WC
         // ================================================================
-
-        { keywords: ['banheiro da dce: 01 (wc de serviço)', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'WC Serviço' },
-
-        { keywords: ['lavabo: 01 (wc social)', 'wc social', 'lavabo social'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
+        { keywords: ['banheiro da dce', 'wc de serviço'], icon: 'fa-shower', color: '#1abc9c', label: 'WC Serviço' },
+        { keywords: ['lavabo wc social', 'wc social', 'lavabo social'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
 
         // ================================================================
         // 12. COZINHA / COZINHA AMERICANA
         // ================================================================
-
         { keywords: ['cozinha americana integrada à sala', 'cozinha integrada à sala', 'cozinha americana integrada'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
 
         // ================================================================
         // 13. COWORKING / HOME OFFICE / ESPAÇO DE ESTUDOS
         // ================================================================
-
-        { keywords: ['coworking (home office) e espaço de estudos', 'coworking', 'espaço de estudos', 'home office', 'espaço coworking'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
+        { keywords: ['coworking home office', 'coworking', 'espaço de estudos', 'home office', 'espaço coworking'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
 
         // ================================================================
         // 14. ÁREAS INFANTIS / PLAYGROUND
         // ================================================================
-
-        { keywords: ['playground / brinquedoteca / estação kids / espaço pet / home cine e praça central', 'playground', 'brinquedoteca', 'estação kids', 'espaço pet', 'home cine', 'praça central'], icon: 'fa-child', color: '#f39c12', label: 'Área Infantil' },
+        { keywords: ['playground', 'brinquedoteca', 'estação kids', 'espaço pet', 'home cine', 'praça central'], icon: 'fa-child', color: '#f39c12', label: 'Área Infantil' },
 
         // ================================================================
         // 15. FITNESS / ACADEMIA / ESPORTES
         // ================================================================
-
-        { keywords: ['fitness / academia / spa / sala de jogos e festas / quadra oficial de squash e poliesportiva', 'fitness / academia', 'academia', 'fitness'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        { keywords: ['fitness academia', 'academia', 'fitness', 'quadra squash', 'quadra poliesportiva'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
 
         // ================================================================
         // 16. PISCINAS
         // ================================================================
-
-        { keywords: ['piscina suspensa panorâmica (skypool) / borda infinita - adulto e infantil aquecida com hidromassagem', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina panorâmica com borda infinita e deck', 'piscina com deck'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
+        { keywords: ['piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
 
         // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
         // ================================================================
-
-        { keywords: ['espaço gourmet / churrasqueira e forno de pizza', 'espaço gourmet: sim; com área de lazer', 'espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
+        { keywords: ['espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
 
         // ================================================================
         // 18. ÁREA DE SERVIÇO / LAVANDERIA
         // ================================================================
-
-        { keywords: ['área de serviço', 'lavanderia (pay-per-use) compartilhada', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
 
         // ================================================================
         // 19. POSIÇÃO / NASCENTE
         // ================================================================
-
-        { keywords: ['posição/nascente: leste; conforme disponibilidade da unidade', 'posição/nascente: leste', 'nascente: leste'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
+        { keywords: ['posição nascente leste', 'nascente leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
 
         // ================================================================
         // 20. VISTA PARA O MAR
         // ================================================================
-
-        { keywords: ['vista para o mar: sim; conforme disponibilidade da unidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
+        { keywords: ['vista para o mar disponibilidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
-        // 21. SUÍTES / QUARTOS (CORRIGIDO - TEXTO NORMALIZADO)
+        // 21. SUÍTES / QUARTOS (apenas descrições ISOLADAS)
         // ================================================================
-        
-        // SUÍTES ESPECÍFICAS (descrições isoladas, sem "area privativa")
-        { keywords: ['04 suites (todas com closet)', 'suite master com hidromassagem', 'suite master', 'suites com closet', 'master suite', 'hidromassagem na suite'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
-        
-        // FALLBACK - SUÍTES (apenas se aparecer sozinha)
-        { keywords: ['03 suites', '04 suites'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
-        
+        { keywords: ['suite master com hidromassagem', 'suite master', 'suites com closet', 'master suite', 'hidromassagem na suite'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
         // ================================================================
-
         { keywords: ['restaurante'], icon: 'fa-utensils', color: '#e67e22', label: 'Restaurante' },
         { keywords: ['café'], icon: 'fa-mug-saucer', color: '#6c5ce7', label: 'Café' },
         { keywords: ['sauna'], icon: 'fa-hot-tub-person', color: '#e74c3c', label: 'Sauna' },
@@ -966,33 +936,27 @@ window.FeatureIconMapper = {
         // ================================================================
         // 23. RECEPÇÃO / SALAS COMERCIAIS
         // ================================================================
-
-        { keywords: ['recepção/salas comerciais no térreo/empresariais na sobreloja', 'recepção', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
+        { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
 
         // ================================================================
-        // 24. CHURRASQUEIRA (PADRÃO ADICIONAL)
+        // 24. CHURRASQUEIRA
         // ================================================================
-
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
 
         // ================================================================
         // 25. CONDOMÍNIO FECHADO / SEGURANÇA
         // ================================================================
-
-        { keywords: ['condomínio fechado c/ câmeras de vigilância e ronda e portaria 24h', 'condomínio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
+        { keywords: ['condomínio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
 
         // ================================================================
-        // 26. VARANDA (FALLBACK - para capturar variações não capturadas)
+        // 26. VARANDA (FALLBACK)
         // ================================================================
-
         { keywords: ['varanda'], icon: 'fa-window-frame', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
-        // 27. FALLBACK GERAL (para descrições não mapeadas - SEM "suítes")
+        // 27. FALLBACK GERAL (NÃO contém "suite" ou "vaga")
         // ================================================================
-        
-        { keywords: ['area privativa', 'area privativa:', 'area construida', 'area util', 'm²', 'm2', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' },        
-        
+        { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }        
     ],
     
     normalizeText: function(text) {
