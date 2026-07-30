@@ -989,8 +989,9 @@ window.FeatureIconMapper = {
         // ================================================================
         // 27. FALLBACK GERAL (para descrições não mapeadas)
         // ================================================================
-
-        { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área', 'area', 'área útil', 'area util', 'área construída', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }
+        
+        { keywords: ['área privativa', 'area privativa', 'privativa', 'm²', 'm2', 'metros quadrados', 'área útil', 'area util', 'área construída', 'area construida'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' },
+        
     ],
     
     normalizeText: function(text) {
