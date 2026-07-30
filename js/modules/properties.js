@@ -805,9 +805,16 @@ window.FeatureIconMapper = {
     mappings: [
         
         // ================================================================
-        // 1. FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
+        // 1. INFORMAÇÕES GERAIS / TIPO DE IMÓVEL
         // ================================================================
+        
+        // FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
         { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
+        
+        // ================================================================
+        // 1.1. FINANCIAMENTO / PARCELAMENTO (NOVO)
+        // ================================================================
+        { keywords: ['financiamento', 'parcelamento', 'plano facilitado', 'direto com a construtora', '100x', 'parcelas', 'financiamento direto', 'plano de pagamento', 'pagamento facilitado'], icon: 'fa-hand-holding-usd', color: '#27ae60', label: 'Financiamento' },
 
         // ================================================================
         // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
