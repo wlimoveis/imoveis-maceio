@@ -968,7 +968,7 @@ window.FeatureIconMapper = {
         { keywords: ['restaurante'], icon: 'fa-utensils', color: '#e67e22', label: 'Restaurante' },
         { keywords: ['café'], icon: 'fa-mug-saucer', color: '#6c5ce7', label: 'Café' },
         { keywords: ['sauna'], icon: 'fa-hot-tub-person', color: '#e74c3c', label: 'Sauna' },
-        { keywords: ['espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
+        { keywords: ['banheiras de hidromassagem', 'espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
         { keywords: ['massagem'], icon: 'fas fa-hands', color: '#9b59b6', label: 'Massagem' },
 
         // ================================================================
