@@ -916,8 +916,13 @@ window.FeatureIconMapper = {
         // ================================================================
         // 15. FITNESS / ACADEMIA / ESPORTES
         // ================================================================
-        { keywords: ['Salão de jogos', 'fitness academia', 'academia', 'fitness', 'quadra squash', 'quadra poliesportiva'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
-
+        
+        // ESPORTES (fa-court-sport)
+        { keywords: ['futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-court-sport', color: '#27ae60', label: 'Esportes' },
+        
+        // ACADEMIA / FITNESS (fa-dumbbell)
+        { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        
         // ================================================================
         // 16. PISCINAS
         // ================================================================
@@ -2153,7 +2158,7 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ===================================================
+// ==================================================
 // FIM DO ARQUIVO - properties.js v3.0
 // ==================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
