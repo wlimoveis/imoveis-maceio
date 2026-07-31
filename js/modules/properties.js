@@ -926,8 +926,8 @@ window.FeatureIconMapper = {
         // ================================================================
         // 16. PISCINAS
         // ================================================================
-        { keywords: ['Piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d'água'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
-
+        { keywords: ['piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
+        
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
         // ================================================================
         { keywords: ['espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
