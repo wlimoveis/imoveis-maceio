@@ -916,7 +916,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 15. FITNESS / ACADEMIA / ESPORTES
         // ================================================================
-        { keywords: ['fitness academia', 'academia', 'fitness', 'quadra squash', 'quadra poliesportiva'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        { keywords: ['Salão de jogos', 'fitness academia', 'academia', 'fitness', 'quadra squash', 'quadra poliesportiva'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
 
         // ================================================================
         // 16. PISCINAS
