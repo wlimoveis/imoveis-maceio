@@ -985,6 +985,11 @@ window.FeatureIconMapper = {
         { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
 
         // ================================================================
+        // 23.1. SALA DE REUNIÃO / CONDOMÍNIO (NOVO)
+        // ================================================================
+        { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'condomínio', 'condominio', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
+        
+        // ================================================================
         // 24. CHURRASQUEIRA
         // ================================================================
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
