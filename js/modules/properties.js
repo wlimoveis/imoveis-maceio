@@ -943,6 +943,11 @@ window.FeatureIconMapper = {
         { keywords: ['área de serviço', 'lavanderia', 'Lavanderia', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
 
         // ================================================================
+        // 18.1. BICICLETA / BICICLETÁRIO (NOVO)
+        // ================================================================
+        { keywords: ['bicicleta', 'bike', 'bicicletário', 'ciclovia', 'ciclista', 'bicicletas'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
+        
+        // ================================================================
         // 19. POSIÇÃO / NASCENTE
         // ================================================================
         { keywords: ['Posição/Nascente', 'posição nascente leste', 'nascente leste', 'Leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
