@@ -963,7 +963,7 @@ window.FeatureIconMapper = {
         { keywords: ['restaurante'], icon: 'fa-utensils', color: '#e67e22', label: 'Restaurante' },
         { keywords: ['café'], icon: 'fa-mug-saucer', color: '#6c5ce7', label: 'Café' },
         { keywords: ['sauna'], icon: 'fa-hot-tub-person', color: '#e74c3c', label: 'Sauna' },
-        { keywords: ['spa com hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
+        { keywords: ['espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
         { keywords: ['massagem'], icon: 'fas fa-hands', color: '#9b59b6', label: 'Massagem' },
 
         // ================================================================
@@ -2160,7 +2160,7 @@ if (document.readyState === 'loading') {
 
 // =================================================
 // FIM DO ARQUIVO - properties.js v3.0
-// ==================================================
+// =================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
