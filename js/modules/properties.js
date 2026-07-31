@@ -906,8 +906,8 @@ window.FeatureIconMapper = {
         // ================================================================
         // 13. COWORKING / HOME OFFICE / ESPAÇO DE ESTUDOS
         // ================================================================
-        { keywords: ['coworking home office', 'coworking', 'espaço de estudos', 'home office', 'espaço coworking'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
-
+        { keywords: ['coworking home office', 'coworking', 'home office', 'espaço coworking', 'sala de estudos', 'biblioteca', 'estudos'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
+       
         // ================================================================
         // 14. ÁREAS INFANTIS / PLAYGROUND
         // ================================================================
