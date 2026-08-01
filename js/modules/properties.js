@@ -875,6 +875,9 @@ window.FeatureIconMapper = {
         // ================================================================
         { keywords: ['Varanda', 'varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
 
+        // "Área Externa / Terraço"
+        { keywords: ['área externa', 'terraço', 'terraço descoberto', 'terraço privativo'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
+        
         // ================================================================
         // 10.1. ELEVADOR (NOVO)
         // ================================================================
