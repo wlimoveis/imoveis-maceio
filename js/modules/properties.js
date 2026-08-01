@@ -879,35 +879,35 @@ window.FeatureIconMapper = {
         { keywords: ['área externa', 'terraço', 'terraço descoberto', 'terraço privativo'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
 
         // ================================================================
-        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS (NOVO)
+        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
         // ================================================================
         
         // FAZENDA / PROPRIEDADE RURAL
-        { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'pecuária', 'agropecuário', 'criação de gado'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
+        { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
-        // PASTAGEM
-        { keywords: ['pastagem', 'pastagens', 'pasto', 'campos', 'prados'], icon: 'fa-leaf', color: '#27ae60', label: 'Pastagem' },
+        // TAREFAS / HECTARES
+        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terra', 'terreno rural'], icon: 'fa-arrows-alt', color: '#2ecc71', label: 'Área de Terra' },
         
-        // CASA DE VAQUEIRO
-        { keywords: ['casa de vaqueiro', 'casa de taipa', 'vaqueiro', 'sertanejo'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Vaqueiro' },
+        // ÁGUA / NASCENTES
+        { keywords: ['água', 'muita água', 'nascente', 'nascentes', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
         
-        // ENERGIA ELÉTRICA
-        { keywords: ['energia elétrica', 'eletricidade', 'iluminação', 'energia'], icon: 'fa-bolt', color: '#f1c40f', label: 'Energia Elétrica' },
+        // CURRAIS
+        { keywords: ['curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Curral' },
         
-        // INTERNET
-        { keywords: ['acesso à internet', 'internet', 'wi-fi', 'conectividade', 'fibra ótica'], icon: 'fa-wifi', color: '#3498db', label: 'Internet' },
+        // PIQUETES
+        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação de gado', 'criação do gado', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
         
-        // RECURSOS HÍDRICOS / ÁGUA
-        { keywords: ['recursos hídricos', 'água', 'córrego', 'rio', 'nascente', 'reservatório'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
+        // CASA DE MORADOR / CASA SEDE
+        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
         
-        // PIQUETES / CURRAIS
-        { keywords: ['piquete', 'piquetes', 'curral', 'mangueira', 'cercado', 'divisão de pasto'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
+        // GADO DE CORTE / REBANHO
+        { keywords: ['gado de corte', 'gado', 'rebanho', 'bovinos', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
         
-        // BEBEDOUROS
-        { keywords: ['bebedouro', 'bebedouros', 'cocho', 'alimentação animal'], icon: 'fa-trough', color: '#7f8c8d', label: 'Bebedouros' },
+        // INFRAESTRUTURA / ESTRADAS
+        { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
         
-        // REBANHO / GADO
-        { keywords: ['rebanho', 'gado', 'bovinos', 'animais', 'criação', 'boi', 'vaca'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
+        // CAPIM / PASTAGEM CULTIVADA
+        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },        
         
         // ================================================================
         // 10.1. ELEVADOR (NOVO)
