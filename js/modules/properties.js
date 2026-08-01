@@ -877,6 +877,37 @@ window.FeatureIconMapper = {
 
         // "Área Externa / Terraço"
         { keywords: ['área externa', 'terraço', 'terraço descoberto', 'terraço privativo'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
+
+        // ================================================================
+        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS (NOVO)
+        // ================================================================
+        
+        // FAZENDA / PROPRIEDADE RURAL
+        { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'pecuária', 'agropecuário', 'criação de gado'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
+        
+        // PASTAGEM
+        { keywords: ['pastagem', 'pastagens', 'pasto', 'campos', 'prados'], icon: 'fa-leaf', color: '#27ae60', label: 'Pastagem' },
+        
+        // CASA DE VAQUEIRO
+        { keywords: ['casa de vaqueiro', 'casa de taipa', 'vaqueiro', 'sertanejo'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Vaqueiro' },
+        
+        // ENERGIA ELÉTRICA
+        { keywords: ['energia elétrica', 'eletricidade', 'iluminação', 'energia'], icon: 'fa-bolt', color: '#f1c40f', label: 'Energia Elétrica' },
+        
+        // INTERNET
+        { keywords: ['acesso à internet', 'internet', 'wi-fi', 'conectividade', 'fibra ótica'], icon: 'fa-wifi', color: '#3498db', label: 'Internet' },
+        
+        // RECURSOS HÍDRICOS / ÁGUA
+        { keywords: ['recursos hídricos', 'água', 'córrego', 'rio', 'nascente', 'reservatório'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
+        
+        // PIQUETES / CURRAIS
+        { keywords: ['piquete', 'piquetes', 'curral', 'mangueira', 'cercado', 'divisão de pasto'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
+        
+        // BEBEDOUROS
+        { keywords: ['bebedouro', 'bebedouros', 'cocho', 'alimentação animal'], icon: 'fa-trough', color: '#7f8c8d', label: 'Bebedouros' },
+        
+        // REBANHO / GADO
+        { keywords: ['rebanho', 'gado', 'bovinos', 'animais', 'criação', 'boi', 'vaca'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
         
         // ================================================================
         // 10.1. ELEVADOR (NOVO)
@@ -2179,4 +2210,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ================================================
+// ===============================================
