@@ -941,7 +941,7 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // PISCINAS (prioridade máxima)
-        { keywords: ['piscina privativa', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },        
+        { keywords: ['piscina privativa:', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },        
 
         // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
