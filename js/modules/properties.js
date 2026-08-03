@@ -812,7 +812,7 @@ window.FeatureIconMapper = {
         { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
         
         // ================================================================
-        // 1.1. FINANCIAMENTO / PARCELAMENTO (NOVO)
+        // 1.1. FINANCIAMENTO / PARCELAMENTO
         // ================================================================
         { keywords: ['financiamento', 'parcelamento', 'plano facilitado', 'direto com a construtora', '100x', 'parcelas', 'financiamento direto', 'plano de pagamento', 'pagamento facilitado'], icon: 'fa-hand-holding-usd', color: '#27ae60', label: 'Financiamento' },
 
@@ -871,61 +871,28 @@ window.FeatureIconMapper = {
         { keywords: ['vagas de garagem:', 'vagas cobertas', 'vagas descobertas', 'vaga coberta', 'vaga descoberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
 
         // ================================================================
-        // 10. VARANDA
+        // 10. VARANDA / ÁREA EXTERNA / TERRAÇO
         // ================================================================
-        { keywords: ['Varanda', 'varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
-
-        // "Área Externa / Terraço"
+        { keywords: ['varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         { keywords: ['área externa', 'terraço', 'terraço descoberto', 'terraço privativo'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
 
         // ================================================================
-        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
-        // ================================================================
-        
-        // FAZENDA / PROPRIEDADE RURAL
-        { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
-        
-        // TAREFAS / HECTARES
-        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terra', 'terreno rural'], icon: 'fa-arrows-alt', color: '#2ecc71', label: 'Área de Terra' },
-        
-        // ÁGUA / NASCENTES
-        { keywords: ['água', 'muita água', 'nascente', 'nascentes', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
-        
-        // CURRAIS
-        { keywords: ['curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Curral' },
-        
-        // PIQUETES
-        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação de gado', 'criação do gado', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
-        
-        // CASA DE MORADOR / CASA SEDE
-        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
-        
-        // GADO DE CORTE / REBANHO
-        { keywords: ['gado de corte', 'gado', 'rebanho', 'bovinos', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
-        
-        // INFRAESTRUTURA / ESTRADAS
-        { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
-        
-        // CAPIM / PASTAGEM CULTIVADA
-        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },        
-        
-        // ================================================================
-        // 10.1. ELEVADOR (NOVO)
+        // 10.1. ELEVADOR
         // ================================================================
         { keywords: ['elevador', 'elevadores', 'elevador social', 'elevador de serviço'], icon: 'fa-elevator', color: '#7f8c8d', label: 'Elevador' },
         
         // ================================================================
-        // 11. BANHEIROS / LAVABO / WC (fa-shower)
+        // 11. BANHEIROS / LAVABO / WC / VESTIÁRIOS
         // ================================================================
         
-        // BANHEIROS EM GERAL (inclui WC, banheiro da DCE, banheiro de apoio)
+        // BANHEIROS EM GERAL
         { keywords: ['banheiro da dce', 'banheiro de serviço', 'banheiro apoio', 'wc de serviço', 'wc social', 'wc apoio', 'banheiro'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
         
         // LAVABO SOCIAL
         { keywords: ['lavabo wc social', 'lavabo social', 'lavabo'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
         
-        // VESTIÁRIOS (mantido com fa-restroom, pois é mais específico)
-        { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
+        // VESTIÁRIOS (prioridade máxima para evitar conflitos)
+        { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários', 'vestiarios'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
 
         // ================================================================
         // 12. COZINHA / COZINHA AMERICANA
@@ -933,7 +900,7 @@ window.FeatureIconMapper = {
         { keywords: ['cozinha americana integrada à sala', 'cozinha integrada à sala', 'cozinha americana integrada'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
 
         // ================================================================
-        // 12.1. MÓVEIS PLANEJADOS (fa-kitchen-set)
+        // 12.1. MÓVEIS PLANEJADOS
         // ================================================================
         { keywords: ['móveis planejados', 'moveis planejados', 'cozinha planejada', 'quarto planejado', 'wc planejado', 'móveis planejados cozinha'], icon: 'fa-kitchen-set', color: '#e67e22', label: 'Móveis Planejados' },
         
@@ -952,40 +919,41 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // ESPORTES (fa-court-sport)
-        { keywords: ['Campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-chess-board', color: '#27ae60', label: 'Esportes' },
+        { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-chess-board', color: '#27ae60', label: 'Esportes' },
                 
         // ACADEMIA / FITNESS (fa-dumbbell)
         { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
         
         // ================================================================
-        // 16. PISCINAS
+        // 16. PISCINAS / ESPELHO D'ÁGUA / DECK MOLHADO
         // ================================================================
         { keywords: ['piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
         
+        // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
         // ================================================================
         { keywords: ['espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
         
         // ================================================================
-        // 17.1. SALÃO DE FESTAS / EVENTOS (NOVO)
+        // 17.1. SALÃO DE FESTAS / EVENTOS
         // ================================================================
         { keywords: ['salão de festas', 'salao de festas', 'eventos', 'celebração', 'comemoração', 'festas', 'salão de eventos', 'espaço para eventos'], icon: 'fa-glass-cheers', color: '#e84393', label: 'Salão de Festas' },
 
         // ================================================================
         // 18. ÁREA DE SERVIÇO / LAVANDERIA
         // ================================================================
-        { keywords: ['área de serviço', 'lavanderia', 'Lavanderia', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
+        { keywords: ['área de serviço', 'lavanderia', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
 
         // ================================================================
-        // 18.1. BICICLETA / BICICLETÁRIO (NOVO)
+        // 18.1. BICICLETA / BICICLETÁRIO
         // ================================================================
         { keywords: ['bicicleta', 'bike', 'bicicletário', 'ciclovia', 'ciclista', 'bicicletas'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         
         // ================================================================
-        // 19. POSIÇÃO / NASCENTE
+        // 19. POSIÇÃO / NASCENTE (prioridade sobre o bloco rural)
         // ================================================================
-        { keywords: ['Posição/Nascente', 'posição nascente leste', 'nascente leste', 'Leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
-
+        { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade', 'nascente'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
+        
         // ================================================================
         // 20. VISTA PARA O MAR
         // ================================================================
@@ -1010,7 +978,7 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // DEPÓSITO / ADMINISTRAÇÃO (prioridade máxima)
-        { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-bed-front', color: '#7f8c8d', label: 'Depósito / Administração' },
+        { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Depósito / Administração' },
         
         // RECEPÇÃO / ATENDIMENTO
         { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
@@ -1019,7 +987,7 @@ window.FeatureIconMapper = {
         { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
 
         // ================================================================
-        // 23.1. SALA DE REUNIÃO / CONDOMÍNIO (NOVO)
+        // 23.1. SALA DE REUNIÃO / CONDOMÍNIO
         // ================================================================
         { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'condomínio', 'condominio', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
         
@@ -1034,12 +1002,43 @@ window.FeatureIconMapper = {
         { keywords: ['condomínio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
 
         // ================================================================
-        // 26. VARANDA (FALLBACK)
+        // 26. VARANDA (FALLBACK) - captura variações não capturadas
         // ================================================================
         { keywords: ['varanda'], icon: 'fa-window-frame', color: '#e67e22', label: 'Varanda' },
 
         // ================================================================
-        // 27. FALLBACK GERAL (NÃO contém "suite" ou "vaga")
+        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
+        // ================================================================
+        
+        // FAZENDA / PROPRIEDADE RURAL
+        { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
+        
+        // TAREFAS / HECTARES
+        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural'], icon: 'fa-arrows-alt', color: '#2ecc71', label: 'Área de Terra' },
+        
+        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (CORRIGIDO - sem "água" genérico)
+        { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },        
+
+        // CURRAIS
+        { keywords: ['curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Curral' },
+        
+        // PIQUETES
+        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação de gado', 'criação do gado', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
+        
+        // CASA DE MORADOR / CASA SEDE
+        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
+        
+        // GADO DE CORTE / REBANHO
+        { keywords: ['gado de corte', 'gado', 'rebanho', 'bovinos', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
+        
+        // INFRAESTRUTURA / ESTRADAS
+        { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
+        
+        // CAPIM / PASTAGEM CULTIVADA
+        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
+
+        // ================================================================
+        // 27. FALLBACK GERAL (NÃO contém "suite", "vaga" ou palavras conflitantes)
         // ================================================================
         { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }        
     ],
@@ -2210,4 +2209,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ===============================================
+// ==============================================
