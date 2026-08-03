@@ -873,8 +873,12 @@ window.FeatureIconMapper = {
         // ================================================================
         // 10. VARANDA / ÁREA EXTERNA / TERRAÇO
         // ================================================================
-        { keywords: ['varanda gourmet com vista para o mar', 'varanda com vista', 'varanda disponibilidade'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
-        { keywords: ['área externa', 'terraço', 'terraço descoberto', 'terraço privativo'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
+        
+        // VARANDA (prioridade máxima - captura todas as variações)
+        { keywords: ['varanda gourmet com vista para o mar', 'varanda gourmet', 'varanda com vista', 'varanda disponibilidade', 'varanda: sim', 'varanda sim', 'varanda'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
+        
+        // ÁREA EXTERNA / TERRAÇO (apenas quando não for varanda)
+        { keywords: ['área externa privativa', 'terraço privativo', 'terraço descoberto', 'área externa'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
 
         // ================================================================
         // 10.1. ELEVADOR
@@ -927,7 +931,9 @@ window.FeatureIconMapper = {
         // ================================================================
         // 16. PISCINAS / ESPELHO D'ÁGUA / DECK MOLHADO
         // ================================================================
-        { keywords: ['piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
+        
+        // PISCINAS (prioridade máxima)
+        { keywords: ['piscina privativa', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },        
         
         // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
@@ -960,10 +966,10 @@ window.FeatureIconMapper = {
         { keywords: ['vista para o mar disponibilidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
-        // 21. SUÍTES / QUARTOS (apenas descrições ISOLADAS)
+        // 23.1. SALA DE REUNIÃO (apenas reuniões, não condomínio fechado)
         // ================================================================
-        { keywords: ['suite master com hidromassagem', 'suite master', 'suites com closet', 'master suite', 'hidromassagem na suite'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
-
+        { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
+        
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
         // ================================================================
@@ -997,9 +1003,9 @@ window.FeatureIconMapper = {
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
 
         // ================================================================
-        // 25. CONDOMÍNIO FECHADO / SEGURANÇA
+        // 25. CONDOMÍNIO FECHADO / SEGURANÇA (prioridade máxima)
         // ================================================================
-        { keywords: ['condomínio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
+        { keywords: ['condomínio fechado', 'condominio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h', 'ronda'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
 
         // ================================================================
         // 26. VARANDA (FALLBACK) - captura variações não capturadas
@@ -2209,4 +2215,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ==============================================
+// =============================================
