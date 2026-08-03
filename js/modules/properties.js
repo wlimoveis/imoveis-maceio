@@ -833,7 +833,7 @@ window.FeatureIconMapper = {
         { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
         
         // SALAS COMERCIAIS
-        { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building', color: '#0984e3', label: 'Salas Comerciais' },        
+        { keywords: ['salas comerciais c/wc', 'salas comerciais com wc'], icon: 'fa-building-lock', color: '#0984e3', label: 'Salas Comerciais' },        
 
         // ================================================================
         // 3. PAVIMENTOS
@@ -2228,4 +2228,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// =========================================
+// ========================================
