@@ -861,6 +861,11 @@ window.FeatureIconMapper = {
         { keywords: ['maceió shopping', 'acesso rápido ao shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
 
         // ================================================================
+        // 7.1. MINI MARKET (NOVO)
+        // ================================================================
+        { keywords: ['mini market', 'minimarket', 'mercado', 'loja de conveniência'], icon: 'fa-cart-shopping', color: '#e67e22', label: 'Mini Market' },
+        
+        // ================================================================
         // 8. CONDOMÍNIO E IPTU
         // ================================================================
         { keywords: ['condomínio incluso', 'iptu incluso', 'taxas inclusas', 'condomínio e iptu'], icon: 'fa-handshake', color: '#00b894', label: 'Condomínio/IPTU Incluso' },
@@ -921,12 +926,12 @@ window.FeatureIconMapper = {
         // ================================================================
         // 15. FITNESS / ACADEMIA / ESPORTES
         // ================================================================
+
+        // ESPORTES (fa-futbol) - futebol, futsal, quadra, squash, jogos
+        { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-futbol', color: '#27ae60', label: 'Esportes' },
         
-        // ESPORTES (fa-court-sport)
-        { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-chess-board', color: '#27ae60', label: 'Esportes' },
-                
         // ACADEMIA / FITNESS (fa-dumbbell)
-        { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },        
         
         // ================================================================
         // 16. PISCINAS / ESPELHO D'ÁGUA / DECK MOLHADO
@@ -2215,4 +2220,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// =============================================
+// ============================================
