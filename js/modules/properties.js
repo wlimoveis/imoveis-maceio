@@ -893,6 +893,9 @@ window.FeatureIconMapper = {
         // ================================================================
         // 11. BANHEIROS / LAVABO / WC / VESTIÁRIOS
         // ================================================================
+
+        // DCE (Dependência Completa de Empregada) - prioridade máxima
+        { keywords: ['dce', 'dependência completa de empregada', 'dependencia completa de empregada', 'dce sim', 'dce: sim'], icon: 'fa-shower', color: '#1abc9c', label: 'DCE' },
         
         // BANHEIROS EM GERAL
         { keywords: ['banheiro da dce', 'banheiro de serviço', 'banheiro apoio', 'wc de serviço', 'wc social', 'wc apoio', 'banheiro'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
@@ -939,7 +942,7 @@ window.FeatureIconMapper = {
         
         // PISCINAS (prioridade máxima)
         { keywords: ['piscina privativa', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },        
-        
+
         // ================================================================
         // 17. ESPAÇO GOURMET / CHURRASQUEIRA
         // ================================================================
@@ -2225,4 +2228,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ===========================================
+// ==========================================
