@@ -1045,7 +1045,7 @@ window.FeatureIconMapper = {
         { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação de gado', 'criação do gado', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
         
         // CASA DE MORADOR / CASA SEDE
-        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'Casa sede', color: '#8B4513', label: 'Casa de Morador' },
+        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-house', color: '#8B4513', label: 'Casa de Morador' },
         
         // GADO DE CORTE / REBANHO
         { keywords: ['gado de corte', 'gado', 'rebanho', 'bovinos', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
@@ -2228,4 +2228,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ==========================================
+// =========================================
