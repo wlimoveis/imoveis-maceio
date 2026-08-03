@@ -971,19 +971,24 @@ window.FeatureIconMapper = {
         { keywords: ['vista para o mar disponibilidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
+        // 21. SUÍTES / QUARTOS (prioridade máxima)
+        // ================================================================
+        { keywords: ['suite master com hidromassagem', 'suíte master com hidromassagem', 'suite master', 'suites com closet', 'hidromassagem na suite', 'hidromassagem na suíte', 'master suite', 'suíte', 'suites'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
+        
+        // ================================================================
         // 23.1. SALA DE REUNIÃO (apenas reuniões, não condomínio fechado)
         // ================================================================
         { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
-        
+                
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
         // ================================================================
         { keywords: ['restaurante'], icon: 'fa-utensils', color: '#e67e22', label: 'Restaurante' },
         { keywords: ['café'], icon: 'fa-mug-saucer', color: '#6c5ce7', label: 'Café' },
         { keywords: ['sauna'], icon: 'fa-hot-tub-person', color: '#e74c3c', label: 'Sauna' },
-        { keywords: ['banheiras de hidromassagem', 'espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
+        { keywords: ['espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem', 'banheiras de hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
         { keywords: ['massagem'], icon: 'fas fa-hands', color: '#9b59b6', label: 'Massagem' },
-
+        
         // ================================================================
         // 23. RECEPÇÃO / SALAS COMERCIAIS / DEPÓSITO
         // ================================================================
@@ -2220,4 +2225,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ============================================
+// ===========================================
