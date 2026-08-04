@@ -996,30 +996,24 @@ window.FeatureIconMapper = {
         // ================================================================
         // 23. RECEPÇÃO / SALAS COMERCIAIS / DEPÓSITO
         // ================================================================
-        
-        // DEPÓSITO / ADMINISTRAÇÃO (prioridade máxima)
         { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Depósito / Administração' },
-        
-        // RECEPÇÃO / ATENDIMENTO
         { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
-        
-        // SALAS COMERCIAIS
         { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
-
-        // ================================================================
-        // 23.1. SALA DE REUNIÃO / CONDOMÍNIO
-        // ================================================================
-        { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'condomínio', 'condominio', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
         
         // ================================================================
         // 24. CHURRASQUEIRA
         // ================================================================
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
-
+        
         // ================================================================
-        // 25. CONDOMÍNIO FECHADO / SEGURANÇA (prioridade máxima)
+        // 25. CONDOMÍNIO FECHADO / SEGURANÇA (prioridade máxima - deve vir ANTES do item 23.1)
         // ================================================================
-        { keywords: ['condomínio fechado', 'condominio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h', 'ronda'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
+        { keywords: ['condomínio fechado', 'condominio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h', 'ronda', 'condomínio', 'condominio'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
+        
+        // ================================================================
+        // 23.1. SALA DE REUNIÃO (NÃO deve conter "condomínio")
+        // ================================================================
+        { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
 
         // ================================================================
         // 26. VARANDA (FALLBACK) - captura variações não capturadas
