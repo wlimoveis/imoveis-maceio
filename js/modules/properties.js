@@ -1030,26 +1030,41 @@ window.FeatureIconMapper = {
         // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
         // ================================================================
         
-        // FAZENDA / PROPRIEDADE RURAL
+        // FAZENDA / PROPRIEDADE RURAL (genérico)
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
-        // TAREFAS / HECTARES
+        // TAREFAS / HECTARES (área de terra)
         { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural'], icon: 'fa-arrows-alt', color: '#2ecc71', label: 'Área de Terra' },
         
-        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (CORRIGIDO - sem "água" genérico)
-        { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },        
-
+        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS
+        { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
+        
         // CURRAIS
         { keywords: ['curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Curral' },
         
         // PIQUETES
-        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação de gado', 'criação do gado', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
+        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
         
         // CASA DE MORADOR / CASA SEDE
-        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-house', color: '#8B4513', label: 'Casa de Morador' },
+        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
         
-        // GADO DE CORTE / REBANHO
-        { keywords: ['gado de corte', 'gado', 'rebanho', 'bovinos', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
+        // ================================================================
+        // CRIAÇÃO DE GADO (CORTE OU LEITE) - fa-cow
+        // ================================================================
+        { keywords: ['gado de corte', 'gado leiteiro', 'gado de leite', 'criação de gado', 'gado', 'rebanho bovino', 'bovinos', 'pecuária de corte', 'pecuária leiteira', 'gado corte', 'gado leite'], icon: 'fa-solid fa-cow', color: '#8B4513', label: 'Gado (Corte/Leite)' },
+        
+        // ================================================================
+        // RAÇAS DE SELA (LAZER/ESPORTE), TRAÇÃO E CORRIDA - fa-sticker-mule
+        // ================================================================
+        { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
+        
+        // ================================================================
+        // SISTEMAS DE CRIAÇÃO (DIFERENTES SISTEMAS)
+        // ================================================================
+        { keywords: ['sistemas de criação', 'sistema de criação', 'confinamento', 'semi-confinamento', 'pastejo', 'rotacionado', 'criação intensiva', 'criação extensiva', 'manejo animal', 'manejo de rebanho'], icon: 'fa-solid fa-helmet-safety', color: '#f39c12', label: 'Sistemas de Criação' },
+        
+        // GADO DE CORTE / REBANHO (fallback - mantido para compatibilidade)
+        { keywords: ['rebanho', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
         
         // INFRAESTRUTURA / ESTRADAS
         { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
