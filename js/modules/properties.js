@@ -1027,9 +1027,11 @@ window.FeatureIconMapper = {
         // FAZENDA / PROPRIEDADE RURAL (genérico)
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
-        // TAREFAS / HECTARES (área de terra)
-        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural'], icon: 'fa-arrows-alt', color: '#2ecc71', label: 'Área de Terra' },
-        
+        // ================================================================
+        // TAREFAS / HECTARES / ÁREA DE TERRA (fa-draw-polygon)
+        // ================================================================
+        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },       
+
         // ÁGUA / NASCENTES / RECURSOS HÍDRICOS
         { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
         
@@ -2243,4 +2245,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// =======================================
+// ======================================
