@@ -1041,6 +1041,11 @@ window.FeatureIconMapper = {
         
         // CASA DE MORADOR / CASA SEDE
         { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
+
+        // ================================================================
+        // LAVOURA / GRÃOS (fa-wheat-awn) - prioridade sobre pastagem
+        // ================================================================
+        { keywords: ['lavoura', 'milho', 'soja', 'trigo', 'cereal', 'grãos', 'plantação de grãos', 'lavoura de milho', 'lavoura de soja', 'feno', 'tifton', 'braquiária', 'capim-elefante', 'capim tifton', 'capim braquiária'], icon: 'fa-wheat-awn', color: '#f1c40f', label: 'Lavoura / Grãos' },
         
         // ================================================================
         // CRIAÇÃO DE GADO (CORTE OU LEITE) - fa-cow
