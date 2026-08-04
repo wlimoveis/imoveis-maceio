@@ -820,17 +820,17 @@ window.FeatureIconMapper = {
         // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
         // ================================================================
         
-        // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima)
+        // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima - fa-tree-city)
         { keywords: ['(studio)', '(studio master)', 'studio com', 'studio master', 'studio)', 'aparthotel', 'condohotel'], icon: 'fa-tree-city', color: '#0984e3', label: 'Studio' },
         
-        // COBERTURA
+        // COBERTURA (fa-city)
         { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
         
-        // SALAS COMERCIAIS (prioridade sobre Apartamento)
+        // SALAS COMERCIAIS (fa-building-lock)
         { keywords: ['salas comerciais c/wc', 'salas comerciais com wc', '04 salas comerciais', 'salas comerciais'], icon: 'fa-building-lock', color: '#0984e3', label: 'Salas Comerciais' },
         
-        // ÁREA PRIVATIVA - APARTAMENTOS RESIDENCIAIS (fa-tree-city)
-        { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-solid fa-tree-city', color: '#6c5ce7', label: 'Apartamento' },
+        // APARTAMENTO RESIDENCIAL (fa-building) - captura descrições de área privativa que NÃO são studio, cobertura ou salas comerciais
+        { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
         
         // ÁREA CONSTRUÍDA / LOTE (fa-home)
         { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
@@ -2220,9 +2220,9 @@ if (document.readyState === 'loading') {
     });
 }
 
-// =================================================
+// ================================================
 // FIM DO ARQUIVO - properties.js v3.0
-// =================================================
+// ================================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
