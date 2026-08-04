@@ -821,7 +821,8 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima - fa-tree-city)
-        { keywords: ['(studio)', '(studio master)', 'studio com', 'studio master', 'studio)', 'aparthotel', 'condohotel'], icon: 'fa-tree-city', color: '#0984e3', label: 'Studio' },
+        // Captura: (studio), (studio master), studio com, studio master, studio), etc.
+        { keywords: ['studio', '(studio', 'studio)', 'studio master', 'studio com', 'aparthotel', 'condohotel'], icon: 'fa-tree-city', color: '#0984e3', label: 'Studio' },
         
         // COBERTURA (fa-city)
         { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
