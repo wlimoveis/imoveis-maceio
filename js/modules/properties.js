@@ -1023,6 +1023,11 @@ window.FeatureIconMapper = {
         // ================================================================
         // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
         // ================================================================
+
+        // ================================================================
+        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA (AGORA NO INÍCIO)
+        // ================================================================
+        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'curral', 'currais', 'curral com balança', 'balança'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
         
         // FAZENDA / PROPRIEDADE RURAL (genérico)
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
@@ -1031,12 +1036,7 @@ window.FeatureIconMapper = {
         // TAREFAS / HECTARES / ÁREA DE TERRA (fa-draw-polygon)
         // ================================================================
         { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },       
-
-        // ================================================================
-        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA
-        // ================================================================
-        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'curral', 'currais', 'curral com balança', 'balança',], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },        
-        
+       
         // ÁGUA / NASCENTES / RECURSOS HÍDRICOS
         { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
         
