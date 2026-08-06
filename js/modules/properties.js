@@ -1035,11 +1035,10 @@ window.FeatureIconMapper = {
         // ÁGUA / NASCENTES / RECURSOS HÍDRICOS
         { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
         
-        // CURRAIS
-        { keywords: ['curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Curral' },
-        
-        // PIQUETES
-        { keywords: ['piquete', 'piquetes', 'divisão de pasto', 'pasto', 'pastagem', 'pastagens', 'criação animal'], icon: 'fa-leaf', color: '#27ae60', label: 'Piquetes' },
+        // ================================================================
+        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA
+        // ================================================================
+        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'curral', 'currais', 'curral com balança', 'balança',], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },        
         
         // CASA DE MORADOR / CASA SEDE
         { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
