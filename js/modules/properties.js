@@ -821,7 +821,6 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima - fa-tree-city)
-        // Captura: (studio), (studio master), studio com, studio master, studio), etc.
         { keywords: ['studio', '(studio', 'studio)', 'studio master', 'studio com', 'aparthotel', 'condohotel'], icon: 'fa-tree-city', color: '#0984e3', label: 'Studio' },
         
         // COBERTURA (fa-city)
@@ -830,7 +829,7 @@ window.FeatureIconMapper = {
         // SALAS COMERCIAIS (fa-building-lock)
         { keywords: ['salas comerciais c/wc', 'salas comerciais com wc', '04 salas comerciais', 'salas comerciais'], icon: 'fa-building-lock', color: '#0984e3', label: 'Salas Comerciais' },
         
-        // APARTAMENTO RESIDENCIAL (fa-building) - captura descrições de área privativa que NÃO são studio, cobertura ou salas comerciais
+        // APARTAMENTO RESIDENCIAL (fa-building)
         { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
         
         // ÁREA CONSTRUÍDA / LOTE (fa-home)
@@ -862,7 +861,7 @@ window.FeatureIconMapper = {
         { keywords: ['maceió shopping', 'acesso rápido ao shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
 
         // ================================================================
-        // 7.1. MINI MARKET (NOVO)
+        // 7.1. MINI MARKET
         // ================================================================
         { keywords: ['mini market', 'minimarket', 'mercado', 'loja de conveniência'], icon: 'fa-cart-shopping', color: '#e67e22', label: 'Mini Market' },
         
@@ -880,10 +879,10 @@ window.FeatureIconMapper = {
         // 10. VARANDA / ÁREA EXTERNA / TERRAÇO
         // ================================================================
         
-        // VARANDA (prioridade máxima - captura todas as variações)
+        // VARANDA (prioridade máxima)
         { keywords: ['varanda gourmet com vista para o mar', 'varanda gourmet', 'varanda com vista', 'varanda disponibilidade', 'varanda: sim', 'varanda sim', 'varanda'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
         
-        // ÁREA EXTERNA / TERRAÇO (apenas quando não for varanda)
+        // ÁREA EXTERNA / TERRAÇO
         { keywords: ['área externa privativa', 'terraço privativo', 'terraço descoberto', 'área externa'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
 
         // ================================================================
@@ -895,7 +894,7 @@ window.FeatureIconMapper = {
         // 11. BANHEIROS / LAVABO / WC / VESTIÁRIOS
         // ================================================================
 
-        // DCE (Dependência Completa de Empregada) - prioridade máxima
+        // DCE
         { keywords: ['dce', 'dependência completa de empregada', 'dependencia completa de empregada', 'dce sim', 'dce: sim'], icon: 'fa-shower', color: '#1abc9c', label: 'DCE' },
         
         // BANHEIROS EM GERAL
@@ -904,7 +903,7 @@ window.FeatureIconMapper = {
         // LAVABO SOCIAL
         { keywords: ['lavabo wc social', 'lavabo social', 'lavabo'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
         
-        // VESTIÁRIOS (prioridade máxima para evitar conflitos)
+        // VESTIÁRIOS
         { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários', 'vestiarios'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
 
         // ================================================================
@@ -931,10 +930,10 @@ window.FeatureIconMapper = {
         // 15. FITNESS / ACADEMIA / ESPORTES
         // ================================================================
 
-        // ESPORTES (fa-futbol) - futebol, futsal, quadra, squash, jogos
+        // ESPORTES (fa-futbol)
         { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-futbol', color: '#27ae60', label: 'Esportes' },
         
-        // ACADEMIA / FITNESS (fa-dumbbell)
+        // ACADEMIA / FITNESS
         { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },        
         
         // ================================================================
@@ -965,7 +964,7 @@ window.FeatureIconMapper = {
         { keywords: ['bicicleta', 'bike', 'bicicletário', 'ciclovia', 'ciclista', 'bicicletas'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         
         // ================================================================
-        // 19. POSIÇÃO / NASCENTE (prioridade sobre o bloco rural)
+        // 19. POSIÇÃO / NASCENTE
         // ================================================================
         { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade', 'nascente'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
         
@@ -975,15 +974,10 @@ window.FeatureIconMapper = {
         { keywords: ['vista para o mar disponibilidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
 
         // ================================================================
-        // 21. SUÍTES / QUARTOS (prioridade máxima)
+        // 21. SUÍTES / QUARTOS
         // ================================================================
         { keywords: ['suite master com hidromassagem', 'suíte master com hidromassagem', 'suite master', 'suites com closet', 'hidromassagem na suite', 'hidromassagem na suíte', 'master suite', 'suíte', 'suites'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
-        
-        // ================================================================
-        // 23.1. SALA DE REUNIÃO (apenas reuniões, não condomínio fechado)
-        // ================================================================
-        { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
-                
+
         // ================================================================
         // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
         // ================================================================
@@ -1006,7 +1000,7 @@ window.FeatureIconMapper = {
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
         
         // ================================================================
-        // 25. CONDOMÍNIO FECHADO / SEGURANÇA (prioridade máxima - deve vir ANTES do item 23.1)
+        // 25. CONDOMÍNIO FECHADO / SEGURANÇA
         // ================================================================
         { keywords: ['condomínio fechado', 'condominio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h', 'ronda', 'condomínio', 'condominio'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
         
@@ -1016,7 +1010,7 @@ window.FeatureIconMapper = {
         { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
 
         // ================================================================
-        // 26. VARANDA (FALLBACK) - captura variações não capturadas
+        // 26. VARANDA (FALLBACK)
         // ================================================================
         { keywords: ['varanda'], icon: 'fa-window-frame', color: '#e67e22', label: 'Varanda' },
 
@@ -1025,15 +1019,15 @@ window.FeatureIconMapper = {
         // ================================================================
 
         // ================================================================
-        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA (AGORA NO INÍCIO)
+        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA
         // ================================================================
-        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'curral', 'currais', 'curral com balança', 'balança'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
+        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
         
-        // FAZENDA / PROPRIEDADE RURAL (genérico)
+        // FAZENDA / PROPRIEDADE RURAL
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
         // ================================================================
-        // TAREFAS / HECTARES / ÁREA DE TERRA (fa-draw-polygon)
+        // TAREFAS / HECTARES / ÁREA DE TERRA
         // ================================================================
         { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },       
        
@@ -1044,26 +1038,26 @@ window.FeatureIconMapper = {
         { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
 
         // ================================================================
-        // LAVOURA / GRÃOS (fa-wheat-awn) - prioridade sobre pastagem
+        // LAVOURA / GRÃOS
         // ================================================================
         { keywords: ['lavoura', 'milho', 'soja', 'trigo', 'cereal', 'grãos', 'plantação de grãos', 'lavoura de milho', 'lavoura de soja', 'feno', 'tifton', 'braquiária', 'capim-elefante', 'capim tifton', 'capim braquiária'], icon: 'fa-wheat-awn', color: '#f1c40f', label: 'Lavoura / Grãos' },
         
         // ================================================================
-        // CRIAÇÃO DE GADO (CORTE OU LEITE) - fa-cow
+        // CRIAÇÃO DE GADO (CORTE OU LEITE)
         // ================================================================
         { keywords: ['gado de corte', 'gado leiteiro', 'gado de leite', 'criação de gado', 'gado', 'rebanho bovino', 'bovinos', 'pecuária de corte', 'pecuária leiteira', 'gado corte', 'gado leite'], icon: 'fa-solid fa-cow', color: '#8B4513', label: 'Gado (Corte/Leite)' },
         
         // ================================================================
-        // RAÇAS DE SELA (LAZER/ESPORTE), TRAÇÃO E CORRIDA - fa-sticker-mule
+        // RAÇAS DE SELA (LAZER/ESPORTE), TRAÇÃO E CORRIDA
         // ================================================================
         { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
         
         // ================================================================
-        // SISTEMAS DE CRIAÇÃO (DIFERENTES SISTEMAS)
+        // SISTEMAS DE CRIAÇÃO
         // ================================================================
         { keywords: ['sistemas de criação', 'sistema de criação', 'confinamento', 'semi-confinamento', 'pastejo', 'rotacionado', 'criação intensiva', 'criação extensiva', 'manejo animal', 'manejo de rebanho'], icon: 'fa-solid fa-helmet-safety', color: '#f39c12', label: 'Sistemas de Criação' },
         
-        // GADO DE CORTE / REBANHO (fallback - mantido para compatibilidade)
+        // GADO DE CORTE / REBANHO (fallback)
         { keywords: ['rebanho', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
         
         // INFRAESTRUTURA / ESTRADAS
@@ -1073,7 +1067,7 @@ window.FeatureIconMapper = {
         { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
 
         // ================================================================
-        // 27. FALLBACK GERAL (NÃO contém "suite", "vaga" ou palavras conflitantes)
+        // 27. FALLBACK GERAL
         // ================================================================
         { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }        
     ],
@@ -1083,20 +1077,17 @@ window.FeatureIconMapper = {
         return text.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     },
     
+    // ================================================================
+    // FUNÇÃO DE CORRESPONDÊNCIA (SIMPLIFICADA)
+    // ================================================================
     matchesKeyword: function(text, keywordList) {
         var normalizedText = this.normalizeText(text);
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
-            if (normalizedText === normalizedKeyword || normalizedText.indexOf(normalizedKeyword) !== -1 || normalizedKeyword.indexOf(normalizedText) !== -1) {
+            // Correspondência direta: a palavra-chave está contida no texto
+            if (normalizedText.indexOf(normalizedKeyword) !== -1) {
                 return true;
-            }
-            var words = normalizedText.split(/\s+/);
-            for (var j = 0; j < words.length; j++) {
-                var word = words[j];
-                if (word === normalizedKeyword || (normalizedKeyword.length > 2 && word.indexOf(normalizedKeyword) !== -1)) {
-                    return true;
-                }
             }
         }
         return false;
@@ -1121,7 +1112,7 @@ window.FeatureIconMapper = {
         return `
             <span class="feature-tag ${ruralClass}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0f0f0; border-radius: 20px; font-size: 0.75rem;">
                 <i class="fas ${iconData.icon}" style="color: ${iconData.color}; font-size: 0.7rem;" aria-hidden="true"></i>
-                <span>${window.SharedCore.escapeHtml(featureText) || featureText}</span>
+                <span>${featureText}</span>
             </span>
         `;
     }
@@ -2244,4 +2235,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ======================================
+// =====================================
