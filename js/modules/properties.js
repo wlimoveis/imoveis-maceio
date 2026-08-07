@@ -964,10 +964,10 @@ window.FeatureIconMapper = {
         { keywords: ['bicicleta', 'bike', 'bicicletário', 'ciclovia', 'ciclista', 'bicicletas'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
         
         // ================================================================
-        // 19. POSIÇÃO / NASCENTE
+        // 19. POSIÇÃO / NASCENTE (prioridade sobre o bloco rural)
         // ================================================================
-        { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade', 'nascente'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
-        
+        { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },        
+
         // ================================================================
         // 20. VISTA PARA O MAR
         // ================================================================
