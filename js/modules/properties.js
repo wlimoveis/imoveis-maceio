@@ -1133,6 +1133,11 @@ window.FeatureIconMapper = {
         { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
 
         // ================================================================
+        // AGROINDÚSTRIA / FRIGORÍFICO / PROCESSAMENTO (fa-industry)
+        // ================================================================
+        { keywords: ['frigorífico', 'agroindústria', 'agroindustria', 'processamento', 'cadeia de processamento', 'industrialização', 'beneficiamento'], icon: 'fas fa-industry', color: '#7f8c8d', label: 'Agroindústria' },
+        
+        // ================================================================
         // 27. FALLBACK GERAL
         // ================================================================
         { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }        
