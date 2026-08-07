@@ -1017,55 +1017,116 @@ window.FeatureIconMapper = {
         // ================================================================
         // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
         // ================================================================
-
-        // ================================================================
-        // PIQUETES / CURRAIS (fa-fence) - PRIORIDADE MÁXIMA
-        // ================================================================
-        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras'], icon: 'fa-fence', color: '#8B4513', label: 'Piquetes' },
         
-        // FAZENDA / PROPRIEDADE RURAL
+        // ================================================================
+        // PIQUETES / CURRAIS (fa-object-group) - SUBSTITUTO DO fa-fence
+        // ================================================================
+        { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras', 'cerca', 'cercas'], icon: 'fa-object-group', color: '#8B4513', label: 'Piquetes/Currais' },
+        
+        // ================================================================
+        // FAZENDA / PROPRIEDADE RURAL (genérico)
+        // ================================================================
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
         // ================================================================
-        // TAREFAS / HECTARES / ÁREA DE TERRA
+        // TAREFAS / HECTARES / ÁREA DE TERRA (fa-draw-polygon)
         // ================================================================
-        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },       
-       
-        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS
-        { keywords: ['muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water', color: '#3498db', label: 'Recursos Hídricos' },
-        
-        // CASA DE MORADOR / CASA SEDE
-        { keywords: ['casa de morador', 'casa sede', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-home', color: '#8B4513', label: 'Casa de Morador' },
-
-        // ================================================================
-        // LAVOURA / GRÃOS
-        // ================================================================
-        { keywords: ['lavoura', 'milho', 'soja', 'trigo', 'cereal', 'grãos', 'plantação de grãos', 'lavoura de milho', 'lavoura de soja', 'feno', 'tifton', 'braquiária', 'capim-elefante', 'capim tifton', 'capim braquiária'], icon: 'fa-wheat-awn', color: '#f1c40f', label: 'Lavoura / Grãos' },
+        { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },
         
         // ================================================================
-        // CRIAÇÃO DE GADO (CORTE OU LEITE)
+        // MECANIZAÇÃO / TERRA MECANIZADA (fa-tractor)
         // ================================================================
-        { keywords: ['gado de corte', 'gado leiteiro', 'gado de leite', 'criação de gado', 'gado', 'rebanho bovino', 'bovinos', 'pecuária de corte', 'pecuária leiteira', 'gado corte', 'gado leite'], icon: 'fa-solid fa-cow', color: '#8B4513', label: 'Gado (Corte/Leite)' },
+        { keywords: ['mecanização', 'mecanizada', 'terra mecanizada', 'área mecanizada', 'topografia mecanizada', 'mecanizável'], icon: 'fa-solid fa-tractor', color: '#8B4513', label: 'Mecanização' },
         
         // ================================================================
-        // RAÇAS DE SELA (LAZER/ESPORTE), TRAÇÃO E CORRIDA
+        // IMPLEMENTOS AGRÍCOLAS (fa-trailer)
+        // ================================================================
+        { keywords: ['implementos agrícolas', 'implementos', 'carreta', 'carretas', 'equipamentos agrícolas', 'máquinas agrícolas'], icon: 'fa-solid fa-trailer', color: '#7f8c8d', label: 'Implementos Agrícolas' },
+        
+        // ================================================================
+        // CRIAÇÃO DE ANIMAIS DE SELA (fa-sticker-mule)
         // ================================================================
         { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
         
         // ================================================================
-        // SISTEMAS DE CRIAÇÃO
+        // GADO (CORTE OU LEITE) - fa-cow
+        // ================================================================
+        { keywords: ['gado de corte', 'gado leiteiro', 'gado de leite', 'criação de gado', 'gado', 'rebanho bovino', 'bovinos', 'pecuária de corte', 'pecuária leiteira', 'gado corte', 'gado leite'], icon: 'fa-solid fa-cow', color: '#8B4513', label: 'Gado (Corte/Leite)' },
+        
+        // ================================================================
+        // SUINOCULTURA / CRIAÇÃO DE PORCOS (fa-piggy-bank)
+        // ================================================================
+        { keywords: ['suinocultura', 'criação de porcos', 'porcos', 'suínos', 'baias', 'baia de porcos', 'granja de suínos'], icon: 'fa-solid fa-piggy-bank', color: '#e84393', label: 'Suinocultura' },
+        
+        // ================================================================
+        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (fa-water-ladder)
+        // ================================================================
+        { keywords: ['poço artesiano', 'muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water-ladder', color: '#3498db', label: 'Recursos Hídricos' },
+        
+        // ================================================================
+        // ENERGIA / ELETRIFICAÇÃO (fa-bolt)
+        // ================================================================
+        { keywords: ['eletrificação', 'energia elétrica', 'energia', 'luz', 'iluminação', 'eletricidade', 'poste', 'rede elétrica'], icon: 'fa-bolt', color: '#f1c40f', label: 'Eletrificação' },
+        
+        // ================================================================
+        // RESERVA LEGAL / MATA / REFLORESTAMENTO (fa-tree)
+        // ================================================================
+        { keywords: ['reserva legal', 'mata', 'reflorestamento', 'mata nativa', 'preservação', 'floresta', 'bosque'], icon: 'fa6-solid fa-tree', color: '#27ae60', label: 'Reserva Legal' },
+        
+        // ================================================================
+        // REGISTROS E CADASTROS OBRIGATÓRIOS (fa-award)
+        // ================================================================
+        { keywords: ['cadastro rural', 'car', 'ccir', 'itr', 'georreferenciamento', 'incra', 'matrícula', 'registro de imóveis', 'selo', 'produto orgânico', 'certificação', 'selo sustentável', 'registro rural'], icon: 'fa-solid fa-award', color: '#f1c40f', label: 'Cadastro Rural' },
+        
+        // ================================================================
+        // CASA DE MORADOR (fa-store-alt) e CASA SEDE (fa-gopuram)
+        // ================================================================
+        { keywords: ['casa de morador', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-solid fa-store-alt', color: '#8B4513', label: 'Casa de Morador' },
+        
+        { keywords: ['casa sede', 'casa principal', 'sede da fazenda', 'casa grande'], icon: 'fa-solid fa-gopuram', color: '#6c5ce7', label: 'Casa Sede' },
+        
+        // ================================================================
+        // VAQUEIRO / MORADOR / FUNCIONÁRIO (fa-people-carry-box)
+        // ================================================================
+        { keywords: ['vaqueiro', 'funcionário', 'trabalhador rural', 'caseiro', 'morador', 'empregado rural'], icon: 'fa-solid fa-people-carry-box', color: '#3498db', label: 'Funcionários' },
+        
+        // ================================================================
+        // VEÍCULOS DA PROPRIEDADE (fa-truck-pickup e fa-truck-moving)
+        // ================================================================
+        { keywords: ['caminhonete', 'pickup', 'camionete', 'veículo da propriedade'], icon: 'fa-solid fa-truck-pickup', color: '#2c3e50', label: 'Caminhonete' },
+        
+        { keywords: ['caminhão', 'caminhões', 'transporte de carga'], icon: 'fa-solid fa-truck-moving', color: '#34495e', label: 'Caminhão' },
+        
+        // ================================================================
+        // HELIPONTO (fa-helicopter)
+        // ================================================================
+        { keywords: ['heliponto', 'helicóptero', 'pouso de helicóptero'], icon: 'fa-solid fa-helicopter', color: '#e67e22', label: 'Heliponto' },
+        
+        // ================================================================
+        // LAVOURA / GRÃOS (fa-wheat-awn)
+        // ================================================================
+        { keywords: ['lavoura', 'milho', 'soja', 'trigo', 'cereal', 'grãos', 'plantação de grãos', 'lavoura de milho', 'lavoura de soja', 'feno', 'tifton', 'braquiária', 'capim-elefante', 'capim tifton', 'capim braquiária'], icon: 'fa-wheat-awn', color: '#f1c40f', label: 'Lavoura / Grãos' },
+        
+        // ================================================================
+        // SISTEMAS DE CRIAÇÃO (fa-helmet-safety)
         // ================================================================
         { keywords: ['sistemas de criação', 'sistema de criação', 'confinamento', 'semi-confinamento', 'pastejo', 'rotacionado', 'criação intensiva', 'criação extensiva', 'manejo animal', 'manejo de rebanho'], icon: 'fa-solid fa-helmet-safety', color: '#f39c12', label: 'Sistemas de Criação' },
         
-        // GADO DE CORTE / REBANHO (fallback)
+        // ================================================================
+        // GADO DE CORTE / REBANHO (fallback - fa-horse-head)
+        // ================================================================
         { keywords: ['rebanho', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
         
-        // INFRAESTRUTURA / ESTRADAS
+        // ================================================================
+        // INFRAESTRUTURA / ESTRADAS (fa-road)
+        // ================================================================
         { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
         
-        // CAPIM / PASTAGEM CULTIVADA
+        // ================================================================
+        // CAPIM / PASTAGEM CULTIVADA (fa-seedling)
+        // ================================================================
         { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
-
+        
         // ================================================================
         // 27. FALLBACK GERAL
         // ================================================================
