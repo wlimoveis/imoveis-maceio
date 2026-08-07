@@ -1019,7 +1019,22 @@ window.FeatureIconMapper = {
         // ================================================================
         
         // ================================================================
-        // PIQUETES / CURRAIS (fa-object-group) - SUBSTITUTO DO fa-fence
+        // CRIAÇÃO DE ANIMAIS DE SELA (fa-sticker-mule) - PRIORIDADE MÁXIMA
+        // ================================================================
+        { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria', 'criação de animais'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
+        
+        // ================================================================
+        // MECANIZAÇÃO / TERRA MECANIZADA (fa-tractor) - PRIORIDADE MÁXIMA
+        // ================================================================
+        { keywords: ['mecanização', 'mecanizada', 'terra mecanizada', 'terra plana mecanizada', 'área mecanizada', 'topografia mecanizada', 'mecanizável', 'plana toda mecanizada'], icon: 'fa-solid fa-tractor', color: '#8B4513', label: 'Mecanização' },
+        
+        // ================================================================
+        // GALPÃO / ARMAZÉM (fa-warehouse) - PRIORIDADE SOBRE ÁGUA
+        // ================================================================
+        { keywords: ['galpão', 'armazém', 'depósito agrícola', 'guarda maquinário', 'maquinário', 'depósito de máquinas', 'armazenamento'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Galpão/Armazém' },
+        
+        // ================================================================
+        // PIQUETES / CURRAIS (fa-object-group)
         // ================================================================
         { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras', 'cerca', 'cercas'], icon: 'fa-object-group', color: '#8B4513', label: 'Piquetes/Currais' },
         
@@ -1034,19 +1049,9 @@ window.FeatureIconMapper = {
         { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },
         
         // ================================================================
-        // MECANIZAÇÃO / TERRA MECANIZADA (fa-tractor)
-        // ================================================================
-        { keywords: ['mecanização', 'mecanizada', 'terra mecanizada', 'área mecanizada', 'topografia mecanizada', 'mecanizável'], icon: 'fa-solid fa-tractor', color: '#8B4513', label: 'Mecanização' },
-        
-        // ================================================================
         // IMPLEMENTOS AGRÍCOLAS (fa-trailer)
         // ================================================================
         { keywords: ['implementos agrícolas', 'implementos', 'carreta', 'carretas', 'equipamentos agrícolas', 'máquinas agrícolas'], icon: 'fa-solid fa-trailer', color: '#7f8c8d', label: 'Implementos Agrícolas' },
-        
-        // ================================================================
-        // CRIAÇÃO DE ANIMAIS DE SELA (fa-sticker-mule)
-        // ================================================================
-        { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
         
         // ================================================================
         // GADO (CORTE OU LEITE) - fa-cow
@@ -1125,8 +1130,8 @@ window.FeatureIconMapper = {
         // ================================================================
         // CAPIM / PASTAGEM CULTIVADA (fa-seedling)
         // ================================================================
-        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
-        
+        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },        
+
         // ================================================================
         // 27. FALLBACK GERAL
         // ================================================================
