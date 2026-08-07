@@ -858,8 +858,8 @@ window.FeatureIconMapper = {
         // ================================================================
         // 7. SHOPPING
         // ================================================================
-        { keywords: ['maceió shopping', 'acesso rápido ao shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
-
+        { keywords: ['maceió shopping', 'acesso rápido ao shopping', 'shopping park', 'vizinho ao shopping', 'parque shopping', 'próximo ao shopping', 'perto do shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
+        
         // ================================================================
         // 7.1. MINI MARKET
         // ================================================================
@@ -2303,9 +2303,9 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ================================================
+// ===============================================
 // FIM DO ARQUIVO - properties.js v3.0
-// ================================================
+// ===============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
