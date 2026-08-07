@@ -1022,6 +1022,11 @@ window.FeatureIconMapper = {
         // CRIAÇÃO DE ANIMAIS DE SELA (fa-sticker-mule) - PRIORIDADE MÁXIMA
         // ================================================================
         { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria', 'criação de animais'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
+
+        // ================================================================
+        // DISTÂNCIA / DESLOCAMENTO PARA A CAPITAL (fa-route)
+        // ================================================================
+        { keywords: ['horas de maceió', 'km de maceió', 'distância de maceió', 'minutos de maceió', 'deslocamento até', 'próximo à capital'], icon: 'fa-route', color: '#2c3e50', label: 'Deslocamento' },
         
         // ================================================================
         // MECANIZAÇÃO / TERRA MECANIZADA (fa-tractor) - PRIORIDADE MÁXIMA
@@ -2306,4 +2311,4 @@ if (document.readyState === 'loading') {
 // Última atualização: 2026-07-22
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// =====================================
+// ====================================
