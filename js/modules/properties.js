@@ -1029,7 +1029,7 @@ window.FeatureIconMapper = {
         { keywords: ['mecanização', 'mecanizada', 'terra mecanizada', 'terra plana mecanizada', 'área mecanizada', 'topografia mecanizada', 'mecanizável', 'plana toda mecanizada'], icon: 'fa-solid fa-tractor', color: '#8B4513', label: 'Mecanização' },
         
         // ================================================================
-        // GALPÃO / ARMAZÉM (fa-warehouse) - PRIORIDADE SOBRE ÁGUA
+        // GALPÃO / ARMAZÉM (fa-warehouse)
         // ================================================================
         { keywords: ['galpão', 'armazém', 'depósito agrícola', 'guarda maquinário', 'maquinário', 'depósito de máquinas', 'armazenamento'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Galpão/Armazém' },
         
@@ -1039,7 +1039,12 @@ window.FeatureIconMapper = {
         { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras', 'cerca', 'cercas'], icon: 'fa-object-group', color: '#8B4513', label: 'Piquetes/Currais' },
         
         // ================================================================
-        // FAZENDA / PROPRIEDADE RURAL (genérico)
+        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (fa-water-ladder) - AGORA ANTES DE FAZENDA
+        // ================================================================
+        { keywords: ['poço artesiano', 'muita água', 'rica em água', 'extremamente rica em água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água', 'lagoa', 'brejo', 'áreas de várzea', 'várzea', 'rio na propriedade', 'córrego na fazenda', 'água na fazenda'], icon: 'fa-water-ladder', color: '#3498db', label: 'Recursos Hídricos' },
+        
+        // ================================================================
+        // FAZENDA / PROPRIEDADE RURAL (genérico) - AGORA DEPOIS DE ÁGUA
         // ================================================================
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
         
@@ -1062,11 +1067,6 @@ window.FeatureIconMapper = {
         // SUINOCULTURA / CRIAÇÃO DE PORCOS (fa-piggy-bank)
         // ================================================================
         { keywords: ['suinocultura', 'criação de porcos', 'porcos', 'suínos', 'baias', 'baia de porcos', 'granja de suínos'], icon: 'fa-solid fa-piggy-bank', color: '#e84393', label: 'Suinocultura' },
-        
-        // ================================================================
-        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (fa-water-ladder)
-        // ================================================================
-        { keywords: ['poço artesiano', 'muita água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água'], icon: 'fa-water-ladder', color: '#3498db', label: 'Recursos Hídricos' },
         
         // ================================================================
         // ENERGIA / ELETRIFICAÇÃO (fa-bolt)
@@ -1130,7 +1130,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // CAPIM / PASTAGEM CULTIVADA (fa-seedling)
         // ================================================================
-        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },        
+        { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
 
         // ================================================================
         // 27. FALLBACK GERAL
