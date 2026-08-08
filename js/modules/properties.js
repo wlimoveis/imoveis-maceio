@@ -843,7 +843,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 4. COMÉRCIO E SERVIÇOS
         // ================================================================
-        { keywords: ['acesso rápido à bancos', 'bancos órgãos públicos', 'comércio e serviços', 'bares restaurantes farmácias'], icon: 'fa-store-alt', color: '#e67e22', label: 'Comércio e Serviços' },
+        { keywords: ['acesso rápido à bancos', 'bancos órgãos públicos', 'comércio e serviços', 'bares restaurantes farmácias'], icon: 'fa-store', color: '#e67e22', label: 'Comércio e Serviços' },
 
         // ================================================================
         // 5. TRANSPORTE / MOBILIDADE
@@ -2303,7 +2303,7 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ==============================================
+// =============================================
 // FIM DO ARQUIVO - properties.js v3.0
 // ==============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
