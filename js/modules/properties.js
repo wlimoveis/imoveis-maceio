@@ -833,12 +833,12 @@ window.FeatureIconMapper = {
         { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
         
         // ÁREA CONSTRUÍDA / LOTE (fa-home)
-        { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-home', color: '#6c5ce7', label: 'Área Construída' },
+            { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-school', color: '#6c5ce7', label: 'Área Construída' },
 
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
-        { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-solid fa-kaaba', color: '#6c5ce7', label: 'Pavimentos' },
+        { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-kaaba', color: '#6c5ce7', label: 'Pavimentos' },
 
         // ================================================================
         // 4. COMÉRCIO E SERVIÇOS
