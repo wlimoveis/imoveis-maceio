@@ -1086,7 +1086,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // REGISTROS E CADASTROS OBRIGATÓRIOS (fa-award)
         // ================================================================
-        { keywords: ['cadastro rural', 'car', 'ccir', 'itr', 'georreferenciamento', 'incra', 'matrícula', 'registro de imóveis', 'selo', 'produto orgânico', 'certificação', 'selo sustentável', 'registro rural'], icon: 'fa-solid fa-award', color: '#f1c40f', label: 'Cadastro Rural' },
+        { keywords: ['cadastro rural', 'car', 'ccir', 'itr', 'georreferenciamento', 'incra', 'matrícula', 'registro de imóveis', 'selo', 'produto orgânico', 'certificação', 'selo sustentável', 'registro rural'], icon: 'fa-solid fa-file-shield', color: '#f1c40f', label: 'Cadastro Rural' },
         
         // ================================================================
         // CASA DE MORADOR (fa-store-alt) e CASA SEDE (fa-gopuram)
@@ -2303,7 +2303,7 @@ if (document.readyState === 'loading') {
     });
 }
 
-// ===============================================
+// ==============================================
 // FIM DO ARQUIVO - properties.js v3.0
 // ==============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
