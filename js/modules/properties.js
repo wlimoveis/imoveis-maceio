@@ -838,7 +838,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // 3. PAVIMENTOS
         // ================================================================
-        { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-layer-group', color: '#6c5ce7', label: 'Pavimentos' },
+        { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-solid fa-kaaba', color: '#6c5ce7', label: 'Pavimentos' },
 
         // ================================================================
         // 4. COMÉRCIO E SERVIÇOS
@@ -2305,7 +2305,7 @@ if (document.readyState === 'loading') {
 
 // ===============================================
 // FIM DO ARQUIVO - properties.js v3.0
-// ===============================================
+// ==============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
