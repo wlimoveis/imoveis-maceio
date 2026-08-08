@@ -1091,7 +1091,7 @@ window.FeatureIconMapper = {
         // ================================================================
         // CASA DE MORADOR (fa-store-alt) e CASA SEDE (fa-gopuram)
         // ================================================================
-        { keywords: ['casa de morador', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-solid fa-store-alt', color: '#8B4513', label: 'Casa de Morador' },
+        { keywords: ['casa de morador', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-solid fa-house-chimney', color: '#8B4513', label: 'Casa de Morador' },
         
         { keywords: ['casa sede', 'casa principal', 'sede da fazenda', 'casa grande'], icon: 'fa-solid fa-vihara', color: '#6c5ce7', label: 'Casa Sede' },
         
