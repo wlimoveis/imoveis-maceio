@@ -946,8 +946,9 @@ window.FeatureIconMapper = {
                 <span>${safeText || featureText}</span>
             </span>
         `;
-}
-    
+    }
+};  // <-- FECHA O OBJETO FeatureIconMapper CORRETAMENTE
+        
 // ========== FILTER FUNCTIONS ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     if (!window.properties) return [];
@@ -2040,7 +2041,7 @@ if (document.readyState === 'loading') {
 
 // ============================================
 // FIM DO ARQUIVO - properties.js v3.2
-// ============================================
+// ===========================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.2
 // Última atualização: 2026-08-08
