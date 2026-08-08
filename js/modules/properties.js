@@ -1,15 +1,16 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.0 - LEVE E FOCADA (SRP)
+// VERSÃO 3.1 - LEVE E FOCADA (SRP) COM DELEGAÇÃO DE PERFORMANCE
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis
 // ✅ CRUD completo (Create, Read, Update, Delete)
 // ✅ Renderização e estado
 // ✅ Carregamento de dados do Supabase
 // ✅ Correção de URLs delegada ao ImageUtils
+// ✅ Cache delegado ao TemplateCache (Support System)
 // ============================================================
 
-console.log('✅ properties.js v3.0 carregado - Gerenciamento de Imóveis');
+console.log('✅ properties.js v3.1 carregado - Gerenciamento de Imóveis (com delegação de cache)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -459,7 +460,13 @@ window.loadPropertiesData = async function() {
             window.renderProperties('todos');
         }
         
-        if (window.SmartCache?.invalidatePropertiesCache) window.SmartCache.invalidatePropertiesCache();
+        // Usar PerformanceSystem para invalidar cache (se disponível)
+        if (window.PerformanceSystem && window.PerformanceSystem.cache) {
+            window.PerformanceSystem.cache.invalidatePattern('properties_data_cache');
+            console.log('🧹 Cache de propriedades invalidado via PerformanceSystem');
+        } else if (window.SmartCache?.invalidatePropertiesCache) {
+            window.SmartCache.invalidatePropertiesCache();
+        }
         
     } catch (error) {
         console.error('❌ Erro no carregamento:', error);
@@ -505,11 +512,16 @@ class PropertyTemplateEngine {
         }).join('');
     }
 
+    // ========== MÉTODO GENERATE OTIMIZADO COM DELEGAÇÃO DE CACHE ==========
     generate(property) {
+        // Usar TemplateCache do Support System se disponível
         if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
-            return window.TemplateCache.getTemplate(property, function(prop) { return this._generateTemplate(prop); }.bind(this));
+            return window.TemplateCache.getTemplate(property, function(prop) { 
+                return this._generateTemplate(prop); 
+            }.bind(this));
         }
         
+        // Fallback: cache local simples (SRP mantido)
         var cacheKey = 'prop_' + property.id + '_' + (property.images?.length || 0) + '_' + property.has_video;
         if (this._localCache.has(cacheKey)) {
             return this._localCache.get(cacheKey);
@@ -518,6 +530,7 @@ class PropertyTemplateEngine {
         var html = this._generateTemplate(property);
         this._localCache.set(cacheKey, html);
         
+        // Limitar tamanho do cache (LRU simplificado)
         if (this._localCache.size > 30) {
             var keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
             keysToDelete.forEach(function(key) { this._localCache.delete(key); }.bind(this));
@@ -762,6 +775,7 @@ class PropertyTemplateEngine {
                 }
             }
             
+            // Invalidar cache via TemplateCache (se disponível)
             if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
                 window.TemplateCache.invalidate(propertyId);
             } else if (this._localCache) {
@@ -789,7 +803,7 @@ class PropertyTemplateEngine {
     }
     
     clearCache() {
-        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
+        // Usar TemplateCache se disponível        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
             return window.TemplateCache.invalidateAll();
         }
         var count = this._localCache.size;
@@ -803,349 +817,87 @@ window.propertyTemplates = new PropertyTemplateEngine();
 // ========== FEATURE ICON MAPPER ==========
 window.FeatureIconMapper = {
     mappings: [
-        
         // ================================================================
         // 1. INFORMAÇÕES GERAIS / TIPO DE IMÓVEL
         // ================================================================
-        
-        // FINALIDADE: LOCAÇÃO DE SALAS COMERCIAIS
         { keywords: ['finalidade: locação de salas comerciais', 'locação de salas', 'aluguel de salas', 'locação comercial'], icon: 'fa-handshake', color: '#00b894', label: 'Locação' },
-        
-        // ================================================================
-        // 1.1. FINANCIAMENTO / PARCELAMENTO
-        // ================================================================
         { keywords: ['financiamento', 'parcelamento', 'plano facilitado', 'direto com a construtora', '100x', 'parcelas', 'financiamento direto', 'plano de pagamento', 'pagamento facilitado'], icon: 'fa-hand-holding-usd', color: '#27ae60', label: 'Financiamento' },
-
-        // ================================================================
-        // 2. ÁREA PRIVATIVA / ÁREA CONSTRUÍDA
-        // ================================================================
-        
-        // STUDIO / APARTHOTEL / CONDOHOTEL (prioridade máxima - fa-tree-city)
         { keywords: ['studio', '(studio', 'studio)', 'studio master', 'studio com', 'aparthotel', 'condohotel'], icon: 'fa-tree-city', color: '#0984e3', label: 'Studio' },
-        
-        // COBERTURA (fa-city)
         { keywords: ['cobertura garden', 'cobertura duplex', 'cobertura n°', 'cobertura nº', 'cobertura n', 'cobertura 1', 'cobertura 2', 'cobertura 3', 'cobertura 4'], icon: 'fa-city', color: '#6c5ce7', label: 'Cobertura' },
-        
-        // SALAS COMERCIAIS (fa-building-lock)
         { keywords: ['salas comerciais c/wc', 'salas comerciais com wc', '04 salas comerciais', 'salas comerciais'], icon: 'fa-building-lock', color: '#0984e3', label: 'Salas Comerciais' },
-        
-        // APARTAMENTO RESIDENCIAL (fa-building)
         { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
-        
-        // ÁREA CONSTRUÍDA / LOTE (fa-home)
         { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-solid fa-gopuram', color: '#6c5ce7', label: 'Área Construída' },
-
-        // ================================================================
-        // 3. PAVIMENTOS
-        // ================================================================
         { keywords: ['número de pavimentos', 'pavimentos térreo', 'pavimento térreo e andares'], icon: 'fa-kaaba', color: '#6c5ce7', label: 'Pavimentos' },
-
-        // ================================================================
-        // 4. COMÉRCIO E SERVIÇOS
-        // ================================================================
         { keywords: ['acesso rápido à bancos', 'bancos órgãos públicos', 'comércio e serviços', 'bares restaurantes farmácias'], icon: 'fa-barcode', color: '#e67e22', label: 'Comércio e Serviços' },
-
-        // ================================================================
-        // 5. TRANSPORTE / MOBILIDADE
-        // ================================================================
         { keywords: ['transporte público fácil acesso', 'ônibus e transporte por aplicativo', 'uber / 99'], icon: 'fa-bus', color: '#3498db', label: 'Transporte Público' },
-
-        // ================================================================
-        // 6. AEROPORTO
-        // ================================================================
         { keywords: ['aeroporto zumbi dos palmares', 'zumbi dos palmares', 'mcz'], icon: 'fa-plane', color: '#8e44ad', label: 'Aeroporto' },
-
-        // ================================================================
-        // 7. SHOPPING
-        // ================================================================
         { keywords: ['maceió shopping', 'acesso rápido ao shopping', 'shopping park', 'vizinho ao shopping', 'parque shopping', 'próximo ao shopping', 'perto do shopping'], icon: 'fa-shopping-bag', color: '#8e44ad', label: 'Shopping' },
-        
-        // ================================================================
-        // 7.1. MINI MARKET
-        // ================================================================
         { keywords: ['mini market', 'minimarket', 'mercado', 'loja de conveniência'], icon: 'fa-cart-shopping', color: '#e67e22', label: 'Mini Market' },
-        
-        // ================================================================
-        // 8. CONDOMÍNIO E IPTU
-        // ================================================================
         { keywords: ['condomínio incluso', 'iptu incluso', 'taxas inclusas', 'condomínio e iptu'], icon: 'fa-handshake', color: '#00b894', label: 'Condomínio/IPTU Incluso' },
-
-        // ================================================================
-        // 9. GARAGEM / ESTACIONAMENTO
-        // ================================================================
         { keywords: ['vagas de garagem:', 'vagas cobertas', 'vagas descobertas', 'vaga coberta', 'vaga descoberta'], icon: 'fa-car', color: '#3498db', label: 'Garagem' },
-
-        // ================================================================
-        // 10. VARANDA / ÁREA EXTERNA / TERRAÇO
-        // ================================================================
-        
-        // VARANDA (prioridade máxima)
         { keywords: ['varanda gourmet com vista para o mar', 'varanda gourmet', 'varanda com vista', 'varanda disponibilidade', 'varanda: sim', 'varanda sim', 'varanda'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Varanda' },
-        
-        // ÁREA EXTERNA / TERRAÇO
         { keywords: ['área externa privativa', 'terraço privativo', 'terraço descoberto', 'área externa'], icon: 'fa-umbrella-beach', color: '#e67e22', label: 'Área Externa/Terraço' },
-
-        // ================================================================
-        // 10.1. ELEVADOR
-        // ================================================================
         { keywords: ['elevador', 'elevadores', 'elevador social', 'elevador de serviço'], icon: 'fa-elevator', color: '#7f8c8d', label: 'Elevador' },
-        
-        // ================================================================
-        // 11. BANHEIROS / LAVABO / WC / VESTIÁRIOS
-        // ================================================================
-
-        // DCE
         { keywords: ['dce', 'dependência completa de empregada', 'dependencia completa de empregada', 'dce sim', 'dce: sim'], icon: 'fa-shower', color: '#1abc9c', label: 'DCE' },
-        
-        // BANHEIROS EM GERAL
         { keywords: ['banheiro da dce', 'banheiro de serviço', 'banheiro apoio', 'wc de serviço', 'wc social', 'wc apoio', 'banheiro'], icon: 'fa-shower', color: '#1abc9c', label: 'Banheiro' },
-        
-        // LAVABO SOCIAL
         { keywords: ['lavabo wc social', 'lavabo social', 'lavabo'], icon: 'fa-shower', color: '#1abc9c', label: 'Lavabo' },
-        
-        // VESTIÁRIOS
         { keywords: ['vestiários', 'vestiário', 'diaristas', 'funcionários', 'vestiarios'], icon: 'fa-restroom', color: '#3498db', label: 'Vestiários' },
-
-        // ================================================================
-        // 12. COZINHA / COZINHA AMERICANA
-        // ================================================================
         { keywords: ['cozinha americana integrada à sala', 'cozinha integrada à sala', 'cozinha americana integrada'], icon: 'fa-utensils', color: '#f39c12', label: 'Cozinha Integrada' },
-
-        // ================================================================
-        // 12.1. MÓVEIS PLANEJADOS
-        // ================================================================
         { keywords: ['móveis planejados', 'moveis planejados', 'cozinha planejada', 'quarto planejado', 'wc planejado', 'móveis planejados cozinha'], icon: 'fa-kitchen-set', color: '#e67e22', label: 'Móveis Planejados' },
-        
-        // ================================================================
-        // 13. COWORKING / HOME OFFICE / ESPAÇO DE ESTUDOS
-        // ================================================================
         { keywords: ['coworking home office', 'coworking', 'home office', 'sala de estudos', 'biblioteca', 'estudos'], icon: 'fa-laptop', color: '#0984e3', label: 'Coworking/Home Office' },
-       
-        // ================================================================
-        // 14. ÁREAS INFANTIS / PLAYGROUND
-        // ================================================================
         { keywords: ['playground', 'brinquedoteca', 'estação kids', 'espaço pet', 'home cine', 'praça central'], icon: 'fa-child', color: '#f39c12', label: 'Área Infantil' },
-
-        // ================================================================
-        // 15. FITNESS / ACADEMIA / ESPORTES
-        // ================================================================
-
-        // ESPORTES (fa-futbol)
         { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-volleyball', color: '#27ae60', label: 'Esportes' },
-        
-        // ACADEMIA / FITNESS
-        { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },        
-        
-        // ================================================================
-        // 16. PISCINAS / ESPELHO D'ÁGUA / DECK MOLHADO
-        // ================================================================
-        
-        // PISCINAS (prioridade máxima)
-        { keywords: ['piscina privativa:', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },        
-
-        // ================================================================
-        // 17. ESPAÇO GOURMET / CHURRASQUEIRA
-        // ================================================================
+        { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },
+        { keywords: ['piscina privativa:', 'piscina na área externa', 'piscina cobertura', 'piscina', 'piscina suspensa panorâmica', 'skypool', 'piscina com deck', 'piscina borda infinita', 'piscina infantil aquecida', 'hidromassagem aquecidas', 'espelho d´agua', 'espelho d agua', 'espelho dagua', 'praca d aguas', 'deck molhado', 'espelho d`agua'], icon: 'fa-swimmer', color: '#3498db', label: 'Piscina' },
         { keywords: ['espaço gourmet', 'churrasqueira e forno de pizza'], icon: 'fa-pizza-slice', color: '#e67e22', label: 'Espaço Gourmet' },
-        
-        // ================================================================
-        // 17.1. SALÃO DE FESTAS / EVENTOS
-        // ================================================================
         { keywords: ['salão de festas', 'salao de festas', 'eventos', 'celebração', 'comemoração', 'festas', 'salão de eventos', 'espaço para eventos'], icon: 'fa-glass-cheers', color: '#e84393', label: 'Salão de Festas' },
-
-        // ================================================================
-        // 18. ÁREA DE SERVIÇO / LAVANDERIA
-        // ================================================================
         { keywords: ['área de serviço', 'lavanderia', 'lavanderia compartilhada', 'lavanderia pay-per-use'], icon: 'fa-tshirt', color: '#95a5a6', label: 'Área de Serviço' },
-
-        // ================================================================
-        // 18.1. BICICLETA / BICICLETÁRIO
-        // ================================================================
         { keywords: ['bicicleta', 'bike', 'bicicletário', 'ciclovia', 'ciclista', 'bicicletas'], icon: 'fa-bicycle', color: '#27ae60', label: 'Bicicleta' },
-        
-        // ================================================================
-        // 19. POSIÇÃO / NASCENTE (prioridade sobre o bloco rural)
-        // ================================================================
-        { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },        
-
-        // ================================================================
-        // 20. VISTA PARA O MAR
-        // ================================================================
+        { keywords: ['posição/nascente', 'posição nascente leste', 'nascente leste', 'leste', 'posição disponibilidade'], icon: 'fa-sun', color: '#f39c12', label: 'Nascente (Leste)' },
         { keywords: ['vista para o mar disponibilidade', 'vista para o mar'], icon: 'fa-water', color: '#3498db', label: 'Vista Mar' },
-
-        // ================================================================
-        // 21. SUÍTES / QUARTOS
-        // ================================================================
         { keywords: ['suite master com hidromassagem', 'suíte master com hidromassagem', 'suite master', 'suites com closet', 'hidromassagem na suite', 'hidromassagem na suíte', 'master suite', 'suíte', 'suites'], icon: 'fa-bed', color: '#e74c3c', label: 'Suítes' },
-
-        // ================================================================
-        // 22. RESTAURANTE / CAFÉ / SAUNA / SPA / MASSAGEM
-        // ================================================================
         { keywords: ['restaurante'], icon: 'fa-utensils', color: '#e67e22', label: 'Restaurante' },
         { keywords: ['café'], icon: 'fa-mug-saucer', color: '#6c5ce7', label: 'Café' },
         { keywords: ['sauna'], icon: 'fa-hot-tub-person', color: '#e74c3c', label: 'Sauna' },
         { keywords: ['espaço spa', 'spa', 'spa com hidromassagem', 'spa hidromassagem', 'banheiras de hidromassagem'], icon: 'fa-spa', color: '#1abc9c', label: 'SPA' },
         { keywords: ['massagem'], icon: 'fas fa-hands', color: '#9b59b6', label: 'Massagem' },
-        
-        // ================================================================
-        // 23. RECEPÇÃO / SALAS COMERCIAIS / DEPÓSITO
-        // ================================================================
         { keywords: ['sala para administração', 'sala para adm', 'depósito', 'administração', 'sala de administração'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Depósito / Administração' },
         { keywords: ['recepção', 'atendimento', 'check-in'], icon: 'fa-id-card', color: '#3498db', label: 'Recepção' },
         { keywords: ['recepção salas comerciais', 'salas comerciais no térreo', 'salas empresariais'], icon: 'fa-store', color: '#0984e3', label: 'Recepção/Salas Comerciais' },
-        
-        // ================================================================
-        // 24. CHURRASQUEIRA
-        // ================================================================
         { keywords: ['churrasqueira'], icon: 'fa-drumstick-bite', color: '#e67e22', label: 'Churrasqueira' },
-        
-        // ================================================================
-        // 25. CONDOMÍNIO FECHADO / SEGURANÇA
-        // ================================================================
         { keywords: ['condomínio fechado', 'condominio fechado', 'câmeras de vigilância', 'portaria 24h', 'segurança 24h', 'ronda', 'condomínio', 'condominio'], icon: 'fa-shield-alt', color: '#2c3e50', label: 'Condomínio Fechado' },
-        
-        // ================================================================
-        // 23.1. SALA DE REUNIÃO (NÃO deve conter "condomínio")
-        // ================================================================
         { keywords: ['sala de reunião', 'sala de reuniao', 'reunião', 'reuniao', 'espaço para reuniões', 'sala para reuniões'], icon: 'fa-users', color: '#6c5ce7', label: 'Sala de Reunião' },
-
-        // ================================================================
-        // 26. VARANDA (FALLBACK)
-        // ================================================================
         { keywords: ['varanda'], icon: 'fa-window-frame', color: '#e67e22', label: 'Varanda' },
-
         // ================================================================
-        // 26.1. ITENS PARA IMÓVEIS RURAIS / FAZENDAS
-        // ================================================================
-        
-        // ================================================================
-        // CRIAÇÃO DE ANIMAIS DE SELA (fa-sticker-mule) - PRIORIDADE MÁXIMA
+        // ITENS PARA IMÓVEIS RURAIS / FAZENDAS
         // ================================================================
         { keywords: ['raças de sela', 'sela', 'lazer equestre', 'esporte equestre', 'tração animal', 'corrida equina', 'equinos', 'cavalo', 'cavalos', 'criação de cavalos', 'haras', 'picadeiro', 'hipismo', 'selaria', 'criação de animais'], icon: 'fa-sticker-mule', color: '#6c5ce7', label: 'Equinos (Sela/Tração)' },
-
-        // ================================================================
-        // DISTÂNCIA / DESLOCAMENTO PARA A CAPITAL (fa-route)
-        // ================================================================
         { keywords: ['horas de maceió', 'km de maceió', 'distância de maceió', 'minutos de maceió', 'deslocamento até', 'próximo à capital'], icon: 'fa-route', color: '#2c3e50', label: 'Deslocamento' },
-        
-        // ================================================================
-        // MECANIZAÇÃO / TERRA MECANIZADA (fa-tractor) - PRIORIDADE MÁXIMA
-        // ================================================================
         { keywords: ['mecanização', 'mecanizada', 'terra mecanizada', 'terra plana mecanizada', 'área mecanizada', 'topografia mecanizada', 'mecanizável', 'plana toda mecanizada'], icon: 'fa-solid fa-tractor', color: '#8B4513', label: 'Mecanização' },
-        
-        // ================================================================
-        // GALPÃO / ARMAZÉM (fa-warehouse)
-        // ================================================================
         { keywords: ['galpão', 'armazém', 'depósito agrícola', 'guarda maquinário', 'maquinário', 'depósito de máquinas', 'armazenamento'], icon: 'fa-warehouse', color: '#7f8c8d', label: 'Galpão/Armazém' },
-        
-        // ================================================================
-        // PIQUETES / CURRAIS (fa-object-group)
-        // ================================================================
         { keywords: ['piquete', 'piquetes', 'vários piquetes', 'piquetes para criação', 'piquetes com capim', 'piquetes para gado', 'divisão de pasto', 'curral', 'currais', 'curral com balança', 'balança', 'mangueira', 'mangueiras', 'cerca', 'cercas'], icon: 'fa-object-group', color: '#8B4513', label: 'Piquetes/Currais' },
-        
-        // ================================================================
-        // ÁGUA / NASCENTES / RECURSOS HÍDRICOS (fa-water-ladder) - AGORA ANTES DE FAZENDA
-        // ================================================================
         { keywords: ['poço artesiano', 'muita água', 'rica em água', 'extremamente rica em água', 'recursos hídricos', 'córrego', 'rio', 'reservatório', 'fonte de água', 'nascentes', 'nascente água', 'lagoa', 'brejo', 'áreas de várzea', 'várzea', 'rio na propriedade', 'córrego na fazenda', 'água na fazenda'], icon: 'fa-water-ladder', color: '#3498db', label: 'Recursos Hídricos' },
-        
-        // ================================================================
-        // FAZENDA / PROPRIEDADE RURAL (genérico) - AGORA DEPOIS DE ÁGUA
-        // ================================================================
         { keywords: ['fazenda', 'propriedade rural', 'sítio', 'chácara', 'terra', 'área rural', 'zona da mata', 'mata alagoana'], icon: 'fa-tree', color: '#27ae60', label: 'Fazenda' },
-        
-        // ================================================================
-        // TAREFAS / HECTARES / ÁREA DE TERRA (fa-draw-polygon)
-        // ================================================================
         { keywords: ['tarefas', 'tarefa', 'hectares', 'hectare', 'terreno rural', 'área de terra', 'área rural'], icon: 'fa-draw-polygon', color: '#2ecc71', label: 'Área de Terra' },
-        
-        // ================================================================
-        // IMPLEMENTOS AGRÍCOLAS (fa-trailer)
-        // ================================================================
         { keywords: ['implementos agrícolas', 'implementos', 'carreta', 'carretas', 'equipamentos agrícolas', 'máquinas agrícolas'], icon: 'fa-solid fa-trailer', color: '#7f8c8d', label: 'Implementos Agrícolas' },
-        
-        // ================================================================
-        // GADO (CORTE OU LEITE) - fa-cow
-        // ================================================================
         { keywords: ['gado de corte', 'gado leiteiro', 'gado de leite', 'criação de gado', 'gado', 'rebanho bovino', 'bovinos', 'pecuária de corte', 'pecuária leiteira', 'gado corte', 'gado leite'], icon: 'fa-solid fa-cow', color: '#8B4513', label: 'Gado (Corte/Leite)' },
-        
-        // ================================================================
-        // SUINOCULTURA / CRIAÇÃO DE PORCOS (fa-piggy-bank)
-        // ================================================================
         { keywords: ['suinocultura', 'criação de porcos', 'porcos', 'suínos', 'baias', 'baia de porcos', 'granja de suínos'], icon: 'fa-solid fa-piggy-bank', color: '#e84393', label: 'Suinocultura' },
-        
-        // ================================================================
-        // ENERGIA / ELETRIFICAÇÃO (fa-bolt)
-        // ================================================================
         { keywords: ['eletrificação', 'energia elétrica', 'energia', 'luz', 'iluminação', 'eletricidade', 'poste', 'rede elétrica'], icon: 'fa-bolt', color: '#f1c40f', label: 'Eletrificação' },
-        
-        // ================================================================
-        // RESERVA LEGAL / MATA / REFLORESTAMENTO (fa-tree)
-        // ================================================================
         { keywords: ['reserva legal', 'mata', 'reflorestamento', 'mata nativa', 'preservação', 'floresta', 'bosque'], icon: 'fa6-solid fa-tree', color: '#27ae60', label: 'Reserva Legal' },
-        
-        // ================================================================
-        // REGISTROS E CADASTROS OBRIGATÓRIOS (fa-award)
-        // ================================================================
         { keywords: ['cadastro rural', 'car', 'ccir', 'itr', 'georreferenciamento', 'incra', 'matrícula', 'registro de imóveis', 'selo', 'produto orgânico', 'certificação', 'selo sustentável', 'registro rural'], icon: 'fa-solid fa-file-shield', color: '#f1c40f', label: 'Cadastro Rural' },
-        
-        // ================================================================
-        // CASA DE MORADOR (fa-store-alt) e CASA SEDE (fa-gopuram)
-        // ================================================================
         { keywords: ['casa de morador', 'moradia', 'residência rural', 'casa do caseiro', 'casa de vaqueiro'], icon: 'fa-solid fa-house-chimney', color: '#8B4513', label: 'Casa de Morador' },
-        
         { keywords: ['casa sede', 'casa principal', 'sede da fazenda', 'casa grande'], icon: 'fa-solid fa-vihara', color: '#6c5ce7', label: 'Casa Sede' },
-        
-        // ================================================================
-        // VAQUEIRO / MORADOR / FUNCIONÁRIO (fa-people-carry-box)
-        // ================================================================
         { keywords: ['vaqueiro', 'funcionário', 'trabalhador rural', 'caseiro', 'morador', 'empregado rural'], icon: 'fa-solid fa-people-carry-box', color: '#3498db', label: 'Funcionários' },
-        
-        // ================================================================
-        // VEÍCULOS DA PROPRIEDADE (fa-truck-pickup e fa-truck-moving)
-        // ================================================================
         { keywords: ['caminhonete', 'pickup', 'camionete', 'veículo da propriedade'], icon: 'fa-solid fa-truck-pickup', color: '#2c3e50', label: 'Caminhonete' },
-        
         { keywords: ['caminhão', 'caminhões', 'transporte de carga'], icon: 'fa-solid fa-truck-moving', color: '#34495e', label: 'Caminhão' },
-        
-        // ================================================================
-        // HELIPONTO (fa-helicopter)
-        // ================================================================
         { keywords: ['heliponto', 'helicóptero', 'pouso de helicóptero'], icon: 'fa-solid fa-helicopter', color: '#e67e22', label: 'Heliponto' },
-        
-        // ================================================================
-        // LAVOURA / GRÃOS (fa-wheat-awn)
-        // ================================================================
         { keywords: ['lavoura', 'milho', 'soja', 'trigo', 'cereal', 'grãos', 'plantação de grãos', 'lavoura de milho', 'lavoura de soja', 'feno', 'tifton', 'braquiária', 'capim-elefante', 'capim tifton', 'capim braquiária'], icon: 'fa-wheat-awn', color: '#f1c40f', label: 'Lavoura / Grãos' },
-        
-        // ================================================================
-        // SISTEMAS DE CRIAÇÃO (fa-helmet-safety)
-        // ================================================================
         { keywords: ['sistemas de criação', 'sistema de criação', 'confinamento', 'semi-confinamento', 'pastejo', 'rotacionado', 'criação intensiva', 'criação extensiva', 'manejo animal', 'manejo de rebanho'], icon: 'fa-solid fa-helmet-safety', color: '#f39c12', label: 'Sistemas de Criação' },
-        
-        // ================================================================
-        // GADO DE CORTE / REBANHO (fallback - fa-horse-head)
-        // ================================================================
         { keywords: ['rebanho', 'animais', 'criação', 'boi', 'vaca', 'pecuária'], icon: 'fa-horse-head', color: '#8B4513', label: 'Rebanho' },
-        
-        // ================================================================
-        // INFRAESTRUTURA / ESTRADAS (fa-road)
-        // ================================================================
         { keywords: ['pista asfáltica', 'beira de pista', 'asfalto', 'estrada', 'acesso asfaltado', 'beira da estrada'], icon: 'fa-road', color: '#7f8c8d', label: 'Infraestrutura' },
-        
-        // ================================================================
-        // CAPIM / PASTAGEM CULTIVADA (fa-seedling)
-        // ================================================================
         { keywords: ['capim', 'pastagem', 'pasto', 'forragem', 'cultivo', 'plantações', 'muita capim'], icon: 'fa-seedling', color: '#27ae60', label: 'Pastagem' },
-
-        // ================================================================
-        // AGROINDÚSTRIA / FRIGORÍFICO / PROCESSAMENTO (fa-industry)
-        // ================================================================
         { keywords: ['frigorífico', 'agroindústria', 'agroindustria', 'processamento', 'cadeia de processamento', 'industrialização', 'beneficiamento'], icon: 'fas fa-industry', color: '#7f8c8d', label: 'Agroindústria' },
-        
-        // ================================================================
-        // 27. FALLBACK GERAL
-        // ================================================================
-        { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }        
+        { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }
     ],
     
     normalizeText: function(text) {
@@ -1153,15 +905,11 @@ window.FeatureIconMapper = {
         return text.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     },
     
-    // ================================================================
-    // FUNÇÃO DE CORRESPONDÊNCIA (SIMPLIFICADA)
-    // ================================================================
     matchesKeyword: function(text, keywordList) {
         var normalizedText = this.normalizeText(text);
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
-            // Correspondência direta: a palavra-chave está contida no texto
             if (normalizedText.indexOf(normalizedKeyword) !== -1) {
                 return true;
             }
@@ -1329,31 +1077,6 @@ window.updatePropertyCard = function(propertyId, updatedData) {
     return false;
 };
 
-window.waitForAllPropertyImages = async function() {
-    var images = document.querySelectorAll('.property-image img');
-    if (images.length === 0) return 0;
-    
-    var imagePromises = Array.from(images).map(function(img) {
-        if (img.complete) return Promise.resolve();
-        return new Promise(function(resolve) {
-            img.addEventListener('load', function() { resolve(); });
-            img.addEventListener('error', function() { resolve(); });
-        });
-    });
-    
-    await Promise.all(imagePromises);
-    return images.length;
-};
-
-window.runLowPriority = function(callback) {
-    if (typeof callback !== 'function') return;
-    if ('requestIdleCallback' in window) {
-        requestIdleCallback(function() { callback(); }, { timeout: 2000 });
-    } else {
-        setTimeout(callback, 100);
-    }
-};
-
 // ========== INITIAL PROPERTIES ==========
 function getInitialProperties() {
     return [
@@ -1501,7 +1224,14 @@ window.addNewProperty = async function(propertyData) {
         window.savePropertiesToStorage();
         window.renderProperties('todos', true);
         if (typeof window.loadPropertyList === 'function') setTimeout(function() { window.loadPropertyList(); }, 100);
-        if (window.SmartCache?.invalidatePropertiesCache) window.SmartCache.invalidatePropertiesCache();
+        
+        // Invalidar cache via TemplateCache
+        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
+            window.TemplateCache.invalidateAll();
+        } else if (window.SmartCache?.invalidatePropertiesCache) {
+            window.SmartCache.invalidatePropertiesCache();
+        }
+        
         if (typeof MediaSystem?.resetState === 'function') setTimeout(function() { MediaSystem.resetState(); }, 300);
 
         return newProperty;
@@ -2304,11 +2034,12 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.0
+// FIM DO ARQUIVO - properties.js v3.1
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.0
-// Última atualização: 2026-07-22
+// Versão: 3.1
+// Última atualização: 2026-08-08
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
+// ✅ OTIMIZADO: Cache delegado ao TemplateCache (Support System)
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
 // ====================================
