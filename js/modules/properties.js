@@ -904,8 +904,20 @@ window.FeatureIconMapper = {
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
-            if (normalizedText.indexOf(normalizedKeyword) !== -1) {
+            // Correspondência exata ou contém
+            if (normalizedText === normalizedKeyword || 
+                normalizedText.indexOf(normalizedKeyword) !== -1 || 
+                normalizedKeyword.indexOf(normalizedText) !== -1) {
                 return true;
+            }
+            // Correspondência por palavra (quebra por espaços)
+            var words = normalizedText.split(/\s+/);
+            for (var j = 0; j < words.length; j++) {
+                var word = words[j];
+                if (word === normalizedKeyword || 
+                    (normalizedKeyword.length > 2 && word.indexOf(normalizedKeyword) !== -1)) {
+                    return true;
+                }
             }
         }
         return false;
@@ -927,15 +939,15 @@ window.FeatureIconMapper = {
         isRural = isRural || false;
         var iconData = this.getIconForFeature(featureText);
         var ruralClass = isRural ? 'rural-tag' : '';
+        var safeText = window.SharedCore ? window.SharedCore.escapeHtml(featureText) : featureText;
         return `
             <span class="feature-tag ${ruralClass}" style="display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; background: #f0f0f0; border-radius: 20px; font-size: 0.75rem;">
                 <i class="fas ${iconData.icon}" style="color: ${iconData.color}; font-size: 0.7rem;" aria-hidden="true"></i>
-                <span>${featureText}</span>
+                <span>${safeText || featureText}</span>
             </span>
         `;
-    }
-};
-
+}
+    
 // ========== FILTER FUNCTIONS ==========
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     if (!window.properties) return [];
@@ -2026,7 +2038,7 @@ if (document.readyState === 'loading') {
     });
 }
 
-// =============================================
+// ============================================
 // FIM DO ARQUIVO - properties.js v3.2
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
