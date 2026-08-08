@@ -833,7 +833,7 @@ window.FeatureIconMapper = {
         { keywords: ['area privativa:', 'area privativa com', 'area privativa de', 'area privativa m²', 'área privativa:'], icon: 'fa-building', color: '#0984e3', label: 'Apartamento' },
         
         // ÁREA CONSTRUÍDA / LOTE (fa-home)
-        { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: '<i class="fa-regular fa-school"></i>', color: '#6c5ce7', label: 'Área Construída' },
+        { keywords: ['área construída', 'area construida', 'lote com área total', 'área total do lote'], icon: 'fa-regular fa-school', color: '#6c5ce7', label: 'Área Construída' },
 
         // ================================================================
         // 3. PAVIMENTOS
@@ -2305,7 +2305,7 @@ if (document.readyState === 'loading') {
 
 // =============================================
 // FIM DO ARQUIVO - properties.js v3.0
-// =============================================
+// ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.0
 // Última atualização: 2026-07-22
