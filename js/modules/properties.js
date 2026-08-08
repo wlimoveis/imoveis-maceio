@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.1 - LEVE E FOCADA (SRP) COM DELEGAÇÃO DE PERFORMANCE
+// VERSÃO 3.2 - CORRIGIDA (ERRO DE SINTAXE RESOLVIDO)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis
 // ✅ CRUD completo (Create, Read, Update, Delete)
@@ -8,9 +8,10 @@
 // ✅ Carregamento de dados do Supabase
 // ✅ Correção de URLs delegada ao ImageUtils
 // ✅ Cache delegado ao TemplateCache (Support System)
+// ✅ CORREÇÃO: Erro de sintaxe na linha 809 resolvido
 // ============================================================
 
-console.log('✅ properties.js v3.1 carregado - Gerenciamento de Imóveis (com delegação de cache)');
+console.log('✅ properties.js v3.2 carregado - Gerenciamento de Imóveis (com correção de sintaxe)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -413,7 +414,7 @@ window.loadPropertiesData = async function() {
 
         window.properties = propertiesData || getInitialProperties();
         
-        // ========== 🔥 CORREÇÃO AUTOMÁTICA DE URLs (AGORA NO ImageUtils) ==========
+        // ========== 🔥 CORREÇÃO AUTOMÁTICA DE URLs ==========
         if (window.ImageUtils && typeof window.ImageUtils.fixAllProperties === 'function') {
             console.log('🔄 [LOAD] Aplicando correção de URLs via ImageUtils...');
             var result = window.ImageUtils.fixAllProperties();
@@ -424,7 +425,6 @@ window.loadPropertiesData = async function() {
                 }
             }
         } else {
-            // Fallback: se ImageUtils não estiver disponível, tenta a função antiga
             console.warn('⚠️ [LOAD] ImageUtils não disponível, tentando fallback...');
             if (typeof window.fixAllPropertiesOnLoad === 'function') {
                 window.fixAllPropertiesOnLoad();
@@ -460,7 +460,6 @@ window.loadPropertiesData = async function() {
             window.renderProperties('todos');
         }
         
-        // Usar PerformanceSystem para invalidar cache (se disponível)
         if (window.PerformanceSystem && window.PerformanceSystem.cache) {
             window.PerformanceSystem.cache.invalidatePattern('properties_data_cache');
             console.log('🧹 Cache de propriedades invalidado via PerformanceSystem');
@@ -514,14 +513,12 @@ class PropertyTemplateEngine {
 
     // ========== MÉTODO GENERATE OTIMIZADO COM DELEGAÇÃO DE CACHE ==========
     generate(property) {
-        // Usar TemplateCache do Support System se disponível
         if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
             return window.TemplateCache.getTemplate(property, function(prop) { 
                 return this._generateTemplate(prop); 
             }.bind(this));
         }
         
-        // Fallback: cache local simples (SRP mantido)
         var cacheKey = 'prop_' + property.id + '_' + (property.images?.length || 0) + '_' + property.has_video;
         if (this._localCache.has(cacheKey)) {
             return this._localCache.get(cacheKey);
@@ -530,7 +527,6 @@ class PropertyTemplateEngine {
         var html = this._generateTemplate(property);
         this._localCache.set(cacheKey, html);
         
-        // Limitar tamanho do cache (LRU simplificado)
         if (this._localCache.size > 30) {
             var keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
             keysToDelete.forEach(function(key) { this._localCache.delete(key); }.bind(this));
@@ -594,7 +590,6 @@ class PropertyTemplateEngine {
         var hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
         var safeTitle = this._safe(property.title) || 'Imóvel';
         
-        // Usar ImageUtils para gerar fallback se disponível
         var fallbackUrl = this.imageFallback;
         if (window.ImageUtils && typeof window.ImageUtils.getFallbackUrl === 'function') {
             fallbackUrl = window.ImageUtils.getFallbackUrl(property.title);
@@ -775,7 +770,6 @@ class PropertyTemplateEngine {
                 }
             }
             
-            // Invalidar cache via TemplateCache (se disponível)
             if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
                 window.TemplateCache.invalidate(propertyId);
             } else if (this._localCache) {
@@ -803,7 +797,7 @@ class PropertyTemplateEngine {
     }
     
     clearCache() {
-        // Usar TemplateCache se disponível        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
+        if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
             return window.TemplateCache.invalidateAll();
         }
         var count = this._localCache.size;
@@ -1225,7 +1219,6 @@ window.addNewProperty = async function(propertyData) {
         window.renderProperties('todos', true);
         if (typeof window.loadPropertyList === 'function') setTimeout(function() { window.loadPropertyList(); }, 100);
         
-        // Invalidar cache via TemplateCache
         if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
             window.TemplateCache.invalidateAll();
         } else if (window.SmartCache?.invalidatePropertiesCache) {
@@ -2034,11 +2027,12 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.1
+// FIM DO ARQUIVO - properties.js v3.2
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.1
+// Versão: 3.2
 // Última atualização: 2026-08-08
+// ✅ CORRIGIDO: Erro de sintaxe na linha 809 (Unexpected identifier 'count')
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache (Support System)
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
