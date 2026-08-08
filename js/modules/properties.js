@@ -931,7 +931,7 @@ window.FeatureIconMapper = {
         // ================================================================
 
         // ESPORTES (fa-futbol)
-        { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-futbol', color: '#27ae60', label: 'Esportes' },
+        { keywords: ['campinho', 'futebol', 'futsal', 'jogo', 'jogos', 'salão de jogos', 'sala de jogos', 'quadra', 'quadra squash', 'quadra poliesportiva', 'squash', 'campo', 'esportes'], icon: 'fa-volleyball', color: '#27ae60', label: 'Esportes' },
         
         // ACADEMIA / FITNESS
         { keywords: ['academia', 'fitness', 'fitness academia', 'ginásio', 'musculação'], icon: 'fas fa-dumbbell', color: '#e74c3c', label: 'Academia' },        
