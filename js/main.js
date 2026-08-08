@@ -1,5 +1,6 @@
 // js/main.js - SISTEMA DE INICIALIZAÇÃO OTIMIZADO E ENXUTO
-console.log('🚀 main.js carregado - Sistema de Inicialização Otimizado');
+// ✅ VERSÃO 2.1 - COM DELEGAÇÃO DE PERFORMANCE AO SUPPORT SYSTEM
+console.log('🚀 main.js carregado - Sistema de Inicialização Otimizado v2.1');
 
 /**
  * FUNÇÃO PRINCIPAL DE INICIALIZAÇÃO OTIMIZADA
@@ -25,7 +26,6 @@ window.initializeWeberLessaSystem = async function() {
         }, 400);
         
         // ✅ PRIMEIRA CAMADA DE PROTEÇÃO: GARANTIR FUNCIONALIDADE BÁSICA
-        // Esta é a correção crítica apontada pelo outro agente
         if (typeof window.ensureBasicFunctionality === 'function') {
             console.log('🔧 Garantindo funcionalidade básica (camada 1)...');
             window.ensureBasicFunctionality();
@@ -47,11 +47,9 @@ window.initializeWeberLessaSystem = async function() {
             await window.loadPropertiesData();
             console.log('✅ Imóveis carregados com sucesso');
             
-            // *** NOVO: Após carregar os dados, verifica se há um imóvel específico na URL ***
             if (typeof window.loadPropertiesBasedOnUrl === 'function') {
                 window.loadPropertiesBasedOnUrl();
             } else {
-                // Fallback: se a nova função não existir, exibe todos (comportamento antigo)
                 console.warn('⚠️ Função loadPropertiesBasedOnUrl não encontrada. Usando fallback.');
                 if (typeof window.renderProperties === 'function') {
                     window.renderProperties('todos');
@@ -82,14 +80,20 @@ window.initializeWeberLessaSystem = async function() {
             console.log('✅ Galeria configurada');
         }
         
-        // ✅ OTIMIZAÇÃO DE IMAGENS (se disponível)
+        // ✅ OTIMIZAÇÃO DE IMAGENS (DELEGADA AO PERFORMANCE SYSTEM)
         let imagesLoaded = 0;
-        if (typeof window.waitForCriticalImages === 'function') {
+        if (window.PerformanceSystem && window.PerformanceSystem.cache) {
+            // Usar o sistema de performance se disponível
+            console.log('⚡ Usando PerformanceSystem para otimização de imagens...');
+            imagesLoaded = await window.SharedCore.ImageLoader.waitForCriticalImages();
+        } else if (typeof window.waitForCriticalImages === 'function') {
+            // Fallback: função tradicional
             imagesLoaded = await window.waitForCriticalImages();
-            console.log(`🖼️ ${imagesLoaded} imagem(ns) principal(is) otimizada(s)`);
         } else {
             console.log('ℹ️ Otimização de imagem não disponível (modo produção)');
         }
+        
+        console.log(`🖼️ ${imagesLoaded || 0} imagem(ns) principal(is) otimizada(s)`);
         
         const totalTime = Date.now() - loadingStartTime;
         const propertyCount = window.properties ? window.properties.length : 0;
@@ -185,4 +189,4 @@ if (document.readyState === 'loading') {
     setTimeout(startOptimizedInitialization, 150);
 }
 
-console.log('✅ main.js otimizado carregado - Sistema pronto para inicializar');
+console.log('✅ main.js otimizado carregado - Sistema pronto para inicializar (v2.1)');
