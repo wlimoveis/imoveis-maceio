@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.3 - COM DELEGAÇÃO DE FILTROS PARA FilterManager
+// VERSÃO 3.4 - CORRIGIDA (getInitialProperties RESTAURADA)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -8,10 +8,11 @@
 // ✅ Correção de URLs delegada ao ImageUtils
 // ✅ Cache delegado ao TemplateCache (Support System)
 // ✅ Filtros delegados ao FilterManager (Cisão A)
-// ✅ CORREÇÃO: Erro de sintaxe resolvido
+// ✅ CORREÇÃO: getInitialProperties restaurada
+// ✅ CORREÇÃO: Verificação de propriedades undefined
 // ============================================================
 
-console.log('✅ properties.js v3.3 carregado - Gerenciamento de Imóveis (com delegação de filtros)');
+console.log('✅ properties.js v3.4 carregado - Gerenciamento de Imóveis (com correções)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -949,6 +950,21 @@ window.FeatureIconMapper = {
 };
 
 // ============================================================
+// INITIAL PROPERTIES - RESTAURADA
+// ============================================================
+function getInitialProperties() {
+    return [
+        { id: 1, title: "Casa 2Qtos - Forene", price: "R$ 180.000", location: "Residência Conj. Portal do Renascer, Forene", description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;", features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de garagem"]), type: "residencial", has_video: true, badge: "Destaque", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 2, title: "Apartamento 4Qtos (178m²) - Ponta Verde", price: "R$ 1.500.000", location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL", description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.", features: JSON.stringify(["4 Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]), type: "residencial", has_video: false, badge: "Luxo", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 99, title: "Loja Comercial - Centro", price: "R$ 350.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótima para comércio varejista, com grande fluxo de pessoas e fácil acesso.", features: JSON.stringify(["100m²", "Banheiro", "Ponto comercial", "Boa localização"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 100, title: "Sala Comercial - Ponta Verde", price: "R$ 280.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.", features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 101, title: "Loja Comercial - Centro", price: "R$ 450.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótimo para qualquer negócio.", features: JSON.stringify(["80m²", "Banheiro", "Ponto comercial", "Vidraça frontal"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 102, title: "Sala Comercial - Ponta Verde", price: "R$ 320.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Próximo a bancos e comércio.", features: JSON.stringify(["50m²", "Ar condicionado", "2 vagas garagem", "Recepção"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 103, title: "Galpão Comercial - Tabuleiro", price: "R$ 850.000", location: "Av. Menino Marcelo, Tabuleiro do Martins, Maceió/AL", description: "Galpão comercial para depósito ou indústria. Área ampla com escritório.", features: JSON.stringify(["300m²", "Pé direito alto", "Escritório", "Banheiros", "Estacionamento"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() }
+    ];
+}
+
+// ============================================================
 // DELEGAÇÃO DE FILTROS PARA O FilterManager (Cisão A)
 // ============================================================
 
@@ -1092,10 +1108,18 @@ window.renderProperties = function(filter, forceClearCache) {
     
     var container = document.getElementById('properties-container');
     if (!container) return;
-    if (!window.properties?.length) { container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>'; return; }
+    
+    // 🔴 CORREÇÃO: Verificar se properties existe e é um array
+    if (!window.properties || !Array.isArray(window.properties) || window.properties.length === 0) {
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>';
+        return;
+    }
 
     var filtered = window.filterPropertiesByType(window.properties, filter);
-    if (filtered.length === 0) { container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>'; return; }
+    if (filtered.length === 0) { 
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>'; 
+        return; 
+    }
 
     container.innerHTML = filtered.map(function(prop) { return window.propertyTemplates.generate(prop); }).join('');
     
@@ -1993,14 +2017,16 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.3
+// FIM DO ARQUIVO - properties.js v3.4
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.3
-// Última atualização: 2026-08-08
+// Versão: 3.4
+// Última atualização: 2026-08-09
+// ✅ CORRIGIDO: getInitialProperties restaurada
+// ✅ CORRIGIDO: Verificação de propriedades undefined
 // ✅ CORRIGIDO: Erro de sintaxe na linha 809
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
-// ✅ OTIMIZADO: Cache delegado ao TemplateCache (Support System)
+// ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
 // ============================================
