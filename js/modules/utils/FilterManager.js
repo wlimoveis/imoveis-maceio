@@ -9,10 +9,10 @@
 // ✅ CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL
 // ✅ CORREÇÃO FINAL: "Residencial" como default para visitantes
 // ✅ CORREÇÃO FINAL: "Todos" visível apenas para admin logado
-// ✅ Suporte a "Terrenos & Incorporações"
+// ✅ CORREÇÃO: Verificação de properties em filterFn (previne erro)
 // ============================================================
 
-console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdmin corrigido)');
+console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com verificação de properties)');
 
 (function() {
     'use strict';
@@ -51,7 +51,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
             
             // 4. 🔴 NÃO considerar ADMIN_PASSWORD como admin automático
             // A senha existe no sistema, mas o usuário precisa digitar para ser admin
-            // Apenas verificamos se há uma SESSÃO ativa
             
             return false;
         },
@@ -60,20 +59,26 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
         showAllForAdmin: true
     };
 
-    // ========== CATEGORIAS DE FILTRO ==========
+    // ========== CATEGORIAS DE FILTRO (COM VERIFICAÇÃO DE PROPERTIES) ==========
     const CATEGORY_CONFIG = {
         'todos': {
             label: 'Todos',
             icon: 'fa-list',
-            showOnlyForAdmin: true,  // 🔴 SÓ APARECE PARA ADMIN
-            filterFn: function(properties) { return properties; }
+            showOnlyForAdmin: true,
+            filterFn: function(properties) {
+                // 🔴 CORREÇÃO: Verificar se properties existe e é array
+                if (!properties || !Array.isArray(properties)) return [];
+                return properties;
+            }
         },
         'Residencial': {
             label: 'Residencial',
             icon: 'fa-home',
             showOnlyForAdmin: false,
-            isDefaultForVisitors: true,  // 🔴 DEFAULT PARA VISITANTES
+            isDefaultForVisitors: true,
             filterFn: function(properties) {
+                // 🔴 CORREÇÃO: Verificar se properties existe e é array
+                if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) { 
                     return p.type === 'residencial'; 
                 });
@@ -84,6 +89,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
             icon: 'fa-building',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
+                // 🔴 CORREÇÃO: Verificar se properties existe e é array
+                if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) { 
                     return p.type === 'comercial'; 
                 });
@@ -94,6 +101,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
             icon: 'fa-tractor',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
+                // 🔴 CORREÇÃO: Verificar se properties existe e é array
+                if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) { 
                     return p.type === 'rural' || p.rural === true; 
                 });
@@ -104,6 +113,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
             icon: 'fa-hand-holding-heart',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
+                // 🔴 CORREÇÃO: Verificar se properties existe e é array
+                if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) {
                     return p.badge === 'Terreno' || 
                            p.badge === 'Incorporação' ||
@@ -134,7 +145,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
     };
 
     // ========== FUNÇÕES EXISTENTES (DROPDOWNS DE BAIRROS) ==========
-    // [Todas as funções existentes permanecem intactas]
 
     function extractBairroFromLocation(location) {
         if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
@@ -859,6 +869,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdm
     console.log('✅ FilterManager completo carregado com sucesso!');
     console.log('🔧 CORREÇÃO FINAL: isAdmin() NÃO considera ADMIN_PASSWORD global');
     console.log('🔧 CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL');
+    console.log('🔧 CORREÇÃO: Verificação de properties em filterFn');
     console.log('🏠 CORREÇÃO FINAL: "Residencial" como default para visitantes');
     console.log('🛡️ CORREÇÃO FINAL: "Todos" visível apenas para admin logado');
 
@@ -878,10 +889,11 @@ function escapeHtml(str) {
 // FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.1 - Correção Final
+// Versão: 2.2 - Correção Final com verificação de properties
 // Última atualização: 2026-08-09
 // CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
 // CORREÇÃO: Admin só é detectado se painel está VISÍVEL
+// CORREÇÃO: Verificação de properties em filterFn
 // CORREÇÃO: "Residencial" como default para visitantes
 // CORREÇÃO: "Todos" visível apenas para admin logado
 // ============================================================
