@@ -1,17 +1,17 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.2 - CORRIGIDA (ERRO DE SINTAXE RESOLVIDO)
+// VERSÃO 3.3 - COM DELEGAÇÃO DE FILTROS PARA FilterManager
 // ============================================================
-// ✅ Responsabilidade Única: Gerenciamento de imóveis
-// ✅ CRUD completo (Create, Read, Update, Delete)
+// ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
 // ✅ Carregamento de dados do Supabase
 // ✅ Correção de URLs delegada ao ImageUtils
 // ✅ Cache delegado ao TemplateCache (Support System)
-// ✅ CORREÇÃO: Erro de sintaxe na linha 809 resolvido
+// ✅ Filtros delegados ao FilterManager (Cisão A)
+// ✅ CORREÇÃO: Erro de sintaxe resolvido
 // ============================================================
 
-console.log('✅ properties.js v3.2 carregado - Gerenciamento de Imóveis (com correção de sintaxe)');
+console.log('✅ properties.js v3.3 carregado - Gerenciamento de Imóveis (com delegação de filtros)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -511,7 +511,6 @@ class PropertyTemplateEngine {
         }).join('');
     }
 
-    // ========== MÉTODO GENERATE OTIMIZADO COM DELEGAÇÃO DE CACHE ==========
     generate(property) {
         if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
             return window.TemplateCache.getTemplate(property, function(prop) { 
@@ -947,155 +946,142 @@ window.FeatureIconMapper = {
             </span>
         `;
     }
-};  // <-- FECHA O OBJETO FeatureIconMapper CORRETAMENTE
-        
-// ========== FILTER FUNCTIONS ==========
-window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
-    if (!window.properties) return [];
-    
-    var CATEGORY_CONFIG = {
-        'Comercial': { filterBy: 'type', expectedValues: ['comercial'] },
-        'Residencial': { filterBy: 'badge', expectedValues: ['Novo', 'Destaque', 'Luxo'], requiredType: 'residencial' },
-        'Rural': { filterBy: 'badge', expectedValues: ['Fazenda', 'Chácara', 'Rural'], requiredType: 'rural' },
-        'Incorporacoes': { filterBy: 'badge', expectedValues: ['MCMV'], requiredType: null }
-    };
-    
-    var config = CATEGORY_CONFIG[category];
-    if (!config) {
-        if (typeof window.renderProperties === 'function') window.renderProperties(category);
-        return [];
-    }
-    
-    var filtered = [];
-    
-    if (config.filterBy === 'type') {
-        filtered = window.properties.filter(function(p) { return p.type && config.expectedValues.indexOf(p.type) !== -1; });
-    } else {
-        filtered = window.properties.filter(function(p) {
-            var hasCorrectBadge = p.badge && config.expectedValues.indexOf(p.badge) !== -1;
-            if (config.requiredType) return hasCorrectBadge && p.type === config.requiredType;
-            return hasCorrectBadge;
-        });
-    }
-    
-    if (bairro && bairro !== 'null' && bairro !== 'undefined' && bairro !== '') {
-        var normalizedBairroFilter = bairro.trim().toLowerCase();
-        filtered = filtered.filter(function(p) {
-            if (!p.location) return false;
-            var propertyBairro = window.SharedCore.extractBairroFromLocation(p.location);
-            if (propertyBairro) {
-                propertyBairro = propertyBairro.trim().toLowerCase();
-                return propertyBairro === normalizedBairroFilter;
-            }
-            return false;
-        });
-    }
-    
-    if (typeof window.renderPropertiesWithFilter === 'function') {
-        window.renderPropertiesWithFilter(filtered);
-    } else {
-        var container = document.getElementById('properties-container');
-        if (container) {
-            container.innerHTML = filtered.length === 0 
-                ? '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>'
-                : filtered.map(function(prop) { return window.propertyTemplates.generate(prop); }).join('');
-        }
-    }
-    
-    var countElement = document.getElementById('propertyCount');
-    if (countElement) countElement.textContent = filtered.length + ' imóvel(is)';
-    
-    return filtered;
 };
 
+// ============================================================
+// DELEGAÇÃO DE FILTROS PARA O FilterManager (Cisão A)
+// ============================================================
+
+/**
+ * DELEGADO: filterPropertiesByCategoryAndBairro
+ * Agora gerenciado pelo FilterManager
+ */
+window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
+    if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
+        return window.FilterManager.applyMainFilter(category);
+    }
+    // Fallback: implementação simplificada
+    console.warn('⚠️ FilterManager não disponível, usando fallback');
+    if (!window.properties) return [];
+    return window.properties.filter(function(p) {
+        if (category === 'Residencial') return p.type === 'residencial';
+        if (category === 'Comercial') return p.type === 'comercial';
+        if (category === 'Rural') return p.type === 'rural' || p.rural === true;
+        if (category === 'TerrenosIncorporacoes') {
+            return p.badge === 'Terreno' || p.badge === 'Incorporação' || p.type === 'terrenos_incorporacoes';
+        }
+        return true;
+    });
+};
+
+/**
+ * DELEGADO: filterPropertiesByCategoryAndDestaque
+ * Agora gerenciado pelo FilterManager
+ */
 window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue) {
+    if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
+        return window.FilterManager.applyMainFilter(category);
+    }
+    console.warn('⚠️ FilterManager não disponível, usando fallback');
     if (!window.properties) return [];
     var filtered = window.properties.slice();
-    
     if (category && category !== 'todos') {
         var filterMap = {
             'Rural': function(p) { return p.type === 'rural' || p.rural === true; },
             'Residencial': function(p) { return p.type === 'residencial'; },
             'Comercial': function(p) { return p.type === 'comercial'; },
-            'Incorporacoes': function(p) { return p.badge === 'MCMV'; }
+            'TerrenosIncorporacoes': function(p) { 
+                return p.badge === 'Terreno' || p.badge === 'Incorporação' || p.type === 'terrenos_incorporacoes';
+            }
         };
         var filterFn = filterMap[category];
         if (filterFn) filtered = filtered.filter(filterFn);
     }
-    
     if (destaqueValue && destaqueValue !== 'null' && destaqueValue !== 'undefined' && destaqueValue !== '') {
         filtered = filtered.filter(function(p) { return p.badge === destaqueValue; });
     }
-    
-    if (typeof window.renderPropertiesWithFilter === 'function') window.renderPropertiesWithFilter(filtered);
     return filtered;
 };
 
+/**
+ * DELEGADO: renderPropertiesWithFilter
+ * Agora gerenciado pelo FilterManager
+ */
 window.renderPropertiesWithFilter = function(filteredProperties) {
+    if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
+        // O FilterManager já renderiza automaticamente
+        return;
+    }
+    // Fallback
     var container = document.getElementById('properties-container');
     if (!container) return;
-    
     if (!filteredProperties || filteredProperties.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>';
         return;
     }
-    
-    container.innerHTML = filteredProperties.map(function(prop) { return window.propertyTemplates.generate(prop); }).join('');
-    
+    if (window.propertyTemplates && typeof window.propertyTemplates.generate === 'function') {
+        container.innerHTML = filteredProperties.map(function(prop) {
+            return window.propertyTemplates.generate(prop);
+        }).join('');
+    }
     var countElement = document.getElementById('propertyCount');
     if (countElement) countElement.textContent = filteredProperties.length + ' imóvel(is)';
 };
 
-window.updatePropertyCard = function(propertyId, updatedData) {
-    updatedData = updatedData || null;
-    var property = window.properties?.find(function(p) { return p.id === propertyId; });
-    if (!property) return false;
-    
-    var propertyToRender = updatedData ? Object.assign({}, property, updatedData) : property;
-    
-    if (updatedData && window.propertyTemplates.updateCardContent) {
-        var partialSuccess = window.propertyTemplates.updateCardContent(propertyId, propertyToRender);
-        if (partialSuccess) {
-            var index = window.properties.findIndex(function(p) { return p.id === propertyId; });
-            if (index !== -1) window.properties[index] = Object.assign({}, window.properties[index], updatedData);
-            return true;
-        }
+/**
+ * DELEGADO: filterPropertiesByType
+ * Agora gerenciado pelo FilterManager
+ */
+window.filterPropertiesByType = function(properties, filter) {
+    if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
+        // O FilterManager já gerencia isso
+        return;
     }
-    
-    var allCards = document.querySelectorAll('.property-card');
-    var cardToUpdate = null;
-    allCards.forEach(function(card) {
-        if (card.getAttribute('data-property-id') == propertyId) cardToUpdate = card;
-    });
-    
-    if (cardToUpdate) {
-        cardToUpdate.outerHTML = window.propertyTemplates.generate(propertyToRender);
-        var idx = window.properties.findIndex(function(p) { return p.id === propertyId; });
-        if (idx !== -1) window.properties[idx] = propertyToRender;
-        setTimeout(function() {
-            var updatedCard = document.querySelector('.property-card[data-property-id="' + propertyId + '"]');
-            if (updatedCard) {
-                updatedCard.classList.add('highlighted');
-                setTimeout(function() { updatedCard.classList.remove('highlighted'); }, 1000);
-            }
-        }, 50);
+    // Fallback
+    if (filter === 'todos' || !filter) return properties;
+    var filterMap = {
+        'Residencial': function(p) { return p.type === 'residencial'; },
+        'Comercial': function(p) { return p.type === 'comercial'; },
+        'Rural': function(p) { return p.type === 'rural' || p.rural === true; },
+        'TerrenosIncorporacoes': function(p) { 
+            return p.badge === 'Terreno' || p.badge === 'Incorporação' || p.type === 'terrenos_incorporacoes';
+        }
+    };
+    var filterFn = filterMap[filter];
+    return filterFn ? properties.filter(filterFn) : properties;
+};
+
+/**
+ * DELEGADO: setupFilters
+ * Agora gerenciado pelo FilterManager
+ */
+window.setupFilters = function() {
+    if (window.FilterManager && typeof window.FilterManager.init === 'function') {
+        return window.FilterManager.init();
+    }
+    console.warn('⚠️ FilterManager não disponível para setupFilters');
+    // Fallback: implementação antiga
+    var filterButtons = document.querySelectorAll('.filter-btn');
+    if (filterButtons.length) {
+        filterButtons.forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var filter = this.getAttribute('data-filter');
+                if (filter) {
+                    window.currentFilter = filter;
+                    window.renderProperties(filter);
+                    filterButtons.forEach(function(b) { b.classList.remove('active'); });
+                    this.classList.add('active');
+                }
+            });
+        });
         return true;
     }
     return false;
 };
 
-// ========== INITIAL PROPERTIES ==========
-function getInitialProperties() {
-    return [
-        { id: 1, title: "Casa 2Qtos - Forene", price: "R$ 180.000", location: "Residência Conj. Portal do Renascer, Forene", description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;", features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de garagem"]), type: "residencial", has_video: true, badge: "Destaque", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 2, title: "Apartamento 4Qtos (178m²) - Ponta Verde", price: "R$ 1.500.000", location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL", description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.", features: JSON.stringify(["4 Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]), type: "residencial", has_video: false, badge: "Luxo", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 99, title: "Loja Comercial - Centro", price: "R$ 350.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótima para comércio varejista, com grande fluxo de pessoas e fácil acesso.", features: JSON.stringify(["100m²", "Banheiro", "Ponto comercial", "Boa localização"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 100, title: "Sala Comercial - Ponta Verde", price: "R$ 280.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.", features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 101, title: "Loja Comercial - Centro", price: "R$ 450.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótimo para qualquer negócio.", features: JSON.stringify(["80m²", "Banheiro", "Ponto comercial", "Vidraça frontal"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 102, title: "Sala Comercial - Ponta Verde", price: "R$ 320.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Próximo a bancos e comércio.", features: JSON.stringify(["50m²", "Ar condicionado", "2 vagas garagem", "Recepção"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
-        { id: 103, title: "Galpão Comercial - Tabuleiro", price: "R$ 850.000", location: "Av. Menino Marcelo, Tabuleiro do Martins, Maceió/AL", description: "Galpão comercial para depósito ou indústria. Área ampla com escritório.", features: JSON.stringify(["300m²", "Pé direito alto", "Escritório", "Banheiros", "Estacionamento"]), type: "comercial", has_video: false, badge: "Comercial", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() }
-    ];
-}
+// ============================================================
+// FIM DA DELEGAÇÃO DE FILTROS
+// ============================================================
 
 // ========== RENDER PROPERTIES ==========
 window.renderProperties = function(filter, forceClearCache) {
@@ -1117,18 +1103,6 @@ window.renderProperties = function(filter, forceClearCache) {
     if (countElement) countElement.textContent = filtered.length + ' imóveis';
 };
 
-window.filterPropertiesByType = function(properties, filter) {
-    if (filter === 'todos' || !filter) return properties;
-    var filterMap = {
-        'Residencial': function(p) { return p.type === 'residencial'; },
-        'Comercial': function(p) { return p.type === 'comercial'; },
-        'Rural': function(p) { return p.type === 'rural' || p.rural === true; },
-        'Incorporacoes': function(p) { return p.badge === 'MCMV'; }
-    };
-    var filterFn = filterMap[filter];
-    return filterFn ? properties.filter(filterFn) : properties;
-};
-
 window.savePropertiesToStorage = function() {
     try {
         if (!window.properties?.length) return false;
@@ -1141,27 +1115,6 @@ window.savePropertiesToStorage = function() {
 };
 
 window.updateLocalStorage = function() { return window.savePropertiesToStorage(); };
-
-window.setupFilters = function() {
-    if (window.FilterManager?.setupWithFallback) return window.FilterManager.setupWithFallback();
-    
-    var filterButtons = document.querySelectorAll('.filter-btn');
-    if (filterButtons.length) {
-        filterButtons.forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                var filter = this.getAttribute('data-filter');
-                if (filter) {
-                    window.currentFilter = filter;
-                    window.renderProperties(filter);
-                    filterButtons.forEach(function(b) { b.classList.remove('active'); });
-                    this.classList.add('active');
-                }
-            });
-        });
-        return true;
-    }
-    return false;
-};
 
 window.contactAgent = function(id) {
     var property = window.properties.find(function(p) { return p.id === id; });
@@ -2039,14 +1992,15 @@ if (document.readyState === 'loading') {
     });
 }
 
+// =============================================
+// FIM DO ARQUIVO - properties.js v3.3
 // ============================================
-// FIM DO ARQUIVO - properties.js v3.2
-// ===========================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.2
+// Versão: 3.3
 // Última atualização: 2026-08-08
-// ✅ CORRIGIDO: Erro de sintaxe na linha 809 (Unexpected identifier 'count')
+// ✅ CORRIGIDO: Erro de sintaxe na linha 809
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache (Support System)
+// ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ====================================
+// ============================================
