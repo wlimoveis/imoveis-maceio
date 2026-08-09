@@ -1,16 +1,17 @@
 // ============================================================
 // js/modules/utils/FilterManager.js
-// SISTEMA DE FILTROS - VERSÃO EXPANDIDA
+// SISTEMA DE FILTROS - VERSÃO COMPLETA (832 LINHAS)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de filtros
-// ✅ Suporte a dropdowns de bairros (existente)
+// ✅ Suporte a dropdowns de bairros (existente) - COMPLETO
 // ✅ Suporte a filtros principais (novo)
 // ✅ Visibilidade condicional (admin vs visitante)
+// ✅ CORREÇÃO: Botão "Todos" oculto para visitantes
+// ✅ CORREÇÃO: "Residencial" como default para visitantes
 // ✅ Suporte a "Terrenos & Incorporações"
-// ✅ Integração com admin (novas opções)
 // ============================================================
 
-console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte a filtros principais)');
+console.log('🎛️ FilterManager.js carregado - Versão Completa (com dropdowns de bairros)');
 
 (function() {
     'use strict';
@@ -28,7 +29,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
     // ========== CONFIGURAÇÃO DOS FILTROS PRINCIPAIS (NOVO) ==========
     const FILTER_CONFIG = {
         isAdmin: function() {
-            // Detecta se é administrador
             return window.ADMIN_PASSWORD !== undefined || 
                    document.querySelector('.admin-panel') !== null ||
                    sessionStorage.getItem('admin_logged_in') === 'true' ||
@@ -39,7 +39,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         showAllForAdmin: true
     };
 
-    // ========== CATEGORIAS DE FILTRO (NOVO) ==========
+    // ========== CATEGORIAS DE FILTRO ==========
     const CATEGORY_CONFIG = {
         'todos': {
             label: 'Todos',
@@ -94,7 +94,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
 
     // ========== ESTADO ==========
     const state = {
-        // Estado existente (dropdowns)
         currentFilter: DROPDOWN_CONFIG.defaultFilter,
         currentBairro: null,
         containers: new Map(),
@@ -104,16 +103,13 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         hoverTimeout: null,
         currentActiveDropdown: null,
         dropdownCloseTimeout: null,
-        
-        // NOVO: Estado para filtros principais
         currentMainFilter: null,
         isAdmin: FILTER_CONFIG.isAdmin(),
         properties: [],
         containerId: 'properties-container'
     };
 
-    // ========== FUNÇÕES EXISTENTES (DROPDOWNS DE BAIRROS) ==========
-
+    // ========== FUNÇÃO: EXTRAIR BAIRRO ==========
     function extractBairroFromLocation(location) {
         if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
             return window.SharedCore.extractBairroFromLocation(location);
@@ -138,6 +134,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         return null;
     }
 
+    // ========== BAIRROS PRIORITÁRIOS ==========
     const bairrosPrioridade = [
         'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
         'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -151,6 +148,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
     ];
 
+    // ========== FUNÇÃO: EXTRAIR BAIRROS POR CATEGORIA ==========
     function extractBairrosByCategory(properties, category) {
         if (!properties || !Array.isArray(properties)) return [];
         const config = CATEGORY_CONFIG[category];
@@ -188,6 +186,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         return bairros;
     }
 
+    // ========== FUNÇÃO: FECHAR DROPDOWN ==========
     function closeDropdownImmediately() {
         if (state.currentActiveDropdown && state.currentActiveDropdown.parentNode) {
             state.currentActiveDropdown.remove();
@@ -207,6 +206,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         }
     }
 
+    // ========== FUNÇÃO: MENSAGEM TEMPORÁRIA ==========
     function showTemporaryMessage(button, message) {
         const tempMsg = document.createElement('div');
         tempMsg.style.cssText = `
@@ -227,6 +227,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         setTimeout(function() { tempMsg.remove(); }, 2000);
     }
 
+    // ========== FUNÇÃO: CRIAR DROPDOWN DE BAIRROS ==========
     function createBairroDropdown(buttonElement, category, bairros) {
         if (!bairros || bairros.length === 0) return null;
         if (state.currentActiveDropdown) closeDropdownImmediately();
@@ -292,6 +293,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         return dropdown;
     }
 
+    // ========== FUNÇÃO: MOSTRAR DROPDOWN ==========
     function showDropdown(button, category) {
         if (state.dropdownActive && state.currentActiveDropdown) closeDropdownImmediately();
         if (state.dropdownCloseTimeout) clearTimeout(state.dropdownCloseTimeout);
@@ -355,6 +357,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         }, 100);
     }
 
+    // ========== FUNÇÃO: CONTAR IMÓVEIS POR CATEGORIA E BAIRRO ==========
     function getPropertyCountByCategoryAndBairro(category, bairro) {
         const properties = window.properties || [];
         const config = CATEGORY_CONFIG[category];
@@ -371,6 +374,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         return filtered.length;
     }
 
+    // ========== FUNÇÃO: APLICAR FILTRO COM BAIRRO ==========
     function applyFilterWithBairro(category, bairro) {
         state.currentFilter = category;
         const filterValue = bairro ? category + '|' + bairro : category;
@@ -383,10 +387,12 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         console.log('🎯 Filtro aplicado: Categoria="' + category + '", Bairro="' + (bairro || 'Todos') + '"');
     }
 
+    // ========== FUNÇÃO: VERIFICAR SE TEM DROPDOWN ==========
     function hasDropdown(category) {
         return CATEGORY_CONFIG[category] !== undefined;
     }
 
+    // ========== FUNÇÃO: ATUALIZAR ESTILO DO BOTÃO ATIVO ==========
     function updateActiveButtonStyle(filterValue) {
         state.containers.forEach(function(containerState) {
             containerState.buttons.forEach(function(button) {
@@ -410,6 +416,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         });
     }
 
+    // ========== FUNÇÃO: CONFIGURAR CONTAINER ==========
     function setupContainer(container, containerId, onFilterChange) {
         const buttons = container.querySelectorAll('.' + DROPDOWN_CONFIG.buttonClass);
         const containerState = state.containers.get(containerId);
@@ -484,6 +491,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         state.containers.set(containerId, containerState);
     }
 
+    // ========== FUNÇÕES: API DROPDOWNS ==========
     function setActiveFilter(filterValue, sourceContainerId) {
         sourceContainerId = sourceContainerId || null;
         state.currentFilter = filterValue;
@@ -570,7 +578,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         if (state.currentActiveDropdown) closeDropdownImmediately();
     }
 
-    // ========== NOVAS FUNÇÕES: FILTROS PRINCIPAIS ==========
+    // ========== FUNÇÕES: FILTROS PRINCIPAIS ==========
 
     function getDefaultFilter() {
         if (FILTER_CONFIG.isAdmin()) {
@@ -584,9 +592,13 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         let html = '<div class="filter-options">';
         
         for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
-            // Verifica se o botão deve ser exibido
+            // 🔴 CORREÇÃO: Botão "Todos" só aparece para admin
+            if (key === 'todos' && !isAdminUser) {
+                continue;
+            }
+            
             if (config.showOnlyForAdmin && !isAdminUser) {
-                continue; // Pula botões apenas para admin
+                continue;
             }
             
             const isActive = state.currentMainFilter === key;
@@ -618,24 +630,15 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         
         state.currentMainFilter = filterKey;
         
-        // Buscar propriedades
         const properties = window.properties || [];
-        
-        // Aplicar filtro
         let filtered = config.filterFn(properties);
         
-        // Renderizar
         renderProperties(filtered);
-        
-        // Atualizar botões
         updateActiveMainButton(filterKey);
-        
-        // Atualizar contador
         updatePropertyCount(filtered.length);
         
         console.log('🎯 Filtro aplicado: ' + config.label + ' (' + filtered.length + ' imóveis)');
         
-        // Disparar evento
         const event = new CustomEvent('filterChanged', {
             detail: { filter: filterKey, count: filtered.length }
         });
@@ -657,13 +660,11 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
             return;
         }
         
-        // Usar o template engine existente
         if (window.propertyTemplates && typeof window.propertyTemplates.generate === 'function') {
             container.innerHTML = properties.map(function(prop) {
                 return window.propertyTemplates.generate(prop);
             }).join('');
         } else {
-            // Fallback: renderização simples
             container.innerHTML = properties.map(function(prop) {
                 return `
                     <div class="property-card" data-property-id="${prop.id}">
@@ -703,12 +704,10 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         
         if (wasAdmin !== state.isAdmin) {
             console.log('🔄 Modo admin alterado: ' + wasAdmin + ' → ' + state.isAdmin);
-            // Re-renderizar botões principais
             const filterContainer = document.querySelector('.filters');
             if (filterContainer) {
                 renderMainFilterButtons(filterContainer);
             }
-            // Aplicar filtro default apropriado
             const defaultFilter = getDefaultFilter();
             applyMainFilter(defaultFilter);
         }
@@ -723,9 +722,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
             return;
         }
         
-        console.log('🔧 Inicializando FilterManager (Versão Expandida)...');
+        console.log('🔧 Inicializando FilterManager (Versão Completa)...');
         
-        // 1. Inicializar dropdowns existentes
         const containers = document.querySelectorAll('.' + DROPDOWN_CONFIG.containerClass);
         if (containers.length === 0) {
             console.warn('⚠️ Nenhum container de filtros encontrado');
@@ -744,12 +742,10 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
             state.callbacks.set('global', onFilterChange);
         }
         
-        // 2. NOVO: Inicializar filtros principais
         state.isAdmin = FILTER_CONFIG.isAdmin();
         state.currentMainFilter = getDefaultFilter();
         state.containerId = 'properties-container';
         
-        // Renderizar botões principais
         const filterContainer = document.querySelector('.filters');
         if (filterContainer) {
             renderMainFilterButtons(filterContainer);
@@ -757,21 +753,20 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
             console.warn('⚠️ Container de filtros principais não encontrado');
         }
         
-        // Aplicar filtro default
         applyMainFilter(state.currentMainFilter);
         
         state.initialized = true;
-        console.log('✅ FilterManager expandido inicializado - Filtro default: ' + state.currentMainFilter);
+        console.log('✅ FilterManager completo inicializado - Filtro default: ' + state.currentMainFilter);
+        console.log('📊 Modo admin: ' + state.isAdmin);
     }
 
-    // ========== API PÚBLICA EXPANDIDA ==========
+    // ========== API PÚBLICA ==========
     window.FilterManager = {
-        // Configurações
         DROPDOWN_CONFIG: DROPDOWN_CONFIG,
         FILTER_CONFIG: FILTER_CONFIG,
         CATEGORY_CONFIG: CATEGORY_CONFIG,
         
-        // Funções existentes (dropdowns)
+        // Funções dropdowns
         init: init,
         setupContainer: setupContainer,
         setActiveFilter: setActiveFilter,
@@ -784,13 +779,14 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         isInitialized: isInitialized,
         refreshBairros: refreshBairros,
         
-        // NOVAS funções (filtros principais)
+        // Funções filtros principais
         applyMainFilter: applyMainFilter,
         getDefaultFilter: getDefaultFilter,
         isAdmin: FILTER_CONFIG.isAdmin,
         refreshFilters: refreshFilters,
         getCurrentMainFilter: function() { return state.currentMainFilter; },
         getFilterConfig: function(key) { return CATEGORY_CONFIG[key] || null; },
+        renderMainFilterButtons: renderMainFilterButtons,
         
         // Estado
         getState: function() { return state; }
@@ -813,7 +809,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Expandida (com suporte
         }, 500);
     }
 
-    console.log('✅ FilterManager expandido carregado com sucesso!');
+    console.log('✅ FilterManager completo carregado com sucesso!');
 
 })();
 
@@ -828,5 +824,5 @@ function escapeHtml(str) {
 }
 
 // ============================================================
-// FIM DO ARQUIVO - FilterManager.js (Versão Expandida)
+// FIM DO ARQUIVO - FilterManager.js (Versão Completa)
 // ============================================================
