@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.4 - CORRIGIDA (getInitialProperties RESTAURADA)
+// VERSÃO 3.5 - CORRIGIDA (filterPropertiesByType retorna array)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -9,10 +9,11 @@
 // ✅ Cache delegado ao TemplateCache (Support System)
 // ✅ Filtros delegados ao FilterManager (Cisão A)
 // ✅ CORREÇÃO: getInitialProperties restaurada
-// ✅ CORREÇÃO: Verificação de propriedades undefined
+// ✅ CORREÇÃO: filterPropertiesByType retorna array sempre
+// ✅ CORREÇÃO: renderProperties com verificações de segurança
 // ============================================================
 
-console.log('✅ properties.js v3.4 carregado - Gerenciamento de Imóveis (com correções)');
+console.log('✅ properties.js v3.5 carregado - Gerenciamento de Imóveis (com correções)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -965,7 +966,7 @@ function getInitialProperties() {
 }
 
 // ============================================================
-// DELEGAÇÃO DE FILTROS PARA O FilterManager (Cisão A)
+// DELEGAÇÃO DE FILTROS PARA O FilterManager (Cisão A) - CORRIGIDA
 // ============================================================
 
 /**
@@ -978,7 +979,7 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     }
     // Fallback: implementação simplificada
     console.warn('⚠️ FilterManager não disponível, usando fallback');
-    if (!window.properties) return [];
+    if (!window.properties || !Array.isArray(window.properties)) return [];
     return window.properties.filter(function(p) {
         if (category === 'Residencial') return p.type === 'residencial';
         if (category === 'Comercial') return p.type === 'comercial';
@@ -999,7 +1000,7 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
         return window.FilterManager.applyMainFilter(category);
     }
     console.warn('⚠️ FilterManager não disponível, usando fallback');
-    if (!window.properties) return [];
+    if (!window.properties || !Array.isArray(window.properties)) return [];
     var filtered = window.properties.slice();
     if (category && category !== 'todos') {
         var filterMap = {
@@ -1031,7 +1032,7 @@ window.renderPropertiesWithFilter = function(filteredProperties) {
     // Fallback
     var container = document.getElementById('properties-container');
     if (!container) return;
-    if (!filteredProperties || filteredProperties.length === 0) {
+    if (!filteredProperties || !Array.isArray(filteredProperties) || filteredProperties.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel encontrado para este filtro.</p>';
         return;
     }
@@ -1045,14 +1046,21 @@ window.renderPropertiesWithFilter = function(filteredProperties) {
 };
 
 /**
- * DELEGADO: filterPropertiesByType
+ * DELEGADO: filterPropertiesByType - CORRIGIDO (retorna array sempre)
  * Agora gerenciado pelo FilterManager
  */
 window.filterPropertiesByType = function(properties, filter) {
+    // 🔴 CORREÇÃO: Verificar se properties é válido
+    if (!properties || !Array.isArray(properties)) {
+        console.warn('⚠️ filterPropertiesByType: properties não é um array válido');
+        return []; // Retorna array vazio em vez de undefined
+    }
+    
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
         // O FilterManager já gerencia isso
-        return;
+        return properties;
     }
+    
     // Fallback
     if (filter === 'todos' || !filter) return properties;
     var filterMap = {
@@ -1099,7 +1107,7 @@ window.setupFilters = function() {
 // FIM DA DELEGAÇÃO DE FILTROS
 // ============================================================
 
-// ========== RENDER PROPERTIES ==========
+// ========== RENDER PROPERTIES - CORRIGIDA ==========
 window.renderProperties = function(filter, forceClearCache) {
     filter = filter || 'todos';
     forceClearCache = forceClearCache || false;
@@ -1110,12 +1118,26 @@ window.renderProperties = function(filter, forceClearCache) {
     if (!container) return;
     
     // 🔴 CORREÇÃO: Verificar se properties existe e é um array
-    if (!window.properties || !Array.isArray(window.properties) || window.properties.length === 0) {
+    if (!window.properties || !Array.isArray(window.properties)) {
+        console.warn('⚠️ renderProperties: window.properties não é um array');
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>';
+        return;
+    }
+    
+    if (window.properties.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>';
         return;
     }
 
+    // 🔴 CORREÇÃO: Garantir que filterPropertiesByType retorne um array
     var filtered = window.filterPropertiesByType(window.properties, filter);
+    
+    // 🔴 CORREÇÃO: Verificar se filtered é um array
+    if (!filtered || !Array.isArray(filtered)) {
+        console.warn('⚠️ renderProperties: filtered não é um array, usando properties');
+        filtered = window.properties;
+    }
+    
     if (filtered.length === 0) { 
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>'; 
         return; 
@@ -2017,13 +2039,14 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.4
+// FIM DO ARQUIVO - properties.js v3.5
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.4
+// Versão: 3.5
 // Última atualização: 2026-08-09
 // ✅ CORRIGIDO: getInitialProperties restaurada
-// ✅ CORRIGIDO: Verificação de propriedades undefined
+// ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
+// ✅ CORRIGIDO: renderProperties com verificações de segurança
 // ✅ CORRIGIDO: Erro de sintaxe na linha 809
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
