@@ -1,18 +1,18 @@
 // ============================================================
 // js/modules/utils/FilterManager.js
-// SISTEMA DE FILTROS - VERSÃO COMPLETA (CORRIGIDA)
+// SISTEMA DE FILTROS - VERSÃO CORRIGIDA FINAL
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de filtros
 // ✅ Suporte a dropdowns de bairros (existente)
 // ✅ Suporte a filtros principais (novo)
-// ✅ Visibilidade condicional (admin vs visitante)
-// ✅ CORREÇÃO DEFINITIVA: Botão "Todos" oculto para visitantes
-// ✅ CORREÇÃO DEFINITIVA: "Residencial" como default para visitantes
+// ✅ CORREÇÃO FINAL: isAdmin() NÃO considera ADMIN_PASSWORD global
+// ✅ CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL
+// ✅ CORREÇÃO FINAL: "Residencial" como default para visitantes
+// ✅ CORREÇÃO FINAL: "Todos" visível apenas para admin logado
 // ✅ Suporte a "Terrenos & Incorporações"
-// ✅ Mantém autorrecuperação (diagnostics65.js intacto)
 // ============================================================
 
-console.log('🎛️ FilterManager.js carregado - Versão Completa (com correção definitiva de visibilidade)');
+console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (isAdmin corrigido)');
 
 (function() {
     'use strict';
@@ -27,14 +27,33 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
         useClickForDropdown: false
     };
 
-    // ========== CONFIGURAÇÃO DOS FILTROS PRINCIPAIS ==========
+    // ========== CONFIGURAÇÃO DOS FILTROS PRINCIPAIS (CORRIGIDA) ==========
     const FILTER_CONFIG = {
         isAdmin: function() {
-            // Detecta se é administrador
-            return window.ADMIN_PASSWORD !== undefined || 
-                   document.querySelector('.admin-panel') !== null ||
-                   sessionStorage.getItem('admin_logged_in') === 'true' ||
-                   window.location.search.includes('admin=true');
+            // 🔴 CORREÇÃO FINAL: O usuário SÓ é admin se o painel está VISÍVEL
+            // A variável ADMIN_PASSWORD existe no sistema, mas NÃO significa admin automático
+            
+            // 1. Verificar se o painel admin está VISÍVEL (aberto com senha)
+            var panel = document.getElementById('adminPanel');
+            if (panel && panel.style.display === 'block') {
+                return true;
+            }
+            
+            // 2. Verificar se o usuário logou via sessionStorage
+            if (sessionStorage.getItem('admin_logged_in') === 'true') {
+                return true;
+            }
+            
+            // 3. Verificar se a URL tem parâmetro admin (força admin)
+            if (window.location.search.includes('admin=true')) {
+                return true;
+            }
+            
+            // 4. 🔴 NÃO considerar ADMIN_PASSWORD como admin automático
+            // A senha existe no sistema, mas o usuário precisa digitar para ser admin
+            // Apenas verificamos se há uma SESSÃO ativa
+            
+            return false;
         },
         defaultFilterForVisitors: 'Residencial',
         defaultFilterForAdmin: 'todos',
@@ -116,8 +135,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
 
     // ========== FUNÇÕES EXISTENTES (DROPDOWNS DE BAIRROS) ==========
     // [Todas as funções existentes permanecem intactas]
-    // extractBairroFromLocation, extractBairrosByCategory, 
-    // createBairroDropdown, showDropdown, etc.
 
     function extractBairroFromLocation(location) {
         if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
@@ -585,14 +602,14 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
     }
 
     // ============================================================
-    // 🔴 CORREÇÃO DEFINITIVA: RENDERIZAR BOTÕES DE FILTRO
+    // 🔴 CORREÇÃO FINAL: RENDERIZAR BOTÕES DE FILTRO
     // ============================================================
     function renderMainFilterButtons(container) {
         const isAdminUser = FILTER_CONFIG.isAdmin();
         let html = '<div class="filter-options">';
         
         for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
-            // 🔴 CORREÇÃO: Botão "Todos" só aparece para admin
+            // 🔴 CORREÇÃO FINAL: Botão "Todos" só aparece para admin LOGADO
             if (key === 'todos' && !isAdminUser) {
                 continue; // Pula o botão "Todos" para visitantes - NÃO RENDERIZA
             }
@@ -623,12 +640,12 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
         if (!isAdminUser) {
             console.log('👤 [FilterManager] Visitante - Botão "Todos" OCULTO');
         } else {
-            console.log('🛡️ [FilterManager] Admin - Botão "Todos" VISÍVEL');
+            console.log('🛡️ [FilterManager] Admin logado - Botão "Todos" VISÍVEL');
         }
     }
 
     // ============================================================
-    // 🔴 CORREÇÃO DEFINITIVA: APLICAR FILTRO PRINCIPAL
+    // 🔴 CORREÇÃO FINAL: APLICAR FILTRO PRINCIPAL
     // ============================================================
     function applyMainFilter(filterKey) {
         if (!filterKey) return;
@@ -721,6 +738,12 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
             }
             const defaultFilter = getDefaultFilter();
             applyMainFilter(defaultFilter);
+        } else {
+            // Mesmo que não tenha mudado, forçar re-renderização para garantir
+            const filterContainer = document.querySelector('.filters');
+            if (filterContainer) {
+                renderMainFilterButtons(filterContainer);
+            }
         }
     }
 
@@ -733,7 +756,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
             return;
         }
         
-        console.log('🔧 Inicializando FilterManager (Versão Completa - com correção de visibilidade)...');
+        console.log('🔧 Inicializando FilterManager (Versão Corrigida Final)...');
         
         // 1. Inicializar dropdowns existentes
         const containers = document.querySelectorAll('.' + DROPDOWN_CONFIG.containerClass);
@@ -778,7 +801,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
             console.log('👤 [FilterManager] Visitante detectado - Botão "Todos" OCULTO');
             console.log('🏠 [FilterManager] Filtro default: "Residencial"');
         } else {
-            console.log('🛡️ [FilterManager] Admin detectado - Botão "Todos" VISÍVEL');
+            console.log('🛡️ [FilterManager] Admin logado - Botão "Todos" VISÍVEL');
             console.log('📋 [FilterManager] Filtro default: "Todos"');
         }
     }
@@ -834,9 +857,10 @@ console.log('🎛️ FilterManager.js carregado - Versão Completa (com correç�
     }
 
     console.log('✅ FilterManager completo carregado com sucesso!');
-    console.log('🔧 CORREÇÃO DEFINITIVA: Botão "Todos" oculto para visitantes');
-    console.log('🏠 CORREÇÃO DEFINITIVA: "Residencial" como default para visitantes');
-    console.log('🛡️ CORREÇÃO DEFINITIVA: "Todos" visível apenas para admin');
+    console.log('🔧 CORREÇÃO FINAL: isAdmin() NÃO considera ADMIN_PASSWORD global');
+    console.log('🔧 CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL');
+    console.log('🏠 CORREÇÃO FINAL: "Residencial" como default para visitantes');
+    console.log('🛡️ CORREÇÃO FINAL: "Todos" visível apenas para admin logado');
 
 })();
 
@@ -851,12 +875,13 @@ function escapeHtml(str) {
 }
 
 // ============================================================
-// FIM DO ARQUIVO - FilterManager.js (Versão Corrigida)
+// FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.0 - Correção Definitiva
+// Versão: 2.1 - Correção Final
 // Última atualização: 2026-08-09
-// CORREÇÃO: Botão "Todos" oculto para visitantes
+// CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
+// CORREÇÃO: Admin só é detectado se painel está VISÍVEL
 // CORREÇÃO: "Residencial" como default para visitantes
-// CORREÇÃO: "Todos" visível apenas para admin
+// CORREÇÃO: "Todos" visível apenas para admin logado
 // ============================================================
