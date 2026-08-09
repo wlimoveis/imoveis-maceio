@@ -1,7 +1,8 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.4
-// CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
+// js/modules/admin.js - Versão ESTÁVEL v2.5
+// ✅ CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
+// ✅ NOVAS OPÇÕES: Terrenos & Incorporações, Terreno, Incorporação (Cisão A)
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.4');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.5');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -92,6 +93,9 @@ window.toggleAdminPanel = function() {
     panel.style.display = 'block';
     window.resetAdminFormCompletely(false);
     switchToManageTab();
+    
+    // Disparar evento para atualizar campos do admin
+    document.dispatchEvent(new CustomEvent('adminPanelOpened'));
     
     setTimeout(function() {
         panel.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -252,9 +256,21 @@ window.saveProperty = async function() {
             propertyData[field.key] = el ? (el.type === 'select-one' ? el.value : el.value.trim()) : '';
         });
         
-        if (!propertyData.title || !propertyData.price || !propertyData.location) throw new Error('Preencha Título, Preço e Localização!');
+        // Validar campos obrigatórios
+        if (!propertyData.title || !propertyData.price || !propertyData.location) {
+            throw new Error('Preencha Título, Preço e Localização!');
+        }
         
-        if (window.SharedCore.PriceFormatter?.formatForAdmin) propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
+        // Validar se o tipo é "Terrenos & Incorporações" e badge é compatível
+        if (propertyData.type === 'terrenos_incorporacoes') {
+            if (propertyData.badge !== 'Terreno' && propertyData.badge !== 'Incorporação') {
+                throw new Error('Para "Terrenos & Incorporações", selecione "Terreno" ou "Incorporação" no campo Destaque!');
+            }
+        }
+        
+        if (window.SharedCore.PriceFormatter?.formatForAdmin) {
+            propertyData.price = window.SharedCore.PriceFormatter.formatForAdmin(propertyData.price);
+        }
         
         propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
         
@@ -276,8 +292,11 @@ window.saveProperty = async function() {
         if (window.editingPropertyId) {
             if (typeof window.updateProperty === 'function') {
                 const updateResult = await window.updateProperty(window.editingPropertyId, propertyData);
-                if (updateResult?.success && typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Imóvel atualizado com sucesso!', 'success', 3000);
-                else if (typeof window.showAdminNotification === 'function') window.showAdminNotification('⚠️ Imóvel salvo apenas localmente', 'info', 3000);
+                if (updateResult?.success && typeof window.showAdminNotification === 'function') {
+                    window.showAdminNotification('✅ Imóvel atualizado com sucesso!', 'success', 3000);
+                } else if (typeof window.showAdminNotification === 'function') {
+                    window.showAdminNotification('⚠️ Imóvel salvo apenas localmente', 'info', 3000);
+                }
             }
             setTimeout(() => {
                 if (typeof window.updatePropertyCard === 'function') window.updatePropertyCard(window.editingPropertyId);
@@ -292,7 +311,9 @@ window.saveProperty = async function() {
             if (typeof window.addNewProperty === 'function') {
                 const result = await window.addNewProperty(newProperty);
                 if (result) {
-                    if (typeof window.showAdminNotification === 'function') window.showAdminNotification('✅ Imóvel criado com sucesso!', 'success', 3000);
+                    if (typeof window.showAdminNotification === 'function') {
+                        window.showAdminNotification('✅ Imóvel criado com sucesso!', 'success', 3000);
+                    }
                     setTimeout(() => { if (typeof window.renderProperties === 'function') window.renderProperties('todos'); }, 300);
                     setTimeout(() => window.resetAdminFormCompletely(true), 1500);
                 } else throw new Error('addNewProperty retornou null');
@@ -300,8 +321,11 @@ window.saveProperty = async function() {
         }
     } catch (error) {
         console.error('[ADMIN] ❌ Erro ao salvar imóvel:', error);
-        if (typeof window.showAdminNotification === 'function') window.showAdminNotification(`❌ Erro: ${error.message}`, 'error', 5000);
-        else alert(`❌ Erro: ${error.message}`);
+        if (typeof window.showAdminNotification === 'function') {
+            window.showAdminNotification(`❌ Erro: ${error.message}`, 'error', 5000);
+        } else {
+            alert(`❌ Erro: ${error.message}`);
+        }
     }
 };
 
@@ -483,9 +507,82 @@ function ensureAutocomplete(retries = 5, delay = 100) {
     return false;
 }
 
+// ============================================================
+// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A)
+// ============================================================
+
+/**
+ * ATUALIZA OS CAMPOS DO FORMULÁRIO ADMIN
+ * Adiciona novas opções para Terrenos & Incorporações
+ */
+function updateAdminFormFields() {
+    console.log('🔄 [ADMIN] Atualizando campos do formulário...');
+    
+    // 1. Campo TIPO - Adicionar "Terrenos & Incorporações"
+    const typeSelect = document.getElementById('propType');
+    if (typeSelect) {
+        let exists = false;
+        for (let i = 0; i < typeSelect.options.length; i++) {
+            if (typeSelect.options[i].value === 'terrenos_incorporacoes') {
+                exists = true;
+                break;
+            }
+        }
+        
+        if (!exists) {
+            const option = document.createElement('option');
+            option.value = 'terrenos_incorporacoes';
+            option.textContent = 'Terrenos & Incorporações';
+            typeSelect.appendChild(option);
+            console.log('✅ [ADMIN] Opção "Terrenos & Incorporações" adicionada ao campo TIPO');
+        }
+    }
+    
+    // 2. Campo DESTAQUE - Adicionar "Terreno"
+    const badgeSelect = document.getElementById('propBadge');
+    if (badgeSelect) {
+        let existsTerreno = false;
+        let existsIncorporacao = false;
+        
+        for (let i = 0; i < badgeSelect.options.length; i++) {
+            if (badgeSelect.options[i].value === 'Terreno') {
+                existsTerreno = true;
+            }
+            if (badgeSelect.options[i].value === 'Incorporação') {
+                existsIncorporacao = true;
+            }
+        }
+        
+        if (!existsTerreno) {
+            const option1 = document.createElement('option');
+            option1.value = 'Terreno';
+            option1.textContent = 'Terreno';
+            badgeSelect.appendChild(option1);
+            console.log('✅ [ADMIN] Opção "Terreno" adicionada ao campo DESTAQUE');
+        }
+        
+        if (!existsIncorporacao) {
+            const option2 = document.createElement('option');
+            option2.value = 'Incorporação';
+            option2.textContent = 'Incorporação';
+            badgeSelect.appendChild(option2);
+            console.log('✅ [ADMIN] Opção "Incorporação" adicionada ao campo DESTAQUE');
+        }
+    }
+    
+    console.log('✅ [ADMIN] Campos do formulário atualizados com sucesso!');
+}
+
+// ============================================================
+// FIM DAS ATUALIZAÇÕES DO ADMIN
+// ============================================================
+
 window.setupForm = function() {
     const form = document.getElementById('propertyForm');
     if (!form) return;
+    
+    // Atualizar campos do formulário com novas opções
+    updateAdminFormFields();
     
     if (window.setupPriceAutoFormat) window.setupPriceAutoFormat();
     
@@ -529,6 +626,9 @@ window.setupAdminUI = function() {
         cancelBtn.style.display = 'none';
     }
     
+    // Atualizar campos do formulário ao carregar o admin
+    setTimeout(updateAdminFormFields, 300);
+    
     if (typeof window.setupForm === 'function') setTimeout(window.setupForm, 100);
 };
 
@@ -548,6 +648,31 @@ window.getAutocompleteStatus = () => window.AUTOCOMPLETE_ACTIVE;
 window.stopHealthCheck = stopHealthCheck;
 window.switchToManageTab = switchToManageTab;
 window.switchToFormTab = switchToFormTab;
+window.updateAdminFormFields = updateAdminFormFields;
+
+// ============================================================
+// INICIALIZAÇÃO DAS NOVAS OPÇÕES
+// ============================================================
+
+// Executar quando o DOM estiver pronto
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', function() {
+        setTimeout(updateAdminFormFields, 500);
+    });
+} else {
+    setTimeout(updateAdminFormFields, 500);
+}
+
+// Também executar quando o painel admin for aberto
+document.addEventListener('adminPanelOpened', function() {
+    setTimeout(updateAdminFormFields, 100);
+});
+
+// ============================================================
+// FIM DAS ATUALIZAÇÕES DO ADMIN
+// ============================================================
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
+
+console.log('✅ admin.js v2.5 carregado - Com suporte a Terrenos & Incorporações');
