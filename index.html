@@ -1,7 +1,7 @@
 <!-- ===========================================================
      index.html
      PÁGINA PRINCIPAL - WEBER LESSA CORRETOR & CONSULTOR
-     ✅ Versão: 2.12
+     ✅ Versão: 2.13
      ✅ Responsivo: Desktop, Tablet e Mobile
      ✅ Otimizado: Performance e SEO
      ✅ SEO: Meta tags, Open Graph, Sitemap
@@ -15,6 +15,7 @@
      ✅ CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
      ✅ MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
      ✅ MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
+     ✅ CISÃO A: Botão "Incorporações & Empreendimentos" renomeado para "Terrenos & Incorporações"
      ============================================================ -->
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -42,8 +43,8 @@
     <title>Weber Lessa Corretor &amp; Consultor - Imóveis em Maceió - CRECI 654/AL</title>
 
     <!-- ========== META TAGS DE SEO ========== -->
-    <meta name="description" content="Encontre imóveis em Maceió com Weber Lessa Corretor &amp; Consultor. Especialista em venda, compra e regularização de imóveis residenciais, comerciais e rurais. CRECI: 654/AL. +30 anos de experiência.">
-    <meta name="keywords" content="imóveis Maceió, corretor de imóveis, Weber Lessa, compra e venda, regularização de imóveis, CRECI 654, imóveis residenciais, imóveis comerciais, propriedades rurais, Maceió-AL">
+    <meta name="description" content="Encontre imóveis em Maceió com Weber Lessa Corretor &amp; Consultor. Especialista em venda, compra e regularização de imóveis residenciais, comerciais, rurais, terrenos e incorporações. CRECI: 654/AL. +30 anos de experiência.">
+    <meta name="keywords" content="imóveis Maceió, corretor de imóveis, Weber Lessa, compra e venda, regularização de imóveis, CRECI 654, imóveis residenciais, imóveis comerciais, propriedades rurais, terrenos, incorporações, Maceió-AL">
     <meta name="robots" content="index, follow">
     <meta name="author" content="Weber Lessa Corretor &amp; Consultor">
     <meta name="geo.region" content="BR-AL">
@@ -94,12 +95,12 @@
     <!-- ========== SCRIPT DE DIAGNÓSTICO PARA GITHUB ACTIONS ========== -->
     <script>
         console.log('✅ [index.html] Página carregada com sucesso');
-        console.log('📊 [index.html] Versão: 2.12');
+        console.log('📊 [index.html] Versão: 2.13');
         console.log('📊 [index.html] Status: CARREGADO');
         console.log('📊 [index.html] Timestamp: ' + new Date().toISOString());
 
         window.__INDEX_HTML_LOADED = true;
-        window.__INDEX_HTML_VERSION = '2.12';
+        window.__INDEX_HTML_VERSION = '2.13';
         window.__INDEX_HTML_STATUS = 'success';
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -222,7 +223,13 @@
         <!-- ========== IMÓVEIS SECTION ========== -->
         <section class="properties" id="properties">
             <div class="section-title"><h2>Imóveis em Destaque</h2><p>Confira nossas melhores oportunidades em Maceió e região</p></div>
-            <div class="filters"><h3>Filtrar por:</h3><div class="filter-options"><button class="filter-btn active" data-tooltip="Ver todos os imóveis">Todos</button><button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button><button class="filter-btn" data-tooltip="Lojas, salas e galpões">Comercial</button><button class="filter-btn" data-tooltip="Sítios, chácaras e fazendas">Rural</button><button class="filter-btn" data-tooltip="Incorporações e Empreendimentos">Incorporações &amp; Empreendimentos</button></div></div>
+            <div class="filters"><h3>Filtrar por:</h3><div class="filter-options">
+                <button class="filter-btn active" data-tooltip="Ver todos os imóveis">Todos</button>
+                <button class="filter-btn" data-tooltip="Apartamentos e casas">Residencial</button>
+                <button class="filter-btn" data-tooltip="Lojas, salas e galpões">Comercial</button>
+                <button class="filter-btn" data-tooltip="Sítios, chácaras e fazendas">Rural</button>
+                <button class="filter-btn" data-tooltip="Terrenos e Incorporações">Terrenos &amp; Incorporações</button>
+            </div></div>
             <div class="property-grid" id="properties-container"></div>
         </section>
         <!-- ========== FIM DOS IMÓVEIS ========== -->
@@ -303,6 +310,7 @@
                 <a href="#">Financiamento</a>
                 <a href="#">Regularização</a>
                 <a href="#">Minha Casa Minha Vida</a>
+                <a href="#">Terrenos</a>
             </div>
         </div>
 
@@ -409,11 +417,12 @@
 
                     <div class="form-row-2cols">
                         <div class="form-group">
-                            <label><i class="fas fa-building" aria-hidden="true"></i> TIPO</label>
-                            <select id="propType">
+                            <label><i class="fas fa-building" aria-hidden="true"></i> TIPO *</label>
+                            <select id="propType" required>
                                 <option value="residencial">Residencial</option>
                                 <option value="comercial">Comercial</option>
                                 <option value="rural">Rural</option>
+                                <option value="terrenos_incorporacoes">Terrenos &amp; Incorporações</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -425,6 +434,8 @@
                                 <option value="MCMV">Incorporação</option>
                                 <option value="Fazenda">Fazenda</option>
                                 <option value="Chacara">Chácara</option>
+                                <option value="Terreno">Terreno</option>
+                                <option value="Incorporação">Incorporação</option>
                             </select>
                         </div>
                     </div>
@@ -590,11 +601,12 @@
          FIM DO ARQUIVO - index.html
          ============================================================
          STATUS: ✅ CARREGADO COM SUCESSO
-         Versão: 2.12
-         Última atualização: 2026-07-19
+         Versão: 2.13
+         Última atualização: 2026-08-08
          CORREÇÃO: video-indicator removido - gerenciado APENAS pelo gallery.js
          MELHORIA: Campos Descrição e Características com altura ampliada e barra vertical
          MELHORIA: Logo com detecção automática (SVG prioritário, PNG fallback)
+         CISÃO A: Botão "Incorporações & Empreendimentos" renomeado para "Terrenos & Incorporações"
          ============================================================ -->
 </body>
 </html>
