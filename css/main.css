@@ -2,7 +2,7 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.6
+   ✅ Versão: 2.7
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
@@ -10,6 +10,7 @@
    ✅ CORREÇÃO: Contraste FORÇADO com !important (PageSpeed Insights)
    ✅ CORREÇÃO: Contraste do CTA Button, Badges e Rural Tags
    ✅ CORREÇÃO: Especificidade aumentada para sobrescrever estilos inline
+   ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -17,16 +18,16 @@
     --primary: #1a5276;
     --secondary: #2980b9;
     --accent: #3498db;
-    --gold: #d4a017;      /* Dourado mais escuro para melhor contraste */
+    --gold: #d4a017;
     --gold-light: #f39c12;
-    --green: #1e8449;     /* Verde mais escuro para melhor contraste */
+    --green: #1e8449;
     --green-light: #27ae60;
     --text: #2c3e50;
     --light: #ecf0f1;
     --dark: #2c3e50;
     --success: #1e8449;
     --white: #ffffff;
-    --whatsapp: #075e54;  /* WhatsApp mais escuro para contraste */
+    --whatsapp: #075e54;
     --whatsapp-hover: #0a7a6b;
 }
 
@@ -468,6 +469,122 @@ div.property-badge,
     color: #ffffff !important;
 }
 
+/* ============================================================
+   NOVO: FAIXAS DIAGONAIS PARA DESTAQUES MÚLTIPLOS
+   ============================================================ */
+
+/* Container das faixas diagonais */
+.diagonal-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 5;
+}
+
+/* Estilo base para cada faixa diagonal */
+.diagonal-badge {
+    position: absolute;
+    left: -35px;
+    transform: rotate(-40deg);
+    text-align: center;
+    white-space: nowrap;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    pointer-events: none;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+/* Tamanhos das faixas */
+.diagonal-badge.large {
+    font-size: 1.1rem;
+    padding: 8px 40px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    width: 220px;
+}
+
+.diagonal-badge.medium {
+    font-size: 0.85rem;
+    padding: 6px 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    width: 200px;
+}
+
+.diagonal-badge.small {
+    font-size: 0.7rem;
+    padding: 5px 25px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    width: 180px;
+}
+
+/* Efeito de brilho nas faixas */
+.diagonal-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+/* Cores das faixas - serão aplicadas via JavaScript também */
+.diagonal-badge.color-luxo { background: #d4a017; color: #1a1a2e; }
+.diagonal-badge.color-novo { background: #27ae60; color: #ffffff; }
+.diagonal-badge.color-destaque { background: #2980b9; color: #ffffff; }
+.diagonal-badge.color-lancamento { background: #e74c3c; color: #ffffff; }
+.diagonal-badge.color-oportunidade { background: #f39c12; color: #1a1a2e; }
+.diagonal-badge.color-exclusivo { background: #8e44ad; color: #ffffff; }
+.diagonal-badge.color-imperdivel { background: #e67e22; color: #ffffff; }
+.diagonal-badge.color-ultima-unidade { background: #c0392b; color: #ffffff; }
+.diagonal-badge.color-beira-mar { background: #1abc9c; color: #ffffff; }
+.diagonal-badge.color-vista-mar { background: #3498db; color: #ffffff; }
+.diagonal-badge.color-com-lazer { background: #2ecc71; color: #1a1a2e; }
+.diagonal-badge.color-pronto-para-morar { background: #9b59b6; color: #ffffff; }
+.diagonal-badge.color-alto-padrao { background: #d4a017; color: #1a1a2e; }
+
+/* Responsividade das faixas diagonais */
+@media (max-width: 768px) {
+    .diagonal-badge.large {
+        font-size: 0.9rem;
+        padding: 6px 25px;
+        width: 160px;
+        left: -25px;
+    }
+    .diagonal-badge.medium {
+        font-size: 0.7rem;
+        padding: 4px 20px;
+        width: 140px;
+        left: -20px;
+    }
+    .diagonal-badge.small {
+        font-size: 0.6rem;
+        padding: 3px 15px;
+        width: 120px;
+        left: -15px;
+    }
+}
+
+/* Animações opcionais das faixas */
+.diagonal-badge:hover {
+    transform: rotate(-40deg) scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== FIM DAS FAIXAS DIAGONAIS ========== */
+
 .property-content {
     padding: 1.5rem;
 }
@@ -586,7 +703,6 @@ span.rural-tag:hover,
 }
 
 /* ========== BOTÃO WHATSAPP - OTIMIZADO PARA PERFORMANCE ========== */
-/* ✅ CORREÇÃO: Animação usa transform + opacity em vez de box-shadow */
 @keyframes whatsappPulse {
     0% {
         transform: scale(1);
@@ -1369,6 +1485,7 @@ span.feature-tag.rural-tag {
    FIM DO ARQUIVO - main.css
    ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.6
-   Última atualização: 2026-06-23
+   Versão: 2.7
+   Última atualização: 2026-08-10
+   NOVO: Faixas diagonais para Destaques Múltiplos
    ============================================================ */
