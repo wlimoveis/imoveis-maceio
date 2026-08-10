@@ -1,9 +1,9 @@
-// js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE E TIMESTAMPS
+// js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE, TIMESTAMPS E FAIXAS DIAGONAIS
 // ✅ Funções de visualização delegadas ao SharedCore
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
-// ✅ NOVO: Sistema de Destaques Múltiplos (Faixas Diagonais) - Destaque1 e Destaque2
-console.log('🚀 gallery.js carregado - v2.4 com Faixas Diagonais');
+// ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
+console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
 // ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
@@ -179,6 +179,112 @@ window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel
     `;
 };
 
+// ========== NOVO: GERAR FAIXAS DIAGONAIS ==========
+function generateDiagonalBadges(property) {
+    const badges = [];
+    const colors = {
+        'Luxo': { bg: '#d4a017', color: '#1a1a2e' },
+        'Novo': { bg: '#27ae60', color: '#ffffff' },
+        'Destaque': { bg: '#2980b9', color: '#ffffff' },
+        'Lançamento': { bg: '#e74c3c', color: '#ffffff' },
+        'Oportunidade': { bg: '#f39c12', color: '#1a1a2e' },
+        'Exclusivo': { bg: '#8e44ad', color: '#ffffff' },
+        'Imperdível': { bg: '#e67e22', color: '#ffffff' },
+        'Última Unidade': { bg: '#c0392b', color: '#ffffff' },
+        'Beira Mar': { bg: '#1abc9c', color: '#ffffff' },
+        'Vista Mar': { bg: '#3498db', color: '#ffffff' },
+        'Com Lazer': { bg: '#2ecc71', color: '#1a1a2e' },
+        'Pronto para Morar': { bg: '#9b59b6', color: '#ffffff' },
+        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e' }
+    };
+
+    // Badge principal (DESTAQUE)
+    if (property.badge && property.badge !== 'Nenhum') {
+        const color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff' };
+        badges.push({
+            text: property.badge,
+            bg: color.bg,
+            color: color.color,
+            position: 0,
+            size: 'large'
+        });
+    }
+
+    // Badge 1 (DESTAQUE1)
+    if (property.badge1 && property.badge1 !== 'Nenhum') {
+        const color = colors[property.badge1] || { bg: '#34495e', color: '#ffffff' };
+        badges.push({
+            text: property.badge1,
+            bg: color.bg,
+            color: color.color,
+            position: 1,
+            size: 'medium'
+        });
+    }
+
+    // Badge 2 (DESTAQUE2)
+    if (property.badge2 && property.badge2 !== 'Nenhum') {
+        const color = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff' };
+        badges.push({
+            text: property.badge2,
+            bg: color.bg,
+            color: color.color,
+            position: 2,
+            size: 'small'
+        });
+    }
+
+    return badges;
+}
+
+// ========== NOVO: RENDERIZAR FAIXAS DIAGONAIS NO HTML ==========
+function renderDiagonalBadges(property) {
+    const badges = generateDiagonalBadges(property);
+    if (badges.length === 0) return '';
+
+    // Configurações de posicionamento
+    const baseTop = 15;
+    const spacing = 45;
+
+    return badges.map((badge, index) => {
+        const top = baseTop + (index * spacing);
+        const isFirst = index === 0;
+        const fontSize = isFirst ? '1.1rem' : (badge.size === 'medium' ? '0.85rem' : '0.7rem');
+        const padding = isFirst ? '8px 40px' : '6px 30px';
+        const opacity = 1 - (index * 0.1);
+        const zIndex = 10 - index;
+
+        return `
+            <div class="diagonal-badge ${badge.size}" 
+                 style="
+                    position: absolute;
+                    top: ${top}px;
+                    left: -35px;
+                    transform: rotate(-40deg);
+                    background: ${badge.bg};
+                    color: ${badge.color};
+                    padding: ${padding};
+                    font-size: ${fontSize};
+                    font-weight: ${isFirst ? '900' : '700'};
+                    text-transform: uppercase;
+                    letter-spacing: ${isFirst ? '3px' : '2px'};
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    z-index: ${zIndex};
+                    width: 220px;
+                    text-align: center;
+                    white-space: nowrap;
+                    opacity: ${opacity};
+                    border: 1px solid rgba(255,255,255,0.15);
+                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                    pointer-events: none;
+                    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                 ">
+                ${badge.text}
+            </div>
+        `;
+    }).join('');
+}
+
 // ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
 function createNavigationArrows(propertyId, totalItems, currentIndex) {
     if (totalItems <= 1) return '';
@@ -285,116 +391,7 @@ function updateCardMedia(propertyId, newIndex) {
     }
 }
 
-// ========== FUNÇÃO PARA GERAR FAIXAS DIAGONAIS ==========
-function generateDiagonalBadges(property) {
-    const badges = [];
-    const colors = {
-        'Luxo': { bg: '#d4af37', color: '#1a1a2e' },
-        'Novo': { bg: '#27ae60', color: '#ffffff' },
-        'Destaque': { bg: '#2980b9', color: '#ffffff' },
-        'Lançamento': { bg: '#e74c3c', color: '#ffffff' },
-        'Oportunidade': { bg: '#f39c12', color: '#1a1a2e' },
-        'Exclusivo': { bg: '#8e44ad', color: '#ffffff' },
-        'Imperdível': { bg: '#e67e22', color: '#ffffff' },
-        'Última Unidade': { bg: '#c0392b', color: '#ffffff' },
-        'Beira Mar': { bg: '#1abc9c', color: '#ffffff' },
-        'Vista Mar': { bg: '#3498db', color: '#ffffff' },
-        'Com Lazer': { bg: '#2ecc71', color: '#1a1a2e' },
-        'Pronto para Morar': { bg: '#9b59b6', color: '#ffffff' },
-        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e' }
-    };
-
-    // Badge principal (DESTAQUE) - NÃO incluir se for "Nenhum"
-    if (property.badge && property.badge !== 'Nenhum') {
-        const color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff' };
-        badges.push({
-            text: property.badge,
-            bg: color.bg,
-            color: color.color,
-            position: 0,
-            size: 'large'
-        });
-    }
-
-    // Badge 1 (DESTAQUE1) - apenas se não for "Nenhum"
-    if (property.badge1 && property.badge1 !== 'Nenhum') {
-        const color = colors[property.badge1] || { bg: '#34495e', color: '#ffffff' };
-        badges.push({
-            text: property.badge1,
-            bg: color.bg,
-            color: color.color,
-            position: 1,
-            size: 'medium'
-        });
-    }
-
-    // Badge 2 (DESTAQUE2) - apenas se não for "Nenhum"
-    if (property.badge2 && property.badge2 !== 'Nenhum') {
-        const color = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff' };
-        badges.push({
-            text: property.badge2,
-            bg: color.bg,
-            color: color.color,
-            position: 2,
-            size: 'small'
-        });
-    }
-
-    return badges;
-}
-
-// ========== RENDERIZAR FAIXAS DIAGONAIS NO HTML ==========
-function renderDiagonalBadges(property) {
-    const badges = generateDiagonalBadges(property);
-    if (badges.length === 0) return '';
-
-    // Configurações de posicionamento
-    const baseTop = 15; // posição inicial em px
-    const spacing = 45; // espaçamento entre faixas
-
-    return badges.map((badge, index) => {
-        const top = baseTop + (index * spacing);
-        const isFirst = index === 0;
-        const fontSize = isFirst ? '1.1rem' : (badge.size === 'medium' ? '0.85rem' : '0.7rem');
-        const padding = isFirst ? '8px 40px' : '6px 30px';
-        const opacity = 1 - (index * 0.1); // Leve degradê de opacidade
-
-        return `
-            <div class="diagonal-badge ${badge.size}" 
-                 style="
-                    position: absolute;
-                    top: ${top}px;
-                    left: -35px;
-                    transform: rotate(-40deg);
-                    background: ${badge.bg};
-                    color: ${badge.color};
-                    padding: ${padding};
-                    font-size: ${fontSize};
-                    font-weight: ${isFirst ? '900' : '700'};
-                    text-transform: uppercase;
-                    letter-spacing: ${isFirst ? '3px' : '2px'};
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    z-index: ${10 - index};
-                    width: 220px;
-                    text-align: center;
-                    white-space: nowrap;
-                    opacity: ${opacity};
-                    border: 1px solid rgba(255,255,255,0.15);
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    pointer-events: none;
-                    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                    box-sizing: border-box;
-                    transition: all 0.3s ease;
-                 ">
-                ${badge.text}
-            </div>
-        `;
-    }).join('');
-}
-
-// ========== FUNÇÃO PRINCIPAL: Criar galeria ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria (COM FAIXAS DIAGONAIS) ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -410,6 +407,9 @@ window.createPropertyGallery = function(property) {
     
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     const propertyTitle = property.title || 'Imóvel';
+    
+    // 🔴 NOVO: Gerar faixas diagonais
+    const badgesHtml = renderDiagonalBadges(property);
     
     const dotsHtml = allMediaUrls.map((url, idx) => {
         const isVideo = window.isVideoUrl(url);
@@ -433,10 +433,7 @@ window.createPropertyGallery = function(property) {
         <i class="fas fa-eye" aria-hidden="true"></i>
         <span>${viewCount}</span>
     </div>
-    `;
-    
-    // ========== GERAR FAIXAS DIAGONAIS ==========
-    const badgesHtml = renderDiagonalBadges(property);
+`;
 
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
@@ -454,7 +451,7 @@ window.createPropertyGallery = function(property) {
                 
                 ${arrowsHtml}
                 
-                ${badgesHtml}  <!-- FAIXAS DIAGONAIS -->
+                ${badgesHtml}
                 
                 <div class="gallery-indicator-mobile" aria-label="Indicador de imagens">
                     <i class="fas fa-images" aria-hidden="true"></i>
@@ -476,8 +473,6 @@ window.createPropertyGallery = function(property) {
                 
                 ${viewCounterHtml}
             </div>
-            
-            ${property.badge ? `<div class="property-badge ${property.rural ? 'rural-badge' : ''}">${property.badge}</div>` : ''}
             
             ${hasVideos ? `<div class="video-indicator" style="position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); color:white; padding:4px 8px; border-radius:4px; font-size:0.7rem; z-index:20;">
                 <i class="fas fa-video" aria-hidden="true"></i> Vídeo
@@ -759,8 +754,8 @@ window.setupGalleryEvents = function() {
         .gallery-view-counter:hover i {
             transform: scale(1.2);
         }
-        
-        /* ========== FAIXAS DIAGONAIS - ESTILOS ========== */
+
+        /* ========== FAIXAS DIAGONAIS ========== */
         .diagonal-badge {
             position: absolute;
             pointer-events: none;
@@ -795,7 +790,6 @@ window.setupGalleryEvents = function() {
             width: 180px;
         }
 
-        /* Efeito de brilho nas faixas */
         .diagonal-badge::after {
             content: '';
             position: absolute;
@@ -807,7 +801,6 @@ window.setupGalleryEvents = function() {
             pointer-events: none;
         }
 
-        /* Responsividade das faixas diagonais */
         @media (max-width: 768px) {
             .diagonal-badge.large {
                 font-size: 0.9rem;
@@ -827,6 +820,11 @@ window.setupGalleryEvents = function() {
                 width: 120px;
                 left: -15px;
             }
+        }
+
+        .diagonal-badge:hover {
+            transform: rotate(-40deg) scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
         }
     `;
     document.head.appendChild(style);
