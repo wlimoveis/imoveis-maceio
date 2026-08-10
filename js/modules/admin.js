@@ -1,8 +1,9 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.5
+// js/modules/admin.js - Versão ESTÁVEL v2.6
 // ✅ CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
 // ✅ NOVAS OPÇÕES: Terrenos & Incorporações, Terreno, Incorporação (Cisão A)
+// ✅ NOVO: Sistema de Destaques Múltiplos (Faixas Diagonais) - Destaque1 e Destaque2
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.5');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.6');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -110,12 +111,24 @@ window.resetAdminFormCompletely = function(showNotification = true) {
     if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(null);
     else window.editingPropertyId = null;
     
-    ['propTitle', 'propPrice', 'propLocation', 'propDescription', 'propFeatures', 'propType', 'propBadge', 'propHasVideo'].forEach(id => {
+    // Campos padrão + badge1 e badge2
+    const fieldIds = [
+        'propTitle', 'propPrice', 'propLocation', 'propDescription', 
+        'propFeatures', 'propType', 'propBadge', 'propBadge1', 'propBadge2', 'propHasVideo'
+    ];
+    
+    fieldIds.forEach(id => {
         const el = document.getElementById(id);
         if (el) {
-            if (el.type === 'select-one') el.value = el.id === 'propType' ? 'residencial' : 'Novo';
-            else if (el.type === 'checkbox') el.checked = false;
-            else el.value = '';
+            if (el.type === 'select-one') {
+                if (id === 'propType') el.value = 'residencial';
+                else if (id === 'propBadge' || id === 'propBadge1' || id === 'propBadge2') el.value = 'Nenhum';
+                else el.value = 'Novo';
+            } else if (el.type === 'checkbox') {
+                el.checked = false;
+            } else {
+                el.value = '';
+            }
         }
     });
     
@@ -174,6 +187,7 @@ window.editProperty = function(id) {
     const formatPrice = (price) => window.SharedCore.PriceFormatter.formatForAdmin(price) ?? '';
     const formatFeatures = (features) => window.SharedCore.formatFeaturesForDisplay(features) ?? '';
     
+    // Mapeamento incluindo badge1 e badge2
     const fieldMappings = {
         'propTitle': property.title || '',
         'propPrice': formatPrice(property.price) || '',
@@ -181,7 +195,9 @@ window.editProperty = function(id) {
         'propDescription': property.description || '',
         'propFeatures': formatFeatures(property.features) || '',
         'propType': property.type || 'residencial',
-        'propBadge': property.badge || 'Novo',
+        'propBadge': property.badge || 'Nenhum',
+        'propBadge1': property.badge1 || 'Nenhum',
+        'propBadge2': property.badge2 || 'Nenhum',
         'propHasVideo': window.SharedCore.ensureBooleanVideo(property.has_video)
     };
     
@@ -244,11 +260,17 @@ window.saveProperty = async function() {
         const videoCheckbox = document.getElementById('propHasVideo');
         propertyData.has_video = window.SharedCore.ensureBooleanVideo(videoCheckbox?.checked);
         
+        // Campos incluindo badge1 e badge2
         const fields = [
-            { id: 'propTitle', key: 'title' }, { id: 'propPrice', key: 'price' },
-            { id: 'propLocation', key: 'location' }, { id: 'propDescription', key: 'description' },
-            { id: 'propFeatures', key: 'features' }, { id: 'propType', key: 'type' },
-            { id: 'propBadge', key: 'badge' }
+            { id: 'propTitle', key: 'title' },
+            { id: 'propPrice', key: 'price' },
+            { id: 'propLocation', key: 'location' },
+            { id: 'propDescription', key: 'description' },
+            { id: 'propFeatures', key: 'features' },
+            { id: 'propType', key: 'type' },
+            { id: 'propBadge', key: 'badge' },
+            { id: 'propBadge1', key: 'badge1' },
+            { id: 'propBadge2', key: 'badge2' }
         ];
         
         fields.forEach(field => {
@@ -508,12 +530,13 @@ function ensureAutocomplete(retries = 5, delay = 100) {
 }
 
 // ============================================================
-// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A)
+// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A + Faixas Diagonais)
 // ============================================================
 
 /**
  * ATUALIZA OS CAMPOS DO FORMULÁRIO ADMIN
  * Adiciona novas opções para Terrenos & Incorporações
+ * Adiciona opções para Destaque1 e Destaque2 (faixas diagonais)
  */
 function updateAdminFormFields() {
     console.log('🔄 [ADMIN] Atualizando campos do formulário...');
@@ -538,19 +561,26 @@ function updateAdminFormFields() {
         }
     }
     
-    // 2. Campo DESTAQUE - Adicionar "Terreno"
+    // 2. Campo DESTAQUE PRINCIPAL - Adicionar "Terreno" e "Nenhum"
     const badgeSelect = document.getElementById('propBadge');
     if (badgeSelect) {
+        // Adicionar "Nenhum" se não existir
+        let existsNenhum = false;
         let existsTerreno = false;
         let existsIncorporacao = false;
         
         for (let i = 0; i < badgeSelect.options.length; i++) {
-            if (badgeSelect.options[i].value === 'Terreno') {
-                existsTerreno = true;
-            }
-            if (badgeSelect.options[i].value === 'Incorporação') {
-                existsIncorporacao = true;
-            }
+            if (badgeSelect.options[i].value === 'Nenhum') existsNenhum = true;
+            if (badgeSelect.options[i].value === 'Terreno') existsTerreno = true;
+            if (badgeSelect.options[i].value === 'Incorporação') existsIncorporacao = true;
+        }
+        
+        if (!existsNenhum) {
+            const optionNenhum = document.createElement('option');
+            optionNenhum.value = 'Nenhum';
+            optionNenhum.textContent = 'Nenhum';
+            badgeSelect.insertBefore(optionNenhum, badgeSelect.firstChild);
+            console.log('✅ [ADMIN] Opção "Nenhum" adicionada ao campo DESTAQUE');
         }
         
         if (!existsTerreno) {
@@ -568,6 +598,45 @@ function updateAdminFormFields() {
             badgeSelect.appendChild(option2);
             console.log('✅ [ADMIN] Opção "Incorporação" adicionada ao campo DESTAQUE');
         }
+    }
+    
+    // 3. Campo DESTAQUE 1 (Faixa Secundária)
+    const badge1Select = document.getElementById('propBadge1');
+    if (badge1Select) {
+        const options = ['Nenhum', 'Lançamento', 'Oportunidade', 'Exclusivo', 'Imperdível', 'Última Unidade'];
+        // Verificar se já existe
+        const existingValues = [];
+        for (let i = 0; i < badge1Select.options.length; i++) {
+            existingValues.push(badge1Select.options[i].value);
+        }
+        options.forEach(opt => {
+            if (!existingValues.includes(opt)) {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                badge1Select.appendChild(option);
+            }
+        });
+        console.log('✅ [ADMIN] Campo DESTAQUE 1 configurado');
+    }
+    
+    // 4. Campo DESTAQUE 2 (Faixa Inferior)
+    const badge2Select = document.getElementById('propBadge2');
+    if (badge2Select) {
+        const options = ['Nenhum', 'Beira Mar', 'Vista Mar', 'Com Lazer', 'Pronto para Morar', 'Alto Padrão'];
+        const existingValues = [];
+        for (let i = 0; i < badge2Select.options.length; i++) {
+            existingValues.push(badge2Select.options[i].value);
+        }
+        options.forEach(opt => {
+            if (!existingValues.includes(opt)) {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt;
+                badge2Select.appendChild(option);
+            }
+        });
+        console.log('✅ [ADMIN] Campo DESTAQUE 2 configurado');
     }
     
     console.log('✅ [ADMIN] Campos do formulário atualizados com sucesso!');
@@ -675,4 +744,4 @@ document.addEventListener('adminPanelOpened', function() {
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
 
-console.log('✅ admin.js v2.5 carregado - Com suporte a Terrenos & Incorporações');
+console.log('✅ admin.js v2.6 carregado - Com suporte a Terrenos & Incorporações e Destaques Múltiplos');
