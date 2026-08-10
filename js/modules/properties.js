@@ -456,6 +456,23 @@ window.loadPropertiesData = async function() {
         
         loading?.updateMessage?.(finalMessage);
         
+        // ========== 🔥 CORREÇÃO: Reaplicar filtro após carregar imóveis ==========
+        // Isso garante que o filtro "Residencial" seja aplicado corretamente na inicialização
+        if (window.FilterManager && typeof window.FilterManager.refreshFilters === 'function') {
+            setTimeout(function() {
+                window.FilterManager.refreshFilters();
+                console.log('🔄 [FilterManager] Filtros recarregados após carregar imóveis');
+            }, 300);
+        } else if (typeof window.renderProperties === 'function') {
+            // Fallback: renderizar diretamente
+            setTimeout(function() {
+                var currentFilter = window.currentFilter || 'Residencial';
+                window.renderProperties(currentFilter, true);
+                console.log('🔄 [Fallback] Propriedades renderizadas com filtro: ' + currentFilter);
+            }, 400);
+        }
+        // ============================================================
+        
         if (typeof window.loadPropertiesBasedOnUrl === 'function') {
             window.loadPropertiesBasedOnUrl();
         } else if (typeof window.renderProperties === 'function') {
@@ -2052,4 +2069,4 @@ if (document.readyState === 'loading') {
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ============================================
+// ===========================================
