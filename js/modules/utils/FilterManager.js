@@ -9,10 +9,11 @@
 // ✅ CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL
 // ✅ CORREÇÃO FINAL: "Residencial" como default para visitantes
 // ✅ CORREÇÃO FINAL: "Todos" visível apenas para admin logado
-// ✅ CORREÇÃO: Verificação de properties em filterFn (previne erro)
+// ✅ CORREÇÃO: Verificação de properties em filterFn
+// ✅ CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
 // ============================================================
 
-console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com verificação de properties)');
+console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com fallback para residenciais)');
 
 (function() {
     'use strict';
@@ -31,27 +32,16 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     const FILTER_CONFIG = {
         isAdmin: function() {
             // 🔴 CORREÇÃO FINAL: O usuário SÓ é admin se o painel está VISÍVEL
-            // A variável ADMIN_PASSWORD existe no sistema, mas NÃO significa admin automático
-            
-            // 1. Verificar se o painel admin está VISÍVEL (aberto com senha)
             var panel = document.getElementById('adminPanel');
             if (panel && panel.style.display === 'block') {
                 return true;
             }
-            
-            // 2. Verificar se o usuário logou via sessionStorage
             if (sessionStorage.getItem('admin_logged_in') === 'true') {
                 return true;
             }
-            
-            // 3. Verificar se a URL tem parâmetro admin (força admin)
             if (window.location.search.includes('admin=true')) {
                 return true;
             }
-            
-            // 4. 🔴 NÃO considerar ADMIN_PASSWORD como admin automático
-            // A senha existe no sistema, mas o usuário precisa digitar para ser admin
-            
             return false;
         },
         defaultFilterForVisitors: 'Residencial',
@@ -59,14 +49,13 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         showAllForAdmin: true
     };
 
-    // ========== CATEGORIAS DE FILTRO (COM VERIFICAÇÃO DE PROPERTIES) ==========
+    // ========== CATEGORIAS DE FILTRO (COM FALLBACK PARA RESIDENCIAIS) ==========
     const CATEGORY_CONFIG = {
         'todos': {
             label: 'Todos',
             icon: 'fa-list',
             showOnlyForAdmin: true,
             filterFn: function(properties) {
-                // 🔴 CORREÇÃO: Verificar se properties existe e é array
                 if (!properties || !Array.isArray(properties)) return [];
                 return properties;
             }
@@ -77,10 +66,28 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             showOnlyForAdmin: false,
             isDefaultForVisitors: true,
             filterFn: function(properties) {
-                // 🔴 CORREÇÃO: Verificar se properties existe e é array
                 if (!properties || !Array.isArray(properties)) return [];
-                return properties.filter(function(p) { 
-                    return p.type === 'residencial'; 
+                return properties.filter(function(p) {
+                    // ✅ CORREÇÃO: Identificar residenciais mesmo sem type definido
+                    // 1. Tem type = 'residencial'
+                    if (p.type === 'residencial') return true;
+                    // 2. Não tem type definido
+                    if (!p.type || p.type === '' || p.type === 'undefined' || p.type === 'null') {
+                        // Se tem rural=false e badge não é de comercial/rural/terreno
+                        if (p.rural === false) return true;
+                        // Se tem badge que sugere residencial
+                        if (p.badge === 'Novo' || p.badge === 'Destaque' || p.badge === 'Luxo') return true;
+                        // Se não tem badge que sugere outros tipos
+                        if (p.badge !== 'Fazenda' && p.badge !== 'Chácara' && 
+                            p.badge !== 'Comercial' && p.badge !== 'Terreno' && 
+                            p.badge !== 'Incorporação') return true;
+                        return false;
+                    }
+                    // 3. Tem type que não é comercial/rural/terrenos
+                    if (p.type !== 'comercial' && p.type !== 'rural' && p.type !== 'terrenos_incorporacoes') {
+                        return true;
+                    }
+                    return false;
                 });
             }
         },
@@ -89,10 +96,9 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             icon: 'fa-building',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
-                // 🔴 CORREÇÃO: Verificar se properties existe e é array
                 if (!properties || !Array.isArray(properties)) return [];
-                return properties.filter(function(p) { 
-                    return p.type === 'comercial'; 
+                return properties.filter(function(p) {
+                    return p.type === 'comercial';
                 });
             }
         },
@@ -101,10 +107,9 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             icon: 'fa-tractor',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
-                // 🔴 CORREÇÃO: Verificar se properties existe e é array
                 if (!properties || !Array.isArray(properties)) return [];
-                return properties.filter(function(p) { 
-                    return p.type === 'rural' || p.rural === true; 
+                return properties.filter(function(p) {
+                    return p.type === 'rural' || p.rural === true;
                 });
             }
         },
@@ -113,10 +118,9 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             icon: 'fa-hand-holding-heart',
             showOnlyForAdmin: false,
             filterFn: function(properties) {
-                // 🔴 CORREÇÃO: Verificar se properties existe e é array
                 if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) {
-                    return p.badge === 'Terreno' || 
+                    return p.badge === 'Terreno' ||
                            p.badge === 'Incorporação' ||
                            p.type === 'terrenos_incorporacoes';
                 });
@@ -126,7 +130,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
 
     // ========== ESTADO ==========
     const state = {
-        // Estado existente (dropdowns)
         currentFilter: DROPDOWN_CONFIG.defaultFilter,
         currentBairro: null,
         containers: new Map(),
@@ -136,8 +139,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         hoverTimeout: null,
         currentActiveDropdown: null,
         dropdownCloseTimeout: null,
-        
-        // Estado para filtros principais
         currentMainFilter: null,
         isAdmin: FILTER_CONFIG.isAdmin(),
         properties: [],
@@ -156,8 +157,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
-                possibleBairro = possibleBairro.split(' ').map(function(word) { 
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase(); 
+                possibleBairro = possibleBairro.split(' ').map(function(word) {
+                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
                 }).join(' ');
                 if (possibleBairro.length > 0 && possibleBairro.length < 50) {
                     return possibleBairro;
@@ -177,7 +178,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
         'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
         'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
-        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+        'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo',
         'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
         'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
         'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
@@ -191,7 +192,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         let filteredProperties = config.filterFn(properties);
         console.log('📊 Encontrados ' + filteredProperties.length + ' imóveis para categoria ' + category);
         if (filteredProperties.length === 0) return [];
-        
+
         const bairrosMap = new Map();
         filteredProperties.forEach(function(property) {
             if (property.location && property.location.trim() !== '') {
@@ -201,11 +202,11 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                 }
             }
         });
-        
+
         let bairrosComContagem = Array.from(bairrosMap.entries()).map(function(entry) {
             return { nome: entry[0], count: entry[1] };
         });
-        
+
         bairrosComContagem.sort(function(a, b) {
             const indexA = bairrosPrioridade.indexOf(a.nome);
             const indexB = bairrosPrioridade.indexOf(b.nome);
@@ -214,7 +215,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             if (indexB !== -1) return 1;
             return a.nome.localeCompare(b.nome, 'pt-BR');
         });
-        
+
         const bairros = bairrosComContagem.map(function(item) { return item.nome; });
         console.log('📍 Categoria "' + category + '" - ' + bairros.length + ' bairros únicos encontrados');
         return bairros;
@@ -262,14 +263,14 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     function createBairroDropdown(buttonElement, category, bairros) {
         if (!bairros || bairros.length === 0) return null;
         if (state.currentActiveDropdown) closeDropdownImmediately();
-        
+
         const config = CATEGORY_CONFIG[category];
         const icon = config ? config.icon : 'fa-home';
         const title = config ? config.label : category;
-        
+
         const dropdown = document.createElement('div');
         dropdown.className = 'filter-dropdown';
-        
+
         const header = document.createElement('div');
         header.className = 'filter-dropdown-header';
         header.innerHTML = `
@@ -277,7 +278,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             <span class="filter-dropdown-close">×</span>
         `;
         dropdown.appendChild(header);
-        
+
         const isAllActive = state.currentBairro === null;
         const allOption = document.createElement('div');
         allOption.className = 'filter-dropdown-all' + (isAllActive ? ' active' : '');
@@ -289,7 +290,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             closeDropdownImmediately();
         };
         dropdown.appendChild(allOption);
-        
+
         bairros.forEach(function(bairro) {
             const isActive = state.currentBairro === bairro && state.currentFilter === category;
             const option = document.createElement('div');
@@ -303,24 +304,24 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             };
             dropdown.appendChild(option);
         });
-        
+
         const propertyCount = getPropertyCountByCategoryAndBairro(category, null);
         const footer = document.createElement('div');
         footer.className = 'filter-dropdown-footer';
         footer.innerHTML = '<i class="fas fa-chart-line"></i> ' + propertyCount + ' imóvel(is) encontrado(s)';
         dropdown.appendChild(footer);
-        
+
         dropdown.addEventListener('mouseenter', function() {
             if (state.dropdownCloseTimeout) {
                 clearTimeout(state.dropdownCloseTimeout);
                 state.dropdownCloseTimeout = null;
             }
         });
-        
+
         dropdown.addEventListener('mouseleave', function() {
             state.dropdownCloseTimeout = setTimeout(function() { closeDropdownImmediately(); }, 300);
         });
-        
+
         return dropdown;
     }
 
@@ -328,26 +329,26 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         if (state.dropdownActive && state.currentActiveDropdown) closeDropdownImmediately();
         if (state.dropdownCloseTimeout) clearTimeout(state.dropdownCloseTimeout);
         if (!hasDropdown(category)) return;
-        
+
         const properties = window.properties || [];
         const bairros = extractBairrosByCategory(properties, category);
-        
+
         if (bairros.length === 0) {
             showTemporaryMessage(button, '⚠️ Nenhum bairro encontrado para ' + category);
             return;
         }
-        
+
         if (state.currentActiveDropdown && state.currentActiveDropdown !== button) closeDropdownImmediately();
-        
+
         const dropdown = createBairroDropdown(button, category, bairros);
         if (!dropdown) return;
-        
+
         state.currentActiveDropdown = dropdown;
-        
+
         const rect = button.getBoundingClientRect();
         dropdown.style.top = (rect.bottom + window.scrollY) + 'px';
         dropdown.style.left = (rect.left + window.scrollX) + 'px';
-        
+
         const closeDropdownHandler = function(e) {
             if (!dropdown.contains(e.target) && e.target !== button) {
                 closeDropdownImmediately();
@@ -355,7 +356,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                 document.removeEventListener('keydown', escapeHandler);
             }
         };
-        
+
         const escapeHandler = function(e) {
             if (e.key === 'Escape') {
                 closeDropdownImmediately();
@@ -363,17 +364,17 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                 document.removeEventListener('keydown', escapeHandler);
             }
         };
-        
+
         const closeOtherDropdowns = function() {
             if (state.currentActiveDropdown && state.currentActiveDropdown !== dropdown) closeDropdownImmediately();
         };
-        
+
         document.body.appendChild(dropdown);
         state.dropdownActive = true;
-        
+
         const closeBtn = dropdown.querySelector('.filter-dropdown-close');
         if (closeBtn) closeBtn.onclick = function() { closeDropdownImmediately(); };
-        
+
         setTimeout(function() {
             document.addEventListener('click', closeDropdownHandler);
             document.addEventListener('keydown', escapeHandler);
@@ -391,9 +392,9 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         const properties = window.properties || [];
         const config = CATEGORY_CONFIG[category];
         if (!config) return 0;
-        
+
         let filtered = config.filterFn(properties);
-        
+
         if (bairro) {
             filtered = filtered.filter(function(p) {
                 const propertyBairro = extractBairroFromLocation(p.location);
@@ -457,7 +458,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             newBtn.style.boxShadow = '';
             newBtn.style.position = 'relative';
             newBtn.style.cursor = 'pointer';
-            
+
             if (filterValue !== 'todos' && CATEGORY_CONFIG[filterValue]) {
                 newBtn.classList.add('has-dropdown');
                 let hoverTimer;
@@ -473,14 +474,14 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                             const rect = state.currentActiveDropdown.getBoundingClientRect();
                             const mouseX = event?.clientX || 0;
                             const mouseY = event?.clientY || 0;
-                            const isInsideDropdown = mouseX >= rect.left && mouseX <= rect.right && 
+                            const isInsideDropdown = mouseX >= rect.left && mouseX <= rect.right &&
                                                     mouseY >= rect.top && mouseY <= rect.bottom;
                             if (!isInsideDropdown) closeDropdownImmediately();
                         }
                     }, 200);
                 });
             }
-            
+
             newBtn.addEventListener('click', function(e) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -506,7 +507,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                     if (typeof callback === 'function') callback(filterValue);
                 });
             });
-            
+
             containerState.buttons.push({
                 element: newBtn,
                 originalText: filterText,
@@ -550,7 +551,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     function getCurrentFilter() {
         return state.currentFilter;
     }
-    
+
     function getCurrentBairro() {
         return state.currentBairro;
     }
@@ -593,11 +594,11 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         state.callbacks.clear();
         state.initialized = false;
     }
-    
+
     function isInitialized() {
         return state.initialized;
     }
-    
+
     function refreshBairros() {
         if (state.currentActiveDropdown) closeDropdownImmediately();
     }
@@ -611,29 +612,25 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         return FILTER_CONFIG.defaultFilterForVisitors;
     }
 
-    // ============================================================
-    // 🔴 CORREÇÃO FINAL: RENDERIZAR BOTÕES DE FILTRO
-    // ============================================================
     function renderMainFilterButtons(container) {
         const isAdminUser = FILTER_CONFIG.isAdmin();
         let html = '<div class="filter-options">';
-        
+
         for (const [key, config] of Object.entries(CATEGORY_CONFIG)) {
-            // 🔴 CORREÇÃO FINAL: Botão "Todos" só aparece para admin LOGADO
             if (key === 'todos' && !isAdminUser) {
-                continue; // Pula o botão "Todos" para visitantes - NÃO RENDERIZA
+                continue;
             }
-            
+
             if (config.showOnlyForAdmin && !isAdminUser) {
                 continue;
             }
-            
+
             const isActive = state.currentMainFilter === key;
             const label = config.label;
             const icon = config.icon || 'fa-tag';
-            
+
             html += `
-                <button class="filter-btn ${isActive ? 'active' : ''}" 
+                <button class="filter-btn ${isActive ? 'active' : ''}"
                         data-filter="${key}"
                         data-tooltip="Filtrar por ${label}"
                         onclick="FilterManager.applyMainFilter('${key}')">
@@ -641,11 +638,10 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                 </button>
             `;
         }
-        
+
         html += '</div>';
         container.innerHTML = html;
-        
-        // Log para debug
+
         console.log('📊 [FilterManager] Botões renderizados. Admin: ' + isAdminUser);
         if (!isAdminUser) {
             console.log('👤 [FilterManager] Visitante - Botão "Todos" OCULTO');
@@ -654,29 +650,26 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         }
     }
 
-    // ============================================================
-    // 🔴 CORREÇÃO FINAL: APLICAR FILTRO PRINCIPAL
-    // ============================================================
     function applyMainFilter(filterKey) {
         if (!filterKey) return;
-        
+
         const config = CATEGORY_CONFIG[filterKey];
         if (!config) {
             console.warn('⚠️ Filtro "' + filterKey + '" não encontrado');
             return;
         }
-        
+
         state.currentMainFilter = filterKey;
-        
+
         const properties = window.properties || [];
         let filtered = config.filterFn(properties);
-        
+
         renderProperties(filtered);
         updateActiveMainButton(filterKey);
         updatePropertyCount(filtered.length);
-        
+
         console.log('🎯 Filtro aplicado: ' + config.label + ' (' + filtered.length + ' imóveis) - Admin: ' + FILTER_CONFIG.isAdmin());
-        
+
         const event = new CustomEvent('filterChanged', {
             detail: { filter: filterKey, count: filtered.length }
         });
@@ -686,7 +679,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     function renderProperties(properties) {
         const container = document.getElementById(state.containerId);
         if (!container) return;
-        
+
         if (!properties || properties.length === 0) {
             container.innerHTML = `
                 <div class="no-properties" style="text-align:center; padding:3rem; color:#666;">
@@ -697,7 +690,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             `;
             return;
         }
-        
+
         if (window.propertyTemplates && typeof window.propertyTemplates.generate === 'function') {
             container.innerHTML = properties.map(function(prop) {
                 return window.propertyTemplates.generate(prop);
@@ -739,7 +732,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     function refreshFilters() {
         const wasAdmin = state.isAdmin;
         state.isAdmin = FILTER_CONFIG.isAdmin();
-        
+
         if (wasAdmin !== state.isAdmin) {
             console.log('🔄 Modo admin alterado: ' + wasAdmin + ' → ' + state.isAdmin);
             const filterContainer = document.querySelector('.filters');
@@ -749,7 +742,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
             const defaultFilter = getDefaultFilter();
             applyMainFilter(defaultFilter);
         } else {
-            // Mesmo que não tenha mudado, forçar re-renderização para garantir
             const filterContainer = document.querySelector('.filters');
             if (filterContainer) {
                 renderMainFilterButtons(filterContainer);
@@ -760,15 +752,14 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     // ========== FUNÇÃO DE INICIALIZAÇÃO EXPANDIDA ==========
     function init(onFilterChange) {
         onFilterChange = onFilterChange || null;
-        
+
         if (state.initialized) {
             console.log('⏭️ FilterManager já inicializado');
             return;
         }
-        
-        console.log('🔧 Inicializando FilterManager (Versão Corrigida Final)...');
-        
-        // 1. Inicializar dropdowns existentes
+
+        console.log('🔧 Inicializando FilterManager (Versão Corrigida Final - com fallback para residenciais)...');
+
         const containers = document.querySelectorAll('.' + DROPDOWN_CONFIG.containerClass);
         if (containers.length === 0) {
             console.warn('⚠️ Nenhum container de filtros encontrado');
@@ -782,34 +773,31 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
                 setupContainer(container, containerId, onFilterChange);
             });
         }
-        
+
         if (onFilterChange && typeof onFilterChange === 'function') {
             state.callbacks.set('global', onFilterChange);
         }
-        
-        // 2. Inicializar filtros principais
+
         state.isAdmin = FILTER_CONFIG.isAdmin();
         state.currentMainFilter = getDefaultFilter();
         state.containerId = 'properties-container';
-        
-        // Renderizar botões principais (com correção de visibilidade)
+
         const filterContainer = document.querySelector('.filters');
         if (filterContainer) {
             renderMainFilterButtons(filterContainer);
         } else {
             console.warn('⚠️ Container de filtros principais não encontrado');
         }
-        
-        // Aplicar filtro default
+
         applyMainFilter(state.currentMainFilter);
-        
+
         state.initialized = true;
         console.log('✅ FilterManager completo inicializado - Filtro default: ' + state.currentMainFilter);
         console.log('📊 Modo admin: ' + state.isAdmin);
-        
+
         if (!state.isAdmin) {
             console.log('👤 [FilterManager] Visitante detectado - Botão "Todos" OCULTO');
-            console.log('🏠 [FilterManager] Filtro default: "Residencial"');
+            console.log('🏠 [FilterManager] Filtro default: "Residencial" (com fallback para imóveis sem tipo)');
         } else {
             console.log('🛡️ [FilterManager] Admin logado - Botão "Todos" VISÍVEL');
             console.log('📋 [FilterManager] Filtro default: "Todos"');
@@ -818,12 +806,10 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
 
     // ========== API PÚBLICA ==========
     window.FilterManager = {
-        // Configurações
         DROPDOWN_CONFIG: DROPDOWN_CONFIG,
         FILTER_CONFIG: FILTER_CONFIG,
         CATEGORY_CONFIG: CATEGORY_CONFIG,
-        
-        // Funções existentes (dropdowns)
+
         init: init,
         setupContainer: setupContainer,
         setActiveFilter: setActiveFilter,
@@ -835,8 +821,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         destroy: destroy,
         isInitialized: isInitialized,
         refreshBairros: refreshBairros,
-        
-        // Funções filtros principais (corrigidas)
+
         applyMainFilter: applyMainFilter,
         getDefaultFilter: getDefaultFilter,
         isAdmin: FILTER_CONFIG.isAdmin,
@@ -844,8 +829,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
         getCurrentMainFilter: function() { return state.currentMainFilter; },
         getFilterConfig: function(key) { return CATEGORY_CONFIG[key] || null; },
         renderMainFilterButtons: renderMainFilterButtons,
-        
-        // Estado
+
         getState: function() { return state; }
     };
 
@@ -867,11 +851,12 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com v
     }
 
     console.log('✅ FilterManager completo carregado com sucesso!');
-    console.log('🔧 CORREÇÃO FINAL: isAdmin() NÃO considera ADMIN_PASSWORD global');
-    console.log('🔧 CORREÇÃO FINAL: Admin só é detectado se painel está VISÍVEL');
+    console.log('🔧 CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global');
+    console.log('🔧 CORREÇÃO: Admin só é detectado se painel está VISÍVEL');
     console.log('🔧 CORREÇÃO: Verificação de properties em filterFn');
-    console.log('🏠 CORREÇÃO FINAL: "Residencial" como default para visitantes');
-    console.log('🛡️ CORREÇÃO FINAL: "Todos" visível apenas para admin logado');
+    console.log('🔧 CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"');
+    console.log('🏠 CORREÇÃO: "Residencial" como default para visitantes');
+    console.log('🛡️ CORREÇÃO: "Todos" visível apenas para admin logado');
 
 })();
 
@@ -889,11 +874,12 @@ function escapeHtml(str) {
 // FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.2 - Correção Final com verificação de properties
-// Última atualização: 2026-08-09
+// Versão: 2.3 - Correção Final com fallback para residenciais
+// Última atualização: 2026-08-10
 // CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
 // CORREÇÃO: Admin só é detectado se painel está VISÍVEL
 // CORREÇÃO: Verificação de properties em filterFn
+// CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
 // CORREÇÃO: "Residencial" como default para visitantes
 // CORREÇÃO: "Todos" visível apenas para admin logado
 // ============================================================
