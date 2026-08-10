@@ -179,107 +179,167 @@ window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel
     `;
 };
 
-// ========== NOVO: GERAR FAIXAS DIAGONAIS ==========
+// ========== NOVO: GERAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON) ==========
 function generateDiagonalBadges(property) {
     const badges = [];
     const colors = {
-        'Luxo': { bg: '#d4a017', color: '#1a1a2e' },
-        'Novo': { bg: '#27ae60', color: '#ffffff' },
-        'Destaque': { bg: '#2980b9', color: '#ffffff' },
-        'Lançamento': { bg: '#e74c3c', color: '#ffffff' },
-        'Oportunidade': { bg: '#f39c12', color: '#1a1a2e' },
-        'Exclusivo': { bg: '#8e44ad', color: '#ffffff' },
-        'Imperdível': { bg: '#e67e22', color: '#ffffff' },
-        'Última Unidade': { bg: '#c0392b', color: '#ffffff' },
-        'Beira Mar': { bg: '#1abc9c', color: '#ffffff' },
-        'Vista Mar': { bg: '#3498db', color: '#ffffff' },
-        'Com Lazer': { bg: '#2ecc71', color: '#1a1a2e' },
-        'Pronto para Morar': { bg: '#9b59b6', color: '#ffffff' },
-        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e' }
+        'Luxo': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
+        'Novo': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' },
+        'Destaque': { bg: '#2980b9', color: '#ffffff', border: '#3498db' },
+        'Lançamento': { bg: '#e74c3c', color: '#ffffff', border: '#f1948a' },
+        'Oportunidade': { bg: '#f39c12', color: '#1a1a2e', border: '#f7dc6f' },
+        'Exclusivo': { bg: '#8e44ad', color: '#ffffff', border: '#af7ac5' },
+        'Imperdível': { bg: '#e67e22', color: '#ffffff', border: '#f0b27a' },
+        'Última Unidade': { bg: '#c0392b', color: '#ffffff', border: '#e74c3c' },
+        'Beira Mar': { bg: '#1abc9c', color: '#ffffff', border: '#48c9b0' },
+        'Vista Mar': { bg: '#3498db', color: '#ffffff', border: '#5dade2' },
+        'Com Lazer': { bg: '#2ecc71', color: '#1a1a2e', border: '#58d68d' },
+        'Pronto para Morar': { bg: '#9b59b6', color: '#ffffff', border: '#af7ac5' },
+        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' }
     };
 
-    // Badge principal (DESTAQUE)
+    // Badge principal (DESTAQUE) - Estilo Gold Ribbon
     if (property.badge && property.badge !== 'Nenhum') {
-        const color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff' };
+        const color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge,
             bg: color.bg,
             color: color.color,
+            border: color.border || color.bg,
             position: 0,
-            size: 'large'
+            size: 'large',
+            style: 'gold-ribbon'
         });
     }
 
-    // Badge 1 (DESTAQUE1)
+    // Badge 1 (DESTAQUE1) - Estilo Gold Ribbon
     if (property.badge1 && property.badge1 !== 'Nenhum') {
-        const color = colors[property.badge1] || { bg: '#34495e', color: '#ffffff' };
+        const color = colors[property.badge1] || { bg: '#34495e', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge1,
             bg: color.bg,
             color: color.color,
+            border: color.border || color.bg,
             position: 1,
-            size: 'medium'
+            size: 'medium',
+            style: 'gold-ribbon'
         });
     }
 
-    // Badge 2 (DESTAQUE2)
+    // Badge 2 (DESTAQUE2) - Estilo Gold Ribbon com alinhamento à esquerda
     if (property.badge2 && property.badge2 !== 'Nenhum') {
-        const color = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff' };
+        const color = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge2,
             bg: color.bg,
             color: color.color,
+            border: color.border || color.bg,
             position: 2,
-            size: 'small'
+            size: 'small',
+            style: 'gold-ribbon-left'
         });
     }
 
     return badges;
 }
 
-// ========== NOVO: RENDERIZAR FAIXAS DIAGONAIS NO HTML ==========
+// ========== NOVO: RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON) ==========
 function renderDiagonalBadges(property) {
     const badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // Configurações de posicionamento
-    const baseTop = 15;
-    const spacing = 45;
+    // Configurações de posicionamento - MAIS ELEVADAS
+    const baseTop = 5;
+    const spacing = 38; // Menor espaçamento para sobreposição discreta
 
     return badges.map((badge, index) => {
         const top = baseTop + (index * spacing);
         const isFirst = index === 0;
-        const fontSize = isFirst ? '1.1rem' : (badge.size === 'medium' ? '0.85rem' : '0.7rem');
-        const padding = isFirst ? '8px 40px' : '6px 30px';
-        const opacity = 1 - (index * 0.1);
-        const zIndex = 10 - index;
+        const isLast = index === badges.length - 1;
+        const isLeftAligned = badge.style === 'gold-ribbon-left';
+        
+        // Tamanhos e estilos
+        let fontSize, padding, width, leftOffset, letterSpacing;
+        
+        if (isFirst) {
+            fontSize = '1.0rem';
+            padding = '10px 50px';
+            width = '240px';
+            leftOffset = '-40px';
+            letterSpacing = '4px';
+        } else if (badge.size === 'medium') {
+            fontSize = '0.85rem';
+            padding = '8px 40px';
+            width = '210px';
+            leftOffset = '-35px';
+            letterSpacing = '3px';
+        } else {
+            fontSize = '0.7rem';
+            padding = '6px 30px';
+            width = '180px';
+            leftOffset = '-30px';
+            letterSpacing = '2px';
+        }
+
+        // Alinhamento à esquerda para Destaque 2
+        if (isLeftAligned) {
+            leftOffset = '-50px';
+            padding = '6px 35px';
+            width = '200px';
+        }
+
+        // Opacidade para sobreposição discreta
+        const opacity = 0.92 - (index * 0.04);
+
+        // Efeito Gold Ribbon com bordas decorativas
+        const borderStyle = badge.border ? `border-bottom: 3px solid ${badge.border};` : '';
+        const shadowStyle = isFirst ? 'box-shadow: 0 3px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);' : 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
+        
+        // Efeito de brilho dourado para o primeiro
+        const glowStyle = isFirst ? 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');' : 'background: ' + badge.bg + ';';
+
+        // Classe extra para alinhamento
+        const alignClass = isLeftAligned ? 'diagonal-badge-left' : '';
 
         return `
-            <div class="diagonal-badge ${badge.size}" 
+            <div class="diagonal-badge ${badge.size} ${alignClass}" 
                  style="
                     position: absolute;
                     top: ${top}px;
-                    left: -35px;
-                    transform: rotate(-40deg);
-                    background: ${badge.bg};
+                    left: ${leftOffset};
+                    transform: rotate(-38deg);
+                    ${glowStyle}
                     color: ${badge.color};
                     padding: ${padding};
                     font-size: ${fontSize};
                     font-weight: ${isFirst ? '900' : '700'};
                     text-transform: uppercase;
-                    letter-spacing: ${isFirst ? '3px' : '2px'};
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-                    z-index: ${zIndex};
-                    width: 220px;
-                    text-align: center;
+                    letter-spacing: ${letterSpacing};
+                    ${shadowStyle}
+                    ${borderStyle}
+                    z-index: ${10 - index};
+                    width: ${width};
+                    text-align: ${isLeftAligned ? 'left' : 'center'};
                     white-space: nowrap;
                     opacity: ${opacity};
-                    border: 1px solid rgba(255,255,255,0.15);
                     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                     pointer-events: none;
                     text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                    border-radius: 2px;
                  ">
                 ${badge.text}
+                <!-- Detalhe decorativo da ponta -->
+                <span style="
+                    position: absolute;
+                    right: -15px;
+                    top: 0;
+                    width: 0;
+                    height: 0;
+                    border-top: ${parseInt(padding.split(' ')[0]) + 4}px solid transparent;
+                    border-bottom: ${parseInt(padding.split(' ')[0]) + 4}px solid transparent;
+                    border-left: 15px solid ${badge.bg};
+                    opacity: 0.6;
+                "></span>
             </div>
         `;
     }).join('');
