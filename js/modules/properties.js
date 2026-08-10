@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.6 - COM SUPORTE A DESTAQUES MÚLTIPLOS (badge1 e badge2)
+// VERSÃO 3.6 - COM DESTAQUES MÚLTIPLOS (badge1 e badge2)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -11,10 +11,10 @@
 // ✅ CORREÇÃO: getInitialProperties restaurada
 // ✅ CORREÇÃO: filterPropertiesByType retorna array sempre
 // ✅ CORREÇÃO: renderProperties com verificações de segurança
-// ✅ NOVO: badge1 e badge2 (Destaques Múltiplos - Faixas Diagonais)
+// ✅ NOVO: Suporte a badge1 (Destaque1) e badge2 (Destaque2)
 // ============================================================
 
-console.log('✅ properties.js v3.6 carregado - Com Destaques Múltiplos (badge1/badge2)');
+console.log('✅ properties.js v3.6 carregado - Gerenciamento de Imóveis (com Destaques Múltiplos)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -442,8 +442,8 @@ window.loadPropertiesData = async function() {
                 features: window.SharedCore.parseFeaturesForStorage(prop.features),
                 images: prop.images || '',
                 pdfs: prop.pdfs || '',
-                badge1: prop.badge1 || 'Nenhum',  // ✅ GARANTIR badge1
-                badge2: prop.badge2 || 'Nenhum'   // ✅ GARANTIR badge2
+                badge1: prop.badge1 || 'Nenhum',
+                badge2: prop.badge2 || 'Nenhum'
             };
         });
         
@@ -923,11 +923,13 @@ window.FeatureIconMapper = {
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
+            // Correspondência exata ou contém
             if (normalizedText === normalizedKeyword || 
                 normalizedText.indexOf(normalizedKeyword) !== -1 || 
                 normalizedKeyword.indexOf(normalizedText) !== -1) {
                 return true;
             }
+            // Correspondência por palavra (quebra por espaços)
             var words = normalizedText.split(/\s+/);
             for (var j = 0; j < words.length; j++) {
                 var word = words[j];
@@ -967,122 +969,17 @@ window.FeatureIconMapper = {
 };
 
 // ============================================================
-// INITIAL PROPERTIES - COM badge1 E badge2
+// INITIAL PROPERTIES - RESTAURADA (COM DESTAQUES MÚLTIPLOS)
 // ============================================================
 function getInitialProperties() {
     return [
-        { 
-            id: 1, 
-            title: "Casa 2Qtos - Forene", 
-            price: "R$ 180.000", 
-            location: "Residência Conj. Portal do Renascer, Forene", 
-            description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;", 
-            features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de garagem"]), 
-            type: "residencial", 
-            has_video: true, 
-            badge: "Destaque",
-            badge1: "Oportunidade",
-            badge2: "Vista Mar",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 2, 
-            title: "Apartamento 4Qtos (178m²) - Ponta Verde", 
-            price: "R$ 1.500.000", 
-            location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL", 
-            description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.", 
-            features: JSON.stringify(["4 Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]), 
-            type: "residencial", 
-            has_video: false, 
-            badge: "Luxo",
-            badge1: "Exclusivo",
-            badge2: "Beira Mar",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 99, 
-            title: "Loja Comercial - Centro", 
-            price: "R$ 350.000", 
-            location: "Rua do Comércio, Centro, Maceió/AL", 
-            description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótima para comércio varejista, com grande fluxo de pessoas e fácil acesso.", 
-            features: JSON.stringify(["100m²", "Banheiro", "Ponto comercial", "Boa localização"]), 
-            type: "comercial", 
-            has_video: false, 
-            badge: "Comercial",
-            badge1: "Nenhum",
-            badge2: "Nenhum",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 100, 
-            title: "Sala Comercial - Ponta Verde", 
-            price: "R$ 280.000", 
-            location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", 
-            description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.", 
-            features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]), 
-            type: "comercial", 
-            has_video: false, 
-            badge: "Comercial",
-            badge1: "Nenhum",
-            badge2: "Nenhum",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 101, 
-            title: "Loja Comercial - Centro", 
-            price: "R$ 450.000", 
-            location: "Rua do Comércio, Centro, Maceió/AL", 
-            description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótimo para qualquer negócio.", 
-            features: JSON.stringify(["80m²", "Banheiro", "Ponto comercial", "Vidraça frontal"]), 
-            type: "comercial", 
-            has_video: false, 
-            badge: "Comercial",
-            badge1: "Nenhum",
-            badge2: "Nenhum",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 102, 
-            title: "Sala Comercial - Ponta Verde", 
-            price: "R$ 320.000", 
-            location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", 
-            description: "Sala comercial no coração de Ponta Verde. Próximo a bancos e comércio.", 
-            features: JSON.stringify(["50m²", "Ar condicionado", "2 vagas garagem", "Recepção"]), 
-            type: "comercial", 
-            has_video: false, 
-            badge: "Comercial",
-            badge1: "Nenhum",
-            badge2: "Nenhum",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        },
-        { 
-            id: 103, 
-            title: "Galpão Comercial - Tabuleiro", 
-            price: "R$ 850.000", 
-            location: "Av. Menino Marcelo, Tabuleiro do Martins, Maceió/AL", 
-            description: "Galpão comercial para depósito ou indústria. Área ampla com escritório.", 
-            features: JSON.stringify(["300m²", "Pé direito alto", "Escritório", "Banheiros", "Estacionamento"]), 
-            type: "comercial", 
-            has_video: false, 
-            badge: "Comercial",
-            badge1: "Nenhum",
-            badge2: "Nenhum",
-            rural: false, 
-            images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", 
-            created_at: new Date().toISOString() 
-        }
+        { id: 1, title: "Casa 2Qtos - Forene", price: "R$ 180.000", location: "Residência Conj. Portal do Renascer, Forene", description: "Casa a 100m do CEASA; - Medindo 6,60m frente X 19m lado; - 125,40m² de área total; -Somente um único dono; - 02 Quartos, Sala; - Cozinha; - 02 Banheiros; - Varanda; - 02 Vagas de garagem; - Água de Poço Artesiano;", features: JSON.stringify(["02 Quartos", "Sala", "Cozinha", "02 Banheiros", "Varanda", "02 Vagas de garagem"]), type: "residencial", has_video: true, badge: "Destaque", badge1: "Lançamento", badge2: "Beira Mar", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 2, title: "Apartamento 4Qtos (178m²) - Ponta Verde", price: "R$ 1.500.000", location: "Rua Saleiro Pitão, Ponta Verde - Maceió/AL", description: "Apartamento amplo, super claro e arejado, imóvel diferenciado com 178m² de área privativa, oferecendo conforto, espaço e alto padrão de acabamento. 4 Qtos, sendo 03 suítes, sala ampla com varanda, cozinha, dependência de empregada, área de serviço, 02 vagas de garagem no subsolo.", features: JSON.stringify(["4 Qtos s/ 3 suítes", "Sala ampla com varanda", "Cozinha", "Área de serviço", "DCE", "02 vagas de garagem"]), type: "residencial", has_video: false, badge: "Luxo", badge1: "Exclusivo", badge2: "Alto Padrão", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80,https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 99, title: "Loja Comercial - Centro", price: "R$ 350.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótima para comércio varejista, com grande fluxo de pessoas e fácil acesso.", features: JSON.stringify(["100m²", "Banheiro", "Ponto comercial", "Boa localização"]), type: "comercial", has_video: false, badge: "Comercial", badge1: "Nenhum", badge2: "Nenhum", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 100, title: "Sala Comercial - Ponta Verde", price: "R$ 280.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Ambiente moderno, ideal para escritórios, consultórios ou pequenos negócios.", features: JSON.stringify(["50m²", "Ar condicionado", "Estacionamento", "Excelente localização"]), type: "comercial", has_video: false, badge: "Comercial", badge1: "Nenhum", badge2: "Nenhum", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 101, title: "Loja Comercial - Centro", price: "R$ 450.000", location: "Rua do Comércio, Centro, Maceió/AL", description: "Loja comercial em ponto privilegiado no Centro de Maceió. Ótimo para qualquer negócio.", features: JSON.stringify(["80m²", "Banheiro", "Ponto comercial", "Vidraça frontal"]), type: "comercial", has_video: false, badge: "Comercial", badge1: "Nenhum", badge2: "Nenhum", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 102, title: "Sala Comercial - Ponta Verde", price: "R$ 320.000", location: "Av. Álvaro Otacílio, Ponta Verde, Maceió/AL", description: "Sala comercial no coração de Ponta Verde. Próximo a bancos e comércio.", features: JSON.stringify(["50m²", "Ar condicionado", "2 vagas garagem", "Recepção"]), type: "comercial", has_video: false, badge: "Comercial", badge1: "Nenhum", badge2: "Nenhum", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() },
+        { id: 103, title: "Galpão Comercial - Tabuleiro", price: "R$ 850.000", location: "Av. Menino Marcelo, Tabuleiro do Martins, Maceió/AL", description: "Galpão comercial para depósito ou indústria. Área ampla com escritório.", features: JSON.stringify(["300m²", "Pé direito alto", "Escritório", "Banheiros", "Estacionamento"]), type: "comercial", has_video: false, badge: "Comercial", badge1: "Nenhum", badge2: "Nenhum", rural: false, images: "https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80", created_at: new Date().toISOString() }
     ];
 }
 
@@ -1174,7 +1071,7 @@ window.filterPropertiesByType = function(properties, filter) {
     // 🔴 CORREÇÃO: Verificar se properties é válido
     if (!properties || !Array.isArray(properties)) {
         console.warn('⚠️ filterPropertiesByType: properties não é um array válido');
-        return []; // Retorna array vazio em vez de undefined
+        return [];
     }
     
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
@@ -1321,8 +1218,8 @@ window.addNewProperty = async function(propertyData) {
                     description: propertyData.description || '', features: propertyData.features,
                     type: propertyData.type || 'residencial', has_video: propertyData.has_video,
                     badge: propertyData.badge || 'Nenhum',
-                    badge1: propertyData.badge1 || 'Nenhum',   // ✅ NOVO
-                    badge2: propertyData.badge2 || 'Nenhum',   // ✅ NOVO
+                    badge1: propertyData.badge1 || 'Nenhum',
+                    badge2: propertyData.badge2 || 'Nenhum',
                     rural: propertyData.type === 'rural',
                     images: propertyData.images || '', pdfs: propertyData.pdfs || ''
                 });
@@ -1340,7 +1237,7 @@ window.addNewProperty = async function(propertyData) {
         }
         var newId = (supabaseSuccess && supabaseId) ? supabaseId : (maxId + 1);
         
-        // ✅ NOVO OBJETO COM badge1 E badge2
+        // 🔴 CORREÇÃO: Incluir badge1 e badge2 no newProperty
         var newProperty = {
             id: newId,
             title: propertyData.title,
@@ -1351,8 +1248,8 @@ window.addNewProperty = async function(propertyData) {
             type: propertyData.type || 'residencial',
             has_video: propertyData.has_video,
             badge: propertyData.badge || 'Nenhum',
-            badge1: propertyData.badge1 || 'Nenhum',   // ✅ NOVO
-            badge2: propertyData.badge2 || 'Nenhum',   // ✅ NOVO
+            badge1: propertyData.badge1 || 'Nenhum',
+            badge2: propertyData.badge2 || 'Nenhum',
             rural: propertyData.type === 'rural',
             images: propertyData.images || '',
             pdfs: propertyData.pdfs || '',
@@ -1396,7 +1293,7 @@ window.updateProperty = async function(id, propertyData) {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
         var processedData = Object.assign({}, propertyData, { has_video: window.SharedCore.ensureBooleanVideo(propertyData.has_video) });
         
-        // ✅ NOVO updateData COM badge1 E badge2
+        // 🔴 CORREÇÃO: Incluir badge1 e badge2 no updateData
         var updateData = {
             title: processedData.title || window.properties[index].title,
             price: processedData.price || window.properties[index].price,
@@ -1406,8 +1303,8 @@ window.updateProperty = async function(id, propertyData) {
             type: processedData.type || window.properties[index].type || 'residencial',
             has_video: processedData.has_video,
             badge: processedData.badge || window.properties[index].badge || 'Nenhum',
-            badge1: processedData.badge1 || window.properties[index].badge1 || 'Nenhum',   // ✅ NOVO
-            badge2: processedData.badge2 || window.properties[index].badge2 || 'Nenhum',   // ✅ NOVO
+            badge1: processedData.badge1 || window.properties[index].badge1 || 'Nenhum',
+            badge2: processedData.badge2 || window.properties[index].badge2 || 'Nenhum',
             rural: processedData.type === 'rural' || window.properties[index].rural || false,
             images: processedData.images || window.properties[index].images || '',
             pdfs: processedData.pdfs || window.properties[index].pdfs || ''
@@ -2053,15 +1950,6 @@ window.loadPropertyList = function(page) {
         var indicatorFontSize = isDesktop ? '0.5rem' : '0.65rem';
         var iconFontSize = isDesktop ? '0.6rem' : '0.8rem';
         
-        // badge1 e badge2 no admin list
-        var badgesDisplay = '';
-        if (property.badge1 && property.badge1 !== 'Nenhum') {
-            badgesDisplay += '<span style="background:#e74c3c; color:white; padding:0.08rem 0.3rem; border-radius:3px; font-size:' + indicatorFontSize + ';">' + property.badge1 + '</span> ';
-        }
-        if (property.badge2 && property.badge2 !== 'Nenhum') {
-            badgesDisplay += '<span style="background:#3498db; color:white; padding:0.08rem 0.3rem; border-radius:3px; font-size:' + indicatorFontSize + ';">' + property.badge2 + '</span>';
-        }
-        
         item.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
                 <input type="checkbox" 
@@ -2128,12 +2016,6 @@ window.loadPropertyList = function(page) {
                             ${timeDisplayHtml}
                         </span>
                     </span>
-                    ${badgesDisplay ? `
-                        <span style="background: #fce4ec; padding: 0.08rem 0.3rem; border-radius: 3px; display: inline-flex; align-items: center; gap: 0.1rem;">
-                            <i class="fas fa-tags" style="color: #c0392b; font-size: ${iconFontSize};" aria-hidden="true"></i>
-                            ${badgesDisplay}
-                        </span>
-                    ` : ''}
                 </div>
             </div>
             <div style="display: flex; gap: 0.25rem; flex-wrap: wrap; flex-shrink: 0;">
@@ -2202,10 +2084,7 @@ if (document.readyState === 'loading') {
 // ✅ CORRIGIDO: getInitialProperties restaurada
 // ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
 // ✅ CORRIGIDO: renderProperties com verificações de segurança
-// ✅ NOVO: badge1 e badge2 no addNewProperty
-// ✅ NOVO: badge1 e badge2 no updateProperty
-// ✅ NOVO: badge1 e badge2 no loadPropertiesData (garantia)
-// ✅ NOVO: badge1 e badge2 nos dados de exemplo
+// ✅ NOVO: Suporte a badge1 (Destaque1) e badge2 (Destaque2)
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
