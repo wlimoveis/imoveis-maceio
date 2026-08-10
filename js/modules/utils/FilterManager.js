@@ -730,23 +730,26 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
     }
 
     function refreshFilters() {
-        const wasAdmin = state.isAdmin;
+        var wasAdmin = state.isAdmin;
         state.isAdmin = FILTER_CONFIG.isAdmin();
-
+    
+        // 🔴 CORREÇÃO: Forçar reaplicação do filtro atual
+        var currentFilter = state.currentMainFilter || getDefaultFilter();
+        
+        console.log('🔄 [FilterManager] Refresh - Filtro atual: ' + currentFilter);
+        console.log('🔄 [FilterManager] Refresh - Admin: ' + state.isAdmin);
+    
         if (wasAdmin !== state.isAdmin) {
             console.log('🔄 Modo admin alterado: ' + wasAdmin + ' → ' + state.isAdmin);
             const filterContainer = document.querySelector('.filters');
             if (filterContainer) {
                 renderMainFilterButtons(filterContainer);
             }
-            const defaultFilter = getDefaultFilter();
-            applyMainFilter(defaultFilter);
-        } else {
-            const filterContainer = document.querySelector('.filters');
-            if (filterContainer) {
-                renderMainFilterButtons(filterContainer);
-            }
         }
+    
+        // 🔴 CORREÇÃO: Reaplicar o filtro atual com os novos dados
+        applyMainFilter(currentFilter);
+        console.log('🔄 [FilterManager] Filtro reaplicado: ' + currentFilter);
     }
 
     // ========== FUNÇÃO DE INICIALIZAÇÃO EXPANDIDA ==========
