@@ -255,7 +255,7 @@ window.saveProperty = async function() {
         const videoCheckbox = document.getElementById('propHasVideo');
         propertyData.has_video = window.SharedCore.ensureBooleanVideo(videoCheckbox?.checked);
         
-        // 🔴 CORREÇÃO: Incluir badge1 e badge2
+        // 🔴 CORREÇÃO: Incluir badge1 e badge2 com verificação
         const fields = [
             { id: 'propTitle', key: 'title' },
             { id: 'propPrice', key: 'price' },
@@ -270,8 +270,19 @@ window.saveProperty = async function() {
         
         fields.forEach(field => {
             const el = document.getElementById(field.id);
-            propertyData[field.key] = el ? (el.type === 'select-one' ? el.value : el.value.trim()) : '';
+            if (el) {
+                propertyData[field.key] = el.type === 'select-one' ? el.value : el.value.trim();
+                console.log(`📝 Campo ${field.id}: ${propertyData[field.key]}`);
+            } else {
+                console.warn(`⚠️ Campo ${field.id} não encontrado`);
+            }
         });
+        
+        // 🔴 CORREÇÃO: Garantir que badge1 e badge2 existam
+        if (!propertyData.badge1) propertyData.badge1 = 'Nenhum';
+        if (!propertyData.badge2) propertyData.badge2 = 'Nenhum';
+        
+        console.log('📦 Dados coletados:', propertyData);
         
         // Validar campos obrigatórios
         if (!propertyData.title || !propertyData.price || !propertyData.location) {
@@ -307,8 +318,10 @@ window.saveProperty = async function() {
         propertyData.pdfs = pdfUrls || 'EMPTY';
         
         if (window.editingPropertyId) {
+            console.log('✏️ Editando imóvel ID:', window.editingPropertyId);
             if (typeof window.updateProperty === 'function') {
                 const updateResult = await window.updateProperty(window.editingPropertyId, propertyData);
+                console.log('📊 Resultado da atualização:', updateResult);
                 if (updateResult?.success && typeof window.showAdminNotification === 'function') {
                     window.showAdminNotification('✅ Imóvel atualizado com sucesso!', 'success', 3000);
                 } else if (typeof window.showAdminNotification === 'function') {
@@ -324,9 +337,11 @@ window.saveProperty = async function() {
                 setTimeout(switchToManageTab, 100);
             }, 1500);
         } else {
+            console.log('➕ Criando novo imóvel');
             const newProperty = { ...propertyData, created_at: new Date().toISOString(), updated_at: new Date().toISOString() };
             if (typeof window.addNewProperty === 'function') {
                 const result = await window.addNewProperty(newProperty);
+                console.log('📊 Resultado da criação:', result);
                 if (result) {
                     if (typeof window.showAdminNotification === 'function') {
                         window.showAdminNotification('✅ Imóvel criado com sucesso!', 'success', 3000);
@@ -768,9 +783,9 @@ document.addEventListener('adminPanelOpened', function() {
     }, 100);
 });
 
-// ============================================================
+// ===========================================================
 // FIM DAS ATUALIZAÇÕES DO ADMIN
-// ============================================================
+// ===========================================================
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
