@@ -601,7 +601,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (AJUSTADO)
+   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL)
    ============================================================ */
 
 /* Ajustes finos para as faixas */
@@ -637,29 +637,25 @@ div.property-badge,
     width: 150px !important;
 }
 
-/* Alinhamento à direita para Destaque 2 */
-.diagonal-badge.small[style*="right:"] {
-    padding: 5px 30px 5px 40px !important;
-    width: 160px !important;
-    text-align: right !important;
-}
-
 /* Responsividade */
 @media (max-width: 768px) {
     .diagonal-badge.large {
         font-size: 0.75rem !important;
         padding: 6px 25px !important;
         width: 150px !important;
+        left: -25px !important;
     }
     .diagonal-badge.medium {
         font-size: 0.65rem !important;
         padding: 5px 20px !important;
         width: 130px !important;
+        left: -20px !important;
     }
     .diagonal-badge.small {
         font-size: 0.55rem !important;
         padding: 4px 15px !important;
         width: 110px !important;
+        left: -15px !important;
     }
 }
 
@@ -1561,9 +1557,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =======================================================
+/* ======================================================
    FIM DO ARQUIVO - main.css
-   =======================================================
+   ======================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
