@@ -1189,6 +1189,8 @@ window.contactAgent = function(id) {
 
 // ========== CRUD OPERATIONS ==========
 window.addNewProperty = async function(propertyData) {
+    console.log('📦 addNewProperty recebido:', propertyData);
+    
     if (!propertyData.title || !propertyData.price || !propertyData.location) {
         alert('❌ Preencha Título, Preço e Localização!');
         return null;
@@ -1198,6 +1200,10 @@ window.addNewProperty = async function(propertyData) {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
         propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
         propertyData.has_video = window.SharedCore.ensureBooleanVideo(propertyData.has_video);
+        
+        // 🔴 CORREÇÃO: Garantir que badge1 e badge2 existam
+        if (!propertyData.badge1) propertyData.badge1 = 'Nenhum';
+        if (!propertyData.badge2) propertyData.badge2 = 'Nenhum';
 
         var mediaResult = { images: '', pdfs: '' };
         if (typeof MediaSystem !== 'undefined') {
@@ -1214,15 +1220,21 @@ window.addNewProperty = async function(propertyData) {
         if (window.ensureSupabaseCredentials() && typeof window.supabaseSaveProperty === 'function') {
             try {
                 var supabaseResponse = await window.supabaseSaveProperty({
-                    title: propertyData.title, price: propertyData.price, location: propertyData.location,
-                    description: propertyData.description || '', features: propertyData.features,
-                    type: propertyData.type || 'residencial', has_video: propertyData.has_video,
+                    title: propertyData.title,
+                    price: propertyData.price,
+                    location: propertyData.location,
+                    description: propertyData.description || '',
+                    features: propertyData.features,
+                    type: propertyData.type || 'residencial',
+                    has_video: propertyData.has_video,
                     badge: propertyData.badge || 'Nenhum',
                     badge1: propertyData.badge1 || 'Nenhum',
                     badge2: propertyData.badge2 || 'Nenhum',
                     rural: propertyData.type === 'rural',
-                    images: propertyData.images || '', pdfs: propertyData.pdfs || ''
+                    images: propertyData.images || '',
+                    pdfs: propertyData.pdfs || ''
                 });
+                console.log('📤 Supabase response:', supabaseResponse);
                 if (supabaseResponse?.success) {
                     supabaseSuccess = true;
                     supabaseId = supabaseResponse.data?.id || supabaseResponse.data?.[0]?.id;
@@ -1237,7 +1249,6 @@ window.addNewProperty = async function(propertyData) {
         }
         var newId = (supabaseSuccess && supabaseId) ? supabaseId : (maxId + 1);
         
-        // 🔴 CORREÇÃO: Incluir badge1 e badge2 no newProperty
         var newProperty = {
             id: newId,
             title: propertyData.title,
@@ -1258,6 +1269,8 @@ window.addNewProperty = async function(propertyData) {
             savedToSupabase: supabaseSuccess,
             syncStatus: supabaseSuccess ? 'synced' : 'local_only'
         };
+        
+        console.log('🏠 Novo imóvel criado:', newProperty);
 
         window.properties.unshift(newProperty);
         window.savePropertiesToStorage();
@@ -2075,9 +2088,9 @@ if (document.readyState === 'loading') {
     });
 }
 
-// =============================================
+// ===========================================
 // FIM DO ARQUIVO - properties.js v3.6
-// ============================================
+// ===========================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.6
 // Última atualização: 2026-08-10
@@ -2089,4 +2102,4 @@ if (document.readyState === 'loading') {
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ============================================
+// ===========================================
