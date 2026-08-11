@@ -179,10 +179,10 @@ window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel
     `;
 };
 
-// ========== NOVO: GERAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON) ==========
+// ========== GERAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - CORRIGIDO) ==========
 function generateDiagonalBadges(property) {
-    const badges = [];
-    const colors = {
+    var badges = [];
+    var colors = {
         'Luxo': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
         'Novo': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' },
         'Destaque': { bg: '#2980b9', color: '#ffffff', border: '#3498db' },
@@ -198,9 +198,9 @@ function generateDiagonalBadges(property) {
         'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' }
     };
 
-    // Badge principal (DESTAQUE) - Estilo Gold Ribbon
+    // Badge principal (DESTAQUE)
     if (property.badge && property.badge !== 'Nenhum') {
-        const color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
+        var color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge,
             bg: color.bg,
@@ -208,141 +208,148 @@ function generateDiagonalBadges(property) {
             border: color.border || color.bg,
             position: 0,
             size: 'large',
-            style: 'gold-ribbon'
+            align: 'center'
         });
     }
 
-    // Badge 1 (DESTAQUE1) - Estilo Gold Ribbon
+    // Badge 1 (DESTAQUE1)
     if (property.badge1 && property.badge1 !== 'Nenhum') {
-        const color = colors[property.badge1] || { bg: '#34495e', color: '#ffffff', border: '#5d6d7e' };
+        var color1 = colors[property.badge1] || { bg: '#34495e', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge1,
-            bg: color.bg,
-            color: color.color,
-            border: color.border || color.bg,
+            bg: color1.bg,
+            color: color1.color,
+            border: color1.border || color1.bg,
             position: 1,
             size: 'medium',
-            style: 'gold-ribbon'
+            align: 'center'
         });
     }
 
-    // Badge 2 (DESTAQUE2) - Estilo Gold Ribbon com alinhamento à esquerda
+    // Badge 2 (DESTAQUE2) - ALINHADO À DIREITA
     if (property.badge2 && property.badge2 !== 'Nenhum') {
-        const color = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
+        var color2 = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
             text: property.badge2,
-            bg: color.bg,
-            color: color.color,
-            border: color.border || color.bg,
+            bg: color2.bg,
+            color: color2.color,
+            border: color2.border || color2.bg,
             position: 2,
             size: 'small',
-            style: 'gold-ribbon-left'
+            align: 'right'  // 🔴 CORREÇÃO: Alinhado à direita
         });
     }
 
     return badges;
 }
 
-// ========== NOVO: RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON) ==========
+// ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - CORRIGIDO) ==========
 function renderDiagonalBadges(property) {
-    const badges = generateDiagonalBadges(property);
+    var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // Configurações de posicionamento - MAIS ELEVADAS
-    const baseTop = 5;
-    const spacing = 38; // Menor espaçamento para sobreposição discreta
+    // Configurações de posicionamento
+    var baseTop = 4;  // 🔴 CORREÇÃO: Top: 4px (mais elevado)
+    var spacing = 46; // 🔴 CORREÇÃO: Mais espaçamento para não encobrir texto
 
-    return badges.map((badge, index) => {
-        const top = baseTop + (index * spacing);
-        const isFirst = index === 0;
-        const isLast = index === badges.length - 1;
-        const isLeftAligned = badge.style === 'gold-ribbon-left';
-        
+    var result = '';
+
+    for (var i = 0; i < badges.length; i++) {
+        var badge = badges[i];
+        var top = baseTop + (i * spacing);
+        var isFirst = i === 0;
+        var isLast = i === badges.length - 1;
+        var alignRight = badge.align === 'right';
+
         // Tamanhos e estilos
-        let fontSize, padding, width, leftOffset, letterSpacing;
-        
+        var fontSize, padding, width, leftOffset, letterSpacing, textAlign;
+
         if (isFirst) {
             fontSize = '1.0rem';
-            padding = '10px 50px';
-            width = '240px';
-            leftOffset = '-40px';
+            padding = '10px 60px';
+            width = '260px';
+            leftOffset = '-50px';
             letterSpacing = '4px';
+            textAlign = 'center';
         } else if (badge.size === 'medium') {
             fontSize = '0.85rem';
-            padding = '8px 40px';
-            width = '210px';
-            leftOffset = '-35px';
+            padding = '8px 50px';
+            width = '230px';
+            leftOffset = '-40px';
             letterSpacing = '3px';
+            textAlign = 'center';
         } else {
-            fontSize = '0.7rem';
-            padding = '6px 30px';
-            width = '180px';
+            fontSize = '0.75rem';
+            padding = '6px 40px';
+            width = '200px';
             leftOffset = '-30px';
             letterSpacing = '2px';
+            textAlign = 'center';
         }
 
-        // Alinhamento à esquerda para Destaque 2
-        if (isLeftAligned) {
-            leftOffset = '-50px';
-            padding = '6px 35px';
-            width = '200px';
+        // 🔴 CORREÇÃO: Alinhamento à direita para Destaque 2
+        if (alignRight) {
+            leftOffset = 'auto';
+            right = '10px';
+            textAlign = 'right';
+            padding = '6px 40px 6px 50px';
+            width = '220px';
+            // Inverter a rotação para ficar legível
+            var rotateAngle = '38deg';
+        } else {
+            var rotateAngle = '-38deg';
         }
 
         // Opacidade para sobreposição discreta
-        const opacity = 0.92 - (index * 0.04);
+        var opacity = 0.92 - (i * 0.04);
 
-        // Efeito Gold Ribbon com bordas decorativas
-        const borderStyle = badge.border ? `border-bottom: 3px solid ${badge.border};` : '';
-        const shadowStyle = isFirst ? 'box-shadow: 0 3px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);' : 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
+        // 🔴 CORREÇÃO: Estilo Gold Ribbon com gradiente e bordas NO CSS INLINE
+        var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
+        var borderBottom = 'border-bottom: 3px solid ' + badge.border + ';';
+        var shadowStyle = 'box-shadow: 0 3px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);';
         
-        // Efeito de brilho dourado para o primeiro
-        const glowStyle = isFirst ? 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');' : 'background: ' + badge.bg + ';';
+        // Posicionamento para alinhamento à direita
+        var positionStyle = alignRight ? 'right: 10px; left: auto;' : 'left: ' + leftOffset + ';';
 
-        // Classe extra para alinhamento
-        const alignClass = isLeftAligned ? 'diagonal-badge-left' : '';
+        var html = '';
+        html += '<div class="diagonal-badge ' + badge.size + '"';
+        html += ' style="';
+        html += 'position: absolute;';
+        html += 'top: ' + top + 'px;';
+        html += positionStyle;
+        html += 'transform: rotate(' + rotateAngle + ');';
+        html += gradientBg;
+        html += 'color: ' + badge.color + ';';
+        html += 'padding: ' + padding + ';';
+        html += 'font-size: ' + fontSize + ';';
+        html += 'font-weight: ' + (isFirst ? '900' : '700') + ';';
+        html += 'text-transform: uppercase;';
+        html += 'letter-spacing: ' + letterSpacing + ';';
+        html += 'text-align: ' + textAlign + ';';
+        html += 'width: ' + width + ';';
+        html += 'white-space: nowrap;';
+        html += 'opacity: ' + opacity + ';';
+        html += 'z-index: ' + (10 - i) + ';';
+        html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
+        html += 'pointer-events: none;';
+        html += 'text-shadow: 0 1px 3px rgba(0,0,0,0.3);';
+        html += 'border-radius: 3px;';
+        html += borderBottom;
+        html += shadowStyle;
+        html += '">';
+        html += badge.text;
+        // 🔴 CORREÇÃO: Detalhe decorativo da ponta
+        if (!alignRight) {
+            html += '<span style="position: absolute; right: -15px; top: 0; width: 0; height: 0; border-top: 15px solid transparent; border-bottom: 15px solid transparent; border-left: 15px solid ' + badge.bg + '; opacity: 0.6;"></span>';
+        } else {
+            html += '<span style="position: absolute; left: -15px; top: 0; width: 0; height: 0; border-top: 15px solid transparent; border-bottom: 15px solid transparent; border-right: 15px solid ' + badge.bg + '; opacity: 0.6;"></span>';
+        }
+        html += '</div>';
 
-        return `
-            <div class="diagonal-badge ${badge.size} ${alignClass}" 
-                 style="
-                    position: absolute;
-                    top: ${top}px;
-                    left: ${leftOffset};
-                    transform: rotate(-38deg);
-                    ${glowStyle}
-                    color: ${badge.color};
-                    padding: ${padding};
-                    font-size: ${fontSize};
-                    font-weight: ${isFirst ? '900' : '700'};
-                    text-transform: uppercase;
-                    letter-spacing: ${letterSpacing};
-                    ${shadowStyle}
-                    ${borderStyle}
-                    z-index: ${10 - index};
-                    width: ${width};
-                    text-align: ${isLeftAligned ? 'left' : 'center'};
-                    white-space: nowrap;
-                    opacity: ${opacity};
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    pointer-events: none;
-                    text-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                    border-radius: 2px;
-                 ">
-                ${badge.text}
-                <!-- Detalhe decorativo da ponta -->
-                <span style="
-                    position: absolute;
-                    right: -15px;
-                    top: 0;
-                    width: 0;
-                    height: 0;
-                    border-top: ${parseInt(padding.split(' ')[0]) + 4}px solid transparent;
-                    border-bottom: ${parseInt(padding.split(' ')[0]) + 4}px solid transparent;
-                    border-left: 15px solid ${badge.bg};
-                    opacity: 0.6;
-                "></span>
-            </div>
-        `;
-    }).join('');
+        result += html;
+    }
+
+    return result;
 }
 
 // ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
