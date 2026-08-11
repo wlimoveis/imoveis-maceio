@@ -470,7 +470,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON
+   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (CORRIGIDO)
    ============================================================ */
 
 /* Container das faixas diagonais */
@@ -488,7 +488,6 @@ div.property-badge,
 /* Estilo base para cada faixa diagonal - GOLD RIBBON */
 .diagonal-badge {
     position: absolute;
-    transform: rotate(-38deg);
     text-align: center;
     white-space: nowrap;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -497,38 +496,32 @@ div.property-badge,
     overflow: hidden;
     text-overflow: ellipsis;
     box-sizing: border-box;
-    border-radius: 2px;
-}
-
-/* Alinhamento à esquerda para Destaque 2 */
-.diagonal-badge-left {
-    text-align: left !important;
-    padding-left: 40px !important;
+    border-radius: 3px;
 }
 
 /* Tamanhos das faixas */
 .diagonal-badge.large {
     font-size: 1.0rem;
-    padding: 10px 50px;
+    padding: 10px 60px;
     font-weight: 900;
     letter-spacing: 4px;
-    width: 240px;
+    width: 260px;
 }
 
 .diagonal-badge.medium {
     font-size: 0.85rem;
-    padding: 8px 40px;
+    padding: 8px 50px;
     font-weight: 700;
     letter-spacing: 3px;
-    width: 210px;
+    width: 230px;
 }
 
 .diagonal-badge.small {
-    font-size: 0.7rem;
-    padding: 6px 30px;
+    font-size: 0.75rem;
+    padding: 6px 40px;
     font-weight: 600;
     letter-spacing: 2px;
-    width: 180px;
+    width: 200px;
 }
 
 /* Efeito de brilho nas faixas - GOLD RIBBON */
@@ -541,7 +534,7 @@ div.property-badge,
     bottom: 0;
     background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
     pointer-events: none;
-    border-radius: 2px;
+    border-radius: 3px;
 }
 
 /* Efeito de relevo 3D */
@@ -554,52 +547,56 @@ div.property-badge,
     height: 40%;
     background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
     pointer-events: none;
-    border-radius: 2px 2px 0 0;
+    border-radius: 3px 3px 0 0;
 }
 
 /* Cores das faixas - GOLD RIBBON */
-.diagonal-badge.color-luxo { background: linear-gradient(135deg, #d4a017, #f5d76e); color: #1a1a2e; border-bottom: 3px solid #f9e79f; }
-.diagonal-badge.color-novo { background: linear-gradient(135deg, #27ae60, #2ecc71); color: #ffffff; border-bottom: 3px solid #58d68d; }
-.diagonal-badge.color-destaque { background: linear-gradient(135deg, #2980b9, #3498db); color: #ffffff; border-bottom: 3px solid #5dade2; }
-.diagonal-badge.color-lancamento { background: linear-gradient(135deg, #e74c3c, #f1948a); color: #ffffff; border-bottom: 3px solid #f5b7b1; }
-.diagonal-badge.color-oportunidade { background: linear-gradient(135deg, #f39c12, #f7dc6f); color: #1a1a2e; border-bottom: 3px solid #f9e79f; }
-.diagonal-badge.color-exclusivo { background: linear-gradient(135deg, #8e44ad, #af7ac5); color: #ffffff; border-bottom: 3px solid #c39bd3; }
-.diagonal-badge.color-imperdivel { background: linear-gradient(135deg, #e67e22, #f0b27a); color: #ffffff; border-bottom: 3px solid #f5cba7; }
-.diagonal-badge.color-ultima-unidade { background: linear-gradient(135deg, #c0392b, #e74c3c); color: #ffffff; border-bottom: 3px solid #f1948a; }
-.diagonal-badge.color-beira-mar { background: linear-gradient(135deg, #1abc9c, #48c9b0); color: #ffffff; border-bottom: 3px solid #76d7c4; }
-.diagonal-badge.color-vista-mar { background: linear-gradient(135deg, #3498db, #5dade2); color: #ffffff; border-bottom: 3px solid #85c1e9; }
-.diagonal-badge.color-com-lazer { background: linear-gradient(135deg, #2ecc71, #58d68d); color: #1a1a2e; border-bottom: 3px solid #82e0aa; }
-.diagonal-badge.color-pronto-para-morar { background: linear-gradient(135deg, #9b59b6, #af7ac5); color: #ffffff; border-bottom: 3px solid #c39bd3; }
-.diagonal-badge.color-alto-padrao { background: linear-gradient(135deg, #d4a017, #f5d76e); color: #1a1a2e; border-bottom: 3px solid #f9e79f; }
+.diagonal-badge.color-luxo { background: linear-gradient(135deg, #d4a017, #f5d76e) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
+.diagonal-badge.color-novo { background: linear-gradient(135deg, #27ae60, #2ecc71) !important; color: #ffffff !important; border-bottom: 3px solid #58d68d !important; }
+.diagonal-badge.color-destaque { background: linear-gradient(135deg, #2980b9, #3498db) !important; color: #ffffff !important; border-bottom: 3px solid #5dade2 !important; }
+.diagonal-badge.color-lancamento { background: linear-gradient(135deg, #e74c3c, #f1948a) !important; color: #ffffff !important; border-bottom: 3px solid #f5b7b1 !important; }
+.diagonal-badge.color-oportunidade { background: linear-gradient(135deg, #f39c12, #f7dc6f) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
+.diagonal-badge.color-exclusivo { background: linear-gradient(135deg, #8e44ad, #af7ac5) !important; color: #ffffff !important; border-bottom: 3px solid #c39bd3 !important; }
+.diagonal-badge.color-imperdivel { background: linear-gradient(135deg, #e67e22, #f0b27a) !important; color: #ffffff !important; border-bottom: 3px solid #f5cba7 !important; }
+.diagonal-badge.color-ultima-unidade { background: linear-gradient(135deg, #c0392b, #e74c3c) !important; color: #ffffff !important; border-bottom: 3px solid #f1948a !important; }
+.diagonal-badge.color-beira-mar { background: linear-gradient(135deg, #1abc9c, #48c9b0) !important; color: #ffffff !important; border-bottom: 3px solid #76d7c4 !important; }
+.diagonal-badge.color-vista-mar { background: linear-gradient(135deg, #3498db, #5dade2) !important; color: #ffffff !important; border-bottom: 3px solid #85c1e9 !important; }
+.diagonal-badge.color-com-lazer { background: linear-gradient(135deg, #2ecc71, #58d68d) !important; color: #1a1a2e !important; border-bottom: 3px solid #82e0aa !important; }
+.diagonal-badge.color-pronto-para-morar { background: linear-gradient(135deg, #9b59b6, #af7ac5) !important; color: #ffffff !important; border-bottom: 3px solid #c39bd3 !important; }
+.diagonal-badge.color-alto-padrao { background: linear-gradient(135deg, #d4a017, #f5d76e) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
 
 /* Responsividade das faixas diagonais */
 @media (max-width: 768px) {
     .diagonal-badge.large {
         font-size: 0.85rem;
-        padding: 8px 30px;
-        width: 180px;
+        padding: 8px 35px;
+        width: 190px;
         left: -30px;
     }
     .diagonal-badge.medium {
         font-size: 0.7rem;
-        padding: 6px 25px;
-        width: 160px;
+        padding: 6px 28px;
+        width: 170px;
         left: -25px;
     }
     .diagonal-badge.small {
-        font-size: 0.6rem;
-        padding: 4px 20px;
-        width: 140px;
+        font-size: 0.65rem;
+        padding: 4px 22px;
+        width: 150px;
         left: -20px;
     }
-    .diagonal-badge-left {
-        padding-left: 25px !important;
+    /* Alinhamento à direita em mobile */
+    .diagonal-badge.small[style*="right:"] {
+        right: 5px !important;
+        left: auto !important;
+        padding: 4px 22px 4px 30px !important;
+        width: 150px !important;
     }
 }
 
 /* Animações opcionais das faixas */
 .diagonal-badge:hover {
-    transform: rotate(-38deg) scale(1.05);
+    transform: scale(1.05) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
 }
 
@@ -1501,9 +1498,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ==========================================================
+/* =========================================================
    FIM DO ARQUIVO - main.css
-   ==========================================================
+   =========================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
