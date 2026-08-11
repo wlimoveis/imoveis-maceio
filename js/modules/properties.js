@@ -2090,7 +2090,7 @@ if (document.readyState === 'loading') {
 
 // ===========================================
 // FIM DO ARQUIVO - properties.js v3.6
-// ===========================================
+// ==========================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
 // Versão: 3.6
 // Última atualização: 2026-08-10
@@ -2102,4 +2102,4 @@ if (document.readyState === 'loading') {
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
-// ===========================================
+// ==========================================
