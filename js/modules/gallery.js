@@ -180,6 +180,7 @@ window.createImageThumbnail = function(imageUrl, index, propertyTitle = 'Imóvel
 };
 
 // ========== GERAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - CORRIGIDO) ==========
+// ========== GERAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - AJUSTADO) ==========
 function generateDiagonalBadges(property) {
     var badges = [];
     var colors = {
@@ -207,8 +208,7 @@ function generateDiagonalBadges(property) {
             color: color.color,
             border: color.border || color.bg,
             position: 0,
-            size: 'large',
-            align: 'center'
+            size: 'large'
         });
     }
 
@@ -221,12 +221,11 @@ function generateDiagonalBadges(property) {
             color: color1.color,
             border: color1.border || color1.bg,
             position: 1,
-            size: 'medium',
-            align: 'center'
+            size: 'medium'
         });
     }
 
-    // Badge 2 (DESTAQUE2) - ALINHADO À DIREITA
+    // Badge 2 (DESTAQUE2) - Alinhado à direita
     if (property.badge2 && property.badge2 !== 'Nenhum') {
         var color2 = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         badges.push({
@@ -236,21 +235,21 @@ function generateDiagonalBadges(property) {
             border: color2.border || color2.bg,
             position: 2,
             size: 'small',
-            align: 'right'  // 🔴 CORREÇÃO: Alinhado à direita
+            alignRight: true  // 🔴 Alinhado à direita
         });
     }
 
     return badges;
 }
 
-// ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - CORRIGIDO) ==========
+// ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - AJUSTADO) ==========
 function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // Configurações de posicionamento
-    var baseTop = 4;  // 🔴 CORREÇÃO: Top: 4px (mais elevado)
-    var spacing = 46; // 🔴 CORREÇÃO: Mais espaçamento para não encobrir texto
+    // Configurações de posicionamento - AJUSTADAS
+    var baseTop = 12;      // 🔴 CORRIGIDO: Top 12px (para não cortar o texto)
+    var spacing = 42;      // 🔴 CORRIGIDO: Espaçamento 42px (sobreposição discreta)
 
     var result = '';
 
@@ -259,58 +258,57 @@ function renderDiagonalBadges(property) {
         var top = baseTop + (i * spacing);
         var isFirst = i === 0;
         var isLast = i === badges.length - 1;
-        var alignRight = badge.align === 'right';
+        var alignRight = badge.alignRight === true;
 
-        // Tamanhos e estilos
+        // 🔴 CORRIGIDO: Dimensões reduzidas (faixas mais finas)
         var fontSize, padding, width, leftOffset, letterSpacing, textAlign;
 
         if (isFirst) {
-            fontSize = '1.0rem';
-            padding = '10px 60px';
-            width = '260px';
-            leftOffset = '-50px';
-            letterSpacing = '4px';
-            textAlign = 'center';
-        } else if (badge.size === 'medium') {
-            fontSize = '0.85rem';
-            padding = '8px 50px';
-            width = '230px';
-            leftOffset = '-40px';
+            fontSize = '0.9rem';
+            padding = '7px 40px';
+            width = '200px';
+            leftOffset = '-35px';
             letterSpacing = '3px';
             textAlign = 'center';
-        } else {
+        } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
-            padding = '6px 40px';
-            width = '200px';
+            padding = '6px 32px';
+            width = '170px';
             leftOffset = '-30px';
             letterSpacing = '2px';
             textAlign = 'center';
+        } else {
+            fontSize = '0.65rem';
+            padding = '5px 25px';
+            width = '150px';
+            leftOffset = '-25px';
+            letterSpacing = '1.5px';
+            textAlign = 'center';
         }
 
-        // 🔴 CORREÇÃO: Alinhamento à direita para Destaque 2
+        // 🔴 CORRIGIDO: Alinhamento à direita para Destaque 2
+        var positionStyle, rotateAngle, rightOffset;
+
         if (alignRight) {
-            leftOffset = 'auto';
-            right = '10px';
+            rightOffset = '15px';
+            positionStyle = 'right: ' + rightOffset + '; left: auto;';
             textAlign = 'right';
-            padding = '6px 40px 6px 50px';
-            width = '220px';
-            // Inverter a rotação para ficar legível
-            var rotateAngle = '38deg';
+            padding = '5px 30px 5px 40px';  // Mais espaço à esquerda
+            rotateAngle = '38deg';          // Invertido para legibilidade
+            width = '160px';
         } else {
-            var rotateAngle = '-38deg';
+            positionStyle = 'left: ' + leftOffset + ';';
+            rotateAngle = '-38deg';
         }
 
         // Opacidade para sobreposição discreta
         var opacity = 0.92 - (i * 0.04);
 
-        // 🔴 CORREÇÃO: Estilo Gold Ribbon com gradiente e bordas NO CSS INLINE
+        // Estilo Gold Ribbon
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
-        var borderBottom = 'border-bottom: 3px solid ' + badge.border + ';';
-        var shadowStyle = 'box-shadow: 0 3px 15px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);';
+        var borderBottom = 'border-bottom: 2px solid ' + badge.border + ';';
+        var shadowStyle = 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
         
-        // Posicionamento para alinhamento à direita
-        var positionStyle = alignRight ? 'right: 10px; left: auto;' : 'left: ' + leftOffset + ';';
-
         var html = '';
         html += '<div class="diagonal-badge ' + badge.size + '"';
         html += ' style="';
@@ -322,7 +320,7 @@ function renderDiagonalBadges(property) {
         html += 'color: ' + badge.color + ';';
         html += 'padding: ' + padding + ';';
         html += 'font-size: ' + fontSize + ';';
-        html += 'font-weight: ' + (isFirst ? '900' : '700') + ';';
+        html += 'font-weight: ' + (isFirst ? '800' : '600') + ';';
         html += 'text-transform: uppercase;';
         html += 'letter-spacing: ' + letterSpacing + ';';
         html += 'text-align: ' + textAlign + ';';
@@ -332,17 +330,17 @@ function renderDiagonalBadges(property) {
         html += 'z-index: ' + (10 - i) + ';';
         html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
         html += 'pointer-events: none;';
-        html += 'text-shadow: 0 1px 3px rgba(0,0,0,0.3);';
+        html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
         html += '">';
         html += badge.text;
-        // 🔴 CORREÇÃO: Detalhe decorativo da ponta
+        // Detalhe decorativo da ponta
         if (!alignRight) {
-            html += '<span style="position: absolute; right: -15px; top: 0; width: 0; height: 0; border-top: 15px solid transparent; border-bottom: 15px solid transparent; border-left: 15px solid ' + badge.bg + '; opacity: 0.6;"></span>';
+            html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         } else {
-            html += '<span style="position: absolute; left: -15px; top: 0; width: 0; height: 0; border-top: 15px solid transparent; border-bottom: 15px solid transparent; border-right: 15px solid ' + badge.bg + '; opacity: 0.6;"></span>';
+            html += '<span style="position: absolute; left: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-right: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         }
         html += '</div>';
 
