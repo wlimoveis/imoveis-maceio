@@ -601,7 +601,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL)
+   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL DEFINITIVA)
    ============================================================ */
 
 /* Ajustes finos para as faixas */
@@ -613,49 +613,52 @@ div.property-badge,
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
     font-size: 0.9rem !important;
-    padding: 7px 40px !important;
+    padding: 7px 45px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 200px !important;
+    width: 220px !important;
+    left: -40px !important;
 }
 
 /* Faixa secundária */
 .diagonal-badge.medium {
     font-size: 0.75rem !important;
-    padding: 6px 32px !important;
+    padding: 6px 38px !important;
     font-weight: 600 !important;
     letter-spacing: 2px !important;
-    width: 170px !important;
+    width: 190px !important;
+    left: -35px !important;
 }
 
 /* Faixa inferior - Destaque 2 */
 .diagonal-badge.small {
     font-size: 0.65rem !important;
-    padding: 5px 25px !important;
+    padding: 5px 30px !important;
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
-    width: 150px !important;
+    width: 180px !important;  /* 🔴 Aumentado */
+    left: -30px !important;
 }
 
 /* Responsividade */
 @media (max-width: 768px) {
     .diagonal-badge.large {
         font-size: 0.75rem !important;
-        padding: 6px 25px !important;
-        width: 150px !important;
+        padding: 6px 28px !important;
+        width: 160px !important;
         left: -25px !important;
     }
     .diagonal-badge.medium {
         font-size: 0.65rem !important;
-        padding: 5px 20px !important;
-        width: 130px !important;
+        padding: 5px 22px !important;
+        width: 140px !important;
         left: -20px !important;
     }
     .diagonal-badge.small {
         font-size: 0.55rem !important;
-        padding: 4px 15px !important;
-        width: 110px !important;
-        left: -15px !important;
+        padding: 4px 18px !important;
+        width: 130px !important;  /* 🔴 Aumentado no mobile */
+        left: -18px !important;
     }
 }
 
@@ -1557,9 +1560,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ======================================================
+/* =====================================================
    FIM DO ARQUIVO - main.css
-   ======================================================
+   =====================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
