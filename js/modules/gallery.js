@@ -246,9 +246,9 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 CORRIGIDO: baseTop aumentado para 18px (evitar corte do texto)
+    // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
     var baseTop = 18;
-    var spacing = 42;
+    var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
 
     var result = '';
 
@@ -257,30 +257,30 @@ function renderDiagonalBadges(property) {
         var top = baseTop + (i * spacing);
         var isFirst = i === 0;
 
-        // 🔴 CORRIGIDO: Dimensões reduzidas (faixas mais finas)
+        // 🔴 CORRIGIDO: Aumentar largura para evitar texto cortado
         var fontSize, padding, width, leftOffset, letterSpacing;
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '7px 40px';
-            width = '200px';
-            leftOffset = '-35px';
+            padding = '7px 45px';
+            width = '220px';        // 🔴 Aumentado
+            leftOffset = '-40px';
             letterSpacing = '3px';
         } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
-            padding = '6px 32px';
-            width = '170px';
-            leftOffset = '-30px';
+            padding = '6px 38px';
+            width = '190px';        // 🔴 Aumentado
+            leftOffset = '-35px';
             letterSpacing = '2px';
         } else {
             fontSize = '0.65rem';
-            padding = '5px 25px';
-            width = '150px';
-            leftOffset = '-25px';
+            padding = '5px 30px';
+            width = '180px';        // 🔴 Aumentado (antes 150px)
+            leftOffset = '-30px';
             letterSpacing = '1.5px';
         }
 
-        // 🔴 CORRIGIDO: TODAS as faixas no mesmo lado (esquerda)
+        // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = '-38deg';
         var textAlign = 'center';
@@ -320,7 +320,7 @@ function renderDiagonalBadges(property) {
         html += shadowStyle;
         html += '">';
         html += badge.text;
-        // Detalhe decorativo da ponta (mesmo para todas)
+        // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
 
@@ -881,5 +881,5 @@ if (document.readyState === 'loading') {
     window.setupGalleryEvents();
 }
 
-// ========== EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS ==========
+// ========= EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS =========
 window.openGallery = window.openGalleryAtCurrentIndex;
