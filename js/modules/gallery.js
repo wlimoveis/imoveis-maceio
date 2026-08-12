@@ -3,6 +3,8 @@
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
+// ✅ CORREÇÃO: Texto movido para LESTE (DIREITA) para descolar da borda superior
+// ✅ CORREÇÃO: Centralização vertical mantida com Flexbox
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -246,8 +248,8 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 FAIXA NO TOPO (mais alta possível)
-    var baseTop = 10;      // Reduzido para ficar bem no topo
+    // 🔴 FAIXA NO TOPO (baseTop: 10)
+    var baseTop = 10;
     var spacing = 52;
 
     var result = '';
@@ -261,7 +263,10 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.85rem';
-            padding = '8px 45px 8px 45px';  // Padding equilibrado
+            // 🔴 AJUSTADO: padding-left aumentado de 45px para 60px
+            // Isso move o texto para a DIREITA (LESTE), fazendo-o DESCER
+            // E descolando da borda superior (NORTE)
+            padding = '8px 45px 8px 60px';  // top=8, right=45, bottom=8, left=60
             width = '280px';
             leftOffset = '-40px';
             letterSpacing = '3px';
@@ -279,11 +284,15 @@ function renderDiagonalBadges(property) {
             letterSpacing = '1.5px';
         }
 
+        // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = '-42deg';  // Mantém a diagonal
+        var rotateAngle = '-42deg';
         var textAlign = 'center';
+
+        // Opacidade para sobreposição discreta
         var opacity = 0.92 - (i * 0.04);
 
+        // Estilo Gold Ribbon
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
         var borderBottom = 'border-bottom: 2px solid ' + badge.border + ';';
         var shadowStyle = 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
@@ -313,13 +322,13 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
-        // 🔴 NOVO: Flexbox para centralização perfeita
+        // 🔴 Flexbox para centralização vertical perfeita
         html += 'display: flex;';
         html += 'align-items: center;';
         html += 'justify-content: center;';
         html += 'box-sizing: border-box;';
         html += '">';
-        // 🔴 NOVO: Span com o texto centralizado
+        // 🔴 Span com o texto centralizado
         html += '<span style="display: inline-block; text-align: center; width: 100%;">' + badge.text + '</span>';
         // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
