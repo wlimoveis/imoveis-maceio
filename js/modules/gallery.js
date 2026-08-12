@@ -12,7 +12,7 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE ==========
+// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE =========
 // A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
 // ========== FUNÇÕES DELEGADAS PARA O SHAREDCORE (COM FALLBACK) ==========
@@ -247,7 +247,7 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
-    var baseTop = 35;
+    var baseTop = 14;
     var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
 
     var result = '';
@@ -262,7 +262,8 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '7px 45px';
+            padding = 14px 45px 7px 45px';  // <--- ALTERADO: top:14px, right:45px, bottom:7px, left:45px
+    // OU padding = '12px 45px 4px 45px'; (testar valores)
             width = '280px';        // 🔴 Aumentado
             leftOffset = '-40px';
             letterSpacing = '3px';
