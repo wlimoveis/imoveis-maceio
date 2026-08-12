@@ -618,6 +618,7 @@ div.property-badge,
     letter-spacing: 3px !important;
     width: 280px !important;
     left: -40px !important;
+    top: 35px !important;  /* <--- ADICIONADO: fallback para o top */
 }
 
 /* Faixa secundária */
@@ -1560,9 +1561,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =====================================================
+/* ====================================================
    FIM DO ARQUIVO - main.css
-   =====================================================
+   ====================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
