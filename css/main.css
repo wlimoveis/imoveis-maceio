@@ -616,7 +616,7 @@ div.property-badge,
     padding: 7px 45px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 220px !important;
+    width: 280px !important;
     left: -40px !important;
 }
 
@@ -645,7 +645,7 @@ div.property-badge,
     .diagonal-badge.large {
         font-size: 0.75rem !important;
         padding: 6px 28px !important;
-        width: 160px !important;
+        width: 200px !important;
         left: -25px !important;
     }
     .diagonal-badge.medium {
