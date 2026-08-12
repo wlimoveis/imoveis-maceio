@@ -282,7 +282,7 @@ function renderDiagonalBadges(property) {
 
         // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = '-38deg';
+        var rotateAngle = '-42deg';
         var textAlign = 'center';
 
         // Opacidade para sobreposição discreta
