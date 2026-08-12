@@ -4,6 +4,7 @@
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 // ✅ CORREÇÃO: Texto movido para LESTE (DIREITA) para descolar da borda superior
+// ✅ CORREÇÃO: padding-top aumentado para descer o texto dentro da faixa
 // ✅ CORREÇÃO: Centralização vertical mantida com Flexbox
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
@@ -248,7 +249,7 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 FAIXA NO TOPO (baseTop: 10)
+    // 🔴 FAIXA MANTIDA NO TOPO (baseTop: 10) - NÃO ALTERADO
     var baseTop = 10;
     var spacing = 52;
 
@@ -263,10 +264,10 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.85rem';
-            // 🔴 AJUSTADO: padding-left aumentado de 45px para 60px
-            // Isso move o texto para a DIREITA (LESTE), fazendo-o DESCER
-            // E descolando da borda superior (NORTE)
-            padding = '8px 45px 8px 60px';  // top=8, right=45, bottom=8, left=60
+            // 🔴 AJUSTADO: padding-top aumentado de 8px para 16px
+            // Isso DESCE o texto DENTRO da faixa, sem mover a faixa
+            // O texto "ÇÃO" não será mais cortado pela borda superior
+            padding = '16px 45px 8px 60px';  // top=16 (↑), right=45, bottom=8, left=60
             width = '280px';
             leftOffset = '-40px';
             letterSpacing = '3px';
