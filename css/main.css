@@ -2,7 +2,7 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.8
+   ✅ Versão: 2.7
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
@@ -11,8 +11,6 @@
    ✅ CORREÇÃO: Contraste do CTA Button, Badges e Rural Tags
    ✅ CORREÇÃO: Especificidade aumentada para sobrescrever estilos inline
    ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
-   ✅ CORREÇÃO: Centralização do texto nas faixas diagonais com Flexbox
-   ✅ CORREÇÃO: Posicionamento da faixa principal no topo (baseTop: 10px)
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -472,7 +470,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL DEFINITIVA)
+   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (CORRIGIDO)
    ============================================================ */
 
 /* Container das faixas diagonais */
@@ -499,49 +497,31 @@ div.property-badge,
     text-overflow: ellipsis;
     box-sizing: border-box;
     border-radius: 3px;
-    /* 🔴 NOVO: Flexbox para centralização do texto */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
 }
 
 /* Tamanhos das faixas */
 .diagonal-badge.large {
-    font-size: 0.85rem !important;
-    padding: 8px 45px 8px 45px !important;
-    font-weight: 800 !important;
-    letter-spacing: 3px !important;
-    width: 280px !important;
-    left: -40px !important;
-    top: 10px !important;  /* 🔴 FAIXA NO TOPO - alinhado com baseTop: 10 */
+    font-size: 1.0rem;
+    padding: 10px 60px;
+    font-weight: 900;
+    letter-spacing: 4px;
+    width: 260px;
 }
 
 .diagonal-badge.medium {
-    font-size: 0.75rem !important;
-    padding: 6px 38px !important;
-    font-weight: 600 !important;
-    letter-spacing: 2px !important;
-    width: 190px !important;
-    left: -35px !important;
+    font-size: 0.85rem;
+    padding: 8px 50px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    width: 230px;
 }
 
 .diagonal-badge.small {
-    font-size: 0.65rem !important;
-    padding: 5px 30px !important;
-    font-weight: 600 !important;
-    letter-spacing: 1.5px !important;
-    width: 180px !important;
-    left: -30px !important;
-}
-
-/* 🔴 NOVO: Centralização do texto dentro das faixas */
-.diagonal-badge.large span,
-.diagonal-badge.medium span,
-.diagonal-badge.small span {
-    display: inline-block !important;
-    text-align: center !important;
-    width: 100% !important;
-    line-height: 1.2 !important;
+    font-size: 0.75rem;
+    padding: 6px 40px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    width: 200px;
 }
 
 /* Efeito de brilho nas faixas - GOLD RIBBON */
@@ -588,23 +568,22 @@ div.property-badge,
 /* Responsividade das faixas diagonais */
 @media (max-width: 768px) {
     .diagonal-badge.large {
-        font-size: 0.75rem !important;
-        padding: 6px 28px !important;
-        width: 200px !important;
-        left: -25px !important;
-        top: 10px !important;
+        font-size: 0.85rem;
+        padding: 8px 35px;
+        width: 190px;
+        left: -30px;
     }
     .diagonal-badge.medium {
-        font-size: 0.65rem !important;
-        padding: 5px 22px !important;
-        width: 140px !important;
-        left: -20px !important;
+        font-size: 0.7rem;
+        padding: 6px 28px;
+        width: 170px;
+        left: -25px;
     }
     .diagonal-badge.small {
-        font-size: 0.55rem !important;
-        padding: 4px 18px !important;
-        width: 130px !important;
-        left: -18px !important;
+        font-size: 0.65rem;
+        padding: 4px 22px;
+        width: 150px;
+        left: -20px;
     }
     /* Alinhamento à direita em mobile */
     .diagonal-badge.small[style*="right:"] {
@@ -619,6 +598,68 @@ div.property-badge,
 .diagonal-badge:hover {
     transform: scale(1.05) !important;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* ============================================================
+   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL DEFINITIVA)
+   ============================================================ */
+
+/* Ajustes finos para as faixas */
+.diagonal-badge {
+    border-radius: 3px !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+}
+
+/* Faixa principal - mais destacada */
+.diagonal-badge.large {
+    font-size: 0.9rem !important;
+    padding: 7px 45px !important;
+    font-weight: 800 !important;
+    letter-spacing: 3px !important;
+    width: 220px !important;
+    left: -40px !important;
+}
+
+/* Faixa secundária */
+.diagonal-badge.medium {
+    font-size: 0.75rem !important;
+    padding: 6px 38px !important;
+    font-weight: 600 !important;
+    letter-spacing: 2px !important;
+    width: 190px !important;
+    left: -35px !important;
+}
+
+/* Faixa inferior - Destaque 2 */
+.diagonal-badge.small {
+    font-size: 0.65rem !important;
+    padding: 5px 30px !important;
+    font-weight: 600 !important;
+    letter-spacing: 1.5px !important;
+    width: 180px !important;  /* 🔴 Aumentado */
+    left: -30px !important;
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .diagonal-badge.large {
+        font-size: 0.75rem !important;
+        padding: 6px 28px !important;
+        width: 160px !important;
+        left: -25px !important;
+    }
+    .diagonal-badge.medium {
+        font-size: 0.65rem !important;
+        padding: 5px 22px !important;
+        width: 140px !important;
+        left: -20px !important;
+    }
+    .diagonal-badge.small {
+        font-size: 0.55rem !important;
+        padding: 4px 18px !important;
+        width: 130px !important;  /* 🔴 Aumentado no mobile */
+        left: -18px !important;
+    }
 }
 
 /* ========== FIM DAS FAIXAS DIAGONAIS ========== */
@@ -1519,13 +1560,11 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =================================================
+/* =====================================================
    FIM DO ARQUIVO - main.css
-   =================================================
+   =====================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.8
+   Versão: 2.7
    Última atualização: 2026-08-10
    NOVO: Faixas diagonais para Destaques Múltiplos
-   CORREÇÃO: Centralização do texto com Flexbox
-   CORREÇÃO: Posicionamento da faixa principal no topo (10px)
    ============================================================ */
