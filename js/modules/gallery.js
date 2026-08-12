@@ -246,9 +246,9 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
-    var baseTop = 14;
-    var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
+    // 🔴 FAIXA NO TOPO (mais alta possível)
+    var baseTop = 10;      // Reduzido para ficar bem no topo
+    var spacing = 52;
 
     var result = '';
 
@@ -257,39 +257,33 @@ function renderDiagonalBadges(property) {
         var top = baseTop + (i * spacing);
         var isFirst = i === 0;
 
-        // 🔴 CORRIGIDO: Aumentar largura para evitar texto cortado
         var fontSize, padding, width, leftOffset, letterSpacing;
 
         if (isFirst) {
-            fontSize = '0.9rem';
-            padding = 14px 45px 7px 45px';  // <--- ALTERADO: top:14px, right:45px, bottom:7px, left:45px
-    // OU padding = '12px 45px 4px 45px'; (testar valores)
-            width = '280px';        // 🔴 Aumentado
+            fontSize = '0.85rem';
+            padding = '8px 45px 8px 45px';  // Padding equilibrado
+            width = '280px';
             leftOffset = '-40px';
             letterSpacing = '3px';
         } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
             padding = '6px 38px';
-            width = '190px';        // 🔴 Aumentado
+            width = '190px';
             leftOffset = '-35px';
             letterSpacing = '2px';
         } else {
             fontSize = '0.65rem';
             padding = '5px 30px';
-            width = '180px';        // 🔴 Aumentado (antes 150px)
+            width = '180px';
             leftOffset = '-30px';
             letterSpacing = '1.5px';
         }
 
-        // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = '-42deg';
+        var rotateAngle = '-42deg';  // Mantém a diagonal
         var textAlign = 'center';
-
-        // Opacidade para sobreposição discreta
         var opacity = 0.92 - (i * 0.04);
 
-        // Estilo Gold Ribbon
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
         var borderBottom = 'border-bottom: 2px solid ' + badge.border + ';';
         var shadowStyle = 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
@@ -308,7 +302,7 @@ function renderDiagonalBadges(property) {
         html += 'font-weight: ' + (isFirst ? '800' : '600') + ';';
         html += 'text-transform: uppercase;';
         html += 'letter-spacing: ' + letterSpacing + ';';
-        html += 'text-align: ' + textAlign + ';';
+        html += 'text-align: center;';
         html += 'width: ' + width + ';';
         html += 'white-space: nowrap;';
         html += 'opacity: ' + opacity + ';';
@@ -319,8 +313,14 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
+        // 🔴 NOVO: Flexbox para centralização perfeita
+        html += 'display: flex;';
+        html += 'align-items: center;';
+        html += 'justify-content: center;';
+        html += 'box-sizing: border-box;';
         html += '">';
-        html += badge.text;
+        // 🔴 NOVO: Span com o texto centralizado
+        html += '<span style="display: inline-block; text-align: center; width: 100%;">' + badge.text + '</span>';
         // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
