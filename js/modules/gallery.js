@@ -263,7 +263,7 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             fontSize = '0.9rem';
             padding = '7px 45px';
-            width = '220px';        // 🔴 Aumentado
+            width = '280px';        // 🔴 Aumentado
             leftOffset = '-40px';
             letterSpacing = '3px';
         } else if (badge.size === 'medium') {
