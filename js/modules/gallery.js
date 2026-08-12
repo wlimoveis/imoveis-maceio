@@ -3,11 +3,6 @@
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
-// ✅ CORREÇÃO: Texto movido para LESTE (DIREITA) para descolar da borda superior
-// ✅ CORREÇÃO: padding-top aumentado para descer o texto dentro da faixa
-// ✅ CORREÇÃO: align-items: center REMOVIDO para permitir que o padding-top funcione
-// ✅ CORREÇÃO: overflow: visible adicionado para evitar corte do texto
-// ✅ CORREÇÃO: transform: translateY() no span para forçar a descida do texto
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -17,7 +12,7 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE =========
+// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE ==========
 // A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
 // ========== FUNÇÕES DELEGADAS PARA O SHAREDCORE (COM FALLBACK) ==========
@@ -251,9 +246,9 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 FAIXA MANTIDA NO TOPO (baseTop: 10) - NÃO ALTERADO
-    var baseTop = 10;
-    var spacing = 52;
+    // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
+    var baseTop = 18;
+    var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
 
     var result = '';
 
@@ -262,33 +257,32 @@ function renderDiagonalBadges(property) {
         var top = baseTop + (i * spacing);
         var isFirst = i === 0;
 
+        // 🔴 CORRIGIDO: Aumentar largura para evitar texto cortado
         var fontSize, padding, width, leftOffset, letterSpacing;
 
         if (isFirst) {
-            fontSize = '0.85rem';
-            // 🔴 AJUSTADO: padding-top aumentado para 20px
-            // 🔴 align-items: center REMOVIDO para permitir que o padding funcione
-            padding = '20px 45px 8px 60px';  // top=20, right=45, bottom=8, left=60
-            width = '280px';
+            fontSize = '0.9rem';
+            padding = '7px 45px';
+            width = '220px';        // 🔴 Aumentado
             leftOffset = '-40px';
             letterSpacing = '3px';
         } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
             padding = '6px 38px';
-            width = '190px';
+            width = '190px';        // 🔴 Aumentado
             leftOffset = '-35px';
             letterSpacing = '2px';
         } else {
             fontSize = '0.65rem';
             padding = '5px 30px';
-            width = '180px';
+            width = '180px';        // 🔴 Aumentado (antes 150px)
             leftOffset = '-30px';
             letterSpacing = '1.5px';
         }
 
         // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = '-42deg';
+        var rotateAngle = '-38deg';
         var textAlign = 'center';
 
         // Opacidade para sobreposição discreta
@@ -313,7 +307,7 @@ function renderDiagonalBadges(property) {
         html += 'font-weight: ' + (isFirst ? '800' : '600') + ';';
         html += 'text-transform: uppercase;';
         html += 'letter-spacing: ' + letterSpacing + ';';
-        html += 'text-align: center;';
+        html += 'text-align: ' + textAlign + ';';
         html += 'width: ' + width + ';';
         html += 'white-space: nowrap;';
         html += 'opacity: ' + opacity + ';';
@@ -324,16 +318,8 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
-        // 🔴 CORREÇÃO: Flexbox SEM align-items: center
-        // Isso permite que o padding-top funcione para descer o texto
-        html += 'display: flex;';
-        html += 'justify-content: center;';  // Apenas centralização horizontal
-        html += 'box-sizing: border-box;';
-        // 🔴 ADICIONADO: overflow: visible para evitar corte
-        html += 'overflow: visible;';
         html += '">';
-        // 🔴 CORREÇÃO: Usar transform: translateY() para forçar a descida do texto
-        html += '<span style="display: inline-block; text-align: center; width: 100%; transform: translateY(10px);">' + badge.text + '</span>';
+        html += badge.text;
         // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
@@ -496,11 +482,11 @@ window.createPropertyGallery = function(property) {
 
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
-             style="position: relative; height: 250px; overflow: visible;"
+             style="position: relative; height: 250px;"
              data-property-id="${property.id}">
             <div class="property-gallery-container" 
                  onclick="openGalleryAtCurrentIndex(${property.id})" 
-                 style="cursor:pointer; position:relative; overflow: visible;"
+                 style="cursor:pointer; position:relative;"
                  data-current-index="0">
                 
                 ${firstIsVideo ? 
@@ -819,7 +805,7 @@ window.setupGalleryEvents = function() {
             position: absolute;
             pointer-events: none;
             z-index: 10;
-            overflow: visible !important;
+            overflow: hidden;
             text-overflow: ellipsis;
             box-sizing: border-box;
             transition: all 0.3s ease;
@@ -884,14 +870,6 @@ window.setupGalleryEvents = function() {
         .diagonal-badge:hover {
             transform: rotate(-40deg) scale(1.05);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        /* ========== CORREÇÃO: PERMITIR QUE A FAIXA ULTRAPASSE O CONTAINER ========== */
-        .property-image {
-            overflow: visible !important;
-        }
-        .property-gallery-container {
-            overflow: visible !important;
         }
     `;
     document.head.appendChild(style);
