@@ -5,7 +5,8 @@
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 // ✅ CORREÇÃO: Texto movido para LESTE (DIREITA) para descolar da borda superior
 // ✅ CORREÇÃO: padding-top aumentado para descer o texto dentro da faixa
-// ✅ CORREÇÃO: Centralização vertical mantida com Flexbox
+// ✅ CORREÇÃO: align-items: center REMOVIDO para permitir que o padding-top funcione
+// ✅ CORREÇÃO: Centralização horizontal mantida com justify-content: center
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -264,10 +265,9 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.85rem';
-            // 🔴 AJUSTADO: padding-top aumentado de 8px para 16px
-            // Isso DESCE o texto DENTRO da faixa, sem mover a faixa
-            // O texto "ÇÃO" não será mais cortado pela borda superior
-            padding = '16px 45px 8px 60px';  // top=16 (↑), right=45, bottom=8, left=60
+            // 🔴 AJUSTADO: padding-top aumentado de 8px para 20px
+            // 🔴 align-items: center REMOVIDO do Flexbox para permitir que o padding funcione
+            padding = '20px 45px 8px 60px';  // top=20 (↑), right=45, bottom=8, left=60
             width = '280px';
             leftOffset = '-40px';
             letterSpacing = '3px';
@@ -323,13 +323,14 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
-        // 🔴 Flexbox para centralização vertical perfeita
+        // 🔴 CORREÇÃO: Flexbox SEM align-items: center
+        // Isso permite que o padding-top funcione para descer o texto
         html += 'display: flex;';
-        html += 'align-items: center;';
-        html += 'justify-content: center;';
+        html += 'justify-content: center;';  // Apenas centralização horizontal
+        // align-items: center REMOVIDO
         html += 'box-sizing: border-box;';
         html += '">';
-        // 🔴 Span com o texto centralizado
+        // 🔴 Span com o texto
         html += '<span style="display: inline-block; text-align: center; width: 100%;">' + badge.text + '</span>';
         // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
