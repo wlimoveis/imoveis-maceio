@@ -6,7 +6,8 @@
 // ✅ CORREÇÃO: Texto movido para LESTE (DIREITA) para descolar da borda superior
 // ✅ CORREÇÃO: padding-top aumentado para descer o texto dentro da faixa
 // ✅ CORREÇÃO: align-items: center REMOVIDO para permitir que o padding-top funcione
-// ✅ CORREÇÃO: Centralização horizontal mantida com justify-content: center
+// ✅ CORREÇÃO: overflow: visible adicionado para evitar corte do texto
+// ✅ CORREÇÃO: transform: translateY() no span para forçar a descida do texto
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
 // ========== VARIÁVEIS GLOBAIS ==========
@@ -265,9 +266,9 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.85rem';
-            // 🔴 AJUSTADO: padding-top aumentado de 8px para 20px
-            // 🔴 align-items: center REMOVIDO do Flexbox para permitir que o padding funcione
-            padding = '20px 45px 8px 60px';  // top=20 (↑), right=45, bottom=8, left=60
+            // 🔴 AJUSTADO: padding-top aumentado para 20px
+            // 🔴 align-items: center REMOVIDO para permitir que o padding funcione
+            padding = '20px 45px 8px 60px';  // top=20, right=45, bottom=8, left=60
             width = '280px';
             leftOffset = '-40px';
             letterSpacing = '3px';
@@ -327,11 +328,12 @@ function renderDiagonalBadges(property) {
         // Isso permite que o padding-top funcione para descer o texto
         html += 'display: flex;';
         html += 'justify-content: center;';  // Apenas centralização horizontal
-        // align-items: center REMOVIDO
         html += 'box-sizing: border-box;';
+        // 🔴 ADICIONADO: overflow: visible para evitar corte
+        html += 'overflow: visible;';
         html += '">';
-        // 🔴 Span com o texto
-        html += '<span style="display: inline-block; text-align: center; width: 100%;">' + badge.text + '</span>';
+        // 🔴 CORREÇÃO: Usar transform: translateY() para forçar a descida do texto
+        html += '<span style="display: inline-block; text-align: center; width: 100%; transform: translateY(10px);">' + badge.text + '</span>';
         // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
@@ -494,11 +496,11 @@ window.createPropertyGallery = function(property) {
 
     const containerHtml = `
         <div class="property-image ${property.rural ? 'rural-image' : ''}" 
-             style="position: relative; height: 250px;"
+             style="position: relative; height: 250px; overflow: visible;"
              data-property-id="${property.id}">
             <div class="property-gallery-container" 
                  onclick="openGalleryAtCurrentIndex(${property.id})" 
-                 style="cursor:pointer; position:relative;"
+                 style="cursor:pointer; position:relative; overflow: visible;"
                  data-current-index="0">
                 
                 ${firstIsVideo ? 
@@ -817,7 +819,7 @@ window.setupGalleryEvents = function() {
             position: absolute;
             pointer-events: none;
             z-index: 10;
-            overflow: hidden;
+            overflow: visible !important;
             text-overflow: ellipsis;
             box-sizing: border-box;
             transition: all 0.3s ease;
@@ -882,6 +884,14 @@ window.setupGalleryEvents = function() {
         .diagonal-badge:hover {
             transform: rotate(-40deg) scale(1.05);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ========== CORREÇÃO: PERMITIR QUE A FAIXA ULTRAPASSE O CONTAINER ========== */
+        .property-image {
+            overflow: visible !important;
+        }
+        .property-gallery-container {
+            overflow: visible !important;
         }
     `;
     document.head.appendChild(style);
