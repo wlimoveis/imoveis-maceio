@@ -5,7 +5,7 @@
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
-// ========== VARIÁVEIS GLOBAIS ==========
+// ========= VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
