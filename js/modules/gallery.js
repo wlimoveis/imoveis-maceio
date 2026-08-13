@@ -261,7 +261,7 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '7px 140px 7px 45px';
+            padding = '7px 200px 7px 45px';
             width = '300px';
             leftOffset = '-40px';
             letterSpacing = '3px';
