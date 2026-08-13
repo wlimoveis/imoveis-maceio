@@ -614,6 +614,7 @@ div.property-badge,
 
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
+    top: 30px !important;  /* Mantenha o mesmo valor do JavaScript */
     font-size: 0.9rem !important;
     padding: 7px 250px 7px 10px !important;
     font-weight: 800 !important;
