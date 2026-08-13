@@ -247,7 +247,7 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
-    var baseTop = 18;
+    var baseTop = 25;
     var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
 
     var result = '';
