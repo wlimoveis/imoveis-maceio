@@ -261,9 +261,9 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '7px 250px 7px 45px';
+            padding = '7px 350px 7px 45px';
             width = '500px';
-            leftOffset = '-40px';
+            leftOffset = '-80px';
             letterSpacing = '3px';
             textAlign = 'left';
         } else if (badge.size === 'medium') {
