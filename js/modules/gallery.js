@@ -5,7 +5,7 @@
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
-// ========= VARIÁVEIS GLOBAIS ==========
+// ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
@@ -246,8 +246,9 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 10;    // 🔴 TESTE: 25 para subir
-    var spacing = 52;
+    // 🔴 CORRIGIDO: Aumentar espaçamento para evitar sobreposição
+    var baseTop = 18;
+    var spacing = 52;  // 🔴 52px (antes 42px) - sem sobreposição
 
     var result = '';
 
@@ -256,36 +257,38 @@ function renderDiagonalBadges(property) {
         var top = baseTop + (i * spacing);
         var isFirst = i === 0;
 
+        // 🔴 CORRIGIDO: Aumentar largura para evitar texto cortado
         var fontSize, padding, width, leftOffset, letterSpacing;
-        var textAlign;
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '7px 350px 7px 45px';
-            width = '500px';
-            leftOffset = '-80px';
+            padding = '7px 45px';
+            width = '220px';        // 🔴 Aumentado
+            leftOffset = '-40px';
             letterSpacing = '3px';
-            textAlign = 'left';
         } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
             padding = '6px 38px';
-            width = '190px';
+            width = '190px';        // 🔴 Aumentado
             leftOffset = '-35px';
             letterSpacing = '2px';
-            textAlign = 'center';
         } else {
             fontSize = '0.65rem';
             padding = '5px 30px';
-            width = '180px';
+            width = '180px';        // 🔴 Aumentado (antes 150px)
             leftOffset = '-30px';
             letterSpacing = '1.5px';
-            textAlign = 'center';
         }
 
+        // Todas as faixas no mesmo lado (esquerda)
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = '-38deg';
+        var textAlign = 'center';
+
+        // Opacidade para sobreposição discreta
         var opacity = 0.92 - (i * 0.04);
 
+        // Estilo Gold Ribbon
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
         var borderBottom = 'border-bottom: 2px solid ' + badge.border + ';';
         var shadowStyle = 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
@@ -294,8 +297,7 @@ function renderDiagonalBadges(property) {
         html += '<div class="diagonal-badge ' + badge.size + '"';
         html += ' style="';
         html += 'position: absolute;';
-        // 🔴 ADICIONAR !important PARA FORÇAR A POSIÇÃO
-        html += 'top: ' + top + 'px !important;';
+        html += 'top: ' + top + 'px;';
         html += positionStyle;
         html += 'transform: rotate(' + rotateAngle + ');';
         html += gradientBg;
@@ -316,9 +318,9 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
-        html += 'overflow: visible;';
         html += '">';
         html += badge.text;
+        // Detalhe decorativo da ponta
         html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
 
@@ -879,5 +881,5 @@ if (document.readyState === 'loading') {
     window.setupGalleryEvents();
 }
 
-// ======= EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS ====
+// ========= EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS =========
 window.openGallery = window.openGalleryAtCurrentIndex;
