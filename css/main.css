@@ -1,7 +1,7 @@
-/* ==========================================================
+/* ============================================================
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
-   ==========================================================
+   ============================================================
    ✅ Versão: 2.7
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
@@ -493,8 +493,8 @@ div.property-badge,
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     pointer-events: none;
     transition: all 0.3s ease;
-    /*overflow: hidden;
-    /*text-overflow: ellipsis;
+    overflow: hidden;
+    text-overflow: ellipsis;
     box-sizing: border-box;
     border-radius: 3px;
 }
@@ -608,22 +608,16 @@ div.property-badge,
 .diagonal-badge {
     border-radius: 3px !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
-    /* 🔴 REMOVIDO: overflow: hidden; */
-    /* 🔴 REMOVIDO: text-overflow: ellipsis; */
 }
 
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
-    top: 10px;  /* Mantenha o mesmo valor do JavaScript */
     font-size: 0.9rem !important;
-    padding: 7px 250px 7px 10px !important;
+    padding: 7px 45px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 500px !important;
+    width: 220px !important;
     left: -40px !important;
-    text-align: left !important;
-    overflow: visible !important;      /* 🔴 ADICIONADO */
-    white-space: nowrap !important;    /* 🔴 ADICIONADO */
 }
 
 /* Faixa secundária */
@@ -642,7 +636,7 @@ div.property-badge,
     padding: 5px 30px !important;
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
-    width: 180px !important;
+    width: 180px !important;  /* 🔴 Aumentado */
     left: -30px !important;
 }
 
@@ -1566,9 +1560,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ===============================================
+/* =====================================================
    FIM DO ARQUIVO - main.css
-   ================================================
+   =====================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
