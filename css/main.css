@@ -618,6 +618,7 @@ div.property-badge,
     letter-spacing: 3px !important;
     width: 280px !important;                /* 🔴 ALTERADO */
     left: -40px !important;
+    text-align: left !important;  /* 🔴 FORÇAR ALINHAMENTO À ESQUERDA */
 }
 
 /* Faixa secundária */
