@@ -246,7 +246,7 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 16;
+    var baseTop = 18;
     var spacing = 22;
 
     var result = '';
