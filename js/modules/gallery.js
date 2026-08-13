@@ -246,7 +246,7 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 25;    // 🔴 TESTE: 25 para subir
+    var baseTop = 30;    // 🔴 TESTE: 25 para subir
     var spacing = 52;
 
     var result = '';
