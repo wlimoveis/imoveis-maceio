@@ -266,6 +266,7 @@ function renderDiagonalBadges(property) {
             width = '280px';        // 🔴 Aumentado
             leftOffset = '-40px';
             letterSpacing = '3px';
+            var textAlign = 'left';  // Em vez de 'center'
         } else if (badge.size === 'medium') {
             fontSize = '0.75rem';
             padding = '6px 38px';
