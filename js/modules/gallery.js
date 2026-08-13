@@ -246,8 +246,8 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 18;
-    var spacing = 22;
+    var baseTop = 25;    // 🔴 TESTE: 25 para subir
+    var spacing = 52;
 
     var result = '';
 
@@ -294,7 +294,8 @@ function renderDiagonalBadges(property) {
         html += '<div class="diagonal-badge ' + badge.size + '"';
         html += ' style="';
         html += 'position: absolute;';
-        html += 'top: ' + top + 'px;';
+        // 🔴 ADICIONAR !important PARA FORÇAR A POSIÇÃO
+        html += 'top: ' + top + 'px !important;';
         html += positionStyle;
         html += 'transform: rotate(' + rotateAngle + ');';
         html += gradientBg;
@@ -315,7 +316,6 @@ function renderDiagonalBadges(property) {
         html += 'border-radius: 3px;';
         html += borderBottom;
         html += shadowStyle;
-        // 🔴 ADICIONADO: overflow visible para não cortar
         html += 'overflow: visible;';
         html += '">';
         html += badge.text;
