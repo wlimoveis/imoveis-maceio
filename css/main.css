@@ -493,8 +493,8 @@ div.property-badge,
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     pointer-events: none;
     transition: all 0.3s ease;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    /*overflow: hidden;
+    /*text-overflow: ellipsis;
     box-sizing: border-box;
     border-radius: 3px;
 }
@@ -608,17 +608,21 @@ div.property-badge,
 .diagonal-badge {
     border-radius: 3px !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    /* 🔴 REMOVIDO: overflow: hidden; */
+    /* 🔴 REMOVIDO: text-overflow: ellipsis; */
 }
 
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
     font-size: 0.9rem !important;
-    padding: 7px 140px 7px 45px !important;  /* 🔴 ALTERADO */
+    padding: 7px 140px 7px 45px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 300px !important;                /* 🔴 ALTERADO */
+    width: 300px !important;
     left: -40px !important;
-    text-align: left !important;  /* 🔴 FORÇAR ALINHAMENTO À ESQUERDA */
+    text-align: left !important;
+    overflow: visible !important;      /* 🔴 ADICIONADO */
+    white-space: nowrap !important;    /* 🔴 ADICIONADO */
 }
 
 /* Faixa secundária */
@@ -1563,7 +1567,7 @@ span.feature-tag.rural-tag {
 
 /* ================================================
    FIM DO ARQUIVO - main.css
-   =================================================
+   ================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
