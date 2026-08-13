@@ -615,7 +615,7 @@ div.property-badge,
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
     font-size: 0.9rem !important;
-    padding: 7px 250px 7px 45px !important;
+    padding: 7px 250px 7px 10px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
     width: 300px !important;
@@ -1565,7 +1565,7 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ================================================
+/* ===============================================
    FIM DO ARQUIVO - main.css
    ================================================
    STATUS: ✅ CARREGADO COM SUCESSO
