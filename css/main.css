@@ -616,7 +616,7 @@ div.property-badge,
     padding: 7px 105px 7px 45px !important;  /* 🔴 ALTERADO */
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 280px !important;                /* 🔴 ALTERADO */
+    width: 300px !important;                /* 🔴 ALTERADO */
     left: -40px !important;
     text-align: left !important;  /* 🔴 FORÇAR ALINHAMENTO À ESQUERDA */
 }
