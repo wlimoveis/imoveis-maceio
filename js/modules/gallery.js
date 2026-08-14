@@ -275,13 +275,13 @@ function generateDiagonalBadges(property) {
 }
 
 // ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - VERSÃO FINAL) ==========
+// ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - VERSÃO FINAL) ==========
 function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    // 🔴 baseTop controla a posição do PRIMEIRO badge
-    var baseTop = 6;      // Posição do topo
-    var spacing = 52;     // Distância entre badges
+    var baseTop = 6;
+    var spacing = 52;
 
     var result = '';
 
@@ -293,17 +293,16 @@ function renderDiagonalBadges(property) {
         var fontSize, padding, width, leftOffset, letterSpacing;
         var textAlign;
 
-        // 🔴 Definir tamanhos baseado na posição, não no tipo
+        // 🔴 DEFINIR TAMANHOS BASEADO NA POSIÇÃO
         if (isFirst) {
-            // Primeiro badge (mais alto) = tamanho large
-            fontSize = '0.9rem';
-            padding = '16px 45px 7px 45px';
-            width = '320px';
-            leftOffset = '-40px';
-            letterSpacing = '3px';
-            textAlign = 'left';
+            // 🔴 MESMO TAMANHO DO DESTAQUE 1
+            fontSize = '0.75rem';
+            padding = '6px 38px';
+            width = '190px';
+            leftOffset = '-35px';
+            letterSpacing = '2px';
+            textAlign = 'center';
         } else if (i === 1) {
-            // Segundo badge (meio) = tamanho medium
             fontSize = '0.75rem';
             padding = '6px 38px';
             width = '190px';
@@ -311,7 +310,6 @@ function renderDiagonalBadges(property) {
             letterSpacing = '2px';
             textAlign = 'center';
         } else {
-            // Terceiro badge (mais baixo) = tamanho small
             fontSize = '0.65rem';
             padding = '5px 30px';
             width = '180px';
@@ -319,7 +317,7 @@ function renderDiagonalBadges(property) {
             letterSpacing = '1.5px';
             textAlign = 'center';
         }
-
+        
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = '-38deg';
         var opacity = 0.92 - (i * 0.04);
