@@ -613,7 +613,7 @@ div.property-badge,
 /* Faixa principal - mais destacada */
 .diagonal-badge.large {
     font-size: 0.9rem !important;
-    padding: 20px 45px 7px 10px !important;  /* 🔴 top=20, left=10 */
+    padding: '16px 45px 7px 45px' !important;  /* 🔴 top=20, left=10 */
     font-weight: 800 !important;
     letter-spacing: 3px !important;
     width: 320px !important;
@@ -1560,9 +1560,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ====================================================
+/* ===================================================
    FIM DO ARQUIVO - main.css
-   ====================================================
+   ===================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
