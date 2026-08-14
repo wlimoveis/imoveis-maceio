@@ -5,7 +5,7 @@
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
-// ========== VARIÁVEIS GLOBAIS ==========
+// ========== VARIÁVEIS GLOBAIS =========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
@@ -261,7 +261,7 @@ function renderDiagonalBadges(property) {
 
         if (isFirst) {
             fontSize = '0.9rem';
-            padding = '14px 45px 7px 45px';  // Desceu o texto
+            padding = 20px 45px 7px 10px';  // top=20, right=45, bottom=7, left=10
             width = '320px';                  // Texto completo
             leftOffset = '-40px';
             letterSpacing = '3px';
