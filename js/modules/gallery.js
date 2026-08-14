@@ -195,52 +195,84 @@ function generateDiagonalBadges(property) {
         'Vista Mar': { bg: '#3498db', color: '#ffffff', border: '#5dade2' },
         'Com Lazer': { bg: '#2ecc71', color: '#1a1a2e', border: '#58d68d' },
         'Pronto para Morar': { bg: '#9b59b6', color: '#ffffff', border: '#af7ac5' },
-        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' }
+        'Alto Padrão': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
+        'Incorporação': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
+        'Terreno': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' }
     };
 
-    // Badge principal (DESTAQUE)
+    // 🔴 PRIMEIRO: Coletar os badges selecionados com suas cores
+    var selectedBadges = [];
+    
+    // Destaque Principal (posição 0)
     if (property.badge && property.badge !== 'Nenhum') {
         var color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
-        badges.push({
+        selectedBadges.push({
             text: property.badge,
             bg: color.bg,
             color: color.color,
             border: color.border || color.bg,
-            position: 0,
+            type: 'principal',
             size: 'large'
         });
     }
-
-    // Badge 1 (DESTAQUE1)
+    
+    // Destaque 1 (posição 1)
     if (property.badge1 && property.badge1 !== 'Nenhum') {
         var color1 = colors[property.badge1] || { bg: '#34495e', color: '#ffffff', border: '#5d6d7e' };
-        badges.push({
+        selectedBadges.push({
             text: property.badge1,
             bg: color1.bg,
             color: color1.color,
             border: color1.border || color1.bg,
-            position: 1,
+            type: 'badge1',
             size: 'medium'
         });
     }
-
-    // Badge 2 (DESTAQUE2) - 🔴 CORRIGIDO: Mesmo lado das demais
+    
+    // Destaque 2 (posição 2)
     if (property.badge2 && property.badge2 !== 'Nenhum') {
         var color2 = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
-        badges.push({
+        selectedBadges.push({
             text: property.badge2,
             bg: color2.bg,
             color: color2.color,
             border: color2.border || color2.bg,
-            position: 2,
+            type: 'badge2',
             size: 'small'
-            // 🔴 REMOVIDO: alignRight: true
         });
     }
 
-    return badges;
+    // 🔴 SEGUNDO: Distribuir os badges selecionados nas posições de cima para baixo
+    // Ordenar mantendo a prioridade: Principal > Destaque1 > Destaque2
+    // Mas ocupando as posições superiores independente do tipo
+    var orderedBadges = [];
+    var positionIndex = 0;
+    
+    // Se tem Principal, ele sempre fica no topo (posição 0)
+    var principal = selectedBadges.find(b => b.type === 'principal');
+    if (principal) {
+        orderedBadges.push(principal);
+        positionIndex++;
+    }
+    
+    // Se tem Destaque1, ele fica na próxima posição disponível (posição 1 ou 0 se não tiver Principal)
+    var badge1 = selectedBadges.find(b => b.type === 'badge1');
+    if (badge1) {
+        // Se não tem Principal, badge1 ocupa a posição 0 (topo)
+        // Se tem Principal, badge1 ocupa a posição 1
+        orderedBadges.push(badge1);
+        positionIndex++;
+    }
+    
+    // Se tem Destaque2, ele fica na próxima posição disponível
+    var badge2 = selectedBadges.find(b => b.type === 'badge2');
+    if (badge2) {
+        orderedBadges.push(badge2);
+        positionIndex++;
+    }
+    
+    return orderedBadges;
 }
-
 
 // ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - VERSÃO FINAL) ==========
 function renderDiagonalBadges(property) {
