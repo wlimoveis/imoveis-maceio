@@ -246,7 +246,7 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 08;      // Subiu a faixa
+    var baseTop = 6;      // Subiu a faixa
     var spacing = 52;
 
     var result = '';
