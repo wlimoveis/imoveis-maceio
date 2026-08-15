@@ -275,7 +275,6 @@ function generateDiagonalBadges(property) {
 }
 
 // ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - VERSÃO FINAL) ==========
-// ========== RENDERIZAR FAIXAS DIAGONAIS (ESTILO GOLD RIBBON - VERSÃO FINAL) ==========
 function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
