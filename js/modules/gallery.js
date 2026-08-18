@@ -300,7 +300,7 @@ function renderDiagonalBadges(property) {
             width = '190px';
             leftOffset = '-35px';
             letterSpacing = '2px';
-            textAlign = 'center';
+            textAlign = 'left';
         } else if (i === 1) {
             fontSize = '0.75rem';
             padding = '6px 38px';
