@@ -296,9 +296,9 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             // 🔴 MESMO TAMANHO DO DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '6px 12px 7p 25px';
+            padding = '6px 38px 7p 25px';
             width = '190px';
-            leftOffset = '-45px';
+            leftOffset = '-35px';
             letterSpacing = '2px';
             textAlign = 'left';
         } else if (i === 1) {
