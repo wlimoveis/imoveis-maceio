@@ -298,7 +298,7 @@ function renderDiagonalBadges(property) {
             fontSize = '0.75rem';
             padding = '6px 30px 7px 25px';
             width = '190px';
-            leftOffset = '-20px';
+            leftOffset = '-6px';
             letterSpacing = '2px';
             textAlign = 'left';
         } else if (i === 1) {
