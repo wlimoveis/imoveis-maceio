@@ -613,17 +613,17 @@ div.property-badge,
 
 /* 🔴 Faixa principal - TOTALMENTE ATUALIZADA */
 .diagonal-badge.large {
-    font-size: 0.75rem !important;         /* 🔴 0.9 → 0.75 */
-    padding: 2px 38px 1px 18px !important;  /* 🔴 7px 45px → 2px 38px 1px 18px */
+    font-size: 0.75rem !important;
+    padding: 2px 38px 1px 18px !important;
     font-weight: 800 !important;
-    letter-spacing: 1.5px !important;      /* 🔴 3px → 1.5px */
-    width: 220px !important;               /* 🔴 190px → 220px */
-    left: -32px !important;                /* 🔴 -25px → -32px */
+    letter-spacing: 1.5px !important;
+    width: 220px !important;
+    left: -32px !important;
     overflow: visible !important;
-    text-align: left !important;           /* 🔴 ADICIONADO */
+    text-align: left !important;
 }
 
-/* Faixa secundária */
+/* Faixa secundária - DESTAQUE 1 */
 .diagonal-badge.medium {
     font-size: 0.75rem !important;
     padding: 10px 38px 1px 30px !important;
@@ -631,62 +631,81 @@ div.property-badge,
     letter-spacing: 1.5px !important;
     width: 220px !important;
     left: -32px !important;
-    overflow: visible !important;      /* 🔴 ADICIONADO */
-    text-align: left !important;           /* 🔴 ADICIONADO */
+    overflow: visible !important;
+    text-align: left !important;
 }
 
-/* Faixa inferior - Destaque 2 - MESMO PADRÃO */
+/* Faixa inferior - Destaque 2 */
 .diagonal-badge.small {
     font-size: 0.65rem !important;
-    padding: 16px 38px 1px 50px !important;  /* 🔴 MESMO PADRÃO */
+    padding: 16px 38px 1px 50px !important;
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
-    width: 220px !important;                 /* 🔴 MESMA LARGURA */
+    width: 220px !important;
     left: -32px !important;
     overflow: visible !important;
-    text-align: right !important;           /* 🔴 ADICIONADO */
-
+    text-align: right !important;
 }
 
 /* ============================================================
-   🔴 NOVO: PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
+   🔴 MOBILE: AJUSTES PROPORCIONAIS PARA TELAS PEQUENAS
+   ============================================================ */
+
+@media (max-width: 768px) {
+    /* 🔴 Faixa principal - MOBILE */
+    .diagonal-badge.large {
+        font-size: 0.65rem !important;
+        padding: 2px 20px 1px 14px !important;
+        font-weight: 800 !important;
+        letter-spacing: 1.5px !important;
+        width: 160px !important;
+        left: -25px !important;
+        overflow: visible !important;
+        text-align: left !important;
+    }
+
+    /* 🔴 Faixa Destaque 1 - MOBILE */
+    .diagonal-badge.medium {
+        font-size: 0.65rem !important;
+        padding: 4px 20px 1px 22px !important;
+        font-weight: 600 !important;
+        letter-spacing: 1.5px !important;
+        width: 150px !important;
+        left: -20px !important;
+        overflow: visible !important;
+        text-align: left !important;
+    }
+
+    /* 🔴 Faixa Destaque 2 - MOBILE */
+    .diagonal-badge.small {
+        font-size: 0.55rem !important;
+        padding: 8px 18px 1px 28px !important;
+        font-weight: 600 !important;
+        letter-spacing: 1.5px !important;
+        width: 140px !important;
+        left: -18px !important;
+        overflow: visible !important;
+        text-align: right !important;
+    }
+}
+
+/* ============================================================
+   PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
    ============================================================ */
 
 /* Container da imagem do imóvel */
 .property-image {
-    overflow: visible !important;      /* 🔴 ADICIONADO */
+    overflow: visible !important;
 }
 
 /* Container da galeria dentro da imagem */
 .property-gallery-container {
-    overflow: visible !important;      /* 🔴 ADICIONADO */
+    overflow: visible !important;
 }
 
 /* Container das faixas diagonais */
 .diagonal-badges-container {
-    overflow: visible !important;      /* 🔴 ADICIONADO */
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .diagonal-badge.large {
-        font-size: 0.75rem !important;
-        padding: 6px 28px !important;
-        width: 160px !important;
-        left: -25px !important;
-    }
-    .diagonal-badge.medium {
-        font-size: 0.65rem !important;
-        padding: 5px 22px !important;
-        width: 140px !important;
-        left: -20px !important;
-    }
-    .diagonal-badge.small {
-        font-size: 0.55rem !important;
-        padding: 4px 18px !important;
-        width: 130px !important;  /* 🔴 Aumentado no mobile */
-        left: -18px !important;
-    }
+    overflow: visible !important;
 }
 
 /* ========== FIM DAS FAIXAS DIAGONAIS ========== */
