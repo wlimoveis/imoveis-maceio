@@ -317,7 +317,7 @@ function renderDiagonalBadges(property) {
         } else {
             // 🔴 DESTAQUE 2
             fontSize = '0.65rem';
-            padding = '10px 38px 1px 18px';
+            padding = '10px 30px 1px 30px';
             width = '220px';
             leftOffset = '-32px';
             letterSpacing = '1.5px';
