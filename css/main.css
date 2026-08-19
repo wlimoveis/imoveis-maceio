@@ -614,11 +614,11 @@ div.property-badge,
 /* 🔴 Faixa principal - TOTALMENTE ATUALIZADA */
 .diagonal-badge.large {
     font-size: 0.75rem !important;         /* 🔴 0.9 → 0.75 */
-    padding: 6px 38px 7px 20px !important;  /* 🔴 7px 45px → 6px 38px 7px 22px */
+    padding: 6px 38px 7px 19px !important;  /* 🔴 7px 45px → 6px 38px 7px 19px */
     font-weight: 800 !important;
     letter-spacing: 1.5px !important;      /* 🔴 3px → 1.5px */
     width: 220px !important;               /* 🔴 190px → 220px */
-    left: -28px !important;                /* 🔴 -25px → -28px */
+    left: -27px !important;                /* 🔴 -25px → -27px */
     overflow: visible !important;
     text-align: left !important;           /* 🔴 ADICIONADO */
 }
