@@ -301,13 +301,13 @@ function renderDiagonalBadges(property) {
             letterSpacing = '1.5px';    // 🔴 2 → 1.5
             textAlign = 'left';
         } else if (i === 1) {
-            // 🔴 DESTAQUE 1
+            // 🔴 DESTAQUE 1 - AJUSTADO
             fontSize = '0.75rem';
-            padding = '2px 38px 1px 55px';
+            padding = '0px 38px 0px 35px';   // 🔴 55px → 35px
             width = '220px';
-            leftOffset = '-32px';
+            leftOffset = '-30px';            // 🔴 -35px → -30px
             letterSpacing = '2px';
-            textAlign = 'left';
+            textAlign = 'center';
         } else {
             // 🔴 DESTAQUE 2 - MESMO PADRÃO DOS ANTERIORES
             fontSize = '0.65rem';
