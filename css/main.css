@@ -638,7 +638,7 @@ div.property-badge,
 /* Faixa inferior - Destaque 2 - MESMO PADRÃO */
 .diagonal-badge.small {
     font-size: 0.65rem !important;
-    padding: 6px 38px 1px 18px !important;  /* 🔴 MESMO PADRÃO */
+    padding: 10px 38px 1px 18px !important;  /* 🔴 MESMO PADRÃO */
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
     width: 220px !important;                 /* 🔴 MESMA LARGURA */
