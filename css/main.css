@@ -632,6 +632,7 @@ div.property-badge,
     width: 220px !important;
     left: -35px !important;
     overflow: visible !important;      /* 🔴 ADICIONADO */
+    text-align: left !important;           /* 🔴 ADICIONADO */
 }
 
 /* Faixa inferior - Destaque 2 - MESMO PADRÃO */
