@@ -309,10 +309,10 @@ function renderDiagonalBadges(property) {
             letterSpacing = '2px';
             textAlign = 'center';
         } else {
-            // 🔴 DESTAQUE 2
+            // 🔴 DESTAQUE 2 - MESMO PADRÃO DOS ANTERIORES
             fontSize = '0.65rem';
-            padding = '5px 30px';
-            width = '180px';
+            padding = '2px 38px 1px 18px';   // 🔴 MESMO PADRÃO
+            width = '220px';                  // 🔴 MESMA LARGURA
             leftOffset = '-30px';
             letterSpacing = '1.5px';
             textAlign = 'center';
