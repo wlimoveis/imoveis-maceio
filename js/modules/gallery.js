@@ -280,7 +280,7 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     var baseTop = 6;
-    var spacing = 46;
+    var spacing = 45;
 
     var result = '';
 
@@ -303,7 +303,7 @@ function renderDiagonalBadges(property) {
         } else if (i === 1) {
             // 🔴 DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '4px 38px 4px 18px';
+            padding = 2px 38px 1px 18px';
             width = '190px';
             leftOffset = '-35px';
             letterSpacing = '2px';
