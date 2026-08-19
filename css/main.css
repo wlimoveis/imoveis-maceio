@@ -642,7 +642,7 @@ div.property-badge,
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
     width: 220px !important;                 /* 🔴 MESMA LARGURA */
-    left: -30px !important;
+    left: -22px !important;
     overflow: visible !important;
 }
 
