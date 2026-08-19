@@ -303,7 +303,7 @@ function renderDiagonalBadges(property) {
         } else if (i === 1) {
             // 🔴 DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '4px 38px';
+            padding = '4px 38px 4px 18px';
             width = '190px';
             leftOffset = '-35px';
             letterSpacing = '2px';
