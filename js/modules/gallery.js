@@ -279,7 +279,7 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 2;
+    var baseTop = 8;
     var spacing = 52;
 
     var result = '';
@@ -296,9 +296,9 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             // 🔴 MESMO TAMANHO DO DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '6px 38px 7p 25px';
+            padding = '6px 38px 7px 25px';
             width = '190px';
-            leftOffset = '-35px';
+            leftOffset = '-45px';
             letterSpacing = '2px';
             textAlign = 'left';
         } else if (i === 1) {
