@@ -309,7 +309,7 @@ function renderDiagonalBadges(property) {
         } else if (i === 1) {
             // 🔴 DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '2px 38px 1px 30px';
+            padding = '6px 38px 1px 30px';
             width = '220px';
             leftOffset = '-32px';
             letterSpacing = '1.5px';
@@ -317,7 +317,7 @@ function renderDiagonalBadges(property) {
         } else {
             // 🔴 DESTAQUE 2
             fontSize = '0.65rem';
-            padding = '2px 38px 1px 18px';
+            padding = '6px 38px 1px 18px';
             width = '220px';
             leftOffset = '-32px';
             letterSpacing = '1.5px';
