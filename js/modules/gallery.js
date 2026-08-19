@@ -280,7 +280,7 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     var baseTop = 6;
-    var spacing = 30;
+    var spacing = 28;
 
     var result = '';
 
