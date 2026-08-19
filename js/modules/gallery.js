@@ -280,44 +280,50 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     var baseTop = 6;
-    var spacing = 22;
+    var spacing = 22;  // 🔴 ALTERADO: 24 → 22
 
     var result = '';
 
     for (var i = 0; i < badges.length; i++) {
         var badge = badges[i];
+        
+        // 🔴 AJUSTE MANUAL PARA O DESTAQUE 2
         var top = baseTop + (i * spacing);
+        if (i === 2) {
+            top = top - 2;  // 🔴 SOBE 2px para ficar mais próximo
+        }
+        
         var isFirst = i === 0;
 
         var fontSize, padding, width, leftOffset, letterSpacing;
         var textAlign;
 
         if (isFirst) {
-            // 🔴 DESTAQUE PRINCIPAL - AJUSTADO
+            // 🔴 DESTAQUE PRINCIPAL
             fontSize = '0.75rem';
             padding = '2px 38px 1px 18px';
-            width = '220px';            // 🔴 190 → 220
+            width = '220px';
             leftOffset = '-32px';
-            letterSpacing = '1.5px';    // 🔴 2 → 1.5
+            letterSpacing = '1.5px';
             textAlign = 'left';
         } else if (i === 1) {
-            // 🔴 DESTAQUE 1 - AJUSTADO
+            // 🔴 DESTAQUE 1
             fontSize = '0.75rem';
-            padding = '0px 38px 0px 30px';   // 🔴 55px → 30px
+            padding = '2px 38px 1px 30px';
             width = '220px';
-            leftOffset = '-24px';            // 🔴 -35px → -28px
-            letterSpacing = '2px';
-            textAlign = 'center';
+            leftOffset = '-24px';
+            letterSpacing = '1.5px';
+            textAlign = 'left';
         } else {
-            // 🔴 DESTAQUE 2 - MESMO PADRÃO DOS ANTERIORES
+            // 🔴 DESTAQUE 2
             fontSize = '0.65rem';
-            padding = '2px 38px 1px 18px';   // 🔴 MESMO PADRÃO
-            width = '220px';                  // 🔴 MESMA LARGURA
+            padding = '2px 38px 1px 18px';
+            width = '220px';
             leftOffset = '-22px';
             letterSpacing = '1.5px';
             textAlign = 'center';
         }
-        
+
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = '-38deg';
         var opacity = 0.92 - (i * 0.04);
