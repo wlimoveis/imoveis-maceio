@@ -608,19 +608,19 @@ div.property-badge,
 .diagonal-badge {
     border-radius: 3px !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
-    /* 🔴 ADICIONADO: Permite que a faixa ultrapasse o container */
     overflow: visible !important;
 }
 
-/* 🔴 ADICIONADO: Permitir que a faixa principal ultrapasse */
+/* 🔴 Faixa principal - TOTALMENTE ATUALIZADA */
 .diagonal-badge.large {
-    font-size: 0.9rem !important;
-    padding: 7px 45px !important;
+    font-size: 0.75rem !important;         /* 🔴 0.9 → 0.75 */
+    padding: 6px 38px 7px 0px !important;  /* 🔴 7px 45px → 6px 38px 7px 0px */
     font-weight: 800 !important;
-    letter-spacing: 3px !important;
-    width: 220px !important;
-    left: -40px !important;
-    overflow: visible !important;      /* 🔴 ADICIONADO */
+    letter-spacing: 1.5px !important;      /* 🔴 3px → 1.5px */
+    width: 220px !important;               /* 🔴 190px → 220px */
+    left: -45px !important;                /* 🔴 -40px → -45px */
+    overflow: visible !important;
+    text-align: left !important;           /* 🔴 ADICIONADO */
 }
 
 /* Faixa secundária */
