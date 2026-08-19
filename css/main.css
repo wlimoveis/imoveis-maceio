@@ -634,15 +634,15 @@ div.property-badge,
     overflow: visible !important;      /* 🔴 ADICIONADO */
 }
 
-/* Faixa inferior - Destaque 2 */
+/* Faixa inferior - Destaque 2 - MESMO PADRÃO */
 .diagonal-badge.small {
     font-size: 0.65rem !important;
-    padding: 5px 30px !important;
+    padding: 2px 38px 1px 18px !important;  /* 🔴 MESMO PADRÃO */
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
-    width: 180px !important;
+    width: 220px !important;                 /* 🔴 MESMA LARGURA */
     left: -30px !important;
-    overflow: visible !important;      /* 🔴 ADICIONADO */
+    overflow: visible !important;
 }
 
 /* ============================================================
@@ -1584,9 +1584,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =============================================
+/* ============================================
    FIM DO ARQUIVO - main.css
-   =============================================
+   ============================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
