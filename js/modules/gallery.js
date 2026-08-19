@@ -280,7 +280,7 @@ function renderDiagonalBadges(property) {
     if (badges.length === 0) return '';
 
     var baseTop = 6;
-    var spacing = 28;
+    var spacing = 32;
 
     var result = '';
 
@@ -313,7 +313,7 @@ function renderDiagonalBadges(property) {
             fontSize = '0.65rem';
             padding = '2px 38px 1px 18px';   // 🔴 MESMO PADRÃO
             width = '220px';                  // 🔴 MESMA LARGURA
-            leftOffset = '-30px';
+            leftOffset = '-22px';
             letterSpacing = '1.5px';
             textAlign = 'center';
         }
