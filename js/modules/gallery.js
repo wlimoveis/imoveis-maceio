@@ -3,9 +3,10 @@
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
+// ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
-// ========== VARIÁVEIS GLOBAIS =========
+// ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
@@ -200,10 +201,8 @@ function generateDiagonalBadges(property) {
         'Terreno': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' }
     };
 
-    // 🔴 PRIMEIRO: Coletar os badges selecionados com suas cores
     var selectedBadges = [];
     
-    // Destaque Principal (posição 0)
     if (property.badge && property.badge !== 'Nenhum') {
         var color = colors[property.badge] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         selectedBadges.push({
@@ -216,7 +215,6 @@ function generateDiagonalBadges(property) {
         });
     }
     
-    // Destaque 1 (posição 1)
     if (property.badge1 && property.badge1 !== 'Nenhum') {
         var color1 = colors[property.badge1] || { bg: '#34495e', color: '#ffffff', border: '#5d6d7e' };
         selectedBadges.push({
@@ -229,7 +227,6 @@ function generateDiagonalBadges(property) {
         });
     }
     
-    // Destaque 2 (posição 2)
     if (property.badge2 && property.badge2 !== 'Nenhum') {
         var color2 = colors[property.badge2] || { bg: '#2c3e50', color: '#ffffff', border: '#5d6d7e' };
         selectedBadges.push({
@@ -242,29 +239,21 @@ function generateDiagonalBadges(property) {
         });
     }
 
-    // 🔴 SEGUNDO: Distribuir os badges selecionados nas posições de cima para baixo
-    // Ordenar mantendo a prioridade: Principal > Destaque1 > Destaque2
-    // Mas ocupando as posições superiores independente do tipo
     var orderedBadges = [];
     var positionIndex = 0;
     
-    // Se tem Principal, ele sempre fica no topo (posição 0)
     var principal = selectedBadges.find(b => b.type === 'principal');
     if (principal) {
         orderedBadges.push(principal);
         positionIndex++;
     }
     
-    // Se tem Destaque1, ele fica na próxima posição disponível (posição 1 ou 0 se não tiver Principal)
     var badge1 = selectedBadges.find(b => b.type === 'badge1');
     if (badge1) {
-        // Se não tem Principal, badge1 ocupa a posição 0 (topo)
-        // Se tem Principal, badge1 ocupa a posição 1
         orderedBadges.push(badge1);
         positionIndex++;
     }
     
-    // Se tem Destaque2, ele fica na próxima posição disponível
     var badge2 = selectedBadges.find(b => b.type === 'badge2');
     if (badge2) {
         orderedBadges.push(badge2);
@@ -279,18 +268,21 @@ function renderDiagonalBadges(property) {
     var badges = generateDiagonalBadges(property);
     if (badges.length === 0) return '';
 
-    var baseTop = 6;
-    var spacing = 24;  // 🔴 ALTERADO: 24 → 22
+    // ========== DETECÇÃO DE MOBILE ==========
+    var isMobile = window.innerWidth <= 768;
+
+    // ========== PARÂMETROS BASE ==========
+    var baseTop = isMobile ? 4 : 6;
+    var spacing = isMobile ? 18 : 24;
 
     var result = '';
 
     for (var i = 0; i < badges.length; i++) {
         var badge = badges[i];
         
-        // 🔴 AJUSTE MANUAL PARA O DESTAQUE 2
         var top = baseTop + (i * spacing);
         if (i === 2) {
-            top = top - 2;  // 🔴 SOBE 2px para ficar mais próximo
+            top = top - (isMobile ? 1 : 2);
         }
         
         var isFirst = i === 0;
@@ -299,33 +291,60 @@ function renderDiagonalBadges(property) {
         var textAlign;
 
         if (isFirst) {
-            // 🔴 DESTAQUE PRINCIPAL
-            fontSize = '0.75rem';
-            padding = '2px 38px 1px 18px';
-            width = '220px';
-            leftOffset = '-32px';
-            letterSpacing = '1.5px';
-            textAlign = 'left';
+            // ========== DESTAQUE PRINCIPAL ==========
+            if (isMobile) {
+                fontSize = '0.65rem';
+                padding = '2px 20px 1px 14px';
+                width = '160px';
+                leftOffset = '-25px';
+                letterSpacing = '1.5px';
+                textAlign = 'left';
+            } else {
+                fontSize = '0.75rem';
+                padding = '2px 38px 1px 18px';
+                width = '220px';
+                leftOffset = '-32px';
+                letterSpacing = '1.5px';
+                textAlign = 'left';
+            }
         } else if (i === 1) {
-            // 🔴 DESTAQUE 1
-            fontSize = '0.75rem';
-            padding = '6px 38px 1px 30px';
-            width = '220px';
-            leftOffset = '-32px';
-            letterSpacing = '1.5px';
-            textAlign = 'left';
+            // ========== DESTAQUE 1 ==========
+            if (isMobile) {
+                fontSize = '0.65rem';
+                padding = '4px 20px 1px 22px';
+                width = '150px';
+                leftOffset = '-20px';
+                letterSpacing = '1.5px';
+                textAlign = 'left';
+            } else {
+                fontSize = '0.75rem';
+                padding = '10px 38px 1px 30px';
+                width = '220px';
+                leftOffset = '-32px';
+                letterSpacing = '1.5px';
+                textAlign = 'left';
+            }
         } else {
-            // 🔴 DESTAQUE 2
-            fontSize = '0.65rem';
-            padding = '16px 38px 1px 50px';
-            width = '220px';
-            leftOffset = '-32px';
-            letterSpacing = '1.5px';
-            textAlign = 'right';
+            // ========== DESTAQUE 2 ==========
+            if (isMobile) {
+                fontSize = '0.55rem';
+                padding = '8px 18px 1px 28px';
+                width = '140px';
+                leftOffset = '-18px';
+                letterSpacing = '1.5px';
+                textAlign = 'right';
+            } else {
+                fontSize = '0.65rem';
+                padding = '16px 38px 1px 50px';
+                width = '220px';
+                leftOffset = '-32px';
+                letterSpacing = '1.5px';
+                textAlign = 'right';
+            }
         }
 
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = '-38deg';
+        var rotateAngle = isMobile ? '-35deg' : '-38deg';
         var opacity = 0.92 - (i * 0.04);
 
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
@@ -359,7 +378,7 @@ function renderDiagonalBadges(property) {
         html += shadowStyle;
         html += '">';
         html += badge.text;
-        html += '<span style="position: absolute; right: -12px; top: 0; width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ' + badge.bg + '; opacity: 0.5;"></span>';
+        html += '<span style="position: absolute; right: -8px; top: 0; width: 0; height: 0; border-top: 8px solid transparent; border-bottom: 8px solid transparent; border-left: 8px solid ' + badge.bg + '; opacity: 0.5;"></span>';
         html += '</div>';
 
         result += html;
@@ -491,7 +510,6 @@ window.createPropertyGallery = function(property) {
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     const propertyTitle = property.title || 'Imóvel';
     
-    // 🔴 NOVO: Gerar faixas diagonais
     const badgesHtml = renderDiagonalBadges(property);
     
     const dotsHtml = allMediaUrls.map((url, idx) => {
