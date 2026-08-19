@@ -292,16 +292,16 @@ function renderDiagonalBadges(property) {
         var fontSize, padding, width, leftOffset, letterSpacing;
         var textAlign;
 
-        // 🔴 DEFINIR TAMANHOS BASEADO NA POSIÇÃO
         if (isFirst) {
-            // 🔴 MESMO TAMANHO DO DESTAQUE 1
+            // 🔴 DESTAQUE PRINCIPAL - AJUSTADO
             fontSize = '0.75rem';
             padding = '6px 38px 7px 0px';
-            width = '190px';
+            width = '220px';            // 🔴 190 → 220
             leftOffset = '-45px';
-            letterSpacing = '2px';
+            letterSpacing = '1.5px';    // 🔴 2 → 1.5
             textAlign = 'left';
         } else if (i === 1) {
+            // 🔴 DESTAQUE 1
             fontSize = '0.75rem';
             padding = '6px 38px';
             width = '190px';
@@ -309,6 +309,7 @@ function renderDiagonalBadges(property) {
             letterSpacing = '2px';
             textAlign = 'center';
         } else {
+            // 🔴 DESTAQUE 2
             fontSize = '0.65rem';
             padding = '5px 30px';
             width = '180px';
