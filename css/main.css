@@ -630,7 +630,7 @@ div.property-badge,
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
     width: 220px !important;
-    left: -30px !important;
+    left: -28px !important;
     overflow: visible !important;      /* 🔴 ADICIONADO */
     text-align: left !important;           /* 🔴 ADICIONADO */
 }
@@ -1585,9 +1585,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ===========================================
+/* ==========================================
    FIM DO ARQUIVO - main.css
-   ===========================================
+   ==========================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
