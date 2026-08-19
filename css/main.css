@@ -618,7 +618,7 @@ div.property-badge,
     font-weight: 800 !important;
     letter-spacing: 1.5px !important;      /* 🔴 3px → 1.5px */
     width: 220px !important;               /* 🔴 190px → 220px */
-    left: -30px !important;                /* 🔴 -25px → -30px */
+    left: -28px !important;                /* 🔴 -25px → -28px */
     overflow: visible !important;
     text-align: left !important;           /* 🔴 ADICIONADO */
 }
