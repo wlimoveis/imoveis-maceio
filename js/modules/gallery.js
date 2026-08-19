@@ -321,7 +321,7 @@ function renderDiagonalBadges(property) {
             width = '220px';
             leftOffset = '-32px';
             letterSpacing = '1.5px';
-            textAlign = 'center';
+            textAlign = 'right';
         }
 
         var positionStyle = 'left: ' + leftOffset + ';';
