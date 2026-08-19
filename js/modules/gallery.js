@@ -295,7 +295,7 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             // 🔴 DESTAQUE PRINCIPAL - AJUSTADO
             fontSize = '0.75rem';
-            padding = '6px 38px 7px 8px';
+            padding = '6px 38px 7px 10px';
             width = '220px';            // 🔴 190 → 220
             leftOffset = '-45px';
             letterSpacing = '1.5px';    // 🔴 2 → 1.5
