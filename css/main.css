@@ -644,6 +644,8 @@ div.property-badge,
     width: 220px !important;                 /* 🔴 MESMA LARGURA */
     left: -32px !important;
     overflow: visible !important;
+    text-align: right !important;           /* 🔴 ADICIONADO */
+
 }
 
 /* ============================================================
