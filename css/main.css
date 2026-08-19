@@ -626,7 +626,7 @@ div.property-badge,
 /* Faixa secundária */
 .diagonal-badge.medium {
     font-size: 0.75rem !important;
-    padding: 2px 38px 2px 18px !important;
+    padding: 2px 38px 1px 38px !important;
     font-weight: 600 !important;
     letter-spacing: 2px !important;
     width: 190px !important;
@@ -1584,9 +1584,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ==============================================
+/* =============================================
    FIM DO ARQUIVO - main.css
-   ==============================================
+   =============================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
