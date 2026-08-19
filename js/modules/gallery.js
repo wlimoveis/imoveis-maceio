@@ -311,7 +311,7 @@ function renderDiagonalBadges(property) {
             fontSize = '0.75rem';
             padding = '2px 38px 1px 30px';
             width = '220px';
-            leftOffset = '-24px';
+            leftOffset = '-32px';
             letterSpacing = '1.5px';
             textAlign = 'left';
         } else {
@@ -319,7 +319,7 @@ function renderDiagonalBadges(property) {
             fontSize = '0.65rem';
             padding = '2px 38px 1px 18px';
             width = '220px';
-            leftOffset = '-22px';
+            leftOffset = '-32px';
             letterSpacing = '1.5px';
             textAlign = 'center';
         }
