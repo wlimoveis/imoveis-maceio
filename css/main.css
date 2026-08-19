@@ -608,16 +608,19 @@ div.property-badge,
 .diagonal-badge {
     border-radius: 3px !important;
     text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    /* 🔴 ADICIONADO: Permite que a faixa ultrapasse o container */
+    overflow: visible !important;
 }
 
-/* Faixa principal - mais destacada */
+/* 🔴 ADICIONADO: Permitir que a faixa principal ultrapasse */
 .diagonal-badge.large {
     font-size: 0.9rem !important;
-    padding: '16px 45px 7px 45px' !important;  /* 🔴 top=20, left=10 */
+    padding: 7px 45px !important;
     font-weight: 800 !important;
     letter-spacing: 3px !important;
-    width: 320px !important;
+    width: 220px !important;
     left: -40px !important;
+    overflow: visible !important;      /* 🔴 ADICIONADO */
 }
 
 /* Faixa secundária */
@@ -628,6 +631,7 @@ div.property-badge,
     letter-spacing: 2px !important;
     width: 190px !important;
     left: -35px !important;
+    overflow: visible !important;      /* 🔴 ADICIONADO */
 }
 
 /* Faixa inferior - Destaque 2 */
@@ -636,8 +640,28 @@ div.property-badge,
     padding: 5px 30px !important;
     font-weight: 600 !important;
     letter-spacing: 1.5px !important;
-    width: 180px !important;  /* 🔴 Aumentado */
+    width: 180px !important;
     left: -30px !important;
+    overflow: visible !important;      /* 🔴 ADICIONADO */
+}
+
+/* ============================================================
+   🔴 NOVO: PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
+   ============================================================ */
+
+/* Container da imagem do imóvel */
+.property-image {
+    overflow: visible !important;      /* 🔴 ADICIONADO */
+}
+
+/* Container da galeria dentro da imagem */
+.property-gallery-container {
+    overflow: visible !important;      /* 🔴 ADICIONADO */
+}
+
+/* Container das faixas diagonais */
+.diagonal-badges-container {
+    overflow: visible !important;      /* 🔴 ADICIONADO */
 }
 
 /* Responsividade */
