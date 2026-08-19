@@ -307,7 +307,7 @@ function renderDiagonalBadges(property) {
             width = '220px';
             leftOffset = '-35px';
             letterSpacing = '2px';
-            textAlign = 'center';
+            textAlign = 'left';
         } else {
             // 🔴 DESTAQUE 2 - MESMO PADRÃO DOS ANTERIORES
             fontSize = '0.65rem';
