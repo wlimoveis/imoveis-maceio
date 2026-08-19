@@ -297,7 +297,7 @@ function renderDiagonalBadges(property) {
             fontSize = '0.75rem';
             padding = '6px 38px 7px 18px';
             width = '220px';            // 🔴 190 → 220
-            leftOffset = '-32px';
+            leftOffset = '-35px';
             letterSpacing = '1.5px';    // 🔴 2 → 1.5
             textAlign = 'left';
         } else if (i === 1) {
@@ -913,5 +913,5 @@ if (document.readyState === 'loading') {
     window.setupGalleryEvents();
 }
 
-// ========= EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS ========
+// ========= EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS =======
 window.openGallery = window.openGalleryAtCurrentIndex;
