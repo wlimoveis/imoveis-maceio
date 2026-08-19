@@ -626,7 +626,7 @@ div.property-badge,
 /* Faixa secundária */
 .diagonal-badge.medium {
     font-size: 0.75rem !important;
-    padding: 6px 38px !important;
+    padding: 4px 38px !important;
     font-weight: 600 !important;
     letter-spacing: 2px !important;
     width: 190px !important;
