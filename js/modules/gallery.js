@@ -293,18 +293,19 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             // ========== DESTAQUE PRINCIPAL ==========
             if (isMobile) {
+                // 🔴 MOBILE - MANTER COMO ESTÁ (JÁ FUNCIONA)
                 fontSize = '0.60rem';
-                padding = '2px 28px 1px 30px';
-                width = '190px';
-                leftOffset = '-30px';
+                padding = '2px 35px 1px 30px';
+                width = '195px';
+                leftOffset = '-32px';
                 letterSpacing = '1.2px';
                 textAlign = 'left';
             } else {
-                // 🔴 DESKTOP: padding-left aumentado de 18px para 28px
+                // 🔴 DESKTOP - AUMENTAR padding-right
                 fontSize = '0.75rem';
-                padding = '2px 38px 1px 28px';   // 🔴 18 → 28
-                width = '220px';
-                leftOffset = '-32px';
+                padding = '2px 55px 1px 28px';    // 🔴 48 → 55 (MAIS ESPAÇO)
+                width = '235px';                  // 🔴 230 → 235
+                leftOffset = '-37px';             // 🔴 -35 → -37
                 letterSpacing = '1.5px';
                 textAlign = 'left';
             }
