@@ -682,7 +682,7 @@ div.property-badge,
            padding: 14px 8px 1px 28px !important;
            font-weight: 600 !important;
            letter-spacing: 1.0px !important;
-           width: 190px !important;         /* 🔴 175 → 190 */
+           width: 220px !important;         /* 🔴 175 → 220 */
            left: -30px !important;          /* 🔴 -25 → -30 */
            overflow: visible !important;
            text-align: right !important;
