@@ -333,7 +333,7 @@ function renderDiagonalBadges(property) {
                     fontSize = '0.50rem';
                     // 🔴 MOBILE - AUMENTAR LARGURA E AJUSTAR POSIÇÃO
                     padding = '14px 8px 1px 28px';    // Mantido
-                    width = '190px';                  // 🔴 175 → 190 (MAIS LARGO)
+                    width = '220px';                  // 🔴 175 → 220 (MAIS LARGO)
                     leftOffset = '-30px';             // 🔴 -25 → -30 (COMPENSA)
                     letterSpacing = '1.0px';
                     textAlign = 'right';
