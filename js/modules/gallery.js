@@ -331,11 +331,11 @@ function renderDiagonalBadges(property) {
             // ========== DESTAQUE 2 ==========
                 if (isMobile) {
                     fontSize = '0.50rem';
-                    // 🔴 MOBILE - AUMENTAR LARGURA E AJUSTAR POSIÇÃO
+                    // 🔴 MOBILE - AJUSTE COMBINADO
                     padding = '14px 8px 1px 28px';    // Mantido
-                    width = '220px';                  // 🔴 175 → 220 (MAIS LARGO)
-                    leftOffset = '-40px';             // 🔴 -25 → -40 (COMPENSA)
-                    letterSpacing = '1.0px';
+                    width = '210px';                  // 🔴 190 → 210
+                    leftOffset = '-35px';             // 🔴 -30 → -35
+                    letterSpacing = '0.8px';          // 🔴 1.0 → 0.8 (MENOS ESPAÇO)
                     textAlign = 'right';
                 } else {
                     fontSize = '0.65rem';
