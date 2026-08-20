@@ -667,11 +667,11 @@ div.property-badge,
     /* 🔴 Faixa Destaque 1 - MOBILE (AJUSTADO) */
     .diagonal-badge.medium {
         font-size: 0.60rem !important;
-        padding: 16px 45px 1px 22px !important;  /* 🔴 right: 38 → 45 */
+        padding: 16px 45px 1px 22px !important;
         font-weight: 600 !important;
         letter-spacing: 1.2px !important;
-        width: 185px !important;                /* 🔴 180 → 185 */
-        left: -28px !important;                 /* 🔴 -25 → -28 */
+        width: 210px !important;          /* 🔴 185 → 210 */
+        left: -35px !important;           /* 🔴 -28 → -35 */
         overflow: visible !important;
         text-align: center !important;
     }
