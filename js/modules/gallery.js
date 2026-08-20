@@ -941,5 +941,5 @@ if (document.readyState === 'loading') {
     window.setupGalleryEvents();
 }
 
-// ====== EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS =====
+// ===== EXPOSIÇÃO DA FUNÇÃO openGallery COMO ALIAS =====
 window.openGallery = window.openGalleryAtCurrentIndex;
