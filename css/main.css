@@ -678,14 +678,13 @@ div.property-badge,
 
     /* 🔴 Faixa Destaque 2 - MOBILE (AJUSTADO) */
    .diagonal-badge.small {
-        font-size: 0.50rem !important;
-        padding: 14px 18px 1px 28px !important;  /* 🔴 right: 8 → 18 */
-        font-weight: 600 !important;
-        letter-spacing: 0.8px !important;
-        width: 220px !important;                  /* 🔴 210 → 220 */
-        left: -38px !important;                   /* 🔴 -35 → -38 */
-        overflow: visible !important;
-        text-align: right !important;
+        fontSize = '0.50rem';
+        // 🔴 MOBILE - AUMENTAR padding-right
+        padding = '14px 28px 1px 28px';   // 🔴 right: 18 → 28
+        width = '230px';                  // 🔴 220 → 230
+        leftOffset = '-40px';             // 🔴 -38 → -40
+        letterSpacing = '0.7px';          // 🔴 0.8 → 0.7 (texto mais compacto)
+        textAlign = 'right';
     }
 }
 
