@@ -272,7 +272,6 @@ function renderDiagonalBadges(property) {
     var isMobile = window.innerWidth <= 768;
 
     // ========== PARÂMETROS BASE ==========
-    // 🔴 MOBILE: baseTop aumentado de 4 para 10 (desce a faixa)
     var baseTop = isMobile ? 10 : 6;
     var spacing = isMobile ? 18 : 24;
 
@@ -295,11 +294,11 @@ function renderDiagonalBadges(property) {
             // ========== DESTAQUE PRINCIPAL - MOBILE AJUSTADO ==========
             if (isMobile) {
                 fontSize = '0.60rem';
-                // 🔴 padding-left: 14px → 20px, padding-right: 20px → 28px
-                padding = '2px 28px 1px 20px';
-                width = '180px';          // 🔴 160 → 180
-                leftOffset = '-28px';     // 🔴 -25 → -28
-                letterSpacing = '1.2px';  // 🔴 1.5 → 1.2
+                // 🔴 padding-left: 20px → 30px (MAIS ESPAÇO À ESQUERDA)
+                padding = '2px 28px 1px 30px';
+                width = '190px';          
+                leftOffset = '-30px';     
+                letterSpacing = '1.2px';
                 textAlign = 'left';
             } else {
                 fontSize = '0.75rem';
@@ -313,12 +312,12 @@ function renderDiagonalBadges(property) {
             // ========== DESTAQUE 1 - MOBILE AJUSTADO ==========
             if (isMobile) {
                 fontSize = '0.60rem';
-                // 🔴 padding-left: 22px → 18px, padding-right: 20px → 30px
-                padding = '4px 30px 1px 18px';
-                width = '170px';          // 🔴 150 → 170
-                leftOffset = '-22px';     // 🔴 -20 → -22
-                letterSpacing = '1.2px';  // 🔴 1.5 → 1.2
-                textAlign = 'center';     // 🔴 left → center
+                // 🔴 padding-right: 30px → 38px (MAIS ESPAÇO À DIREITA)
+                padding = '4px 38px 1px 22px';
+                width = '180px';          
+                leftOffset = '-25px';     
+                letterSpacing = '1.2px';
+                textAlign = 'center';
             } else {
                 fontSize = '0.75rem';
                 padding = '10px 38px 1px 30px';
@@ -331,12 +330,13 @@ function renderDiagonalBadges(property) {
             // ========== DESTAQUE 2 - MOBILE AJUSTADO ==========
             if (isMobile) {
                 fontSize = '0.50rem';
-                // 🔴 padding-left: 28px → 22px, padding-right: 18px → 28px
-                padding = '6px 28px 1px 22px';
-                width = '155px';          // 🔴 140 → 155
-                leftOffset = '-20px';     // 🔴 -18 → -20
-                letterSpacing = '1.0px';  // 🔴 1.5 → 1.0
-                textAlign = 'center';     // 🔴 right → center
+                // 🔴 padding-top: 6px → 14px (DESCE O TEXTO)
+                // 🔴 padding-right: 28px → 14px (MENOS ESPAÇO À DIREITA)
+                padding = '14px 14px 1px 28px';
+                width = '160px';          
+                leftOffset = '-22px';     
+                letterSpacing = '1.0px';
+                textAlign = 'right';      // 🔴 right (SOBE PARA EXTREMO DIREITO)
             } else {
                 fontSize = '0.65rem';
                 padding = '16px 38px 1px 50px';
