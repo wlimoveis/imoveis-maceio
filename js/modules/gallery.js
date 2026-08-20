@@ -329,22 +329,22 @@ function renderDiagonalBadges(property) {
             }
         } else {
             // ========== DESTAQUE 2 ==========
-            if (isMobile) {
-                fontSize = '0.50rem';
-                // 🔴 MOBILE: padding-right reduzido para 8px (encosta na borda)
-                padding = '14px 8px 1px 28px';    // 🔴 14 → 8
-                width = '175px';                   // 🔴 160 → 175
-                leftOffset = '-25px';              // 🔴 -22 → -25
-                letterSpacing = '1.0px';
-                textAlign = 'right';
-            } else {
-                fontSize = '0.65rem';
-                padding = '16px 38px 1px 50px';
-                width = '220px';
-                leftOffset = '-32px';
-                letterSpacing = '1.5px';
-                textAlign = 'right';
-            }
+                if (isMobile) {
+                    fontSize = '0.50rem';
+                    // 🔴 MOBILE - AUMENTAR LARGURA E AJUSTAR POSIÇÃO
+                    padding = '14px 8px 1px 28px';    // Mantido
+                    width = '190px';                  // 🔴 175 → 190 (MAIS LARGO)
+                    leftOffset = '-30px';             // 🔴 -25 → -30 (COMPENSA)
+                    letterSpacing = '1.0px';
+                    textAlign = 'right';
+                } else {
+                    fontSize = '0.65rem';
+                    padding = '16px 38px 1px 50px';
+                    width = '220px';
+                    leftOffset = '-32px';
+                    letterSpacing = '1.5px';
+                    textAlign = 'right';
+                }
         }
 
         var positionStyle = 'left: ' + leftOffset + ';';
