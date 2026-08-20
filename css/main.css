@@ -679,11 +679,11 @@ div.property-badge,
     /* 🔴 Faixa Destaque 2 - MOBILE (AJUSTADO) */
    .diagonal-badge.small {
         font-size: 0.50rem !important;
-        padding: 14px 28px 1px 28px !important;  /* 🔴 right: 18 → 28 */
+        padding: 14px 38px 1px 28px !important;  /* 🔴 right: 28 → 38 */
         font-weight: 600 !important;
-        letter-spacing: 0.7px !important;        /* 🔴 0.8 → 0.7 */
-        width: 230px !important;                 /* 🔴 220 → 230 */
-        left: -40px !important;                  /* 🔴 -38 → -40 */
+        letter-spacing: 0.6px !important;        /* 🔴 0.7 → 0.6 */
+        width: 240px !important;                 /* 🔴 230 → 240 */
+        left: -42px !important;                  /* 🔴 -40 → -42 */
         overflow: visible !important;
         text-align: right !important;
     }
@@ -1606,9 +1606,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =========================================
+/* ========================================
    FIM DO ARQUIVO - main.css
-   =========================================
+   ========================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.7
    Última atualização: 2026-08-10
