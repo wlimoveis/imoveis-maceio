@@ -6,7 +6,7 @@
 // ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
 
-// ========== VARIÁVEIS GLOBAIS ==========
+// ========== VARIÁVEIS GLOBAIS =========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
