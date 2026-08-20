@@ -611,7 +611,7 @@ div.property-badge,
     overflow: visible !important;
 }
 
-/* 🔴 Faixa principal - TOTALMENTE ATUALIZADA */
+/* 🔴 Faixa principal - Desktop */
 .diagonal-badge.large {
     font-size: 0.75rem !important;
     padding: 2px 38px 1px 18px !important;
@@ -623,7 +623,7 @@ div.property-badge,
     text-align: left !important;
 }
 
-/* Faixa secundária - DESTAQUE 1 */
+/* Faixa secundária - DESTAQUE 1 - Desktop */
 .diagonal-badge.medium {
     font-size: 0.75rem !important;
     padding: 10px 38px 1px 30px !important;
@@ -635,7 +635,7 @@ div.property-badge,
     text-align: left !important;
 }
 
-/* Faixa inferior - Destaque 2 */
+/* Faixa inferior - Destaque 2 - Desktop */
 .diagonal-badge.small {
     font-size: 0.65rem !important;
     padding: 16px 38px 1px 50px !important;
@@ -654,38 +654,38 @@ div.property-badge,
 @media (max-width: 768px) {
     /* 🔴 Faixa principal - MOBILE */
     .diagonal-badge.large {
-        font-size: 0.65rem !important;
-        padding: 2px 20px 1px 14px !important;
+        font-size: 0.60rem !important;
+        padding: 2px 28px 1px 20px !important;
         font-weight: 800 !important;
-        letter-spacing: 1.5px !important;
-        width: 160px !important;
-        left: -25px !important;
+        letter-spacing: 1.2px !important;
+        width: 180px !important;
+        left: -28px !important;
         overflow: visible !important;
         text-align: left !important;
     }
 
     /* 🔴 Faixa Destaque 1 - MOBILE */
     .diagonal-badge.medium {
-        font-size: 0.65rem !important;
-        padding: 4px 20px 1px 22px !important;
+        font-size: 0.60rem !important;
+        padding: 4px 30px 1px 18px !important;
         font-weight: 600 !important;
-        letter-spacing: 1.5px !important;
-        width: 150px !important;
-        left: -20px !important;
+        letter-spacing: 1.2px !important;
+        width: 170px !important;
+        left: -22px !important;
         overflow: visible !important;
-        text-align: left !important;
+        text-align: center !important;
     }
 
     /* 🔴 Faixa Destaque 2 - MOBILE */
     .diagonal-badge.small {
-        font-size: 0.55rem !important;
-        padding: 8px 18px 1px 28px !important;
+        font-size: 0.50rem !important;
+        padding: 6px 28px 1px 22px !important;
         font-weight: 600 !important;
-        letter-spacing: 1.5px !important;
-        width: 140px !important;
-        left: -18px !important;
+        letter-spacing: 1.0px !important;
+        width: 155px !important;
+        left: -20px !important;
         overflow: visible !important;
-        text-align: right !important;
+        text-align: center !important;
     }
 }
 
