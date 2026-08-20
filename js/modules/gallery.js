@@ -332,10 +332,10 @@ function renderDiagonalBadges(property) {
                 if (isMobile) {
                     fontSize = '0.50rem';
                     // 🔴 MOBILE - AUMENTAR padding-right
-                    padding = '14px 28px 1px 28px';   // 🔴 right: 18 → 28
-                    width = '230px';                  // 🔴 220 → 230
-                    leftOffset = '-40px';             // 🔴 -38 → -40
-                    letterSpacing = '0.7px';          // 🔴 0.8 → 0.7 (texto mais compacto)
+                    padding = '14px 38px 1px 28px';   // 🔴 right: 28 → 38
+                    width = '240px';                  // 🔴 230 → 240
+                    leftOffset = '-42px';             // 🔴 -40 → -42
+                    letterSpacing = '0.6px';          // 🔴 0.7 → 0.6
                     textAlign = 'right';
                 } else {
                     fontSize = '0.65rem';
