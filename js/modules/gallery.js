@@ -273,7 +273,7 @@ function renderDiagonalBadges(property) {
 
     // ========== PARÂMETROS BASE ==========
     var baseTop = isMobile ? 10 : 6;
-    var spacing = isMobile ? 18 : 24;
+    var spacing = isMobile ? 14 : 24;
 
     var result = '';
 
