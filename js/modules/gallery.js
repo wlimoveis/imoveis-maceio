@@ -272,7 +272,8 @@ function renderDiagonalBadges(property) {
     var isMobile = window.innerWidth <= 768;
 
     // ========== PARÂMETROS BASE ==========
-    var baseTop = isMobile ? 4 : 6;
+    // 🔴 MOBILE: baseTop aumentado de 4 para 10 (desce a faixa)
+    var baseTop = isMobile ? 10 : 6;
     var spacing = isMobile ? 18 : 24;
 
     var result = '';
@@ -291,13 +292,14 @@ function renderDiagonalBadges(property) {
         var textAlign;
 
         if (isFirst) {
-            // ========== DESTAQUE PRINCIPAL ==========
+            // ========== DESTAQUE PRINCIPAL - MOBILE AJUSTADO ==========
             if (isMobile) {
-                fontSize = '0.65rem';
-                padding = '2px 20px 1px 14px';
-                width = '160px';
-                leftOffset = '-25px';
-                letterSpacing = '1.5px';
+                fontSize = '0.60rem';
+                // 🔴 padding-left: 14px → 20px, padding-right: 20px → 28px
+                padding = '2px 28px 1px 20px';
+                width = '180px';          // 🔴 160 → 180
+                leftOffset = '-28px';     // 🔴 -25 → -28
+                letterSpacing = '1.2px';  // 🔴 1.5 → 1.2
                 textAlign = 'left';
             } else {
                 fontSize = '0.75rem';
@@ -308,14 +310,15 @@ function renderDiagonalBadges(property) {
                 textAlign = 'left';
             }
         } else if (i === 1) {
-            // ========== DESTAQUE 1 ==========
+            // ========== DESTAQUE 1 - MOBILE AJUSTADO ==========
             if (isMobile) {
-                fontSize = '0.65rem';
-                padding = '4px 20px 1px 22px';
-                width = '150px';
-                leftOffset = '-20px';
-                letterSpacing = '1.5px';
-                textAlign = 'left';
+                fontSize = '0.60rem';
+                // 🔴 padding-left: 22px → 18px, padding-right: 20px → 30px
+                padding = '4px 30px 1px 18px';
+                width = '170px';          // 🔴 150 → 170
+                leftOffset = '-22px';     // 🔴 -20 → -22
+                letterSpacing = '1.2px';  // 🔴 1.5 → 1.2
+                textAlign = 'center';     // 🔴 left → center
             } else {
                 fontSize = '0.75rem';
                 padding = '10px 38px 1px 30px';
@@ -325,14 +328,15 @@ function renderDiagonalBadges(property) {
                 textAlign = 'left';
             }
         } else {
-            // ========== DESTAQUE 2 ==========
+            // ========== DESTAQUE 2 - MOBILE AJUSTADO ==========
             if (isMobile) {
-                fontSize = '0.55rem';
-                padding = '8px 18px 1px 28px';
-                width = '140px';
-                leftOffset = '-18px';
-                letterSpacing = '1.5px';
-                textAlign = 'right';
+                fontSize = '0.50rem';
+                // 🔴 padding-left: 28px → 22px, padding-right: 18px → 28px
+                padding = '6px 28px 1px 22px';
+                width = '155px';          // 🔴 140 → 155
+                leftOffset = '-20px';     // 🔴 -18 → -20
+                letterSpacing = '1.0px';  // 🔴 1.5 → 1.0
+                textAlign = 'center';     // 🔴 right → center
             } else {
                 fontSize = '0.65rem';
                 padding = '16px 38px 1px 50px';
@@ -344,7 +348,7 @@ function renderDiagonalBadges(property) {
         }
 
         var positionStyle = 'left: ' + leftOffset + ';';
-        var rotateAngle = isMobile ? '-35deg' : '-38deg';
+        var rotateAngle = isMobile ? '-32deg' : '-38deg';
         var opacity = 0.92 - (i * 0.04);
 
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
