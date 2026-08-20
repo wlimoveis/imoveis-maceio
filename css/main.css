@@ -655,11 +655,11 @@ div.property-badge,
     /* 🔴 Faixa principal - MOBILE */
     .diagonal-badge.large {
         font-size: 0.60rem !important;
-        padding: 2px 28px 1px 20px !important;
+        padding: 2px 28px 1px 30px !important;  /* 🔴 left: 20 → 30 */
         font-weight: 800 !important;
         letter-spacing: 1.2px !important;
-        width: 180px !important;
-        left: -28px !important;
+        width: 190px !important;                /* 🔴 180 → 190 */
+        left: -30px !important;                 /* 🔴 -28 → -30 */
         overflow: visible !important;
         text-align: left !important;
     }
@@ -667,11 +667,11 @@ div.property-badge,
     /* 🔴 Faixa Destaque 1 - MOBILE */
     .diagonal-badge.medium {
         font-size: 0.60rem !important;
-        padding: 4px 30px 1px 18px !important;
+        padding: 4px 38px 1px 22px !important;  /* 🔴 right: 30 → 38, left: 18 → 22 */
         font-weight: 600 !important;
         letter-spacing: 1.2px !important;
-        width: 170px !important;
-        left: -22px !important;
+        width: 180px !important;                /* 🔴 170 → 180 */
+        left: -25px !important;                 /* 🔴 -22 → -25 */
         overflow: visible !important;
         text-align: center !important;
     }
@@ -679,13 +679,13 @@ div.property-badge,
     /* 🔴 Faixa Destaque 2 - MOBILE */
     .diagonal-badge.small {
         font-size: 0.50rem !important;
-        padding: 6px 28px 1px 22px !important;
+        padding: 14px 14px 1px 28px !important; /* 🔴 top: 6 → 14, right: 28 → 14 */
         font-weight: 600 !important;
         letter-spacing: 1.0px !important;
-        width: 155px !important;
-        left: -20px !important;
+        width: 160px !important;                /* 🔴 155 → 160 */
+        left: -22px !important;                 /* 🔴 -20 → -22 */
         overflow: visible !important;
-        text-align: center !important;
+        text-align: right !important;           /* 🔴 center → right */
     }
 }
 
