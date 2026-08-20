@@ -349,8 +349,17 @@ function renderDiagonalBadges(property) {
 
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = isMobile ? '-32deg' : '-38deg';
-        var opacity = 0.92 - (i * 0.04);
-
+        
+        // 🔴 AJUSTE DE OPACIDADE POR POSIÇÃO
+        var opacity;
+        if (i === 0) {
+            opacity = 0.92;  // Principal (92%)
+        } else if (i === 1) {
+            opacity = 0.85;  // Destaque 1 (85%)
+        } else {
+            opacity = 0.65;  // 🔴 Destaque 2 (65% - MAIS TRANSPARENTE)
+        }
+        
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
         var borderBottom = 'border-bottom: 2px solid ' + badge.border + ';';
         var shadowStyle = 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
