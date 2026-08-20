@@ -313,10 +313,10 @@ function renderDiagonalBadges(property) {
             // ========== DESTAQUE 1 ==========
             if (isMobile) {
                 fontSize = '0.60rem';
-                // 🔴 MOBILE: padding-right aumentado de 38px para 45px
-                padding = '16px 45px 1px 22px';   // 🔴 38 → 45
-                width = '185px';                  // 🔴 180 → 185
-                leftOffset = '-28px';             // 🔴 -25 → -28
+                padding = '16px 45px 1px 22px';
+                // 🔴 MOBILE - AUMENTAR LARGURA
+                width = '210px';                  // 🔴 185 → 210
+                leftOffset = '-35px';             // 🔴 -28 → -35
                 letterSpacing = '1.2px';
                 textAlign = 'center';
             } else {
