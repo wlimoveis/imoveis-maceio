@@ -291,31 +291,31 @@ function renderDiagonalBadges(property) {
         var textAlign;
 
         if (isFirst) {
-            // ========== DESTAQUE PRINCIPAL - MOBILE AJUSTADO ==========
+            // ========== DESTAQUE PRINCIPAL ==========
             if (isMobile) {
                 fontSize = '0.60rem';
-                // 🔴 padding-left: 20px → 30px (MAIS ESPAÇO À ESQUERDA)
                 padding = '2px 28px 1px 30px';
-                width = '190px';          
-                leftOffset = '-30px';     
+                width = '190px';
+                leftOffset = '-30px';
                 letterSpacing = '1.2px';
                 textAlign = 'left';
             } else {
+                // 🔴 DESKTOP: padding-left aumentado de 18px para 28px
                 fontSize = '0.75rem';
-                padding = '2px 38px 1px 18px';
+                padding = '2px 38px 1px 28px';   // 🔴 18 → 28
                 width = '220px';
                 leftOffset = '-32px';
                 letterSpacing = '1.5px';
                 textAlign = 'left';
             }
         } else if (i === 1) {
-            // ========== DESTAQUE 1 - MOBILE AJUSTADO ==========
+            // ========== DESTAQUE 1 ==========
             if (isMobile) {
                 fontSize = '0.60rem';
-                // 🔴 padding-right: 30px → 38px (MAIS ESPAÇO À DIREITA)
-                padding = '4px 38px 1px 22px';
-                width = '180px';          
-                leftOffset = '-25px';     
+                // 🔴 MOBILE: padding-right aumentado de 38px para 45px
+                padding = '4px 45px 1px 22px';   // 🔴 38 → 45
+                width = '185px';                  // 🔴 180 → 185
+                leftOffset = '-28px';             // 🔴 -25 → -28
                 letterSpacing = '1.2px';
                 textAlign = 'center';
             } else {
@@ -327,16 +327,15 @@ function renderDiagonalBadges(property) {
                 textAlign = 'left';
             }
         } else {
-            // ========== DESTAQUE 2 - MOBILE AJUSTADO ==========
+            // ========== DESTAQUE 2 ==========
             if (isMobile) {
                 fontSize = '0.50rem';
-                // 🔴 padding-top: 6px → 14px (DESCE O TEXTO)
-                // 🔴 padding-right: 28px → 14px (MENOS ESPAÇO À DIREITA)
-                padding = '14px 14px 1px 28px';
-                width = '160px';          
-                leftOffset = '-22px';     
+                // 🔴 MOBILE: padding-right reduzido para 8px (encosta na borda)
+                padding = '14px 8px 1px 28px';    // 🔴 14 → 8
+                width = '175px';                   // 🔴 160 → 175
+                leftOffset = '-25px';              // 🔴 -22 → -25
                 letterSpacing = '1.0px';
-                textAlign = 'right';      // 🔴 right (SOBE PARA EXTREMO DIREITO)
+                textAlign = 'right';
             } else {
                 fontSize = '0.65rem';
                 padding = '16px 38px 1px 50px';
