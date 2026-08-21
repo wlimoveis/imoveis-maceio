@@ -1,9 +1,10 @@
-// js/modules/admin.js - Versão ESTÁVEL v2.6
+// js/modules/admin.js - Versão ESTÁVEL v2.7
 // ✅ CORREÇÃO DEFINITIVA: Após OK, o painel aparece INSTANTANEAMENTE com aba GERENCIAR ativa
 // ✅ NOVAS OPÇÕES: Terrenos & Incorporações, Terreno, Incorporação (Cisão A)
 // ✅ NOVOS CAMPOS: Destaque1 e Destaque2 (Faixas Diagonais)
+// ✅ NOVO CAMPO: Destaque3 (Bookmark Ribbon - Flâmula com corte em "V")
 
-console.log('✅ admin.js carregado - Versão ESTÁVEL v2.6');
+console.log('✅ admin.js carregado - Versão ESTÁVEL v2.7');
 
 const ADMIN_CONFIG = { password: "wl654", panelId: "adminPanel", buttonClass: "admin-toggle" };
 window.editingPropertyId = null;
@@ -112,13 +113,13 @@ window.resetAdminFormCompletely = function(showNotification = true) {
     if (window.SupportCoreUtils?.manageEditingState) window.SupportCoreUtils.manageEditingState(null);
     else window.editingPropertyId = null;
     
-    // 🔴 CORREÇÃO: Incluir badge1 e badge2 no reset
-    ['propTitle', 'propPrice', 'propLocation', 'propDescription', 'propFeatures', 'propType', 'propBadge', 'propBadge1', 'propBadge2', 'propHasVideo'].forEach(id => {
+    // 🔴 CORREÇÃO: Incluir badge3 no reset
+    ['propTitle', 'propPrice', 'propLocation', 'propDescription', 'propFeatures', 'propType', 'propBadge', 'propBadge1', 'propBadge2', 'propBadge3', 'propHasVideo'].forEach(id => {
         const el = document.getElementById(id);
         if (el) {
             if (el.type === 'select-one') {
                 if (el.id === 'propType') el.value = 'residencial';
-                else if (el.id === 'propBadge' || el.id === 'propBadge1' || el.id === 'propBadge2') el.value = 'Nenhum';
+                else if (el.id === 'propBadge' || el.id === 'propBadge1' || el.id === 'propBadge2' || el.id === 'propBadge3') el.value = 'Nenhum';
                 else el.value = 'Novo';
             } else if (el.type === 'checkbox') el.checked = false;
             else el.value = '';
@@ -181,7 +182,7 @@ window.editProperty = function(id) {
     const formatPrice = (price) => window.SharedCore.PriceFormatter.formatForAdmin(price) ?? '';
     const formatFeatures = (features) => window.SharedCore.formatFeaturesForDisplay(features) ?? '';
     
-    // 🔴 CORREÇÃO: Incluir badge1 e badge2 no mapeamento
+    // 🔴 CORREÇÃO: Incluir badge3 no mapeamento
     const fieldMappings = {
         'propTitle': property.title || '',
         'propPrice': formatPrice(property.price) || '',
@@ -192,6 +193,7 @@ window.editProperty = function(id) {
         'propBadge': property.badge || 'Nenhum',
         'propBadge1': property.badge1 || 'Nenhum',
         'propBadge2': property.badge2 || 'Nenhum',
+        'propBadge3': property.badge3 || 'Nenhum',
         'propHasVideo': window.SharedCore.ensureBooleanVideo(property.has_video)
     };
     
@@ -255,7 +257,7 @@ window.saveProperty = async function() {
         const videoCheckbox = document.getElementById('propHasVideo');
         propertyData.has_video = window.SharedCore.ensureBooleanVideo(videoCheckbox?.checked);
         
-        // 🔴 CORREÇÃO: Incluir badge1 e badge2 com verificação
+        // 🔴 CORREÇÃO: Incluir badge3
         const fields = [
             { id: 'propTitle', key: 'title' },
             { id: 'propPrice', key: 'price' },
@@ -265,7 +267,8 @@ window.saveProperty = async function() {
             { id: 'propType', key: 'type' },
             { id: 'propBadge', key: 'badge' },
             { id: 'propBadge1', key: 'badge1' },
-            { id: 'propBadge2', key: 'badge2' }
+            { id: 'propBadge2', key: 'badge2' },
+            { id: 'propBadge3', key: 'badge3' }
         ];
         
         fields.forEach(field => {
@@ -278,9 +281,10 @@ window.saveProperty = async function() {
             }
         });
         
-        // 🔴 CORREÇÃO: Garantir que badge1 e badge2 existam
+        // 🔴 CORREÇÃO: Garantir que badges existam
         if (!propertyData.badge1) propertyData.badge1 = 'Nenhum';
         if (!propertyData.badge2) propertyData.badge2 = 'Nenhum';
+        if (!propertyData.badge3) propertyData.badge3 = 'Nenhum';
         
         console.log('📦 Dados coletados:', propertyData);
         
@@ -540,9 +544,13 @@ function ensureAutocomplete(retries = 5, delay = 100) {
 }
 
 // ============================================================
-// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A) - CORRIGIDA
+// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A + Destaque3)
 // ============================================================
 
+/**
+ * ATUALIZA OS CAMPOS DO FORMULÁRIO ADMIN
+ * Adiciona novas opções para Terrenos & Incorporações, Destaques Múltiplos e Destaque3
+ */
 function updateAdminFormFields() {
     console.log('🔄 [ADMIN] Atualizando campos do formulário...');
     
@@ -566,8 +574,7 @@ function updateAdminFormFields() {
         }
     }
     
-    // 2. 🔴 CORRIGIDO: Campo DESTAQUE - Adicionar apenas "Terreno"
-    // "Incorporação" já existe no HTML, não precisa ser adicionada
+    // 2. Campo DESTAQUE - Adicionar "Terreno" (Incorporação já existe)
     const badgeSelect = document.getElementById('propBadge');
     if (badgeSelect) {
         let existsTerreno = false;
@@ -575,18 +582,19 @@ function updateAdminFormFields() {
         for (let i = 0; i < badgeSelect.options.length; i++) {
             if (badgeSelect.options[i].value === 'Terreno') {
                 existsTerreno = true;
+                break;
             }
         }
         
         if (!existsTerreno) {
-            const option1 = document.createElement('option');
-            option1.value = 'Terreno';
-            option1.textContent = 'Terreno';
-            badgeSelect.appendChild(option1);
+            const option = document.createElement('option');
+            option.value = 'Terreno';
+            option.textContent = 'Terreno';
+            badgeSelect.appendChild(option);
             console.log('✅ [ADMIN] Opção "Terreno" adicionada ao campo DESTAQUE');
         }
         
-        // 🔴 VERIFICAÇÃO: Apenas log para confirmar que "Incorporação" existe
+        // Verificar se "Incorporação" existe (apenas log)
         let existsIncorporacao = false;
         for (let i = 0; i < badgeSelect.options.length; i++) {
             if (badgeSelect.options[i].value === 'Incorporação') {
@@ -597,16 +605,18 @@ function updateAdminFormFields() {
         console.log(`✅ [ADMIN] Opção "Incorporação" ${existsIncorporacao ? 'já presente' : 'NÃO ENCONTRADA (criar manualmente)'}`);
     }
     
-    // 3. NOVO: Criar campos Destaque1 e Destaque2 se não existirem
+    // 3. Criar campos Destaque1, Destaque2 e Destaque3 se não existirem
     const existingBadge1 = document.getElementById('propBadge1');
     const existingBadge2 = document.getElementById('propBadge2');
+    const existingBadge3 = document.getElementById('propBadge3');
     
-    if (!existingBadge1 || !existingBadge2) {
-        console.log('🔄 [ADMIN] Criando campos Destaque1 e Destaque2...');
+    if (!existingBadge1 || !existingBadge2 || !existingBadge3) {
+        console.log('🔄 [ADMIN] Criando campos Destaque1, Destaque2 e Destaque3...');
         
         const form = document.getElementById('propertyForm');
         if (!form) return;
         
+        // Encontrar a linha que contém TIPO e DESTAQUE
         const rows = form.querySelectorAll('.form-row-2cols');
         let targetRow = null;
         
@@ -623,9 +633,10 @@ function updateAdminFormFields() {
         }
         
         if (targetRow) {
-            const newRow = document.createElement('div');
-            newRow.className = 'form-row-2cols';
-            newRow.style.marginTop = '0.15rem';
+            // Linha para Destaque1 e Destaque2
+            const newRow1 = document.createElement('div');
+            newRow1.className = 'form-row-2cols';
+            newRow1.style.marginTop = '0.15rem';
             
             // Destaque 1
             const group1 = document.createElement('div');
@@ -657,11 +668,53 @@ function updateAdminFormFields() {
                 </select>
             `;
             
-            newRow.appendChild(group1);
-            newRow.appendChild(group2);
+            newRow1.appendChild(group1);
+            newRow1.appendChild(group2);
             
-            targetRow.parentNode.insertBefore(newRow, targetRow.nextSibling);
+            // Inserir após a linha de TIPO/DESTAQUE
+            targetRow.parentNode.insertBefore(newRow1, targetRow.nextSibling);
             console.log('✅ [ADMIN] Campos Destaque1 e Destaque2 criados');
+            
+            // 🔴 NOVO: Linha para Destaque3 (Bookmark Ribbon) - ocupa uma linha inteira
+            const newRow2 = document.createElement('div');
+            newRow2.className = 'form-group';
+            newRow2.style.marginTop = '0.15rem';
+            newRow2.style.padding = '0.3rem';
+            newRow2.style.border = '1px solid #808080';
+            newRow2.style.borderTopColor = '#ffffff';
+            newRow2.style.borderLeftColor = '#ffffff';
+            newRow2.style.background = '#ece9d8';
+            newRow2.style.borderRadius = '0px';
+            
+            newRow2.innerHTML = `
+                <label style="display:block; margin-bottom:0.15rem; font-weight:700; font-size:0.65rem; color:#000000; font-family:'Courier New','Consolas','Monaco',monospace; text-transform:uppercase; letter-spacing:0.5px;">
+                    <i class="fas fa-flag" aria-hidden="true"></i> DESTAQUE 3 (Flâmula Bookmark)
+                </label>
+                <select id="propBadge3" style="background:#ffffff; border:2px solid; border-color:#404040 #ffffff #ffffff #404040; padding:0.35rem 0.45rem; font-family:'Courier New','Consolas','Monaco',monospace; font-size:0.8rem; width:100%; box-sizing:border-box; box-shadow:inset 2px 2px 5px rgba(0,0,0,0.1);">
+                    <option value="Nenhum">Nenhum</option>
+                    <option value="Deságio 80%">🔻 80% Deságio</option>
+                    <option value="Deságio 70%">🔻 70% Deságio</option>
+                    <option value="Deságio 60%">🔻 60% Deságio</option>
+                    <option value="Deságio 50%">🔻 50% Deságio</option>
+                    <option value="Deságio 40%">🔻 40% Deságio</option>
+                    <option value="Deságio 30%">🔻 30% Deságio</option>
+                    <option value="Deságio 25%">🔻 25% Deságio</option>
+                    <option value="Deságio 20%">🔻 20% Deságio</option>
+                    <option value="Deságio 15%">🔻 15% Deságio</option>
+                    <option value="Deságio 10%">🔻 10% Deságio</option>
+                    <option value="Deságio 7%">🔻 7% Deságio</option>
+                    <option value="Deságio 5%">🔻 5% Deságio</option>
+                    <option value="Oferta Especial">🔥 Oferta Especial</option>
+                    <option value="Última Chance">⚡ Última Chance</option>
+                </select>
+                <small style="display:block; margin-top:0.15rem; font-family:'Courier New',monospace; font-size:0.55rem; color:#666;">
+                    <i class="fas fa-info-circle" aria-hidden="true"></i> Bookmark Ribbon - Flâmula com corte em "V" para destacar ofertas especiais
+                </small>
+            `;
+            
+            // Inserir após a linha de Destaque1/Destaque2
+            newRow1.parentNode.insertBefore(newRow2, newRow1.nextSibling);
+            console.log('✅ [ADMIN] Campo Destaque3 (Bookmark Ribbon) criado');
         } else {
             console.warn('⚠️ [ADMIN] Não foi possível encontrar a linha de DESTAQUE para inserir os novos campos');
         }
@@ -756,13 +809,13 @@ if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', function() {
         setTimeout(function() {
             updateAdminFormFields();
-            console.log('✅ [ADMIN] Campos Destaque1 e Destaque2 inicializados');
+            console.log('✅ [ADMIN] Campos Destaque1, Destaque2 e Destaque3 inicializados');
         }, 500);
     });
 } else {
     setTimeout(function() {
         updateAdminFormFields();
-        console.log('✅ [ADMIN] Campos Destaque1 e Destaque2 inicializados');
+        console.log('✅ [ADMIN] Campos Destaque1, Destaque2 e Destaque3 inicializados');
     }, 500);
 }
 
@@ -770,15 +823,15 @@ if (document.readyState === 'loading') {
 document.addEventListener('adminPanelOpened', function() {
     setTimeout(function() {
         updateAdminFormFields();
-        console.log('🔄 [ADMIN] Campos Destaque1 e Destaque2 recarregados');
+        console.log('🔄 [ADMIN] Campos Destaque1, Destaque2 e Destaque3 recarregados');
     }, 100);
 });
 
-// ===========================================================
+// ============================================================
 // FIM DAS ATUALIZAÇÕES DO ADMIN
-// ===========================================================
+// ============================================================
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeAdmin);
 else initializeAdmin();
 
-console.log('✅ admin.js v2.6 carregado - Com suporte a Terrenos & Incorporações e Destaques Múltiplos');
+console.log('✅ admin.js v2.7 carregado - Com suporte a Terrenos & Incorporações, Destaques Múltiplos e Bookmark Ribbon');
