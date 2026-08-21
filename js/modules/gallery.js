@@ -200,7 +200,7 @@ function generateDiagonalBadges(property) {
         'Incorporação': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
         'Terreno': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' }
     };
-
+    
     var selectedBadges = [];
     
     if (property.badge && property.badge !== 'Nenhum') {
@@ -740,7 +740,7 @@ function updateGalleryModalMedia() {
     }
 }
 
-// ========== NAVEGAÇÃO MODAL ==========
+// ========== NAVEGAÇÃO MODAL =========
 window.nextGalleryImage = function() {
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) currentVideo.pause();
