@@ -540,13 +540,9 @@ function ensureAutocomplete(retries = 5, delay = 100) {
 }
 
 // ============================================================
-// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A)
+// ATUALIZAÇÃO DO ADMIN - NOVAS OPÇÕES (Cisão A) - CORRIGIDA
 // ============================================================
 
-/**
- * ATUALIZA OS CAMPOS DO FORMULÁRIO ADMIN
- * Adiciona novas opções para Terrenos & Incorporações e Destaques Múltiplos
- */
 function updateAdminFormFields() {
     console.log('🔄 [ADMIN] Atualizando campos do formulário...');
     
@@ -570,18 +566,15 @@ function updateAdminFormFields() {
         }
     }
     
-    // 2. Campo DESTAQUE - Adicionar "Terreno" e "Incorporação"
+    // 2. 🔴 CORRIGIDO: Campo DESTAQUE - Adicionar apenas "Terreno"
+    // "Incorporação" já existe no HTML, não precisa ser adicionada
     const badgeSelect = document.getElementById('propBadge');
     if (badgeSelect) {
         let existsTerreno = false;
-        let existsIncorporacao = false;
         
         for (let i = 0; i < badgeSelect.options.length; i++) {
             if (badgeSelect.options[i].value === 'Terreno') {
                 existsTerreno = true;
-            }
-            if (badgeSelect.options[i].value === 'Incorporação') {
-                existsIncorporacao = true;
             }
         }
         
@@ -593,16 +586,18 @@ function updateAdminFormFields() {
             console.log('✅ [ADMIN] Opção "Terreno" adicionada ao campo DESTAQUE');
         }
         
-        if (!existsIncorporacao) {
-            const option2 = document.createElement('option');
-            option2.value = 'Incorporação';
-            option2.textContent = 'Incorporação';
-            badgeSelect.appendChild(option2);
-            console.log('✅ [ADMIN] Opção "Incorporação" adicionada ao campo DESTAQUE');
+        // 🔴 VERIFICAÇÃO: Apenas log para confirmar que "Incorporação" existe
+        let existsIncorporacao = false;
+        for (let i = 0; i < badgeSelect.options.length; i++) {
+            if (badgeSelect.options[i].value === 'Incorporação') {
+                existsIncorporacao = true;
+                break;
+            }
         }
+        console.log(`✅ [ADMIN] Opção "Incorporação" ${existsIncorporacao ? 'já presente' : 'NÃO ENCONTRADA (criar manualmente)'}`);
     }
     
-    // 3. 🔴 NOVO: Criar campos Destaque1 e Destaque2 se não existirem
+    // 3. NOVO: Criar campos Destaque1 e Destaque2 se não existirem
     const existingBadge1 = document.getElementById('propBadge1');
     const existingBadge2 = document.getElementById('propBadge2');
     
@@ -612,7 +607,6 @@ function updateAdminFormFields() {
         const form = document.getElementById('propertyForm');
         if (!form) return;
         
-        // Encontrar a linha que contém TIPO e DESTAQUE
         const rows = form.querySelectorAll('.form-row-2cols');
         let targetRow = null;
         
@@ -629,7 +623,6 @@ function updateAdminFormFields() {
         }
         
         if (targetRow) {
-            // Criar nova linha para Destaque1 e Destaque2
             const newRow = document.createElement('div');
             newRow.className = 'form-row-2cols';
             newRow.style.marginTop = '0.15rem';
@@ -667,9 +660,7 @@ function updateAdminFormFields() {
             newRow.appendChild(group1);
             newRow.appendChild(group2);
             
-            // Inserir após a linha de TIPO/DESTAQUE
             targetRow.parentNode.insertBefore(newRow, targetRow.nextSibling);
-            
             console.log('✅ [ADMIN] Campos Destaque1 e Destaque2 criados');
         } else {
             console.warn('⚠️ [ADMIN] Não foi possível encontrar a linha de DESTAQUE para inserir os novos campos');
