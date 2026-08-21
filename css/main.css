@@ -2,7 +2,7 @@
    css/main.css
    ESTILOS GERAIS DO SITE - WEBER LESSA CORRETOR & CONSULTOR
    ============================================================
-   ✅ Versão: 2.7
+   ✅ Versão: 2.8
    ✅ Responsivo: Desktop, Tablet e Mobile
    ✅ Otimizado: Performance e Acessibilidade
    ✅ Integrado: Com header.css, admin.css e gallery.css
@@ -11,6 +11,7 @@
    ✅ CORREÇÃO: Contraste do CTA Button, Badges e Rural Tags
    ✅ CORREÇÃO: Especificidade aumentada para sobrescrever estilos inline
    ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
+   ✅ NOVO: Bookmark Ribbon para Destaque3 (Flâmula com corte em "V")
    ============================================================ */
 
 /* ========== VARIÁVEIS GLOBAIS ========== */
@@ -29,6 +30,8 @@
     --white: #ffffff;
     --whatsapp: #075e54;
     --whatsapp-hover: #0a7a6b;
+    --ribbon-red: #c0392b;
+    --ribbon-red-hover: #e74c3c;
 }
 
 /* ========== RESET E ESTILOS GERAIS ========== */
@@ -470,137 +473,6 @@ div.property-badge,
 }
 
 /* ============================================================
-   FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (CORRIGIDO)
-   ============================================================ */
-
-/* Container das faixas diagonais */
-.diagonal-badges-container {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    overflow: hidden;
-    z-index: 5;
-}
-
-/* Estilo base para cada faixa diagonal - GOLD RIBBON */
-.diagonal-badge {
-    position: absolute;
-    text-align: center;
-    white-space: nowrap;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
-    border-radius: 3px;
-}
-
-/* Tamanhos das faixas */
-.diagonal-badge.large {
-    font-size: 1.0rem;
-    padding: 10px 60px;
-    font-weight: 900;
-    letter-spacing: 4px;
-    width: 260px;
-}
-
-.diagonal-badge.medium {
-    font-size: 0.85rem;
-    padding: 8px 50px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    width: 230px;
-}
-
-.diagonal-badge.small {
-    font-size: 0.75rem;
-    padding: 6px 40px;
-    font-weight: 600;
-    letter-spacing: 2px;
-    width: 200px;
-}
-
-/* Efeito de brilho nas faixas - GOLD RIBBON */
-.diagonal-badge::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
-    pointer-events: none;
-    border-radius: 3px;
-}
-
-/* Efeito de relevo 3D */
-.diagonal-badge::before {
-    content: '';
-    position: absolute;
-    top: 1px;
-    left: 1px;
-    right: 1px;
-    height: 40%;
-    background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
-    pointer-events: none;
-    border-radius: 3px 3px 0 0;
-}
-
-/* Cores das faixas - GOLD RIBBON */
-.diagonal-badge.color-luxo { background: linear-gradient(135deg, #d4a017, #f5d76e) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
-.diagonal-badge.color-novo { background: linear-gradient(135deg, #27ae60, #2ecc71) !important; color: #ffffff !important; border-bottom: 3px solid #58d68d !important; }
-.diagonal-badge.color-destaque { background: linear-gradient(135deg, #2980b9, #3498db) !important; color: #ffffff !important; border-bottom: 3px solid #5dade2 !important; }
-.diagonal-badge.color-lancamento { background: linear-gradient(135deg, #e74c3c, #f1948a) !important; color: #ffffff !important; border-bottom: 3px solid #f5b7b1 !important; }
-.diagonal-badge.color-oportunidade { background: linear-gradient(135deg, #f39c12, #f7dc6f) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
-.diagonal-badge.color-exclusivo { background: linear-gradient(135deg, #8e44ad, #af7ac5) !important; color: #ffffff !important; border-bottom: 3px solid #c39bd3 !important; }
-.diagonal-badge.color-imperdivel { background: linear-gradient(135deg, #e67e22, #f0b27a) !important; color: #ffffff !important; border-bottom: 3px solid #f5cba7 !important; }
-.diagonal-badge.color-ultima-unidade { background: linear-gradient(135deg, #c0392b, #e74c3c) !important; color: #ffffff !important; border-bottom: 3px solid #f1948a !important; }
-.diagonal-badge.color-beira-mar { background: linear-gradient(135deg, #1abc9c, #48c9b0) !important; color: #ffffff !important; border-bottom: 3px solid #76d7c4 !important; }
-.diagonal-badge.color-vista-mar { background: linear-gradient(135deg, #3498db, #5dade2) !important; color: #ffffff !important; border-bottom: 3px solid #85c1e9 !important; }
-.diagonal-badge.color-com-lazer { background: linear-gradient(135deg, #2ecc71, #58d68d) !important; color: #1a1a2e !important; border-bottom: 3px solid #82e0aa !important; }
-.diagonal-badge.color-pronto-para-morar { background: linear-gradient(135deg, #9b59b6, #af7ac5) !important; color: #ffffff !important; border-bottom: 3px solid #c39bd3 !important; }
-.diagonal-badge.color-alto-padrao { background: linear-gradient(135deg, #d4a017, #f5d76e) !important; color: #1a1a2e !important; border-bottom: 3px solid #f9e79f !important; }
-
-/* Responsividade das faixas diagonais */
-@media (max-width: 768px) {
-    .diagonal-badge.large {
-        font-size: 0.85rem;
-        padding: 8px 35px;
-        width: 190px;
-        left: -30px;
-    }
-    .diagonal-badge.medium {
-        font-size: 0.7rem;
-        padding: 6px 28px;
-        width: 170px;
-        left: -25px;
-    }
-    .diagonal-badge.small {
-        font-size: 0.65rem;
-        padding: 4px 22px;
-        width: 150px;
-        left: -20px;
-    }
-    /* Alinhamento à direita em mobile */
-    .diagonal-badge.small[style*="right:"] {
-        right: 5px !important;
-        left: auto !important;
-        padding: 4px 22px 4px 30px !important;
-        width: 150px !important;
-    }
-}
-
-/* Animações opcionais das faixas */
-.diagonal-badge:hover {
-    transform: scale(1.05) !important;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* ============================================================
    FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL DEFINITIVA)
    ============================================================ */
 
@@ -614,11 +486,11 @@ div.property-badge,
 /* 🔴 Faixa principal - Desktop (AJUSTADO) */
 .diagonal-badge.large {
     font-size: 0.75rem !important;
-    padding: 2px 65px 1px 28px !important;  /* 🔴 right: 55 → 65 */
+    padding: 2px 65px 1px 28px !important;
     font-weight: 800 !important;
     letter-spacing: 1.5px !important;
-    width: 240px !important;                /* 🔴 235 → 240 */
-    left: -40px !important;                 /* 🔴 -37 → -40 */
+    width: 240px !important;
+    left: -40px !important;
     overflow: visible !important;
     text-align: left !important;
 }
@@ -670,8 +542,8 @@ div.property-badge,
         padding: 16px 45px 1px 22px !important;
         font-weight: 600 !important;
         letter-spacing: 1.2px !important;
-        width: 210px !important;          /* 🔴 185 → 210 */
-        left: -35px !important;           /* 🔴 -28 → -35 */
+        width: 210px !important;
+        left: -35px !important;
         overflow: visible !important;
         text-align: center !important;
     }
@@ -679,11 +551,11 @@ div.property-badge,
     /* 🔴 Faixa Destaque 2 - MOBILE (AJUSTADO) */
    .diagonal-badge.small {
         font-size: 0.50rem !important;
-        padding: 14px 48px 1px 28px !important;  /* 🔴 right: 38 → 48 */
+        padding: 14px 48px 1px 28px !important;
         font-weight: 600 !important;
         letter-spacing: 0.6px !important;
-        width: 250px !important;                 /* 🔴 240 → 250 */
-        left: -45px !important;                  /* 🔴 -42 → -45 */
+        width: 250px !important;
+        left: -45px !important;
         overflow: visible !important;
         text-align: right !important;
     }
@@ -708,7 +580,146 @@ div.property-badge,
     overflow: visible !important;
 }
 
-/* ========== FIM DAS FAIXAS DIAGONAIS ========== */
+/* ============================================================
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA COM CORTE EM "V")
+   ============================================================ */
+
+.bookmark-ribbon {
+    position: absolute;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    animation: slideInRight 0.5s ease;
+    border-radius: 2px 0 0 2px;
+    z-index: 20;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.bookmark-ribbon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 2px 0 0 2px;
+}
+
+/* Efeito de pulsação para chamar atenção */
+.bookmark-ribbon.pulse {
+    animation: pulseRibbon 2s infinite;
+}
+
+@keyframes pulseRibbon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+/* 🔴 Desktop Bookmark Ribbon */
+@media (min-width: 769px) {
+    .bookmark-ribbon {
+        font-size: 0.7rem !important;
+        padding: 6px 30px 6px 16px !important;
+        width: 130px !important;
+        height: 48px !important;
+        right: 15px !important;
+        top: 15px !important;
+        border-left: 3px solid var(--ribbon-red-hover) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;
+    }
+    .bookmark-ribbon span {
+        font-size: 0.9rem !important;
+    }
+    .bookmark-ribbon span:first-child {
+        font-size: 0.9rem !important;
+    }
+    .bookmark-ribbon span:nth-child(2) {
+        font-size: 1.1rem !important;
+        font-weight: 900 !important;
+    }
+    .bookmark-ribbon span:nth-child(3) {
+        font-size: 0.55rem !important;
+        font-weight: 600 !important;
+        opacity: 0.9 !important;
+    }
+}
+
+/* 🔴 Mobile Bookmark Ribbon */
+@media (max-width: 768px) {
+    .bookmark-ribbon {
+        font-size: 0.55rem !important;
+        padding: 4px 20px 4px 12px !important;
+        width: 90px !important;
+        height: 36px !important;
+        right: 12px !important;
+        top: 12px !important;
+        border-left: 2px solid var(--ribbon-red-hover) !important;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.25) !important;
+    }
+    .bookmark-ribbon span {
+        font-size: 0.7rem !important;
+    }
+    .bookmark-ribbon span:first-child {
+        font-size: 0.7rem !important;
+    }
+    .bookmark-ribbon span:nth-child(2) {
+        font-size: 0.8rem !important;
+        font-weight: 900 !important;
+    }
+    .bookmark-ribbon span:nth-child(3) {
+        font-size: 0.4rem !important;
+        font-weight: 600 !important;
+        opacity: 0.9 !important;
+    }
+}
+
+/* Efeito hover (apenas para interação) */
+.bookmark-ribbon:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* 🔴 Variação de cores para Bookmark Ribbon */
+.bookmark-ribbon.red {
+    background: var(--ribbon-red) !important;
+    border-left-color: var(--ribbon-red-hover) !important;
+}
+
+.bookmark-ribbon.green {
+    background: var(--green) !important;
+    border-left-color: var(--green-light) !important;
+}
+
+.bookmark-ribbon.orange {
+    background: #e67e22 !important;
+    border-left-color: #f39c12 !important;
+}
+
+.bookmark-ribbon.purple {
+    background: #8e44ad !important;
+    border-left-color: #9b59b6 !important;
+}
+
+/* ============================================================
+   FIM DAS FAIXAS DIAGONAIS E BOOKMARK RIBBON
+   ============================================================ */
 
 .property-content {
     padding: 1.5rem;
@@ -1606,11 +1617,11 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ======================================
+/* ============================================================
    FIM DO ARQUIVO - main.css
-   ======================================
+   ============================================================
    STATUS: ✅ CARREGADO COM SUCESSO
-   Versão: 2.7
-   Última atualização: 2026-08-10
-   NOVO: Faixas diagonais para Destaques Múltiplos
+   Versão: 2.8
+   Última atualização: 2026-08-21
+   NOVO: Bookmark Ribbon para Destaque3 (Flâmula com corte em "V")
    ============================================================ */
