@@ -3,10 +3,11 @@
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
+// ✅ NOVO: Bookmark Ribbon para Destaque3 (Flâmula com corte em "V")
 // ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
-console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais');
+console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais e Bookmark Ribbon');
 
-// ========== VARIÁVEIS GLOBAIS =========
+// ========== VARIÁVEIS GLOBAIS ==========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
@@ -200,7 +201,7 @@ function generateDiagonalBadges(property) {
         'Incorporação': { bg: '#d4a017', color: '#1a1a2e', border: '#f5d76e' },
         'Terreno': { bg: '#27ae60', color: '#ffffff', border: '#2ecc71' }
     };
-    
+
     var selectedBadges = [];
     
     if (property.badge && property.badge !== 'Nenhum') {
@@ -293,7 +294,6 @@ function renderDiagonalBadges(property) {
         if (isFirst) {
             // ========== DESTAQUE PRINCIPAL ==========
             if (isMobile) {
-                // 🔴 MOBILE - MANTER
                 fontSize = '0.60rem';
                 padding = '2px 35px 1px 30px';
                 width = '195px';
@@ -301,11 +301,10 @@ function renderDiagonalBadges(property) {
                 letterSpacing = '1.2px';
                 textAlign = 'left';
             } else {
-                // 🔴 DESKTOP - AJUSTADO (MAIS ESPAÇO À DIREITA)
                 fontSize = '0.75rem';
-                padding = '2px 65px 1px 28px';   // 🔴 right: 55 → 65
-                width = '240px';                 // 🔴 235 → 240
-                leftOffset = '-40px';            // 🔴 -37 → -40
+                padding = '2px 65px 1px 28px';
+                width = '240px';
+                leftOffset = '-40px';
                 letterSpacing = '1.5px';
                 textAlign = 'left';
             }
@@ -314,9 +313,8 @@ function renderDiagonalBadges(property) {
             if (isMobile) {
                 fontSize = '0.60rem';
                 padding = '16px 45px 1px 22px';
-                // 🔴 MOBILE - AUMENTAR LARGURA
-                width = '210px';                  // 🔴 185 → 210
-                leftOffset = '-35px';             // 🔴 -28 → -35
+                width = '210px';
+                leftOffset = '-35px';
                 letterSpacing = '1.2px';
                 textAlign = 'center';
             } else {
@@ -329,35 +327,33 @@ function renderDiagonalBadges(property) {
             }
         } else {
             // ========== DESTAQUE 2 ==========
-                if (isMobile) {
-                    fontSize = '0.50rem';
-                    // 🔴 MOBILE - AUMENTAR MAIS padding-right
-                    padding = '14px 48px 1px 28px';   // 🔴 right: 38 → 48
-                    width = '250px';                  // 🔴 240 → 250
-                    leftOffset = '-45px';             // 🔴 -42 → -45
-                    letterSpacing = '0.6px';
-                    textAlign = 'right';
-                } else {
-                    fontSize = '0.65rem';
-                    padding = '16px 38px 1px 50px';
-                    width = '220px';
-                    leftOffset = '-32px';
-                    letterSpacing = '1.5px';
-                    textAlign = 'right';
-                }
+            if (isMobile) {
+                fontSize = '0.50rem';
+                padding = '14px 48px 1px 28px';
+                width = '250px';
+                leftOffset = '-45px';
+                letterSpacing = '0.6px';
+                textAlign = 'right';
+            } else {
+                fontSize = '0.65rem';
+                padding = '16px 38px 1px 50px';
+                width = '220px';
+                leftOffset = '-32px';
+                letterSpacing = '1.5px';
+                textAlign = 'right';
+            }
         }
 
         var positionStyle = 'left: ' + leftOffset + ';';
         var rotateAngle = isMobile ? '-32deg' : '-38deg';
         
-        // 🔴 AJUSTE DE OPACIDADE POR POSIÇÃO
         var opacity;
         if (i === 0) {
-            opacity = 0.92;  // Principal (92%)
+            opacity = 0.92;
         } else if (i === 1) {
-            opacity = 0.85;  // Destaque 1 (85%)
+            opacity = 0.85;
         } else {
-            opacity = 0.65;  // 🔴 Destaque 2 (65% - MAIS TRANSPARENTE)
+            opacity = 0.65;
         }
         
         var gradientBg = 'background: linear-gradient(135deg, ' + badge.bg + ', ' + badge.border + ');';
@@ -398,6 +394,143 @@ function renderDiagonalBadges(property) {
     }
 
     return result;
+}
+
+// ========== NOVO: GERAR BOOKMARK RIBBON (DESTAQUE 3) ==========
+function generateBookmarkBadge(property) {
+    if (!property.badge3 || property.badge3 === 'Nenhum') return '';
+
+    var isRural = property.type === 'rural' || property.rural === true;
+    var isMobile = window.innerWidth <= 768;
+    
+    // Cores para os diferentes tipos de bookmark
+    var colors = {
+        'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 60%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 50%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 40%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 30%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 25%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 20%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 15%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 10%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 7%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Deságio 5%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
+        'Oferta Especial': { bg: '#e67e22', border: '#f39c12', icon: '🔥' },
+        'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
+    };
+
+    // 🔴 Cor para fazendas (verde)
+    if (isRural) {
+        colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 60%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 50%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 40%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 30%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 25%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 20%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 15%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 10%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 7%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Deságio 5%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
+        colors['Oferta Especial'] = { bg: '#1e8449', border: '#27ae60', icon: '🔥' };
+        colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60', icon: '⚡' };
+    }
+
+    var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b', icon: '🏷️' };
+    
+    // Extrair percentual para exibição destacada
+    var displayText = property.badge3;
+    var percentage = '';
+    var match = property.badge3.match(/(\d+)%/);
+    if (match) {
+        percentage = match[1] + '%';
+        displayText = 'DESÁGIO';
+    }
+
+    // Tamanhos responsivos
+    var fontSize, padding, width, rightOffset, topOffset, height, iconSize;
+    if (isMobile) {
+        fontSize = '0.55rem';
+        padding = '4px 20px 4px 12px';
+        width = '90px';
+        rightOffset = '12px';
+        topOffset = '12px';
+        height = '36px';
+        iconSize = '0.7rem';
+    } else {
+        fontSize = '0.7rem';
+        padding = '6px 30px 6px 16px';
+        width = '130px';
+        rightOffset = '15px';
+        topOffset = '15px';
+        height = '48px';
+        iconSize = '0.9rem';
+    }
+
+    // HTML do Bookmark Ribbon
+    var html = '';
+    html += '<div class="bookmark-ribbon"';
+    html += ' style="';
+    html += 'position: absolute;';
+    html += 'top: ' + topOffset + 'px;';
+    html += 'right: ' + rightOffset + 'px;';
+    html += 'background: ' + color.bg + ';';
+    html += 'color: #ffffff;';
+    html += 'padding: ' + padding + ';';
+    html += 'font-size: ' + fontSize + ';';
+    html += 'font-weight: 700;';
+    html += 'text-transform: uppercase;';
+    html += 'letter-spacing: 0.5px;';
+    html += 'width: ' + width + ';';
+    html += 'height: ' + height + ';';
+    html += 'z-index: 20;';
+    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
+    html += 'text-align: center;';
+    html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
+    html += 'border-radius: 2px 0 0 2px;';
+    html += 'border-left: 3px solid ' + color.border + ';';
+    html += 'display: flex;';
+    html += 'align-items: center;';
+    html += 'justify-content: center;';
+    html += 'gap: 4px;';
+    html += 'line-height: 1;';
+    html += 'pointer-events: none;';
+    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
+    html += '">';
+    
+    // Ícone (seta para baixo ou emoji)
+    html += '<span style="font-size: ' + iconSize + ';">' + color.icon + '</span>';
+    
+    // Texto principal
+    if (percentage) {
+        var percentSize = isMobile ? '0.8rem' : '1.1rem';
+        var labelSize = isMobile ? '0.4rem' : '0.55rem';
+        html += '<span style="font-size: ' + percentSize + '; font-weight: 900;">' + percentage + '</span>';
+        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
+    } else {
+        html += '<span>' + property.badge3 + '</span>';
+    }
+    
+    html += '</div>';
+
+    // 🔴 Corte em "V" (Bookmark Ribbon) - efeito de bandeirola
+    var vSize = isMobile ? 6 : 10;
+    html += '<div style="';
+    html += 'position: absolute;';
+    html += 'top: ' + (parseInt(topOffset) + parseInt(height) - (vSize + 2)) + 'px;';
+    html += 'right: ' + (parseInt(rightOffset) + parseInt(width) - (vSize + 2)) + 'px;';
+    html += 'width: 0;';
+    html += 'height: 0;';
+    html += 'border-top: ' + vSize + 'px solid ' + color.bg + ';';
+    html += 'border-right: ' + vSize + 'px solid transparent;';
+    html += 'z-index: 19;';
+    html += 'pointer-events: none;';
+    html += '"></div>';
+
+    return html;
 }
 
 // ========== FUNÇÃO PARA GERAR SETAS LIQUID GLASS ==========
@@ -506,7 +639,7 @@ function updateCardMedia(propertyId, newIndex) {
     }
 }
 
-// ========== FUNÇÃO PRINCIPAL: Criar galeria (COM FAIXAS DIAGONAIS) ==========
+// ========== FUNÇÃO PRINCIPAL: Criar galeria (COM FAIXAS DIAGONAIS E BOOKMARK) ==========
 window.createPropertyGallery = function(property) {
     const hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
     
@@ -523,7 +656,11 @@ window.createPropertyGallery = function(property) {
     const firstIsVideo = window.isVideoUrl(firstMediaUrl);
     const propertyTitle = property.title || 'Imóvel';
     
+    // 🔴 GERAR FAIXAS DIAGONAIS (Destaque, Destaque1, Destaque2)
     const badgesHtml = renderDiagonalBadges(property);
+    
+    // 🔴 GERAR BOOKMARK RIBBON (Destaque3)
+    const bookmarkHtml = generateBookmarkBadge(property);
     
     const dotsHtml = allMediaUrls.map((url, idx) => {
         const isVideo = window.isVideoUrl(url);
@@ -566,6 +703,8 @@ window.createPropertyGallery = function(property) {
                 ${arrowsHtml}
                 
                 ${badgesHtml}
+                
+                ${bookmarkHtml}
                 
                 <div class="gallery-indicator-mobile" aria-label="Indicador de imagens">
                     <i class="fas fa-images" aria-hidden="true"></i>
@@ -740,7 +879,7 @@ function updateGalleryModalMedia() {
     }
 }
 
-// ========== NAVEGAÇÃO MODAL =========
+// ========== NAVEGAÇÃO MODAL ==========
 window.nextGalleryImage = function() {
     const currentVideo = document.getElementById('galleryVideo');
     if (currentVideo) currentVideo.pause();
@@ -939,6 +1078,97 @@ window.setupGalleryEvents = function() {
         .diagonal-badge:hover {
             transform: rotate(-40deg) scale(1.05);
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ========== BOOKMARK RIBBON (DESTAQUE 3) ========== */
+        .bookmark-ribbon {
+            position: absolute;
+            pointer-events: none;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
+            animation: slideInRight 0.5s ease;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .bookmark-ribbon::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+            pointer-events: none;
+            border-radius: 2px 0 0 2px;
+        }
+
+        /* Efeito de pulsação para chamar atenção */
+        .bookmark-ribbon.pulse {
+            animation: pulseRibbon 2s infinite;
+        }
+
+        @keyframes pulseRibbon {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Responsividade do Bookmark Ribbon */
+        @media (max-width: 768px) {
+            .bookmark-ribbon {
+                font-size: 0.55rem !important;
+                padding: 4px 20px 4px 12px !important;
+                width: 90px !important;
+                height: 36px !important;
+                right: 12px !important;
+                top: 12px !important;
+            }
+            .bookmark-ribbon span {
+                font-size: 0.7rem !important;
+            }
+            .bookmark-ribbon span:first-child {
+                font-size: 0.7rem !important;
+            }
+            .bookmark-ribbon span:nth-child(2) {
+                font-size: 0.8rem !important;
+            }
+        }
+
+        @media (min-width: 769px) {
+            .bookmark-ribbon {
+                font-size: 0.7rem !important;
+                padding: 6px 30px 6px 16px !important;
+                width: 130px !important;
+                height: 48px !important;
+                right: 15px !important;
+                top: 15px !important;
+            }
+            .bookmark-ribbon span {
+                font-size: 0.9rem !important;
+            }
+            .bookmark-ribbon span:first-child {
+                font-size: 0.9rem !important;
+            }
+            .bookmark-ribbon span:nth-child(2) {
+                font-size: 1.1rem !important;
+            }
+        }
+
+        .bookmark-ribbon:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
         }
     `;
     document.head.appendChild(style);
