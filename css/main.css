@@ -608,7 +608,6 @@ div.property-badge,
     }
 }
 
-/* 🔴 Efeito de brilho */
 .bookmark-ribbon::after {
     content: '';
     position: absolute;
@@ -621,71 +620,78 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark (vertical - flâmula) */
+/* 🔴 Desktop Bookmark - SEM !important no width */
 @media (min-width: 769px) {
     .bookmark-ribbon {
-        font-size: 0.6rem !important;
-        padding: 10px 12px 10px 12px !important;
-        width: 56px !important;
-        height: 70px !important;
-        right: 65px !important;
+        font-size: 0.5rem !important;
+        padding: 8px 8px 8px 8px !important;
+        /* 🔴 REMOVER width: 130px !important; */
+        height: 65px !important;
+        right: 60px !important;
         top: 0px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
+        /* 🔴 ADICIONAR: width vindo do JavaScript */
+        width: auto !important;
+        min-width: 28px !important;
+        max-width: 28px !important;
     }
     .bookmark-ribbon span {
-        font-size: 0.7rem !important;
+        font-size: 0.6rem !important;
     }
     .bookmark-ribbon span:first-child {
-        font-size: 0.8rem !important;
+        font-size: 0.6rem !important;
     }
     .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.9rem !important;
+        font-size: 0.8rem !important;
         font-weight: 900 !important;
     }
     .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.45rem !important;
+        font-size: 0.4rem !important;
         font-weight: 600 !important;
         opacity: 0.9 !important;
     }
 }
 
-/* 🔴 Mobile Bookmark (vertical - flâmula) */
+/* 🔴 Mobile Bookmark - SEM !important no width */
 @media (max-width: 768px) {
     .bookmark-ribbon {
-        font-size: 0.5rem !important;
-        padding: 8px 10px 8px 10px !important;
-        width: 44px !important;
-        height: 55px !important;
-        right: 55px !important;
+        font-size: 0.45rem !important;
+        padding: 6px 6px 6px 6px !important;
+        /* 🔴 REMOVER width: 90px !important; */
+        height: 50px !important;
+        right: 50px !important;
         top: 0px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
+        /* 🔴 ADICIONAR: width vindo do JavaScript */
+        width: auto !important;
+        min-width: 22px !important;
+        max-width: 22px !important;
     }
     .bookmark-ribbon span {
-        font-size: 0.6rem !important;
+        font-size: 0.5rem !important;
     }
     .bookmark-ribbon span:first-child {
-        font-size: 0.6rem !important;
+        font-size: 0.5rem !important;
     }
     .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.7rem !important;
+        font-size: 0.6rem !important;
         font-weight: 900 !important;
     }
     .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.35rem !important;
+        font-size: 0.3rem !important;
         font-weight: 600 !important;
         opacity: 0.9 !important;
     }
 }
 
-/* 🔴 Efeito hover */
 .bookmark-ribbon:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-/* 🔴 Cores por tipo (mantidas) */
+/* Cores por tipo */
 .bookmark-ribbon.red {
     background: var(--ribbon-red) !important;
     border-bottom-color: var(--ribbon-red-hover) !important;
@@ -1606,9 +1612,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ===========================================================
+/* ==========================================================
    FIM DO ARQUIVO - main.css
-   ===========================================================
+   ==========================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.8
    Última atualização: 2026-08-21
