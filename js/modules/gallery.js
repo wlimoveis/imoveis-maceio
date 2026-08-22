@@ -457,18 +457,18 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        // 🔴 VALORES EXTREMOS PARA TESTAR
-        topOffset = '-150px';    // 🔴 EXTREMO (bem acima da foto)
-        rightValue = '65px';
+        // 🔴 USAR bottomOffset (distância da BASE para SUBIR)
+        bottomOffset = '50px';      // 🔴 VALOR ALTO = SOBE MAIS
+        rightValue = '25px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        // 🔴 VALORES EXTREMOS PARA TESTAR
-        topOffset = '-200px';    // 🔴 EXTREMO (bem acima da foto)
-        rightValue = '85px';
+        // 🔴 USAR bottomOffset (distância da BASE para SUBIR)
+        bottomOffset = '70px';      // 🔴 VALOR ALTO = SOBE MAIS
+        rightValue = '35px';
         iconSize = '0.6rem';
     }
 
@@ -476,9 +476,9 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute !important;';
-    // 🔴 FORÇAR RIGHT E TOP COM !important
     html += 'right: ' + rightValue + 'px !important;';
-    html += 'top: ' + topOffset + 'px !important;';
+    // 🔴 USAR bottom EM VEZ DE top
+    html += 'bottom: ' + bottomOffset + 'px !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
     html += 'padding: ' + padding + ' !important;';
@@ -503,7 +503,6 @@ function generateBookmarkBadge(property) {
     html += 'pointer-events: none !important;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
     html += 'overflow: visible !important;';
-    // 🔴 ADICIONAR CLIP-PATH NONE PARA EVITAR CORTE
     html += 'clip-path: none !important;';
     html += '-webkit-clip-path: none !important;';
     html += '">';
@@ -521,7 +520,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - também com valores extremos
+    // 🔴 CORTE EM "V" - ajustado para bottom
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
@@ -529,7 +528,8 @@ function generateBookmarkBadge(property) {
     html += '<div style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightVal + 'px !important;';
-    html += 'top: ' + (parseInt(height) - 1 + parseInt(topOffset)) + 'px !important;';
+    // 🔴 USAR bottom EM VEZ DE top
+    html += 'bottom: ' + (parseInt(bottomOffset) - 1) + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
     html += 'z-index: 29 !important;';
