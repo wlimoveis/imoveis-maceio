@@ -565,33 +565,35 @@ div.property-badge,
    PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
    ============================================================ */
 
-/* 🔴 FORÇAR O CONTAINER A PERMITIR ULTRAPASSAR */
+/* Container da imagem do imóvel */
 .property-image {
     overflow: visible !important;
 }
 
+/* Container da galeria dentro da imagem */
 .property-gallery-container {
     overflow: visible !important;
 }
 
+/* Container das faixas diagonais */
 .diagonal-badges-container {
     overflow: visible !important;
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA À DIREITA)
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
    ============================================================ */
 
-/* 🔴 FORÇAR A FLÂMULA COM POSIÇÃO ABSOLUTA E OVERFLOW VISIBLE */
 .bookmark-ribbon {
     position: absolute !important;
     pointer-events: none !important;
     overflow: visible !important;
     box-sizing: border-box !important;
+    transition: all 0.3s ease;
+    animation: slideInRight 0.5s ease;
     z-index: 30 !important;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     line-height: 1 !important;
-    /* 🔴 REMOVER qualquer restrição de tamanho */
     min-width: auto !important;
     max-width: none !important;
 }
@@ -619,7 +621,7 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-* 🔴 FORÇAR A FLÂMULA NO DESKTOP */
+/* 🔴 Desktop Bookmark - POSIÇÃO CONTROLADA PELO JAVASCRIPT */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -632,9 +634,8 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 REMOVER top e right fixos - JavaScript controla */
+        /* 🔴 top e right são controlados pelo JavaScript */
     }
-}
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
     }
@@ -652,7 +653,7 @@ div.property-badge,
     }
 }
 
-/* 🔴 FORÇAR A FLÂMULA NO MOBILE */
+/* 🔴 Mobile Bookmark - POSIÇÃO CONTROLADA PELO JAVASCRIPT */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -665,8 +666,8 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
+        /* 🔴 top e right são controlados pelo JavaScript */
     }
-}
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
     }
@@ -684,20 +685,21 @@ div.property-badge,
     }
 }
 
+/* 🔴 Efeito hover da flâmula */
 .bookmark-ribbon:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-/* 🔴 CORES FORÇADAS */
+/* 🔴 Cores do Bookmark Ribbon */
 .bookmark-ribbon.red {
-    background: #c0392b !important;
-    border-bottom-color: #e74c3c !important;
+    background: var(--ribbon-red) !important;
+    border-bottom-color: var(--ribbon-red-hover) !important;
 }
 
 .bookmark-ribbon.green {
-    background: #1e8449 !important;
-    border-bottom-color: #27ae60 !important;
+    background: var(--green) !important;
+    border-bottom-color: var(--green-light) !important;
 }
 
 .bookmark-ribbon.orange {
