@@ -457,16 +457,16 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        topOffset = '-25px';
-        rightValue = '25px';
+        topOffset = '-5px';
+        rightValue = '5px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        topOffset = '-35px';
-        rightValue = '35px';
+        topOffset = '-3px';
+        rightValue = '3px';
         iconSize = '0.6rem';
     }
 
