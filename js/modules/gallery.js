@@ -454,16 +454,16 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        // 🔴 CENTRALIZAR: usar left com 50% e transform
-        topOffset = '-5px';      // Sobrepondo a borda superior
+        // 🔴 SUBIR MAIS: topOffset de -5px para -15px
+        topOffset = '-15px';     // 🔴 SOBREPONDO MAIS A BORDA SUPERIOR
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        // 🔴 CENTRALIZAR: usar left com 50% e transform
-        topOffset = '-8px';      // Sobrepondo a borda superior
+        // 🔴 SUBIR MAIS: topOffset de -8px para -20px
+        topOffset = '-20px';     // 🔴 SOBREPONDO MAIS A BORDA SUPERIOR
         iconSize = '0.6rem';
     }
 
@@ -471,9 +471,8 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute;';
-    // 🔴 CENTRALIZAR: left 50% + transform translateX(-50%)
-    html += 'left: 50% !important;';
-    html += 'transform: translateX(-50%) !important;';
+    // 🔴 POSICIONAR À DIREITA (próximo ao indicador de fotos)
+    html += 'right: 45px !important;';     // 🔴 Desktop: 45px da direita
     html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ';';
     html += 'color: #ffffff;';
@@ -513,14 +512,14 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - também centralizado
+    // 🔴 CORTE EM "V" - alinhado com a flâmula
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
+    var rightVal = parseInt(45) + (parseInt(width) - vWidth) / 2;  // 🔴 45px (mesmo do right)
     
     html += '<div style="';
     html += 'position: absolute;';
-    html += 'left: 50% !important;';
-    html += 'transform: translateX(-50%) !important;';
+    html += 'right: ' + rightVal + 'px !important;';
     html += 'top: ' + (parseInt(height) - 1) + 'px;';
     html += 'width: ' + vWidth + 'px;';
     html += 'height: ' + vSize + 'px;';
