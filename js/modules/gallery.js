@@ -458,7 +458,7 @@ function generateBookmarkBadge(property) {
         width = '44px';
         height = '50px';
         topOffset = '-200px';     // 🔴 EXTREMO PARA FICAR ACIMA DO INDICADOR
-        rightValue = '25px';
+        rightValue = '55px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
@@ -466,7 +466,7 @@ function generateBookmarkBadge(property) {
         width = '56px';
         height = '65px';
         topOffset = '-250px';     // 🔴 EXTREMO PARA FICAR ACIMA DO INDICADOR
-        rightValue = '35px';
+        rightValue = '65px';
         iconSize = '0.6rem';
     }
 
