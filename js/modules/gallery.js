@@ -457,7 +457,7 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '85px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '-20px';
-        topOffset = '50px';
+        topOffset = '200px';
         rightValue = '-10px';      // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.5rem';
     } else {
@@ -465,7 +465,7 @@ function generateBookmarkBadge(property) {
         padding = '8px 8px 8px 8px';
         width = '95px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '-25px';
-        topOffset = '50px';
+        topOffset = '200px';
         rightValue = '-10px';     // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.6rem';
     }
