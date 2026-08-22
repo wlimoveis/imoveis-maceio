@@ -396,13 +396,14 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== NOVO: GERAR BOOKMARK RIBBON (DESTAQUE 3) ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
+    // Cores para os diferentes tipos de bookmark
     var colors = {
         'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
         'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
@@ -420,6 +421,7 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
     };
 
+    // Cor para fazendas (verde)
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
@@ -447,7 +449,7 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // 🔴 VALORES FORÇADOS
+    // Tamanhos responsivos
     var fontSize, padding, width, height, topOffset, iconSize, rightValue;
     
     if (isMobile) {
@@ -455,20 +457,20 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        topOffset = '-25px';     // 🔴 SOBRE A BORDA
-        rightValue = '25px';     // 🔴 CENTRO-DIREITA
+        topOffset = '-25px';
+        rightValue = '25px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        topOffset = '-35px';     // 🔴 SOBRE A BORDA
-        rightValue = '35px';     // 🔴 CENTRO-DIREITA
+        topOffset = '-35px';
+        rightValue = '35px';
         iconSize = '0.6rem';
     }
 
-    // 🔴 HTML DA FLÂMULA - TODOS OS ESTILOS INLINE
+    // HTML da flâmula
     var html = '';
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
@@ -514,7 +516,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V"
+    // Corte em "V"
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
