@@ -452,7 +452,7 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
-        width = '22px';
+        width = '44px';
         height = '50px';
         rightOffset = '10px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
         topOffset = '-5px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
@@ -460,7 +460,7 @@ function generateBookmarkBadge(property) {
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
-        width = '28px';
+        width = '56px';
         height = '65px';
         rightOffset = '15px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
         topOffset = '-8px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
