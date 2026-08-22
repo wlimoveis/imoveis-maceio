@@ -565,17 +565,15 @@ div.property-badge,
    PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
    ============================================================ */
 
-/* Container da imagem do imóvel */
+/* 🔴 FORÇAR O CONTAINER A PERMITIR ULTRAPASSAR */
 .property-image {
     overflow: visible !important;
 }
 
-/* Container da galeria dentro da imagem */
 .property-gallery-container {
     overflow: visible !important;
 }
 
-/* Container das faixas diagonais */
 .diagonal-badges-container {
     overflow: visible !important;
 }
@@ -584,17 +582,18 @@ div.property-badge,
    BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA À DIREITA)
    ============================================================ */
 
+/* 🔴 FORÇAR A FLÂMULA COM POSIÇÃO ABSOLUTA E OVERFLOW VISIBLE */
 .bookmark-ribbon {
-    position: absolute;
-    pointer-events: none;
-    overflow: visible;
-    text-overflow: ellipsis;
-    box-sizing: border-box;
-    transition: all 0.3s ease;
-    animation: slideInRight 0.5s ease;
-    z-index: 30;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    line-height: 1;
+    position: absolute !important;
+    pointer-events: none !important;
+    overflow: visible !important;
+    box-sizing: border-box !important;
+    z-index: 30 !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    line-height: 1 !important;
+    /* 🔴 REMOVER qualquer restrição de tamanho */
+    min-width: auto !important;
+    max-width: none !important;
 }
 
 @keyframes slideInRight {
@@ -620,20 +619,22 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark - SEM top fixo */
+* 🔴 FORÇAR A FLÂMULA NO DESKTOP */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
+        width: 56px !important;
         height: 65px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
-        width: auto !important;
-        min-width: 56px !important;
-        max-width: 56px !important;
-        /* 🔴 REMOVER qualquer top fixo */
-        /* 🔴 JavaScript controla top e right */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
+        /* 🔴 REMOVER top e right fixos - JavaScript controla */
     }
+}
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
     }
@@ -651,20 +652,21 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark - SEM top fixo */
+/* 🔴 FORÇAR A FLÂMULA NO MOBILE */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
+        width: 44px !important;
         height: 50px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
-        width: auto !important;
-        min-width: 44px !important;
-        max-width: 44px !important;
-        /* 🔴 REMOVER qualquer top fixo */
-        /* 🔴 JavaScript controla top e right */
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
+}
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
     }
@@ -687,15 +689,15 @@ div.property-badge,
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
-/* Cores por tipo */
+/* 🔴 CORES FORÇADAS */
 .bookmark-ribbon.red {
-    background: var(--ribbon-red) !important;
-    border-bottom-color: var(--ribbon-red-hover) !important;
+    background: #c0392b !important;
+    border-bottom-color: #e74c3c !important;
 }
 
 .bookmark-ribbon.green {
-    background: var(--green) !important;
-    border-bottom-color: var(--green-light) !important;
+    background: #1e8449 !important;
+    border-bottom-color: #27ae60 !important;
 }
 
 .bookmark-ribbon.orange {
