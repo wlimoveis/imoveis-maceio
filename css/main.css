@@ -620,7 +620,7 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark - À DIREITA */
+/* 🔴 Desktop Bookmark - SEM top fixo */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -631,8 +631,8 @@ div.property-badge,
         width: auto !important;
         min-width: 56px !important;
         max-width: 56px !important;
-        /* 🔴 REMOVER left: 50% e transform */
-        /* 🔴 JavaScript controla right e top */
+        /* 🔴 REMOVER qualquer top fixo */
+        /* 🔴 JavaScript controla top e right */
     }
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
@@ -651,7 +651,7 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark - À DIREITA */
+/* 🔴 Mobile Bookmark - SEM top fixo */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -662,6 +662,8 @@ div.property-badge,
         width: auto !important;
         min-width: 44px !important;
         max-width: 44px !important;
+        /* 🔴 REMOVER qualquer top fixo */
+        /* 🔴 JavaScript controla top e right */
     }
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
@@ -1606,9 +1608,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =======================================================
+/* ======================================================
    FIM DO ARQUIVO - main.css
-   =======================================================
+   ======================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.8
    Última atualização: 2026-08-21
