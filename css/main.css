@@ -562,7 +562,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL)
    ============================================================ */
 
 /* 🔴 FORÇAR A FLÂMULA A ULTRAPASSAR TODOS OS CONTAINERS */
@@ -578,58 +578,38 @@ div.property-badge,
     line-height: 1 !important;
     min-width: auto !important;
     max-width: none !important;
-    /* 🔴 FORÇAR A SAIR DO CONTAINER */
     clip-path: none !important;
     -webkit-clip-path: none !important;
+    /* 🔴 REMOVER qualquer top ou bottom fixo */
+    top: auto !important;
+    bottom: auto !important;
+    right: auto !important;
+    left: auto !important;
 }
 
-/* ============================================================
-   PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
-   ============================================================ */
-
-/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
+/* 🔴 FORÇAR O CONTAINER DA FOTO */
 .property-image {
     overflow: visible !important;
+    position: relative !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
 }
 
 .property-gallery-container {
     overflow: visible !important;
+    position: relative !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
 }
 
 .diagonal-badges-container {
     overflow: visible !important;
+    position: relative !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
 }
 
-@keyframes slideInRight {
-    from {
-        transform: translateX(80px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.bookmark-ribbon::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-    pointer-events: none;
-    border-radius: 0 0 2px 2px;
-}
-
-/* 🔴 FORÇAR O POSICIONAMENTO DA FLÂMULA */
+/* 🔴 Desktop */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -642,29 +622,15 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 REMOVER QUALQUER TOP OU RIGHT FIXO */
+        /* 🔴 GARANTIR QUE NÃO HAJA POSIÇÃO FIXA */
         top: auto !important;
+        bottom: auto !important;
         right: auto !important;
+        left: auto !important;
     }
 }
 
-.bookmark-ribbon span {
-        font-size: 0.6rem !important;
-    }
-    .bookmark-ribbon span:first-child {
-        font-size: 0.6rem !important;
-    }
-    .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.8rem !important;
-        font-weight: 900 !important;
-    }
-    .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.4rem !important;
-        font-weight: 600 !important;
-        opacity: 0.9 !important;
-    }
-}
-
+/* 🔴 Mobile */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -678,7 +644,9 @@ div.property-badge,
         align-items: center !important;
         justify-content: center !important;
         top: auto !important;
+        bottom: auto !important;
         right: auto !important;
+        left: auto !important;
     }
 }
 
