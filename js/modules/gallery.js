@@ -460,7 +460,7 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        bottomOffset = '250px';   // 🔴 TOPO DA FOTO (altura 250px)
+        bottomOffset = '280px';   // 🔴 TOPO DA FOTO (altura 250px)
         rightValue = '25px';      // 🔴 POSIÇÃO HORIZONTAL
         iconSize = '0.5rem';
     } else {
@@ -468,7 +468,7 @@ function generateBookmarkBadge(property) {
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        bottomOffset = '250px';   // 🔴 TOPO DA FOTO (altura 250px)
+        bottomOffset = '280px';   // 🔴 TOPO DA FOTO (altura 250px)
         rightValue = '35px';      // 🔴 POSIÇÃO HORIZONTAL
         iconSize = '0.6rem';
     }
