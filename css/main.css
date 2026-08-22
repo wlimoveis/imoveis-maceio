@@ -562,28 +562,10 @@ div.property-badge,
 }
 
 /* ============================================================
-   PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
-   ============================================================ */
-
-/* Container da imagem do imóvel */
-.property-image {
-    overflow: visible !important;
-}
-
-/* Container da galeria dentro da imagem */
-.property-gallery-container {
-    overflow: visible !important;
-}
-
-/* Container das faixas diagonais */
-.diagonal-badges-container {
-    overflow: visible !important;
-}
-
-/* ============================================================
    BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
    ============================================================ */
 
+/* 🔴 FORÇAR A FLÂMULA A ULTRAPASSAR TODOS OS CONTAINERS */
 .bookmark-ribbon {
     position: absolute !important;
     pointer-events: none !important;
@@ -596,6 +578,32 @@ div.property-badge,
     line-height: 1 !important;
     min-width: auto !important;
     max-width: none !important;
+    /* 🔴 FORÇAR A SAIR DO CONTAINER */
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+/* ============================================================
+   PERMITIR QUE AS FAIXAS ULTRAPASSEM O CONTAINER DA FOTO
+   ============================================================ */
+
+/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
+.property-image {
+    overflow: visible !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+.property-gallery-container {
+    overflow: visible !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+.diagonal-badges-container {
+    overflow: visible !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
 }
 
 @keyframes slideInRight {
@@ -621,7 +629,7 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark - POSIÇÃO CONTROLADA PELO JAVASCRIPT */
+/* 🔴 FORÇAR O POSICIONAMENTO DA FLÂMULA */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -634,9 +642,13 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 top e right são controlados pelo JavaScript */
+        /* 🔴 REMOVER QUALQUER TOP OU RIGHT FIXO */
+        top: auto !important;
+        right: auto !important;
     }
-    .bookmark-ribbon span {
+}
+
+.bookmark-ribbon span {
         font-size: 0.6rem !important;
     }
     .bookmark-ribbon span:first-child {
@@ -653,7 +665,6 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark - POSIÇÃO CONTROLADA PELO JAVASCRIPT */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -666,8 +677,11 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 top e right são controlados pelo JavaScript */
+        top: auto !important;
+        right: auto !important;
     }
+}
+
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
     }
