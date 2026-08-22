@@ -451,25 +451,22 @@ function generateBookmarkBadge(property) {
 
     var fontSize, padding, width, height, bottomOffset, iconSize, rightValue;
     
-    // 🔴 VALORES PARA SUBIR A FLÂMULA AO TOPO DA FOTO
-    // A foto tem altura de 250px (definido em .property-image)
-    // bottomOffset: quanto MAIOR, mais ALTO a flâmula sobe
-    // 250px = topo da foto, 255px = sobre a borda superior
+    // 🔴 USAR top COM VALOR NEGATIVO EXTREMO
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        bottomOffset = '280px';   // 🔴 TOPO DA FOTO (altura 250px)
-        rightValue = '25px';      // 🔴 POSIÇÃO HORIZONTAL
+        topOffset = '-120px';     // 🔴 VALOR EXTREMO PARA SUBIR
+        rightValue = '25px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        bottomOffset = '280px';   // 🔴 TOPO DA FOTO (altura 250px)
-        rightValue = '35px';      // 🔴 POSIÇÃO HORIZONTAL
+        topOffset = '-150px';     // 🔴 VALOR EXTREMO PARA SUBIR
+        rightValue = '35px';
         iconSize = '0.6rem';
     }
 
@@ -478,8 +475,8 @@ function generateBookmarkBadge(property) {
     html += ' style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightValue + 'px !important;';
-    // 🔴 USANDO bottom PARA SUBIR A FLÂMULA
-    html += 'bottom: ' + bottomOffset + 'px !important;';
+    // 🔴 USAR top COM VALOR NEGATIVO
+    html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
     html += 'padding: ' + padding + ' !important;';
@@ -525,12 +522,12 @@ function generateBookmarkBadge(property) {
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
-    var bottomVal = parseInt(bottomOffset) - 1;
+    var topVal = parseInt(topOffset) + parseInt(height) - 1;
     
     html += '<div style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightVal + 'px !important;';
-    html += 'bottom: ' + bottomVal + 'px !important;';
+    html += 'top: ' + topVal + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
     html += 'z-index: 29 !important;';
