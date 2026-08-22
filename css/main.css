@@ -587,7 +587,7 @@ div.property-badge,
 .bookmark-ribbon {
     position: absolute;
     pointer-events: none;
-    overflow: hidden;
+    overflow: visible;  /* 🔴 Mudar de hidden para visible */
     text-overflow: ellipsis;
     box-sizing: border-box;
     transition: all 0.3s ease;
@@ -620,18 +620,16 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark - SEM !important no width */
+/* 🔴 Desktop Bookmark - SEM right e top fixos */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
-        /* 🔴 REMOVER width: 130px !important; */
         height: 65px !important;
-        right: 60px !important;
-        top: 0px !important;
+        /* 🔴 REMOVER right: 15px !important; */
+        /* 🔴 REMOVER top: 15px !important; */
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
-        /* 🔴 ADICIONAR: width vindo do JavaScript */
         width: auto !important;
         min-width: 28px !important;
         max-width: 28px !important;
@@ -653,18 +651,16 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark - SEM !important no width */
+/* 🔴 Mobile Bookmark - SEM right e top fixos */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
-        /* 🔴 REMOVER width: 90px !important; */
         height: 50px !important;
-        right: 50px !important;
-        top: 0px !important;
+        /* 🔴 REMOVER right: 12px !important; */
+        /* 🔴 REMOVER top: 12px !important; */
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
-        /* 🔴 ADICIONAR: width vindo do JavaScript */
         width: auto !important;
         min-width: 22px !important;
         max-width: 22px !important;
@@ -1612,9 +1608,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* ==========================================================
+/* =========================================================
    FIM DO ARQUIVO - main.css
-   ==========================================================
+   =========================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.8
    Última atualização: 2026-08-21
