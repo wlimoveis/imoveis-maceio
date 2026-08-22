@@ -457,16 +457,16 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
-        width = '84px';
-        height = '50px';
+        width = '54px';
+        height = '80px';
         bottomOffset = '200px';    // 🔴 Quase no topo (altura 250px - 50px)
         rightValue = '25px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
-        width = '86px';
-        height = '65px';
+        width = '56px';
+        height = '85px';
         bottomOffset = '185px';    // 🔴 Quase no topo (altura 250px - 65px)
         rightValue = '35px';
         iconSize = '0.6rem';
