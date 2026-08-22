@@ -449,16 +449,17 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // Tamanhos responsivos
-    var fontSize, padding, width, height, topOffset, iconSize, rightValue;
+    // 🔴 USAR VALORES ABSOLUTOS PARA TESTAR
+    var fontSize, padding, width, height, bottomOffset, iconSize, rightValue;
     
+    // 🔴 FORÇAR A FLÂMULA PARA O TOPO DA FOTO
+    // A foto tem altura de 250px, então bottomOffset = 230px deve colocar a flâmula no topo
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        // 🔴 USAR bottomOffset (distância da BASE para SUBIR)
-        bottomOffset = '50px';      // 🔴 VALOR ALTO = SOBE MAIS
+        bottomOffset = '200px';    // 🔴 Quase no topo (altura 250px - 50px)
         rightValue = '25px';
         iconSize = '0.5rem';
     } else {
@@ -466,8 +467,7 @@ function generateBookmarkBadge(property) {
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        // 🔴 USAR bottomOffset (distância da BASE para SUBIR)
-        bottomOffset = '70px';      // 🔴 VALOR ALTO = SOBE MAIS
+        bottomOffset = '185px';    // 🔴 Quase no topo (altura 250px - 65px)
         rightValue = '35px';
         iconSize = '0.6rem';
     }
@@ -477,7 +477,7 @@ function generateBookmarkBadge(property) {
     html += ' style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightValue + 'px !important;';
-    // 🔴 USAR bottom EM VEZ DE top
+    // 🔴 USAR bottom PARA POSICIONAR
     html += 'bottom: ' + bottomOffset + 'px !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
@@ -520,7 +520,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - ajustado para bottom
+    // 🔴 CORTE EM "V"
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
@@ -528,7 +528,7 @@ function generateBookmarkBadge(property) {
     html += '<div style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightVal + 'px !important;';
-    // 🔴 USAR bottom EM VEZ DE top
+    // 🔴 USAR bottom para alinhar com a flâmula
     html += 'bottom: ' + (parseInt(bottomOffset) - 1) + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
