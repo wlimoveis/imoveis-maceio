@@ -454,16 +454,16 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '22px';
         height = '50px';
-        rightOffset = '50px';
-        topOffset = '0px';
+        rightOffset = '10px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
+        topOffset = '-5px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '28px';
         height = '65px';
-        rightOffset = '60px';
-        topOffset = '0px';
+        rightOffset = '15px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
+        topOffset = '-8px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
         iconSize = '0.6rem';
     }
 
@@ -471,8 +471,9 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute;';
-    html += 'top: ' + topOffset + 'px;';
-    html += 'right: ' + rightOffset + 'px;';
+    // 🔴 FORÇAR right e top com !important
+    html += 'right: ' + rightOffset + 'px !important;';
+    html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ';';
     html += 'color: #ffffff;';
     html += 'padding: ' + padding + ';';
@@ -480,7 +481,6 @@ function generateBookmarkBadge(property) {
     html += 'font-weight: 700;';
     html += 'text-transform: uppercase;';
     html += 'letter-spacing: 0.3px;';
-    // 🔴 FORÇAR O WIDTH COM !important
     html += 'width: ' + width + ' !important;';
     html += 'height: ' + height + ';';
     html += 'z-index: 30;';
