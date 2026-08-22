@@ -581,13 +581,13 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA CENTRALIZADA)
    ============================================================ */
 
 .bookmark-ribbon {
     position: absolute;
     pointer-events: none;
-    overflow: visible;  /* 🔴 Mudar de hidden para visible */
+    overflow: visible;
     text-overflow: ellipsis;
     box-sizing: border-box;
     transition: all 0.3s ease;
@@ -595,15 +595,16 @@ div.property-badge,
     z-index: 30;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1;
+    /* 🔴 CENTRALIZAR: left e transform serão controlados pelo JavaScript */
 }
 
 @keyframes slideInRight {
     from {
-        transform: translateX(80px);
+        transform: translateX(-50%) translateX(80px);
         opacity: 0;
     }
     to {
-        transform: translateX(0);
+        transform: translateX(-50%) translateX(0);
         opacity: 1;
     }
 }
@@ -620,19 +621,18 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 Desktop Bookmark - SEM right e top fixos */
+/* 🔴 Desktop Bookmark - CENTRALIZADO */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
         height: 65px !important;
-        /* 🔴 REMOVER right: 15px !important; */
-        /* 🔴 REMOVER top: 15px !important; */
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
         width: auto !important;
-        min-width: 28px !important;
-        max-width: 28px !important;
+        min-width: 56px !important;
+        max-width: 56px !important;
+        /* 🔴 REMOVER right e top fixos */
     }
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
@@ -651,19 +651,18 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark - SEM right e top fixos */
+/* 🔴 Mobile Bookmark - CENTRALIZADO */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
         height: 50px !important;
-        /* 🔴 REMOVER right: 12px !important; */
-        /* 🔴 REMOVER top: 12px !important; */
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
         width: auto !important;
-        min-width: 22px !important;
-        max-width: 22px !important;
+        min-width: 44px !important;
+        max-width: 44px !important;
+        /* 🔴 REMOVER right e top fixos */
     }
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
@@ -683,7 +682,7 @@ div.property-badge,
 }
 
 .bookmark-ribbon:hover {
-    transform: scale(1.05);
+    transform: translateX(-50%) scale(1.05);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
 }
 
@@ -1608,9 +1607,9 @@ span.feature-tag.rural-tag {
     color: #0e4d2a !important;
 }
 
-/* =========================================================
+/* ========================================================
    FIM DO ARQUIVO - main.css
-   =========================================================
+   ========================================================
    STATUS: ✅ CARREGADO COM SUCESSO
    Versão: 2.8
    Última atualização: 2026-08-21
