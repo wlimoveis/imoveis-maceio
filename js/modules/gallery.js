@@ -403,7 +403,6 @@ function generateBookmarkBadge(property) {
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
-    // Cores para os diferentes tipos de bookmark
     var colors = {
         'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
         'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
@@ -421,7 +420,6 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
     };
 
-    // 🔴 Cor para fazendas (verde)
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
@@ -441,7 +439,6 @@ function generateBookmarkBadge(property) {
 
     var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b', icon: '🏷️' };
     
-    // Extrair percentual para exibição destacada
     var displayText = property.badge3;
     var percentage = '';
     var match = property.badge3.match(/(\d+)%/);
@@ -450,29 +447,26 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // 🔴 BOOKMARK VERTICAL (flâmula) - Largura menor, altura maior
-    var isMobile = window.innerWidth <= 768;
     var fontSize, padding, width, height, rightOffset, topOffset, iconSize;
     
     if (isMobile) {
-        fontSize = '0.5rem';
-        padding = '8px 10px 8px 10px';
-        width = '22px';           // 🔴 ESTREITO (vertical)
-        height = '55px';          // 🔴 ALTO
-        rightOffset = '55px';     // 🔴 À ESQUERDA do indicador de fotos (que está em right: 10px)
-        topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
-        iconSize = '0.6rem';
+        fontSize = '0.45rem';
+        padding = '6px 6px 6px 6px';
+        width = '22px';
+        height = '50px';
+        rightOffset = '50px';
+        topOffset = '0px';
+        iconSize = '0.5rem';
     } else {
-        fontSize = '0.6rem';
-        padding = '10px 12px 10px 12px';
-        width = '22px';           // 🔴 ESTREITO (vertical)
-        height = '70px';          // 🔴 ALTO
-        rightOffset = '65px';     // 🔴 À ESQUERDA do indicador de fotos
-        topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
-        iconSize = '0.8rem';
+        fontSize = '0.5rem';
+        padding = '8px 8px 8px 8px';
+        width = '28px';
+        height = '65px';
+        rightOffset = '60px';
+        topOffset = '0px';
+        iconSize = '0.6rem';
     }
 
-    // HTML do Bookmark Ribbon (vertical - flâmula)
     var html = '';
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
@@ -485,54 +479,53 @@ function generateBookmarkBadge(property) {
     html += 'font-size: ' + fontSize + ';';
     html += 'font-weight: 700;';
     html += 'text-transform: uppercase;';
-    html += 'letter-spacing: 0.5px;';
-    html += 'width: ' + width + ';';
+    html += 'letter-spacing: 0.3px;';
+    // 🔴 FORÇAR O WIDTH COM !important
+    html += 'width: ' + width + ' !important;';
     html += 'height: ' + height + ';';
     html += 'z-index: 30;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
     html += 'text-align: center;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
-    html += 'border-radius: 0 0 2px 2px;';  // 🔴 Cantos inferiores arredondados
+    html += 'border-radius: 0 0 2px 2px;';
     html += 'border-bottom: 3px solid ' + color.border + ';';
     html += 'display: flex;';
-    html += 'flex-direction: column;';       // 🔴 COLUNA (vertical)
+    html += 'flex-direction: column;';
     html += 'align-items: center;';
     html += 'justify-content: center;';
-    html += 'gap: 2px;';
-    html += 'line-height: 1.1;';
+    html += 'gap: 1px;';
+    html += 'line-height: 1;';
     html += 'pointer-events: none;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
     html += '">';
     
-    // 🔴 Ícone (seta para baixo) no TOPO
-    html += '<span style="font-size: ' + iconSize + '; display: block;">' + color.icon + '</span>';
+    html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
     
-    // 🔴 Texto principal (percentual) no MEIO
     if (percentage) {
-        var percentSize = isMobile ? '0.7rem' : '0.9rem';
-        var labelSize = isMobile ? '0.35rem' : '0.45rem';
+        var percentSize = isMobile ? '0.6rem' : '0.8rem';
+        var labelSize = isMobile ? '0.3rem' : '0.4rem';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block; line-height: 1;">' + percentage + '</span>';
         html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block; line-height: 1;">' + displayText + '</span>';
     } else {
-        html += '<span style="font-size: 0.6rem; display: block;">' + property.badge3 + '</span>';
+        html += '<span style="font-size: 0.5rem; display: block; line-height: 1;">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" NA EXTREMIDADE INFERIOR (apontando para BAIXO)
-    var vSize = isMobile ? 6 : 10;
-    var vWidth = isMobile ? 14 : 20;
+    // Corte em "V"
+    var vSize = isMobile ? 5 : 8;
+    var vWidth = isMobile ? 10 : 14;
+    var rightVal = parseInt(rightOffset) + (parseInt(width) - vWidth) / 2;
     
     html += '<div style="';
     html += 'position: absolute;';
     html += 'top: ' + (parseInt(height) - 1) + 'px;';
-    html += 'right: ' + (parseInt(rightOffset) + (parseInt(width) - vWidth) / 2) + 'px;';
+    html += 'right: ' + rightVal + 'px;';
     html += 'width: ' + vWidth + 'px;';
     html += 'height: ' + vSize + 'px;';
     html += 'z-index: 29;';
     html += 'pointer-events: none;';
     html += '">';
-    // 🔴 Triângulo invertido (corte em V apontando para BAIXO)
     html += '<div style="';
     html += 'width: 0;';
     html += 'height: 0;';
