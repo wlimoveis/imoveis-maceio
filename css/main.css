@@ -595,7 +595,7 @@ div.property-badge,
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
-        width: 65px !important;    /* 🔴 ALONGADA */
+        width: 85px !important;    /* 🔴 ALONGADA */
         height: 65px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
