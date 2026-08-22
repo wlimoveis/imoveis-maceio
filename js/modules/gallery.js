@@ -451,22 +451,22 @@ function generateBookmarkBadge(property) {
 
     var fontSize, padding, width, height, bottomOffset, iconSize, rightValue;
     
-    // 🔴 CONFIGURAÇÃO COM ROTAÇÃO DE 90 GRAUS
+    // 🔴 ALONGAR A FAIXA PARA COBRIR A BORDA SUPERIOR
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
-        width = '44px';
+        width = '300px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '50px';
-        topOffset = '10px';
-        rightValue = '55px';      // 🔴 LADO DIREITO
+        topOffset = '15px';
+        rightValue = '-5px';      // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
-        width = '56px';
+        width = '400px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '65px';
-        topOffset = '10px';
-        rightValue = '65px';      // 🔴 LADO DIREITO
+        topOffset = '15px';
+        rightValue = '-10px';     // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.6rem';
     }
 
@@ -520,7 +520,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - também rotacionado
+    // 🔴 CORTE EM "V" - ajustado para a flâmula esticada
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2 + 5;
