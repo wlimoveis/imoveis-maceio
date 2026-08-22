@@ -447,60 +447,57 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    var fontSize, padding, width, height, rightOffset, topOffset, iconSize;
+    // 🔴 VALORES FORÇADOS
+    var fontSize, padding, width, height, topOffset, iconSize, rightValue;
     
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        // 🔴 SUBIR MAIS: topOffset de -15px para -25px
-        topOffset = '-25px';     // 🔴 VALOR MAIS AGRESSIVO
+        topOffset = '-25px';     // 🔴 SOBRE A BORDA
+        rightValue = '25px';     // 🔴 CENTRO-DIREITA
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        // 🔴 SUBIR MAIS: topOffset de -20px para -35px
-        topOffset = '-35px';     // 🔴 VALOR MAIS AGRESSIVO
+        topOffset = '-35px';     // 🔴 SOBRE A BORDA
+        rightValue = '35px';     // 🔴 CENTRO-DIREITA
         iconSize = '0.6rem';
     }
 
+    // 🔴 HTML DA FLÂMULA - TODOS OS ESTILOS INLINE
     var html = '';
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
-    html += 'position: absolute;';
-    // 🔴 POSICIONAR MAIS PARA A DIREITA (centro-direita)
-    // 🔴 Aumentar de 45px para 35px (mais à direita, longe do indicador)
-    var rightValue = isMobile ? '25px' : '35px';
+    html += 'position: absolute !important;';
     html += 'right: ' + rightValue + ' !important;';
-    // 🔴 FORÇAR TOP COM VALOR AGRESSIVO
     html += 'top: ' + topOffset + 'px !important;';
-    html += 'background: ' + color.bg + ';';
-    html += 'color: #ffffff;';
-    html += 'padding: ' + padding + ';';
-    html += 'font-size: ' + fontSize + ';';
-    html += 'font-weight: 700;';
-    html += 'text-transform: uppercase;';
-    html += 'letter-spacing: 0.3px;';
+    html += 'background: ' + color.bg + ' !important;';
+    html += 'color: #ffffff !important;';
+    html += 'padding: ' + padding + ' !important;';
+    html += 'font-size: ' + fontSize + ' !important;';
+    html += 'font-weight: 700 !important;';
+    html += 'text-transform: uppercase !important;';
+    html += 'letter-spacing: 0.3px !important;';
     html += 'width: ' + width + ' !important;';
-    html += 'height: ' + height + ';';
-    html += 'z-index: 30;';
-    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
-    html += 'text-align: center;';
-    html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
-    html += 'border-radius: 0 0 2px 2px;';
-    html += 'border-bottom: 3px solid ' + color.border + ';';
-    html += 'display: flex;';
-    html += 'flex-direction: column;';
-    html += 'align-items: center;';
-    html += 'justify-content: center;';
-    html += 'gap: 1px;';
-    html += 'line-height: 1;';
-    html += 'pointer-events: none;';
-    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
-    // 🔴 ADICIONAR: permitir que a flâmula ultrapasse o container
+    html += 'height: ' + height + ' !important;';
+    html += 'z-index: 30 !important;';
+    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
+    html += 'text-align: center !important;';
+    html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
+    html += 'border-radius: 0 0 2px 2px !important;';
+    html += 'border-bottom: 3px solid ' + color.border + ' !important;';
+    html += 'display: flex !important;';
+    html += 'flex-direction: column !important;';
+    html += 'align-items: center !important;';
+    html += 'justify-content: center !important;';
+    html += 'gap: 1px !important;';
+    html += 'line-height: 1 !important;';
+    html += 'pointer-events: none !important;';
+    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
     html += 'overflow: visible !important;';
     html += '">';
     
@@ -517,27 +514,27 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - ajustado para o novo right
+    // 🔴 CORTE EM "V"
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
     
     html += '<div style="';
-    html += 'position: absolute;';
+    html += 'position: absolute !important;';
     html += 'right: ' + rightVal + 'px !important;';
-    html += 'top: ' + (parseInt(height) - 1) + 'px;';
-    html += 'width: ' + vWidth + 'px;';
-    html += 'height: ' + vSize + 'px;';
-    html += 'z-index: 29;';
-    html += 'pointer-events: none;';
+    html += 'top: ' + (parseInt(height) - 1) + 'px !important;';
+    html += 'width: ' + vWidth + 'px !important;';
+    html += 'height: ' + vSize + 'px !important;';
+    html += 'z-index: 29 !important;';
+    html += 'pointer-events: none !important;';
     html += 'overflow: visible !important;';
     html += '">';
     html += '<div style="';
-    html += 'width: 0;';
-    html += 'height: 0;';
-    html += 'border-left: ' + (vWidth/2) + 'px solid transparent;';
-    html += 'border-right: ' + (vWidth/2) + 'px solid transparent;';
-    html += 'border-top: ' + vSize + 'px solid ' + color.bg + ';';
+    html += 'width: 0 !important;';
+    html += 'height: 0 !important;';
+    html += 'border-left: ' + (vWidth/2) + 'px solid transparent !important;';
+    html += 'border-right: ' + (vWidth/2) + 'px solid transparent !important;';
+    html += 'border-top: ' + vSize + 'px solid ' + color.bg + ' !important;';
     html += '"></div>';
     html += '</div>';
 
