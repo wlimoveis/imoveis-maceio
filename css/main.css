@@ -593,7 +593,7 @@ div.property-badge,
     transition: all 0.3s ease;
     animation: slideInRight 0.5s ease;
     border-radius: 2px 0 0 2px;
-    z-index: 20;
+    z-index: 30;  /* 🔴 z-index MAIOR que o video-indicator (20) */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1;
 }
