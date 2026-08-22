@@ -455,18 +455,18 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
-        width = '80px';          // 🔴 ESTICADO (cobre a largura da foto)
-        height = '50px';
+        width = '82px';          // 🔴 ESTICADO (cobre a largura da foto)
+        height = '30px';
         topOffset = '200px';
-        rightValue = '-10px';      // 🔴 ENCOSTA NA BORDA DIREITA
+        rightValue = '50px';      // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
-        width = '90px';          // 🔴 ESTICADO (cobre a largura da foto)
-        height = '65px';
+        width = '92px';          // 🔴 ESTICADO (cobre a largura da foto)
+        height = '30px';
         topOffset = '200px';
-        rightValue = '-10px';     // 🔴 ENCOSTA NA BORDA DIREITA
+        rightValue = '50px';     // 🔴 ENCOSTA NA BORDA DIREITA
         iconSize = '0.6rem';
     }
 
