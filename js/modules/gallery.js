@@ -421,7 +421,7 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
     };
 
-    // 🔴 Cor para fazendas (verde) - somente se for rural
+    // 🔴 Cor para fazendas (verde)
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
@@ -450,27 +450,29 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // Tamanhos responsivos
-    var fontSize, padding, width, rightOffset, topOffset, height, iconSize;
+    // 🔴 BOOKMARK VERTICAL (flâmula) - Largura menor, altura maior
+    var isMobile = window.innerWidth <= 768;
+    var fontSize, padding, width, height, rightOffset, topOffset, iconSize;
+    
     if (isMobile) {
-        fontSize = '0.55rem';
-        padding = '4px 20px 4px 12px';
-        width = '90px';
-        rightOffset = '12px';
-        topOffset = '12px';
-        height = '36px';
-        iconSize = '0.7rem';
+        fontSize = '0.5rem';
+        padding = '8px 10px 8px 10px';
+        width = '44px';           // 🔴 ESTREITO (vertical)
+        height = '55px';          // 🔴 ALTO
+        rightOffset = '55px';     // 🔴 À ESQUERDA do indicador de fotos (que está em right: 10px)
+        topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
+        iconSize = '0.6rem';
     } else {
-        fontSize = '0.7rem';
-        padding = '6px 30px 6px 16px';
-        width = '130px';
-        rightOffset = '15px';
-        topOffset = '15px';
-        height = '48px';
-        iconSize = '0.9rem';
+        fontSize = '0.6rem';
+        padding = '10px 12px 10px 12px';
+        width = '56px';           // 🔴 ESTREITO (vertical)
+        height = '70px';          // 🔴 ALTO
+        rightOffset = '65px';     // 🔴 À ESQUERDA do indicador de fotos
+        topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
+        iconSize = '0.8rem';
     }
 
-    // HTML do Bookmark Ribbon
+    // HTML do Bookmark Ribbon (vertical - flâmula)
     var html = '';
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
@@ -486,51 +488,59 @@ function generateBookmarkBadge(property) {
     html += 'letter-spacing: 0.5px;';
     html += 'width: ' + width + ';';
     html += 'height: ' + height + ';';
-    html += 'z-index: 30;';  // 🔴 MAIOR que o video-indicator
+    html += 'z-index: 30;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
     html += 'text-align: center;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
-    html += 'border-radius: 2px 0 0 2px;';
-    html += 'border-left: 3px solid ' + color.border + ';';
+    html += 'border-radius: 0 0 2px 2px;';  // 🔴 Cantos inferiores arredondados
+    html += 'border-bottom: 3px solid ' + color.border + ';';
     html += 'display: flex;';
+    html += 'flex-direction: column;';       // 🔴 COLUNA (vertical)
     html += 'align-items: center;';
     html += 'justify-content: center;';
-    html += 'gap: 4px;';
-    html += 'line-height: 1;';
+    html += 'gap: 2px;';
+    html += 'line-height: 1.1;';
     html += 'pointer-events: none;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
     html += '">';
     
-    // Ícone (seta para baixo ou emoji)
-    html += '<span style="font-size: ' + iconSize + ';">' + color.icon + '</span>';
+    // 🔴 Ícone (seta para baixo) no TOPO
+    html += '<span style="font-size: ' + iconSize + '; display: block;">' + color.icon + '</span>';
     
-    // Texto principal
+    // 🔴 Texto principal (percentual) no MEIO
     if (percentage) {
-        var percentSize = isMobile ? '0.8rem' : '1.1rem';
-        var labelSize = isMobile ? '0.4rem' : '0.55rem';
-        html += '<span style="font-size: ' + percentSize + '; font-weight: 900;">' + percentage + '</span>';
-        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
+        var percentSize = isMobile ? '0.7rem' : '0.9rem';
+        var labelSize = isMobile ? '0.35rem' : '0.45rem';
+        html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block; line-height: 1;">' + percentage + '</span>';
+        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block; line-height: 1;">' + displayText + '</span>';
     } else {
-        html += '<span>' + property.badge3 + '</span>';
+        html += '<span style="font-size: 0.6rem; display: block;">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
 
-    // 🔴 Corte em "V" (Bookmark Ribbon) - efeito de bandeirola
+    // 🔴 CORTE EM "V" NA EXTREMIDADE INFERIOR (apontando para BAIXO)
     var vSize = isMobile ? 6 : 10;
-    var rightVal = parseInt(rightOffset) + parseInt(width) - (vSize + 2);
+    var vWidth = isMobile ? 14 : 20;
     
     html += '<div style="';
     html += 'position: absolute;';
-    html += 'top: ' + (parseInt(topOffset) + parseInt(height) - (vSize + 2)) + 'px;';
-    html += 'right: ' + rightVal + 'px;';
+    html += 'top: ' + (parseInt(height) - 1) + 'px;';
+    html += 'right: ' + (parseInt(rightOffset) + (parseInt(width) - vWidth) / 2) + 'px;';
+    html += 'width: ' + vWidth + 'px;';
+    html += 'height: ' + vSize + 'px;';
+    html += 'z-index: 29;';
+    html += 'pointer-events: none;';
+    html += '">';
+    // 🔴 Triângulo invertido (corte em V apontando para BAIXO)
+    html += '<div style="';
     html += 'width: 0;';
     html += 'height: 0;';
+    html += 'border-left: ' + (vWidth/2) + 'px solid transparent;';
+    html += 'border-right: ' + (vWidth/2) + 'px solid transparent;';
     html += 'border-top: ' + vSize + 'px solid ' + color.bg + ';';
-    html += 'border-right: ' + vSize + 'px solid transparent;';
-    html += 'z-index: 29;';  // 🔴 ABAIXO do bookmark (30), ACIMA do video-indicator (20)
-    html += 'pointer-events: none;';
     html += '"></div>';
+    html += '</div>';
 
     return html;
 }
