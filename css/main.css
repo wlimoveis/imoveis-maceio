@@ -472,6 +472,15 @@ div.property-badge,
     color: #ffffff !important;
 }
 
+/* 🔴 OCULTAR O INDICADOR DE FOTOS PARA TESTE */
+.video-indicator {
+    display: none !important;
+}
+
+.image-count {
+    display: none !important;
+}
+
 /* ============================================================
    FAIXAS DIAGONAIS - ESTILO GOLD RIBBON (VERSÃO FINAL DEFINITIVA)
    ============================================================ */
