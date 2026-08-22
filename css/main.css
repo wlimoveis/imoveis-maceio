@@ -595,7 +595,7 @@ div.property-badge,
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
-        width: 85px !important;    /* 🔴 ALONGADA */
+        width: 95px !important;    /* 🔴 ALONGADA */
         height: 65px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
@@ -626,7 +626,7 @@ div.property-badge,
     .bookmark-ribbon {
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
-        width: 75px !important;    /* 🔴 ALONGADA */
+        width: 95px !important;    /* 🔴 ALONGADA */
         height: 50px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
