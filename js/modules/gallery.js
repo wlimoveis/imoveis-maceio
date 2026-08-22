@@ -454,16 +454,16 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        rightOffset = '10px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
-        topOffset = '-5px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
+        // 🔴 CENTRALIZAR: usar left com 50% e transform
+        topOffset = '-5px';      // Sobrepondo a borda superior
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        rightOffset = '15px';    // 🔴 ENCOSTADO NO INDICADOR DE FOTOS
-        topOffset = '-8px';      // 🔴 SOBREPONDO A BORDA SUPERIOR
+        // 🔴 CENTRALIZAR: usar left com 50% e transform
+        topOffset = '-8px';      // Sobrepondo a borda superior
         iconSize = '0.6rem';
     }
 
@@ -471,8 +471,9 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute;';
-    // 🔴 FORÇAR right e top com !important
-    html += 'right: ' + rightOffset + 'px !important;';
+    // 🔴 CENTRALIZAR: left 50% + transform translateX(-50%)
+    html += 'left: 50% !important;';
+    html += 'transform: translateX(-50%) !important;';
     html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ';';
     html += 'color: #ffffff;';
@@ -512,15 +513,15 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // Corte em "V"
+    // 🔴 CORTE EM "V" - também centralizado
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
-    var rightVal = parseInt(rightOffset) + (parseInt(width) - vWidth) / 2;
     
     html += '<div style="';
     html += 'position: absolute;';
+    html += 'left: 50% !important;';
+    html += 'transform: translateX(-50%) !important;';
     html += 'top: ' + (parseInt(height) - 1) + 'px;';
-    html += 'right: ' + rightVal + 'px;';
     html += 'width: ' + vWidth + 'px;';
     html += 'height: ' + vSize + 'px;';
     html += 'z-index: 29;';
