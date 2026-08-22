@@ -562,10 +562,9 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL)
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
    ============================================================ */
 
-/* 🔴 FORÇAR A FLÂMULA A ULTRAPASSAR TODOS OS CONTAINERS */
 .bookmark-ribbon {
     position: absolute !important;
     pointer-events: none !important;
@@ -587,7 +586,30 @@ div.property-badge,
     left: auto !important;
 }
 
-/* 🔴 FORÇAR O CONTAINER DA FOTO */
+@keyframes slideInRight {
+    from {
+        transform: translateX(80px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.bookmark-ribbon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 0 0 2px 2px;
+}
+
+/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
 .property-image {
     overflow: visible !important;
     position: relative !important;
@@ -609,7 +631,7 @@ div.property-badge,
     -webkit-clip-path: none !important;
 }
 
-/* 🔴 Desktop */
+/* 🔴 Desktop Bookmark */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -628,9 +650,24 @@ div.property-badge,
         right: auto !important;
         left: auto !important;
     }
+    .bookmark-ribbon span {
+        font-size: 0.6rem !important;
+    }
+    .bookmark-ribbon span:first-child {
+        font-size: 0.6rem !important;
+    }
+    .bookmark-ribbon span:nth-child(2) {
+        font-size: 0.8rem !important;
+        font-weight: 900 !important;
+    }
+    .bookmark-ribbon span:nth-child(3) {
+        font-size: 0.4rem !important;
+        font-weight: 600 !important;
+        opacity: 0.9 !important;
+    }
 }
 
-/* 🔴 Mobile */
+/* 🔴 Mobile Bookmark */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -643,13 +680,12 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
+        /* 🔴 GARANTIR QUE NÃO HAJA POSIÇÃO FIXA */
         top: auto !important;
         bottom: auto !important;
         right: auto !important;
         left: auto !important;
     }
-}
-
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
     }
@@ -667,7 +703,7 @@ div.property-badge,
     }
 }
 
-/* 🔴 Efeito hover da flâmula */
+/* 🔴 Efeito hover */
 .bookmark-ribbon:hover {
     transform: scale(1.05);
     box-shadow: 0 4px 15px rgba(0,0,0,0.4);
