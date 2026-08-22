@@ -451,32 +451,34 @@ function generateBookmarkBadge(property) {
 
     var fontSize, padding, width, height, bottomOffset, iconSize, rightValue;
     
-    // 🔴 USAR top COM VALOR NEGATIVO EXTREMO
+    // 🔴 CONFIGURAÇÃO COM ROTAÇÃO DE 90 GRAUS
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        topOffset = '-200px';     // 🔴 EXTREMO PARA FICAR ACIMA DO INDICADOR
-        rightValue = '55px';
+        topOffset = '10px';
+        rightValue = '55px';      // 🔴 LADO DIREITO
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        topOffset = '-250px';     // 🔴 EXTREMO PARA FICAR ACIMA DO INDICADOR
-        rightValue = '65px';
+        topOffset = '10px';
+        rightValue = '65px';      // 🔴 LADO DIREITO
         iconSize = '0.6rem';
     }
 
     var html = '';
-    html += '<div class="bookmark-ribbon"';
+    html += '<div class="bookmark-ribbon bookmark-rotated"';
     html += ' style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightValue + 'px !important;';
-    // 🔴 USAR top COM VALOR NEGATIVO
     html += 'top: ' + topOffset + 'px !important;';
+    // 🔴 ROTAÇÃO DE 90 GRAUS
+    html += 'transform: rotate(90deg) !important;';
+    html += 'transform-origin: center center !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
     html += 'padding: ' + padding + ' !important;';
@@ -486,7 +488,7 @@ function generateBookmarkBadge(property) {
     html += 'letter-spacing: 0.3px !important;';
     html += 'width: ' + width + ' !important;';
     html += 'height: ' + height + ' !important;';
-    html += 'z-index: 100 !important;';  // 🔴 MAIOR QUE O INDICADOR
+    html += 'z-index: 30 !important;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
     html += 'text-align: center !important;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
@@ -518,10 +520,10 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V"
+    // 🔴 CORTE EM "V" - também rotacionado
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
-    var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
+    var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2 + 5;
     var topVal = parseInt(topOffset) + parseInt(height) - 1;
     
     html += '<div style="';
@@ -530,11 +532,13 @@ function generateBookmarkBadge(property) {
     html += 'top: ' + topVal + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
-    html += 'z-index: 99 !important;';   // 🔴 MAIOR QUE O INDICADOR
+    html += 'z-index: 29 !important;';
     html += 'pointer-events: none !important;';
     html += 'overflow: visible !important;';
     html += 'clip-path: none !important;';
     html += '-webkit-clip-path: none !important;';
+    html += 'transform: rotate(90deg) !important;';
+    html += 'transform-origin: center center !important;';
     html += '">';
     html += '<div style="';
     html += 'width: 0 !important;';
