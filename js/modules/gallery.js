@@ -457,7 +457,8 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        topOffset = '-65px';
+        // 🔴 VALORES EXTREMOS PARA TESTAR
+        topOffset = '-150px';    // 🔴 EXTREMO (bem acima da foto)
         rightValue = '65px';
         iconSize = '0.5rem';
     } else {
@@ -465,17 +466,18 @@ function generateBookmarkBadge(property) {
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        topOffset = '-85px';
+        // 🔴 VALORES EXTREMOS PARA TESTAR
+        topOffset = '-200px';    // 🔴 EXTREMO (bem acima da foto)
         rightValue = '85px';
         iconSize = '0.6rem';
     }
 
-    // HTML da flâmula
     var html = '';
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute !important;';
-    html += 'right: ' + rightValue + ' !important;';
+    // 🔴 FORÇAR RIGHT E TOP COM !important
+    html += 'right: ' + rightValue + 'px !important;';
     html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
@@ -501,6 +503,9 @@ function generateBookmarkBadge(property) {
     html += 'pointer-events: none !important;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
     html += 'overflow: visible !important;';
+    // 🔴 ADICIONAR CLIP-PATH NONE PARA EVITAR CORTE
+    html += 'clip-path: none !important;';
+    html += '-webkit-clip-path: none !important;';
     html += '">';
     
     html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
@@ -516,7 +521,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // Corte em "V"
+    // 🔴 CORTE EM "V" - também com valores extremos
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
     var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
@@ -524,12 +529,14 @@ function generateBookmarkBadge(property) {
     html += '<div style="';
     html += 'position: absolute !important;';
     html += 'right: ' + rightVal + 'px !important;';
-    html += 'top: ' + (parseInt(height) - 1) + 'px !important;';
+    html += 'top: ' + (parseInt(height) - 1 + parseInt(topOffset)) + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
     html += 'z-index: 29 !important;';
     html += 'pointer-events: none !important;';
     html += 'overflow: visible !important;';
+    html += 'clip-path: none !important;';
+    html += '-webkit-clip-path: none !important;';
     html += '">';
     html += '<div style="';
     html += 'width: 0 !important;';
