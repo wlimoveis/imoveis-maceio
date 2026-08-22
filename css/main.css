@@ -571,7 +571,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ROTACIONADA 90 GRAUS)
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ALONGADA)
    ============================================================ */
 
 .bookmark-ribbon {
@@ -590,12 +590,12 @@ div.property-badge,
     -webkit-clip-path: none !important;
 }
 
-/* 🔴 ROTAÇÃO DE 90 GRAUS NO DESKTOP */
+/* 🔴 DESKTOP - FLÂMULA ALONGADA */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
-        width: 56px !important;
+        width: 400px !important;    /* 🔴 ALONGADA */
         height: 65px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
@@ -621,12 +621,12 @@ div.property-badge,
     }
 }
 
-/* 🔴 ROTAÇÃO DE 90 GRAUS NO MOBILE */
+/* 🔴 MOBILE - FLÂMULA ALONGADA */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
-        width: 44px !important;
+        width: 300px !important;    /* 🔴 ALONGADA */
         height: 50px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
