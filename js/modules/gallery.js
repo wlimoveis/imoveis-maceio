@@ -7,7 +7,7 @@
 // ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais e Bookmark Ribbon');
 
-// ========== VARIÁVEIS GLOBAIS ==========
+// ========== VARIÁVEIS GLOBAIS =========
 window.currentGalleryImages = [];
 window.currentGalleryIndex = 0;
 window.touchStartX = 0;
@@ -421,7 +421,7 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
     };
 
-    // 🔴 Cor para fazendas (verde)
+    // 🔴 Cor para fazendas (verde) - somente se for rural
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
@@ -486,7 +486,7 @@ function generateBookmarkBadge(property) {
     html += 'letter-spacing: 0.5px;';
     html += 'width: ' + width + ';';
     html += 'height: ' + height + ';';
-    html += 'z-index: 20;';
+    html += 'z-index: 30;';  // 🔴 MAIOR que o video-indicator
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
     html += 'text-align: center;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3);';
@@ -518,15 +518,17 @@ function generateBookmarkBadge(property) {
 
     // 🔴 Corte em "V" (Bookmark Ribbon) - efeito de bandeirola
     var vSize = isMobile ? 6 : 10;
+    var rightVal = parseInt(rightOffset) + parseInt(width) - (vSize + 2);
+    
     html += '<div style="';
     html += 'position: absolute;';
     html += 'top: ' + (parseInt(topOffset) + parseInt(height) - (vSize + 2)) + 'px;';
-    html += 'right: ' + (parseInt(rightOffset) + parseInt(width) - (vSize + 2)) + 'px;';
+    html += 'right: ' + rightVal + 'px;';
     html += 'width: 0;';
     html += 'height: 0;';
     html += 'border-top: ' + vSize + 'px solid ' + color.bg + ';';
     html += 'border-right: ' + vSize + 'px solid transparent;';
-    html += 'z-index: 19;';
+    html += 'z-index: 29;';  // 🔴 ABAIXO do bookmark (30), ACIMA do video-indicator (20)
     html += 'pointer-events: none;';
     html += '"></div>';
 
