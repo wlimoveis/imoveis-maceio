@@ -571,7 +571,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA VERTICAL COM CORTE EM "V")
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ROTACIONADA 90 GRAUS)
    ============================================================ */
 
 .bookmark-ribbon {
@@ -588,59 +588,9 @@ div.property-badge,
     max-width: none !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
-    /* 🔴 REMOVER qualquer top ou bottom fixo */
-    top: auto !important;
-    bottom: auto !important;
-    right: auto !important;
-    left: auto !important;
 }
 
-@keyframes slideInRight {
-    from {
-        transform: translateX(80px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.bookmark-ribbon::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-    pointer-events: none;
-    border-radius: 0 0 2px 2px;
-}
-
-/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
-.property-image {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-}
-
-.property-gallery-container {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-}
-
-.diagonal-badges-container {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-}
-
-/* 🔴 Desktop Bookmark */
+/* 🔴 ROTAÇÃO DE 90 GRAUS NO DESKTOP */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -653,11 +603,6 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 GARANTIR QUE NÃO HAJA POSIÇÃO FIXA */
-        top: auto !important;
-        bottom: auto !important;
-        right: auto !important;
-        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
@@ -676,7 +621,7 @@ div.property-badge,
     }
 }
 
-/* 🔴 Mobile Bookmark */
+/* 🔴 ROTAÇÃO DE 90 GRAUS NO MOBILE */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.45rem !important;
@@ -689,11 +634,6 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 GARANTIR QUE NÃO HAJA POSIÇÃO FIXA */
-        top: auto !important;
-        bottom: auto !important;
-        right: auto !important;
-        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
@@ -712,13 +652,12 @@ div.property-badge,
     }
 }
 
-/* 🔴 Efeito hover */
 .bookmark-ribbon:hover {
-    transform: scale(1.05);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+    transform: rotate(90deg) scale(1.05) !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
 }
 
-/* 🔴 Cores do Bookmark Ribbon */
+/* 🔴 Cores */
 .bookmark-ribbon.red {
     background: var(--ribbon-red) !important;
     border-bottom-color: var(--ribbon-red-hover) !important;
