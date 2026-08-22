@@ -457,7 +457,7 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.5rem';
         padding = '8px 10px 8px 10px';
-        width = '44px';           // 🔴 ESTREITO (vertical)
+        width = '22px';           // 🔴 ESTREITO (vertical)
         height = '55px';          // 🔴 ALTO
         rightOffset = '55px';     // 🔴 À ESQUERDA do indicador de fotos (que está em right: 10px)
         topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
@@ -465,7 +465,7 @@ function generateBookmarkBadge(property) {
     } else {
         fontSize = '0.6rem';
         padding = '10px 12px 10px 12px';
-        width = '56px';           // 🔴 ESTREITO (vertical)
+        width = '22px';           // 🔴 ESTREITO (vertical)
         height = '70px';          // 🔴 ALTO
         rightOffset = '65px';     // 🔴 À ESQUERDA do indicador de fotos
         topOffset = '0px';        // 🔴 COMEÇA NA BORDA SUPERIOR
