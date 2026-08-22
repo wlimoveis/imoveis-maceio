@@ -454,16 +454,16 @@ function generateBookmarkBadge(property) {
         padding = '6px 6px 6px 6px';
         width = '44px';
         height = '50px';
-        // 🔴 SUBIR MAIS: topOffset de -5px para -15px
-        topOffset = '-15px';     // 🔴 SOBREPONDO MAIS A BORDA SUPERIOR
+        // 🔴 SUBIR MAIS: topOffset de -15px para -25px
+        topOffset = '-25px';     // 🔴 VALOR MAIS AGRESSIVO
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '8px 8px 8px 8px';
         width = '56px';
         height = '65px';
-        // 🔴 SUBIR MAIS: topOffset de -8px para -20px
-        topOffset = '-20px';     // 🔴 SOBREPONDO MAIS A BORDA SUPERIOR
+        // 🔴 SUBIR MAIS: topOffset de -20px para -35px
+        topOffset = '-35px';     // 🔴 VALOR MAIS AGRESSIVO
         iconSize = '0.6rem';
     }
 
@@ -471,8 +471,11 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon"';
     html += ' style="';
     html += 'position: absolute;';
-    // 🔴 POSICIONAR À DIREITA (próximo ao indicador de fotos)
-    html += 'right: 45px !important;';     // 🔴 Desktop: 45px da direita
+    // 🔴 POSICIONAR MAIS PARA A DIREITA (centro-direita)
+    // 🔴 Aumentar de 45px para 35px (mais à direita, longe do indicador)
+    var rightValue = isMobile ? '25px' : '35px';
+    html += 'right: ' + rightValue + ' !important;';
+    // 🔴 FORÇAR TOP COM VALOR AGRESSIVO
     html += 'top: ' + topOffset + 'px !important;';
     html += 'background: ' + color.bg + ';';
     html += 'color: #ffffff;';
@@ -497,6 +500,8 @@ function generateBookmarkBadge(property) {
     html += 'line-height: 1;';
     html += 'pointer-events: none;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
+    // 🔴 ADICIONAR: permitir que a flâmula ultrapasse o container
+    html += 'overflow: visible !important;';
     html += '">';
     
     html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
@@ -512,10 +517,10 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - alinhado com a flâmula
+    // 🔴 CORTE EM "V" - ajustado para o novo right
     var vSize = isMobile ? 5 : 8;
     var vWidth = isMobile ? 10 : 14;
-    var rightVal = parseInt(45) + (parseInt(width) - vWidth) / 2;  // 🔴 45px (mesmo do right)
+    var rightVal = parseInt(rightValue) + (parseInt(width) - vWidth) / 2;
     
     html += '<div style="';
     html += 'position: absolute;';
@@ -525,6 +530,7 @@ function generateBookmarkBadge(property) {
     html += 'height: ' + vSize + 'px;';
     html += 'z-index: 29;';
     html += 'pointer-events: none;';
+    html += 'overflow: visible !important;';
     html += '">';
     html += '<div style="';
     html += 'width: 0;';
