@@ -449,23 +449,32 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    var fontSize, padding, width, height, topOffset, iconSize, leftValue;
+    var fontSize, padding, width, height, topOffset, bottomOffset, iconSize, leftValue, rightValue;
     
+    // 🔴 TODAS AS OPÇÕES DE NAVEGAÇÃO DISPONÍVEIS
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
         width = '62px';
         height = '45px';
-        topOffset = '150px';
-        leftValue = '15px';
+        // 🔴 OPÇÕES VERTICAIS (cima/baixo)
+        topOffset = '10px';      // 🔴 Posição a partir do TOPO
+        bottomOffset = '50';   // 🔴 Posição a partir da BASE (desativado)
+        // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
+        leftValue = '15px';      // 🔴 Posição a partir da ESQUERDA
+        rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
         width = '72px';
         height = '55px';
-        topOffset = '150px';
-        leftValue = '30px';
+        // 🔴 OPÇÕES VERTICAIS (cima/baixo)
+        topOffset = '10px';      // 🔴 Posição a partir do TOPO
+        bottomOffset = '60';   // 🔴 Posição a partir da BASE (desativado)
+        // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
+        leftValue = '30px';      // 🔴 Posição a partir da ESQUERDA
+        rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
         iconSize = '0.6rem';
     }
 
@@ -473,9 +482,23 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon bookmark-rotated"';
     html += ' style="';
     html += 'position: absolute !important;';
-    // 🔴 USAR left PARA POSICIONAR A PARTIR DA ESQUERDA
-    html += 'left: ' + leftValue + 'px !important;';
-    html += 'top: ' + topOffset + 'px !important;';
+    
+    // 🔴 POSICIONAMENTO HORIZONTAL (esquerda OU direita)
+    if (leftValue !== 'auto') {
+        html += 'left: ' + leftValue + 'px !important;';
+    }
+    if (rightValue !== 'auto') {
+        html += 'right: ' + rightValue + 'px !important;';
+    }
+    
+    // 🔴 POSICIONAMENTO VERTICAL (topo OU base)
+    if (topOffset !== 'auto') {
+        html += 'top: ' + topOffset + 'px !important;';
+    }
+    if (bottomOffset !== 'auto') {
+        html += 'bottom: ' + bottomOffset + 'px !important;';
+    }
+    
     html += 'transform: rotate(90deg) !important;';
     html += 'transform-origin: center center !important;';
     html += 'background: ' + color.bg + ' !important;';
@@ -489,16 +512,13 @@ function generateBookmarkBadge(property) {
     html += 'height: ' + height + ' !important;';
     html += 'z-index: 30 !important;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
-    // 🔴 ALTERAR: text-align de center para left
     html += 'text-align: left !important;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
     html += 'border-radius: 0 0 2px 2px !important;';
     html += 'border-bottom: 3px solid ' + color.border + ' !important;';
-    // 🔴 ALTERAR: align-items de center para flex-start
     html += 'display: flex !important;';
     html += 'flex-direction: column !important;';
     html += 'align-items: flex-start !important;';
-    // 🔴 ALTERAR: justify-content de center para flex-start
     html += 'justify-content: flex-start !important;';
     html += 'gap: 0px !important;';
     html += 'line-height: 1 !important;';
@@ -522,16 +542,36 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V"
+    // 🔴 CORTE EM "V" - ajustado para o posicionamento escolhido
     var vSize = isMobile ? 4 : 6;
     var vWidth = isMobile ? 8 : 12;
-    var leftVal = parseInt(leftValue) + (parseInt(width) - vWidth) / 2 + 5;
-    var topVal = parseInt(topOffset) + parseInt(height) - 1;
+    
+    // 🔴 Calcular posição do corte baseado no posicionamento usado
+    var posLeft = leftValue !== 'auto' ? parseInt(leftValue) : null;
+    var posRight = rightValue !== 'auto' ? parseInt(rightValue) : null;
+    var posTop = topOffset !== 'auto' ? parseInt(topOffset) : null;
+    var posBottom = bottomOffset !== 'auto' ? parseInt(bottomOffset) : null;
+    
+    var horizontalPos = posLeft !== null ? posLeft + (parseInt(width) - vWidth) / 2 + 5 : (posRight !== null ? posRight + (parseInt(width) - vWidth) / 2 + 5 : 0);
+    var verticalPos = posTop !== null ? posTop + parseInt(height) - 1 : (posBottom !== null ? posBottom + parseInt(height) - 1 : 0);
     
     html += '<div style="';
     html += 'position: absolute !important;';
-    html += 'left: ' + leftVal + 'px !important;';
-    html += 'top: ' + topVal + 'px !important;';
+    
+    if (posLeft !== null) {
+        html += 'left: ' + horizontalPos + 'px !important;';
+    }
+    if (posRight !== null) {
+        html += 'right: ' + horizontalPos + 'px !important;';
+    }
+    
+    if (posTop !== null) {
+        html += 'top: ' + verticalPos + 'px !important;';
+    }
+    if (posBottom !== null) {
+        html += 'bottom: ' + verticalPos + 'px !important;';
+    }
+    
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
     html += 'z-index: 29 !important;';
