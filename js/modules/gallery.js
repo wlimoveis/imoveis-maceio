@@ -449,24 +449,24 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    var fontSize, padding, width, height, bottomOffset, iconSize, rightValue;
+    // 🔴 PARÂMETROS DA FLÂMULA (POSIÇÃO ATUAL AJUSTADA)
+    var fontSize, padding, width, height, topOffset, iconSize, leftValue;
     
-    // 🔴 ALONGAR A FAIXA PARA COBRIR A BORDA SUPERIOR
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
-        width = '62px';          // 🔴 ESTICADO (cobre a largura da foto)
-        height = '45px';
-        topOffset = '50px';
-        leftValue = '15px';      // 🔴 ENCOSTA NA BORDA DIREITA
+        width = '62px';          // 🔴 LARGURA (parte superior)
+        height = '45px';         // 🔴 ALTURA (parte inferior)
+        topOffset = '50px';      // 🔴 POSIÇÃO VERTICAL
+        leftValue = '15px';      // 🔴 POSIÇÃO HORIZONTAL (a partir da esquerda)
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
-        width = '72px';          // 🔴 ESTICADO (cobre a largura da foto)
-        height = '55px';
-        topOffset = '50px';
-        leftValue = '30px';     // 🔴 ENCOSTA NA BORDA DIREITA
+        width = '72px';          // 🔴 LARGURA (parte superior)
+        height = '55px';         // 🔴 ALTURA (parte inferior)
+        topOffset = '50px';      // 🔴 POSIÇÃO VERTICAL
+        leftValue = '30px';      // 🔴 POSIÇÃO HORIZONTAL (a partir da esquerda)
         iconSize = '0.6rem';
     }
 
@@ -474,10 +474,9 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon bookmark-rotated"';
     html += ' style="';
     html += 'position: absolute !important;';
-    html += 'left: ' + rightValue + 'px !important;';
-    html += 'top: ' + topOffset + 'px !important;';
-    // 🔴 ROTAÇÃO DE 90 GRAUS
-    html += 'transform: rotate(90deg) !important;';
+    html += 'left: ' + leftValue + 'px !important;';      // 🔴 POSIÇÃO HORIZONTAL
+    html += 'top: ' + topOffset + 'px !important;';       // 🔴 POSIÇÃO VERTICAL
+    html += 'transform: rotate(90deg) !important;';       // 🔴 ROTAÇÃO DE 90 GRAUS
     html += 'transform-origin: center center !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
@@ -510,12 +509,12 @@ function generateBookmarkBadge(property) {
     html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
     
     if (percentage) {
-        var percentSize = isMobile ? '0.6rem' : '0.8rem';
-        var labelSize = isMobile ? '0.3rem' : '0.4rem';
+        var percentSize = isMobile ? '0.6rem' : '0.7rem';
+        var labelSize = isMobile ? '0.25rem' : '0.35rem';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block; line-height: 1;">' + percentage + '</span>';
         html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block; line-height: 1;">' + displayText + '</span>';
     } else {
-        html += '<span style="font-size: 0.5rem; display: block; line-height: 1;">' + property.badge3 + '</span>';
+        html += '<span style="font-size: 0.4rem; display: block; line-height: 1;">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
@@ -528,7 +527,7 @@ function generateBookmarkBadge(property) {
     
     html += '<div style="';
     html += 'position: absolute !important;';
-    html += 'right: ' + rightVal + 'px !important;';
+    html += 'left: ' + leftVal + 'px !important;';
     html += 'top: ' + topVal + 'px !important;';
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
