@@ -457,7 +457,7 @@ function generateBookmarkBadge(property) {
         width = '72px';
         height = '45px';
         topOffset = '10px';
-        bottomOffset = '150px';
+        bottomOffset = '-150px';
         leftValue = '15px';
         rightValue = 'auto';
     } else {
@@ -466,7 +466,7 @@ function generateBookmarkBadge(property) {
         width = '82px';
         height = '55px';
         topOffset = '10px';
-        bottomOffset = '160px';
+        bottomOffset = '-160px';
         leftValue = '30px';
         rightValue = 'auto';
     }
