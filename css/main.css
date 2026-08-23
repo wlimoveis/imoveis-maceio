@@ -589,7 +589,6 @@ div.property-badge,
     clip-path: none !important;
     -webkit-clip-path: none !important;
     right: auto !important;
-    /* 🔴 left: auto !important REMOVIDO - JavaScript controla */
 }
 
 @keyframes slideInRight {
@@ -651,7 +650,6 @@ div.property-badge,
         align-items: flex-start !important;
         justify-content: flex-start !important;
         right: auto !important;
-        /* 🔴 left: auto REMOVIDO */
     }
     .bookmark-ribbon span {
         font-size: 0.55rem !important;
@@ -684,7 +682,6 @@ div.property-badge,
         align-items: flex-start !important;
         justify-content: flex-start !important;
         right: auto !important;
-        /* 🔴 left: auto REMOVIDO */
     }
     .bookmark-ribbon span {
         font-size: 0.45rem !important;
