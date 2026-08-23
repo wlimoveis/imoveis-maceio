@@ -455,11 +455,11 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
-        width = '62px';
+        width = '72px';
         height = '45px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '50px';   // 🔴 Posição a partir da BASE (desativado)
+        bottomOffset = '150px';   // 🔴 Posição a partir da BASE (desativado)
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '15px';      // 🔴 Posição a partir da ESQUERDA
         rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
@@ -467,11 +467,11 @@ function generateBookmarkBadge(property) {
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
-        width = '72px';
+        width = '82px';
         height = '55px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '60px';   // 🔴 Posição a partir da BASE (desativado)
+        bottomOffset = '160px';   // 🔴 Posição a partir da BASE (desativado)
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '30px';      // 🔴 Posição a partir da ESQUERDA
         rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
