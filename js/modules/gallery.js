@@ -396,7 +396,7 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - VERSÃO CORRIGIDA ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - SEM CORTE EM "V" ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
@@ -448,7 +448,7 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // 🔴 PARÂMETROS IDEAL (PRÓXIMO DO IDEAL)
+    // 🔴 PARÂMETROS
     var fontSize, padding, width, height, topOffset, bottomOffset, leftValue, rightValue;
     
     if (isMobile) {
@@ -501,7 +501,6 @@ function generateBookmarkBadge(property) {
     html += 'letter-spacing: 0.3px !important;';
     html += 'width: ' + width + ' !important;';
     html += 'height: ' + height + ' !important;';
-    // 🔴 z-index: 25 (MENOR QUE O VIDEO-INDICATOR 35)
     html += 'z-index: 25 !important;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
     html += 'text-align: left !important;';
@@ -534,53 +533,8 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V"
-    var vSize = isMobile ? 4 : 6;
-    var vWidth = isMobile ? 8 : 12;
-    
-    var posLeft = leftValue !== 'auto' ? parseInt(leftValue) : null;
-    var posRight = rightValue !== 'auto' ? parseInt(rightValue) : null;
-    var posTop = topOffset !== 'auto' ? parseInt(topOffset) : null;
-    var posBottom = bottomOffset !== 'auto' ? parseInt(bottomOffset) : null;
-    
-    var horizontalPos = posLeft !== null ? posLeft + (parseInt(width) - vWidth) / 2 + 5 : (posRight !== null ? posRight + (parseInt(width) - vWidth) / 2 + 5 : 0);
-    var verticalPos = posTop !== null ? posTop + parseInt(height) - 1 : (posBottom !== null ? posBottom + parseInt(height) - 1 : 0);
-    
-    html += '<div style="';
-    html += 'position: absolute !important;';
-    
-    if (posLeft !== null) {
-        html += 'left: ' + horizontalPos + 'px !important;';
-    }
-    if (posRight !== null) {
-        html += 'right: ' + horizontalPos + 'px !important;';
-    }
-    
-    if (posTop !== null) {
-        html += 'top: ' + verticalPos + 'px !important;';
-    }
-    if (posBottom !== null) {
-        html += 'bottom: ' + verticalPos + 'px !important;';
-    }
-    
-    html += 'width: ' + vWidth + 'px !important;';
-    html += 'height: ' + vSize + 'px !important;';
-    html += 'z-index: 24 !important;';  // 🔴 ABAIXO DA FLÂMULA (25)
-    html += 'pointer-events: none !important;';
-    html += 'overflow: visible !important;';
-    html += 'clip-path: none !important;';
-    html += '-webkit-clip-path: none !important;';
-    html += 'transform: rotate(90deg) !important;';
-    html += 'transform-origin: center center !important;';
-    html += '">';
-    html += '<div style="';
-    html += 'width: 0 !important;';
-    html += 'height: 0 !important;';
-    html += 'border-left: ' + (vWidth/2) + 'px solid transparent !important;';
-    html += 'border-right: ' + (vWidth/2) + 'px solid transparent !important;';
-    html += 'border-top: ' + vSize + 'px solid ' + color.bg + ' !important;';
-    html += '"></div>';
-    html += '</div>';
+    // 🔴 CORTE EM "V" REMOVIDO COMPLETAMENTE
+    // O bloco abaixo foi removido
 
     return html;
 }
