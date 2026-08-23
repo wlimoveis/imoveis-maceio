@@ -454,7 +454,7 @@ function generateBookmarkBadge(property) {
     // 🔴 ALONGAR A FAIXA PARA COBRIR A BORDA SUPERIOR
     if (isMobile) {
         fontSize = '0.45rem';
-        padding = '3px 3px 3px 3px';
+        padding = '1px 1px 1px 1px';
         width = '182px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '45px';
         topOffset = '50px';
@@ -462,7 +462,7 @@ function generateBookmarkBadge(property) {
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
-        padding = '4px 4px 4px 4px';
+        padding = '2px 2px 2px 2px';
         width = '192px';          // 🔴 ESTICADO (cobre a largura da foto)
         height = '55px';
         topOffset = '50px';
