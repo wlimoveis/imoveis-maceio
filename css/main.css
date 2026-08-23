@@ -596,7 +596,7 @@ div.property-badge,
         font-size: 0.5rem !important;
         padding: 8px 8px 8px 8px !important;
         width: 192px !important;    /* 🔴 ALONGADA */
-        height: 30px !important;
+        height: 55px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
         display: flex !important;
@@ -627,7 +627,7 @@ div.property-badge,
         font-size: 0.45rem !important;
         padding: 6px 6px 6px 6px !important;
         width: 182px !important;    /* 🔴 ALONGADA */
-        height: 25px !important;
+        height: 45px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
         display: flex !important;
