@@ -603,8 +603,8 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 right será controlado pelo JavaScript */
-        right: auto !important;
+        /* 🔴 left será controlado pelo JavaScript */
+        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.6rem !important;
@@ -636,8 +636,8 @@ div.property-badge,
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
-        /* 🔴 right será controlado pelo JavaScript */
-        right: auto !important;
+        /* 🔴 left será controlado pelo JavaScript */
+        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.5rem !important;
