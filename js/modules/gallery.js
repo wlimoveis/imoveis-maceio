@@ -14,7 +14,7 @@ window.touchStartX = 0;
 window.touchEndX = 0;
 window.SWIPE_THRESHOLD = 50;
 
-// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE ==========
+// ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE =========
 // A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
 // ========== FUNÇÕES DELEGADAS PARA O SHAREDCORE (COM FALLBACK) ==========
