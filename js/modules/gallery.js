@@ -404,42 +404,43 @@ function generateBookmarkBadge(property) {
     var isMobile = window.innerWidth <= 768;
     
     // Cores para os diferentes tipos de bookmark
+    // 🔴 REMOVIDOS OS ÍCONES (setas, fogos, etc.)
     var colors = {
-        'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 60%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 50%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 40%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 30%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 25%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 20%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 15%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 10%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 7%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Deságio 5%': { bg: '#c0392b', border: '#e74c3c', icon: '🔻' },
-        'Oferta Especial': { bg: '#e67e22', border: '#f39c12', icon: '🔥' },
-        'Última Chance': { bg: '#8e44ad', border: '#9b59b6', icon: '⚡' }
+        'Deságio 80%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 70%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 60%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 50%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 40%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 30%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 25%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 20%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 15%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 10%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 7%': { bg: '#c0392b', border: '#e74c3c' },
+        'Deságio 5%': { bg: '#c0392b', border: '#e74c3c' },
+        'Oferta Especial': { bg: '#e67e22', border: '#f39c12' },
+        'Última Chance': { bg: '#8e44ad', border: '#9b59b6' }
     };
 
-    // Cor para fazendas (verde)
+    // Cor para fazendas (verde) - SEM ÍCONES
     if (isRural) {
-        colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 60%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 50%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 40%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 30%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 25%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 20%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 15%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 10%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 7%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Deságio 5%'] = { bg: '#1e8449', border: '#27ae60', icon: '🔻' };
-        colors['Oferta Especial'] = { bg: '#1e8449', border: '#27ae60', icon: '🔥' };
-        colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60', icon: '⚡' };
+        colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 60%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 50%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 40%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 30%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 25%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 20%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 15%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 10%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 7%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 5%'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Oferta Especial'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60' };
     }
 
-        var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b', icon: '🏷️' };
+    var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b' };
     
     var displayText = property.badge3;
     var percentage = '';
@@ -458,11 +459,11 @@ function generateBookmarkBadge(property) {
         width = '72px';
         height = '45px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
-        topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '150px';   // 🔴 Posição a partir da BASE (desativado)
+        topOffset = '10px';
+        bottomOffset = '150px';
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
-        leftValue = '15px';      // 🔴 Posição a partir da ESQUERDA
-        rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
+        leftValue = '15px';
+        rightValue = 'auto';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
@@ -470,11 +471,11 @@ function generateBookmarkBadge(property) {
         width = '82px';
         height = '55px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
-        topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '160px';   // 🔴 Posição a partir da BASE (desativado)
+        topOffset = '10px';
+        bottomOffset = '160px';
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
-        leftValue = '30px';      // 🔴 Posição a partir da ESQUERDA
-        rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
+        leftValue = '30px';
+        rightValue = 'auto';
         iconSize = '0.6rem';
     }
 
@@ -529,7 +530,8 @@ function generateBookmarkBadge(property) {
     html += '-webkit-clip-path: none !important;';
     html += '">';
     
-    html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
+    // 🔴 REMOVIDA A LINHA DA SETA VERDE
+    // html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
     
     if (percentage) {
         var percentSize = isMobile ? '0.6rem' : '0.7rem';
