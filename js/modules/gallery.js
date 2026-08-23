@@ -459,7 +459,7 @@ function generateBookmarkBadge(property) {
         height = '45px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '50';   // 🔴 Posição a partir da BASE (desativado)
+        bottomOffset = '50px';   // 🔴 Posição a partir da BASE (desativado)
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '15px';      // 🔴 Posição a partir da ESQUERDA
         rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
@@ -471,7 +471,7 @@ function generateBookmarkBadge(property) {
         height = '55px';
         // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';      // 🔴 Posição a partir do TOPO
-        bottomOffset = '60';   // 🔴 Posição a partir da BASE (desativado)
+        bottomOffset = '60px';   // 🔴 Posição a partir da BASE (desativado)
         // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '30px';      // 🔴 Posição a partir da ESQUERDA
         rightValue = 'auto';     // 🔴 Posição a partir da DIREITA (desativado)
