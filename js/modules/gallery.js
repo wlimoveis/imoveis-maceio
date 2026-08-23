@@ -396,15 +396,14 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - SEM SETAS ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
-    // Cores para os diferentes tipos de bookmark
-    // 🔴 REMOVIDOS OS ÍCONES (setas, fogos, etc.)
+    // 🔴 CORES SEM ÍCONES
     var colors = {
         'Deságio 80%': { bg: '#c0392b', border: '#e74c3c' },
         'Deságio 70%': { bg: '#c0392b', border: '#e74c3c' },
@@ -450,33 +449,26 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    var fontSize, padding, width, height, topOffset, bottomOffset, iconSize, leftValue, rightValue;
+    var fontSize, padding, width, height, topOffset, bottomOffset, leftValue, rightValue;
     
-    // 🔴 TODAS AS OPÇÕES DE NAVEGAÇÃO DISPONÍVEIS
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
         width = '72px';
         height = '45px';
-        // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';
         bottomOffset = '150px';
-        // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '15px';
         rightValue = 'auto';
-        iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
         width = '82px';
         height = '55px';
-        // 🔴 OPÇÕES VERTICAIS (cima/baixo)
         topOffset = '10px';
         bottomOffset = '160px';
-        // 🔴 OPÇÕES HORIZONTAIS (esquerda/direita)
         leftValue = '30px';
         rightValue = 'auto';
-        iconSize = '0.6rem';
     }
 
     var html = '';
@@ -484,7 +476,7 @@ function generateBookmarkBadge(property) {
     html += ' style="';
     html += 'position: absolute !important;';
     
-    // 🔴 POSICIONAMENTO HORIZONTAL (esquerda OU direita)
+    // Posicionamento horizontal
     if (leftValue !== 'auto') {
         html += 'left: ' + leftValue + 'px !important;';
     }
@@ -492,7 +484,7 @@ function generateBookmarkBadge(property) {
         html += 'right: ' + rightValue + 'px !important;';
     }
     
-    // 🔴 POSICIONAMENTO VERTICAL (topo OU base)
+    // Posicionamento vertical
     if (topOffset !== 'auto') {
         html += 'top: ' + topOffset + 'px !important;';
     }
@@ -530,8 +522,7 @@ function generateBookmarkBadge(property) {
     html += '-webkit-clip-path: none !important;';
     html += '">';
     
-    // 🔴 REMOVIDA A LINHA DA SETA VERDE
-    // html += '<span style="font-size: ' + iconSize + '; display: block; line-height: 1;">' + color.icon + '</span>';
+    // 🔴 REMOVIDO: NENHUM ÍCONE É ADICIONADO AQUI
     
     if (percentage) {
         var percentSize = isMobile ? '0.6rem' : '0.7rem';
@@ -544,11 +535,10 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - ajustado para o posicionamento escolhido
+    // Corte em "V"
     var vSize = isMobile ? 4 : 6;
     var vWidth = isMobile ? 8 : 12;
     
-    // 🔴 Calcular posição do corte baseado no posicionamento usado
     var posLeft = leftValue !== 'auto' ? parseInt(leftValue) : null;
     var posRight = rightValue !== 'auto' ? parseInt(rightValue) : null;
     var posTop = topOffset !== 'auto' ? parseInt(topOffset) : null;
