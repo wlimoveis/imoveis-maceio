@@ -396,7 +396,7 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - SEM SETAS ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - VERSÃO CORRIGIDA ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
@@ -421,7 +421,6 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6' }
     };
 
-    // Cor para fazendas (verde) - SEM ÍCONES
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60' };
@@ -449,6 +448,7 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
+    // 🔴 PARÂMETROS IDEAL (PRÓXIMO DO IDEAL)
     var fontSize, padding, width, height, topOffset, bottomOffset, leftValue, rightValue;
     
     if (isMobile) {
@@ -476,7 +476,6 @@ function generateBookmarkBadge(property) {
     html += ' style="';
     html += 'position: absolute !important;';
     
-    // Posicionamento horizontal
     if (leftValue !== 'auto') {
         html += 'left: ' + leftValue + 'px !important;';
     }
@@ -484,7 +483,6 @@ function generateBookmarkBadge(property) {
         html += 'right: ' + rightValue + 'px !important;';
     }
     
-    // Posicionamento vertical
     if (topOffset !== 'auto') {
         html += 'top: ' + topOffset + 'px !important;';
     }
@@ -503,7 +501,8 @@ function generateBookmarkBadge(property) {
     html += 'letter-spacing: 0.3px !important;';
     html += 'width: ' + width + ' !important;';
     html += 'height: ' + height + ' !important;';
-    html += 'z-index: 30 !important;';
+    // 🔴 z-index: 25 (MENOR QUE O VIDEO-INDICATOR 35)
+    html += 'z-index: 25 !important;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
     html += 'text-align: left !important;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
@@ -535,7 +534,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // Corte em "V"
+    // 🔴 CORTE EM "V"
     var vSize = isMobile ? 4 : 6;
     var vWidth = isMobile ? 8 : 12;
     
@@ -566,7 +565,7 @@ function generateBookmarkBadge(property) {
     
     html += 'width: ' + vWidth + 'px !important;';
     html += 'height: ' + vSize + 'px !important;';
-    html += 'z-index: 29 !important;';
+    html += 'z-index: 24 !important;';  // 🔴 ABAIXO DA FLÂMULA (25)
     html += 'pointer-events: none !important;';
     html += 'overflow: visible !important;';
     html += 'clip-path: none !important;';
