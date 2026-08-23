@@ -642,9 +642,9 @@ div.property-badge,
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
-        padding: 4px 4px 4px 4px !important;
-        width: 130px !important;
-        height: 25px !important;
+        padding: 2px 2px 2px 2px !important;
+        width: 72px !important;
+        height: 55px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
         display: flex !important;
@@ -677,8 +677,8 @@ div.property-badge,
     .bookmark-ribbon {
         font-size: 0.4rem !important;
         padding: 2px 2px 2px 2px !important;
-        width: 120px !important;
-        height: 20px !important;
+        width: 62px !important;
+        height: 45px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
         display: flex !important;
