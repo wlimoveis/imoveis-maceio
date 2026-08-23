@@ -571,7 +571,7 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ALONGADA)
+   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ROTACIONADA 90 GRAUS)
    ============================================================ */
 
 .bookmark-ribbon {
@@ -588,65 +588,119 @@ div.property-badge,
     max-width: none !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
+    /* 🔴 REMOVER right e left fixos - JavaScript controla */
+    right: auto !important;
+    left: auto !important;
 }
 
-/* 🔴 DESKTOP - FLÂMULA ALONGADA */
+@keyframes slideInRight {
+    from {
+        transform: translateX(80px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.bookmark-ribbon::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 0 0 2px 2px;
+}
+
+/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
+.property-image {
+    overflow: visible !important;
+    position: relative !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+.property-gallery-container {
+    overflow: visible !important;
+    position: relative !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+.diagonal-badges-container {
+    overflow: visible !important;
+    position: relative !important;
+    clip-path: none !important;
+    -webkit-clip-path: none !important;
+}
+
+/* 🔴 DESKTOP - FLÂMULA COMPACTA */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
-        padding: 2px 2px 2px 2px !important;
-        width: 72px !important;    /* 🔴 ALONGADA */
-        height: 55px !important;
+        padding: 4px 4px 4px 4px !important;
+        width: 130px !important;
+        height: 25px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;       
+        justify-content: center !important;
+        /* 🔴 right e left controlados pelo JavaScript */
+        right: auto !important;
+        left: auto !important;
     }
     .bookmark-ribbon span {
-        font-size: 0.6rem !important;
+        font-size: 0.55rem !important;
     }
     .bookmark-ribbon span:first-child {
-        font-size: 0.6rem !important;
+        font-size: 0.55rem !important;
     }
     .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.8rem !important;
+        font-size: 0.7rem !important;
         font-weight: 900 !important;
     }
     .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.4rem !important;
+        font-size: 0.35rem !important;
         font-weight: 600 !important;
         opacity: 0.9 !important;
     }
 }
 
-/* 🔴 MOBILE - FLÂMULA ALONGADA */
+/* 🔴 MOBILE - FLÂMULA COMPACTA */
 @media (max-width: 768px) {
     .bookmark-ribbon {
-        font-size: 0.45rem !important;
-        padding: 1px 1px 1px 1px !important;
-        width: 62px !important;    /* 🔴 ALONGADA */
-        height: 45px !important;
+        font-size: 0.4rem !important;
+        padding: 2px 2px 2px 2px !important;
+        width: 120px !important;
+        height: 20px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
         display: flex !important;
         flex-direction: column !important;
         align-items: center !important;
         justify-content: center !important;
+        /* 🔴 right e left controlados pelo JavaScript */
+        right: auto !important;
+        left: auto !important;
     }
     .bookmark-ribbon span {
-        font-size: 0.5rem !important;
+        font-size: 0.45rem !important;
     }
     .bookmark-ribbon span:first-child {
-        font-size: 0.5rem !important;
+        font-size: 0.45rem !important;
     }
     .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.6rem !important;
+        font-size: 0.55rem !important;
         font-weight: 900 !important;
     }
     .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.3rem !important;
+        font-size: 0.25rem !important;
         font-weight: 600 !important;
         opacity: 0.9 !important;
     }
@@ -657,7 +711,7 @@ div.property-badge,
     box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
 }
 
-/* 🔴 Cores */
+/* 🔴 Cores do Bookmark Ribbon */
 .bookmark-ribbon.red {
     background: var(--ribbon-red) !important;
     border-bottom-color: var(--ribbon-red-hover) !important;
