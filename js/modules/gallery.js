@@ -498,7 +498,7 @@ function generateBookmarkBadge(property) {
     html += 'flex-direction: column !important;';
     html += 'align-items: center !important;';
     html += 'justify-content: center !important;';
-    html += 'gap: 1px !important;';
+    html += 'gap: 0px !important;';
     html += 'line-height: 1 !important;';
     html += 'pointer-events: none !important;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
