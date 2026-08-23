@@ -588,9 +588,8 @@ div.property-badge,
     max-width: none !important;
     clip-path: none !important;
     -webkit-clip-path: none !important;
-    /* 🔴 REMOVER right e left fixos - JavaScript controla */
     right: auto !important;
-    left: auto !important;
+    /* 🔴 left: auto !important REMOVIDO - JavaScript controla */
 }
 
 @keyframes slideInRight {
@@ -616,7 +615,7 @@ div.property-badge,
     border-radius: 0 0 2px 2px;
 }
 
-/* 🔴 FORÇAR O CONTAINER DA FOTO A PERMITIR ULTRAPASSAR */
+/* 🔴 FORÇAR O CONTAINER DA FOTO */
 .property-image {
     overflow: visible !important;
     position: relative !important;
@@ -638,7 +637,7 @@ div.property-badge,
     -webkit-clip-path: none !important;
 }
 
-/* 🔴 DESKTOP - FLÂMULA COMPACTA */
+/* 🔴 DESKTOP - FLÂMULA ALINHADA À ESQUERDA */
 @media (min-width: 769px) {
     .bookmark-ribbon {
         font-size: 0.5rem !important;
@@ -649,11 +648,10 @@ div.property-badge,
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        /* 🔴 right e left controlados pelo JavaScript */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
         right: auto !important;
-        left: auto !important;
+        /* 🔴 left: auto REMOVIDO */
     }
     .bookmark-ribbon span {
         font-size: 0.55rem !important;
@@ -672,22 +670,21 @@ div.property-badge,
     }
 }
 
-/* 🔴 MOBILE - FLÂMULA COMPACTA */
+/* 🔴 MOBILE - FLÂMULA ALINHADA À ESQUERDA */
 @media (max-width: 768px) {
     .bookmark-ribbon {
         font-size: 0.4rem !important;
-        padding: 2px 2px 2px 2px !important;
+        padding: 1px 1px 1px 1px !important;
         width: 62px !important;
         height: 45px !important;
         border-radius: 0 0 2px 2px !important;
         border-bottom: 2px solid var(--ribbon-red-hover) !important;
         display: flex !important;
         flex-direction: column !important;
-        align-items: center !important;
-        justify-content: center !important;
-        /* 🔴 right e left controlados pelo JavaScript */
+        align-items: flex-start !important;
+        justify-content: flex-start !important;
         right: auto !important;
-        left: auto !important;
+        /* 🔴 left: auto REMOVIDO */
     }
     .bookmark-ribbon span {
         font-size: 0.45rem !important;
@@ -711,7 +708,7 @@ div.property-badge,
     box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
 }
 
-/* 🔴 Cores do Bookmark Ribbon */
+/* 🔴 Cores */
 .bookmark-ribbon.red {
     background: var(--ribbon-red) !important;
     border-bottom-color: var(--ribbon-red-hover) !important;
