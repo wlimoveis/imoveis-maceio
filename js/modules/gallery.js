@@ -439,7 +439,7 @@ function generateBookmarkBadge(property) {
         colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60', icon: '⚡' };
     }
 
-    var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b', icon: '🏷️' };
+        var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b', icon: '🏷️' };
     
     var displayText = property.badge3;
     var percentage = '';
@@ -449,24 +449,23 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // 🔴 PARÂMETROS DA FLÂMULA (POSIÇÃO ATUAL AJUSTADA)
     var fontSize, padding, width, height, topOffset, iconSize, leftValue;
     
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
-        width = '62px';          // 🔴 LARGURA (parte superior)
-        height = '45px';         // 🔴 ALTURA (parte inferior)
-        topOffset = '50px';      // 🔴 POSIÇÃO VERTICAL
-        leftValue = '15px';      // 🔴 POSIÇÃO HORIZONTAL (a partir da esquerda)
+        width = '62px';
+        height = '45px';
+        topOffset = '50px';
+        leftValue = '15px';
         iconSize = '0.5rem';
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
-        width = '72px';          // 🔴 LARGURA (parte superior)
-        height = '55px';         // 🔴 ALTURA (parte inferior)
-        topOffset = '50px';      // 🔴 POSIÇÃO VERTICAL
-        leftValue = '30px';      // 🔴 POSIÇÃO HORIZONTAL (a partir da esquerda)
+        width = '72px';
+        height = '55px';
+        topOffset = '50px';
+        leftValue = '30px';
         iconSize = '0.6rem';
     }
 
@@ -474,9 +473,10 @@ function generateBookmarkBadge(property) {
     html += '<div class="bookmark-ribbon bookmark-rotated"';
     html += ' style="';
     html += 'position: absolute !important;';
-    html += 'left: ' + leftValue + 'px !important;';      // 🔴 POSIÇÃO HORIZONTAL
-    html += 'top: ' + topOffset + 'px !important;';       // 🔴 POSIÇÃO VERTICAL
-    html += 'transform: rotate(90deg) !important;';       // 🔴 ROTAÇÃO DE 90 GRAUS
+    // 🔴 USAR left PARA POSICIONAR A PARTIR DA ESQUERDA
+    html += 'left: ' + leftValue + 'px !important;';
+    html += 'top: ' + topOffset + 'px !important;';
+    html += 'transform: rotate(90deg) !important;';
     html += 'transform-origin: center center !important;';
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
@@ -489,14 +489,17 @@ function generateBookmarkBadge(property) {
     html += 'height: ' + height + ' !important;';
     html += 'z-index: 30 !important;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
-    html += 'text-align: center !important;';
+    // 🔴 ALTERAR: text-align de center para left
+    html += 'text-align: left !important;';
     html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
     html += 'border-radius: 0 0 2px 2px !important;';
     html += 'border-bottom: 3px solid ' + color.border + ' !important;';
+    // 🔴 ALTERAR: align-items de center para flex-start
     html += 'display: flex !important;';
     html += 'flex-direction: column !important;';
-    html += 'align-items: center !important;';
-    html += 'justify-content: center !important;';
+    html += 'align-items: flex-start !important;';
+    // 🔴 ALTERAR: justify-content de center para flex-start
+    html += 'justify-content: flex-start !important;';
     html += 'gap: 0px !important;';
     html += 'line-height: 1 !important;';
     html += 'pointer-events: none !important;';
@@ -519,7 +522,7 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" - ajustado para left
+    // 🔴 CORTE EM "V"
     var vSize = isMobile ? 4 : 6;
     var vWidth = isMobile ? 8 : 12;
     var leftVal = parseInt(leftValue) + (parseInt(width) - vWidth) / 2 + 5;
