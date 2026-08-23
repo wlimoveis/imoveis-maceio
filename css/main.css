@@ -571,6 +571,38 @@ div.property-badge,
 }
 
 /* ============================================================
+   INDICADOR DE VÍDEO - CORRIGIDO
+   ============================================================ */
+
+.video-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #ffffff;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    z-index: 35 !important;  /* 🔴 MAIOR QUE A FLÂMULA (25) */
+    pointer-events: none;
+    display: flex !important;
+    align-items: center;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.video-indicator i {
+    font-size: 0.6rem;
+    color: #e74c3c;
+}
+
+/* 🔴 GARANTIR QUE O INDICADOR NÃO SEJA OCULTADO */
+.video-indicator[style*="display: none"] {
+    display: flex !important;
+}
+
+/* ============================================================
    BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ROTACIONADA 90 GRAUS)
    ============================================================ */
 
@@ -581,7 +613,7 @@ div.property-badge,
     box-sizing: border-box !important;
     transition: all 0.3s ease;
     animation: slideInRight 0.5s ease;
-    z-index: 30 !important;
+    z-index: 25 !important;  /* 🔴 ABAIXO DO VIDEO-INDICATOR (35) */
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
     line-height: 1 !important;
     min-width: auto !important;
