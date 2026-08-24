@@ -454,7 +454,7 @@ function generateBookmarkBadge(property) {
 
     // 🔴 MEDIDAS DA FAIXA (MANTIDAS)
     if (isMobile) {
-        fontSize = '0.55rem';
+        fontSize = '0.50rem';
         padding = '18px 18px 18px 18px';
         width = '40px';
         leftOffset = '45px';
@@ -462,7 +462,7 @@ function generateBookmarkBadge(property) {
         letterSpacing = '1.0px';
         textAlign = 'center';
     } else {
-        fontSize = '0.65rem';
+        fontSize = '0.60rem';
         padding = '18px 18px 18px 18px';
         width = '50px';
         leftOffset = '75px';
