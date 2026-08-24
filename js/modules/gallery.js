@@ -452,7 +452,7 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, height, topOffset, bottomOffset, leftValue, rightValue;
     
     if (isMobile) {
-        fontSize = '0.45rem';
+        fontSize = '0.225rem';
         padding = '1px 1px 1px 1px';
         width = '162px';
         height = '30px';
@@ -461,7 +461,7 @@ function generateBookmarkBadge(property) {
         leftValue = '15px';
         rightValue = 'auto';
     } else {
-        fontSize = '0.5rem';
+        fontSize = '0.25rem';
         padding = '2px 2px 2px 2px';
         width = '172px';
         height = '40px';
@@ -495,7 +495,7 @@ function generateBookmarkBadge(property) {
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
     html += 'padding: ' + padding + ' !important;';
-    html += 'font-size: ' + fontSize + ' !important;';
+    html += 'font-size: ' + fontSize + ' !important;';  // 🔴 FONTE REDUZIDA
     html += 'font-weight: 700 !important;';
     html += 'text-transform: uppercase !important;';
     html += 'letter-spacing: 0.3px !important;';
@@ -520,21 +520,43 @@ function generateBookmarkBadge(property) {
     html += '-webkit-clip-path: none !important;';
     html += '">';
     
-    // 🔴 REMOVIDO: NENHUM ÍCONE É ADICIONADO AQUI
-    
+    // 🔴 TEXTO COM ROTAÇÃO DE 180 GRAUS
     if (percentage) {
-        var percentSize = isMobile ? '0.6rem' : '0.7rem';
-        var labelSize = isMobile ? '0.25rem' : '0.35rem';
-        html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block; line-height: 1;">' + percentage + '</span>';
-        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block; line-height: 1;">' + displayText + '</span>';
+        var percentSize = isMobile ? '0.3rem' : '0.35rem';  // 🔴 METADE
+        var labelSize = isMobile ? '0.125rem' : '0.175rem'; // 🔴 METADE
+        html += '<span style="';
+        html += 'font-size: ' + percentSize + ';';
+        html += 'font-weight: 900;';
+        html += 'display: block;';
+        html += 'line-height: 1;';
+        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'transform: rotate(180deg) !important;';
+        html += 'transform-origin: center center !important;';
+        html += '">' + percentage + '</span>';
+        html += '<span style="';
+        html += 'font-size: ' + labelSize + ';';
+        html += 'font-weight: 600;';
+        html += 'opacity: 0.9;';
+        html += 'display: block;';
+        html += 'line-height: 1;';
+        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'transform: rotate(180deg) !important;';
+        html += 'transform-origin: center center !important;';
+        html += '">' + displayText + '</span>';
     } else {
-        html += '<span style="font-size: 0.4rem; display: block; line-height: 1;">' + property.badge3 + '</span>';
+        html += '<span style="';
+        html += 'font-size: 0.2rem;';
+        html += 'display: block;';
+        html += 'line-height: 1;';
+        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'transform: rotate(180deg) !important;';
+        html += 'transform-origin: center center !important;';
+        html += '">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
 
-    // 🔴 CORTE EM "V" REMOVIDO COMPLETAMENTE
-    // O bloco abaixo foi removido
+    // 🔴 CORTE EM "V" REMOVIDO
 
     return html;
 }
