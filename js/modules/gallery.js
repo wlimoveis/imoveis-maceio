@@ -456,19 +456,19 @@ function generateBookmarkBadge(property) {
         padding = '1px 1px 1px 1px';
         width = '72px';
         height = '45px';
-        topOffset = '0px';
+        topOffset = '300px';
         bottomOffset = '10px';
-        leftValue = 'auto';
-        rightValue = '15px';
+        leftValue = '15px';
+        rightValue = 'auto';
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
         width = '82px';
         height = '55px';
-        topOffset = '0px';
+        topOffset = '300px';
         bottomOffset = '10px';
-        leftValue = 'auto';
-        rightValue = '30px';
+        leftValue = '30px';
+        rightValue = 'auto';
     }
 
     var html = '';
