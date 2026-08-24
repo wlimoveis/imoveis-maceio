@@ -452,23 +452,23 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 CONFIGURAÇÃO - LADO DIREITO (TEXTO ACOMPANHA A FAIXA)
+    // 🔴 CONFIGURAÇÃO - LADO DIREITO (TEXTO CENTRALIZADO)
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '4px 28px 4px 18px';
-        width = '160px';          // 🔴 AUMENTADO para caber o texto
+        width = '160px';
         leftOffset = '65px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
-        textAlign = 'right';
+        textAlign = 'center';    // 🔴 CENTRALIZADO
     } else {
         fontSize = '0.65rem';
         padding = '6px 38px 6px 25px';
-        width = '200px';          // 🔴 AUMENTADO para caber o texto
+        width = '200px';
         leftOffset = '95px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
-        textAlign = 'right';
+        textAlign = 'center';    // 🔴 CENTRALIZADO
     }
 
     // ========== HTML DA FAIXA ==========
@@ -478,7 +478,6 @@ function generateBookmarkBadge(property) {
     html += 'position: absolute !important;';
     html += 'top: ' + topOffset + 'px !important;';
     html += 'left: ' + leftOffset + 'px !important;';
-    // 🔴 FAIXA NA DIAGONAL (38 graus)
     html += 'transform: rotate(38deg) !important;';
     html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ') !important;';
     html += 'color: ' + color.color + ' !important;';
@@ -499,21 +498,30 @@ function generateBookmarkBadge(property) {
     html += 'border-bottom: 3px solid ' + color.border + ' !important;';
     html += 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;';
     html += 'overflow: visible !important;';
+    // 🔴 FLEXBOX PARA CENTRALIZAR O TEXTO
+    html += 'display: flex !important;';
+    html += 'align-items: center !important;';
+    html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO ACOMPANHA A FAIXA (SEM ROTAÇÃO INVERSA) ==========
+    // ========== TEXTO CENTRALIZADO DENTRO DA FAIXA ==========
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
-        // 🔴 TEXTO SEM ROTAÇÃO INVERSA - ACOMPANHA A FAIXA
-        html += '<span style="display: inline-block;">';
-        html += '<span style="font-size: ' + percentSize + '; font-weight: 900;">' + percentage + '</span>';
-        html += ' ';
-        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
+        html += '<span style="';
+        html += 'display: inline-block;';
+        html += 'text-align: center;';  // 🔴 CENTRALIZADO
+        html += 'line-height: 1.2;';
+        html += '">';
+        html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block;">' + percentage + '</span>';
+        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block;">' + displayText + '</span>';
         html += '</span>';
     } else {
-        // 🔴 TEXTO SEM ROTAÇÃO INVERSA - ACOMPANHA A FAIXA
-        html += '<span style="display: inline-block;">' + property.badge3 + '</span>';
+        html += '<span style="';
+        html += 'display: inline-block;';
+        html += 'text-align: center;';
+        html += 'line-height: 1.2;';
+        html += '">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
