@@ -456,7 +456,7 @@ function generateBookmarkBadge(property) {
     // 🔴 CONFIGURAÇÃO - LADO DIREITO (FORÇADO COM !important)
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '4px 18px 4px 8px';
+        padding = '4px 28px 4px 18px';
         width = '30px';
         leftOffset = '65px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
@@ -464,7 +464,7 @@ function generateBookmarkBadge(property) {
         textAlign = 'right';
     } else {
         fontSize = '0.65rem';
-        padding = '6px 18px 6px 5px';
+        padding = '6px 38px 6px 25px';
         width = '35px';
         leftOffset = '75px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
