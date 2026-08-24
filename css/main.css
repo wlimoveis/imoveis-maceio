@@ -603,163 +603,147 @@ div.property-badge,
 }
 
 /* ============================================================
-   BOOKMARK RIBBON - DESTAQUE 3 (FLÂMULA ROTACIONADA 90 GRAUS)
+   BOOKMARK RIBBON - DESTAQUE 3 (FAIXA DIAGONAL LADO DIREITO)
    ============================================================ */
 
-.bookmark-ribbon {
-    position: absolute !important;
-    pointer-events: none !important;
+/* 🔴 ESTILO BASE PARA O DESTAQUE 3 */
+.diagonal-badge.bookmark-badge {
+    position: absolute;
+    pointer-events: none;
     overflow: visible !important;
-    box-sizing: border-box !important;
+    box-sizing: border-box;
     transition: all 0.3s ease;
-    animation: slideInRight 0.5s ease;
-    z-index: 25 !important;  /* 🔴 ABAIXO DO VIDEO-INDICATOR (35) */
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
-    line-height: 1 !important;
-    min-width: auto !important;
-    max-width: none !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-    right: auto !important;
+    border-radius: 3px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    z-index: 15;
 }
 
-@keyframes slideInRight {
-    from {
-        transform: translateX(80px);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-.bookmark-ribbon::after {
+/* 🔴 EFEITO DE BRILHO */
+.diagonal-badge.bookmark-badge::after {
     content: '';
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.1) 100%);
     pointer-events: none;
-    border-radius: 0 0 2px 2px;
+    border-radius: 3px;
 }
 
-/* 🔴 FORÇAR O CONTAINER DA FOTO */
-.property-image {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
+/* 🔴 EFEITO DE RELEVO 3D */
+.diagonal-badge.bookmark-badge::before {
+    content: '';
+    position: absolute;
+    top: 1px;
+    left: 1px;
+    right: 1px;
+    height: 40%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
+    pointer-events: none;
+    border-radius: 3px 3px 0 0;
 }
 
-.property-gallery-container {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-}
-
-.diagonal-badges-container {
-    overflow: visible !important;
-    position: relative !important;
-    clip-path: none !important;
-    -webkit-clip-path: none !important;
-}
-
-/* 🔴 DESKTOP - FLÂMULA ALINHADA À ESQUERDA */
+/* 🔴 DESKTOP - DESTAQUE 3 (LADO DIREITO) */
 @media (min-width: 769px) {
-    .bookmark-ribbon {
-        font-size: 0.5rem !important;
-        padding: 2px 2px 2px 2px !important;
-        width: 82px !important;
-        height: 55px !important;
-        border-radius: 0 0 2px 2px !important;
+    .diagonal-badge.bookmark-badge {
+        font-size: 0.65rem !important;
+        padding: 6px 38px 6px 25px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.5px !important;
+        width: 200px !important;
+        left: 35px !important;
+        top: 6px !important;
+        transform: rotate(38deg) !important;
+        text-align: right !important;
         border-bottom: 3px solid var(--ribbon-red-hover) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-        left: auto !important;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+        border-radius: 3px !important;
     }
-    .bookmark-ribbon span {
+    .diagonal-badge.bookmark-badge span {
+        font-size: 0.65rem !important;
+    }
+    .diagonal-badge.bookmark-badge span:first-child {
+        font-size: 0.9rem !important;
+        font-weight: 900 !important;
+    }
+    .diagonal-badge.bookmark-badge span:nth-child(2) {
+        font-size: 0.45rem !important;
+        font-weight: 600 !important;
+        opacity: 0.9 !important;
+    }
+}
+
+/* 🔴 MOBILE - DESTAQUE 3 (LADO DIREITO) */
+@media (max-width: 768px) {
+    .diagonal-badge.bookmark-badge {
+        font-size: 0.55rem !important;
+        padding: 4px 28px 4px 18px !important;
+        font-weight: 700 !important;
+        letter-spacing: 1.0px !important;
+        width: 160px !important;
+        left: 25px !important;
+        top: 10px !important;
+        transform: rotate(38deg) !important;
+        text-align: right !important;
+        border-bottom: 2px solid var(--ribbon-red-hover) !important;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;
+        border-radius: 3px !important;
+    }
+    .diagonal-badge.bookmark-badge span {
         font-size: 0.55rem !important;
     }
-    .bookmark-ribbon span:first-child {
-        font-size: 0.55rem !important;
-    }
-    .bookmark-ribbon span:nth-child(2) {
+    .diagonal-badge.bookmark-badge span:first-child {
         font-size: 0.7rem !important;
         font-weight: 900 !important;
     }
-    .bookmark-ribbon span:nth-child(3) {
+    .diagonal-badge.bookmark-badge span:nth-child(2) {
         font-size: 0.35rem !important;
         font-weight: 600 !important;
         opacity: 0.9 !important;
     }
 }
 
-/* 🔴 MOBILE - FLÂMULA ALINHADA À ESQUERDA */
-@media (max-width: 768px) {
-    .bookmark-ribbon {
-        font-size: 0.4rem !important;
-        padding: 1px 1px 1px 1px !important;
-        width: 72px !important;
-        height: 45px !important;
-        border-radius: 0 0 2px 2px !important;
-        border-bottom: 2px solid var(--ribbon-red-hover) !important;
-        display: flex !important;
-        flex-direction: column !important;
-        align-items: flex-start !important;
-        justify-content: flex-start !important;
-        left: auto !important;
-    }
-    .bookmark-ribbon span {
-        font-size: 0.45rem !important;
-    }
-    .bookmark-ribbon span:first-child {
-        font-size: 0.45rem !important;
-    }
-    .bookmark-ribbon span:nth-child(2) {
-        font-size: 0.55rem !important;
-        font-weight: 900 !important;
-    }
-    .bookmark-ribbon span:nth-child(3) {
-        font-size: 0.25rem !important;
-        font-weight: 600 !important;
-        opacity: 0.9 !important;
-    }
-}
-
-.bookmark-ribbon:hover {
-    transform: rotate(90deg) scale(1.05) !important;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.4) !important;
-}
-
-/* 🔴 Cores */
-.bookmark-ribbon.red {
-    background: var(--ribbon-red) !important;
+/* 🔴 CORES DO DESTAQUE 3 */
+.diagonal-badge.bookmark-badge.red {
+    background: linear-gradient(135deg, var(--ribbon-red), var(--ribbon-red-hover)) !important;
     border-bottom-color: var(--ribbon-red-hover) !important;
 }
 
-.bookmark-ribbon.green {
-    background: var(--green) !important;
+.diagonal-badge.bookmark-badge.green {
+    background: linear-gradient(135deg, var(--green), var(--green-light)) !important;
     border-bottom-color: var(--green-light) !important;
 }
 
-.bookmark-ribbon.orange {
-    background: #e67e22 !important;
+.diagonal-badge.bookmark-badge.orange {
+    background: linear-gradient(135deg, #e67e22, #f39c12) !important;
     border-bottom-color: #f39c12 !important;
 }
 
-.bookmark-ribbon.purple {
-    background: #8e44ad !important;
+.diagonal-badge.bookmark-badge.purple {
+    background: linear-gradient(135deg, #8e44ad, #9b59b6) !important;
     border-bottom-color: #9b59b6 !important;
 }
 
+/* 🔴 ANIMAÇÃO DE ENTRADA */
+.diagonal-badge.bookmark-badge {
+    animation: slideInDiagonal 0.5s ease;
+}
+
+@keyframes slideInDiagonal {
+    from {
+        transform: rotate(38deg) translateX(50px);
+        opacity: 0;
+    }
+    to {
+        transform: rotate(38deg) translateX(0);
+        opacity: 0.92;
+    }
+}
+
 /* ============================================================
-   FIM DAS FAIXAS DIAGONAIS E BOOKMARK RIBBON
+   FIM DO BOOKMARK RIBBON - DESTAQUE 3
    ============================================================ */
 
 .property-content {
