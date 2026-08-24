@@ -501,15 +501,26 @@ function generateBookmarkBadge(property) {
     html += 'overflow: visible !important;';
     html += '">';
     
-    // ========== TEXTO ==========
+    // ========== TEXTO HORIZONTAL (ROTAÇÃO INVERSA) ==========
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
-        html += '<span style="display: inline-block;">' + percentage + '</span>';
+        // 🔴 TEXTO COM ROTAÇÃO INVERSA (-38 graus) para ficar HORIZONTAL
+        html += '<span style="';
+        html += 'display: inline-block;';
+        html += 'transform: rotate(-38deg) !important;';  // 🔴 INVERSA DA FAIXA
+        html += 'transform-origin: center center !important;';
+        html += '">';
+        html += '<span style="font-size: ' + percentSize + '; font-weight: 900;">' + percentage + '</span>';
         html += ' ';
         html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
+        html += '</span>';
     } else {
-        html += '<span>' + property.badge3 + '</span>';
+        html += '<span style="';
+        html += 'display: inline-block;';
+        html += 'transform: rotate(-38deg) !important;';  // 🔴 INVERSA DA FAIXA
+        html += 'transform-origin: center center !important;';
+        html += '">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
