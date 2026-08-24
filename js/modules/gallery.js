@@ -454,7 +454,7 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.45rem';
         padding = '1px 1px 1px 1px';
-        width = '120px';
+        width = '170px';
         height = '75px';
         topOffset = '300px';
         bottomOffset = '10px';
@@ -463,7 +463,7 @@ function generateBookmarkBadge(property) {
     } else {
         fontSize = '0.5rem';
         padding = '2px 2px 2px 2px';
-        width = '130px';
+        width = '182px';
         height = '85px';
         topOffset = '300px';
         bottomOffset = '10px';
