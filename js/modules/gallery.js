@@ -456,7 +456,7 @@ function generateBookmarkBadge(property) {
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '6px 18px 6px 18px';    // 🔴 PADDING MAIS LARGO
-        width = '280px';                  // 🔴 AUMENTADO (160 → 280)
+        width = '160px';                  // 🔴 AUMENTADO (160 → 280)
         leftOffset = '45px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
@@ -464,7 +464,7 @@ function generateBookmarkBadge(property) {
     } else {
         fontSize = '0.65rem';
         padding = '8px 25px 8px 25px';    // 🔴 PADDING MAIS LARGO
-        width = '350px';                  // 🔴 AUMENTADO (200 → 350)
+        width = '200px';                  // 🔴 AUMENTADO (200 → 350)
         leftOffset = '75px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
