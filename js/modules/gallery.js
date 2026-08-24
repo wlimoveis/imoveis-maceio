@@ -396,7 +396,7 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO AJUSTADO ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO COM ROTAÇÃO 45° ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
@@ -452,7 +452,7 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 MEDIDAS DA FAIXA CONSOLIDADAS (NÃO ALTERAR)
+    // 🔴 MEDIDAS DA FAIXA (MANTIDAS)
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '18px 18px 18px 18px';
@@ -503,20 +503,19 @@ function generateBookmarkBadge(property) {
     html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO AJUSTADO (PROPORCIONAL) ==========
-    // 🔴 Texto em duas linhas: "80%" em cima, "DESÁGIO" embaixo
-    // 🔴 Rotação: 35 graus (alinhada com a faixa)
+    // ========== TEXTO COM ROTAÇÃO 45° ==========
     if (percentage) {
         var percentSize = isMobile ? '0.45rem' : '0.55rem';
         var labelSize = isMobile ? '0.22rem' : '0.28rem';
-        // 🔴 CONTAINER DO TEXTO COM ROTAÇÃO 35°
+        
         html += '<span style="';
         html += 'display: flex;';
         html += 'flex-direction: column;';
         html += 'align-items: center;';
         html += 'justify-content: center;';
-        html += 'gap: 1px;';
-        html += 'transform: rotate(35deg) !important;';  // 🔴 35 GRAUS
+        html += 'gap: 0px;';
+        // 🔴 ROTAÇÃO AUMENTADA EM +10 GRAUS: 35 → 45
+        html += 'transform: rotate(45deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         // 🔴 PERCENTUAL (ex: 80%)
@@ -541,11 +540,11 @@ function generateBookmarkBadge(property) {
         html += 'flex-direction: column;';
         html += 'align-items: center;';
         html += 'justify-content: center;';
-        html += 'gap: 1px;';
-        html += 'transform: rotate(35deg) !important;';
+        html += 'gap: 0px;';
+        html += 'transform: rotate(45deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
-        html += '<span style="font-size: 0.6rem; font-weight: 700; display: block;">' + property.badge3 + '</span>';
+        html += '<span style="font-size: 0.4rem; font-weight: 700; display: block;">' + property.badge3 + '</span>';
         html += '</span>';
     }
     
