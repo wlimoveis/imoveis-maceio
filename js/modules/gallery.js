@@ -396,14 +396,14 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO COM ROTAÇÃO 120° ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO AJUSTADO ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
-    // 🔴 CORES
+    // 🔴 CORES (mantido)
     var colors = {
         'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
         'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
@@ -452,26 +452,26 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 AUMENTAR LARGURA DA FAIXA
+    // 🔴 MEDIDAS DA FAIXA CONSOLIDADAS (NÃO ALTERAR)
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '18px 18px 18px 18px';    // 🔴 PADDING MAIS LARGO
-        width = '40px';                  // 🔴 AUMENTADO (160 → 280)
+        padding = '18px 18px 18px 18px';
+        width = '40px';
         leftOffset = '45px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'center';
     } else {
         fontSize = '0.65rem';
-        padding = '18px 18px 18px 18px';    // 🔴 PADDING MAIS LARGO
-        width = '50px';                  // 🔴 AUMENTADO (200 → 350)
+        padding = '18px 18px 18px 18px';
+        width = '50px';
         leftOffset = '75px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
         textAlign = 'center';
     }
 
-    // ========== HTML DA FAIXA ==========
+    // ========== HTML DA FAIXA (MANTIDO) ==========
     var html = '';
     html += '<div class="diagonal-badge bookmark-badge"';
     html += ' style="';
@@ -503,30 +503,50 @@ function generateBookmarkBadge(property) {
     html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO COM ROTAÇÃO 35° ==========
-    // 🔴 35° (em pé)
+    // ========== TEXTO AJUSTADO (PROPORCIONAL) ==========
+    // 🔴 Texto em duas linhas: "80%" em cima, "DESÁGIO" embaixo
+    // 🔴 Rotação: 35 graus (alinhada com a faixa)
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
+        // 🔴 CONTAINER DO TEXTO COM ROTAÇÃO 35°
         html += '<span style="';
-        html += 'display: inline-block;';
-        html += 'text-align: center;';
-        html += 'line-height: 0.35;';
-        // 🔴 ROTAÇÃO 35 GRAUS
-        html += 'transform: rotate(35deg) !important;';
+        html += 'display: flex;';
+        html += 'flex-direction: column;';
+        html += 'align-items: center;';
+        html += 'justify-content: center;';
+        html += 'gap: 1px;';
+        html += 'transform: rotate(35deg) !important;';  // 🔴 35 GRAUS
         html += 'transform-origin: center center !important;';
         html += '">';
-        html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block;">' + percentage + '</span>';
-        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9; display: block;">' + displayText + '</span>';
+        // 🔴 PERCENTUAL (ex: 80%)
+        html += '<span style="';
+        html += 'font-size: ' + percentSize + ';';
+        html += 'font-weight: 900;';
+        html += 'display: block;';
+        html += 'line-height: 1;';
+        html += '">' + percentage + '</span>';
+        // 🔴 DESCRIÇÃO (ex: DESÁGIO)
+        html += '<span style="';
+        html += 'font-size: ' + labelSize + ';';
+        html += 'font-weight: 600;';
+        html += 'opacity: 0.9;';
+        html += 'display: block;';
+        html += 'line-height: 1;';
+        html += '">' + displayText + '</span>';
         html += '</span>';
     } else {
         html += '<span style="';
-        html += 'display: inline-block;';
-        html += 'text-align: center;';
-        html += 'line-height: 0.35;';
+        html += 'display: flex;';
+        html += 'flex-direction: column;';
+        html += 'align-items: center;';
+        html += 'justify-content: center;';
+        html += 'gap: 1px;';
         html += 'transform: rotate(35deg) !important;';
         html += 'transform-origin: center center !important;';
-        html += '">' + property.badge3 + '</span>';
+        html += '">';
+        html += '<span style="font-size: 0.6rem; font-weight: 700; display: block;">' + property.badge3 + '</span>';
+        html += '</span>';
     }
     
     html += '</div>';
