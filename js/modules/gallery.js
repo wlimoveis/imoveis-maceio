@@ -449,7 +449,7 @@ function generateBookmarkBadge(property) {
     }
 
     // ========== PARÂMETROS ==========
-    var baseTop = isMobile ? 2 : 6;
+    var baseTop = isMobile ? 32 : 26;
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
