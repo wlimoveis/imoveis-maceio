@@ -495,7 +495,7 @@ function generateBookmarkBadge(property) {
     html += 'background: ' + color.bg + ' !important;';
     html += 'color: #ffffff !important;';
     html += 'padding: ' + padding + ' !important;';
-    html += 'font-size: ' + fontSize + ' !important;';  // 🔴 FONTE REDUZIDA
+    html += 'font-size: ' + fontSize + ' !important;';
     html += 'font-weight: 700 !important;';
     html += 'text-transform: uppercase !important;';
     html += 'letter-spacing: 0.3px !important;';
@@ -509,7 +509,8 @@ function generateBookmarkBadge(property) {
     html += 'border-bottom: 3px solid ' + color.border + ' !important;';
     html += 'display: flex !important;';
     html += 'flex-direction: column !important;';
-    html += 'align-items: flex-start !important;';
+    // 🔴 ALTERAR align-items para flex-end (extrema direita)
+    html += 'align-items: flex-end !important;';
     html += 'justify-content: flex-start !important;';
     html += 'gap: 0px !important;';
     html += 'line-height: 1 !important;';
@@ -520,16 +521,16 @@ function generateBookmarkBadge(property) {
     html += '-webkit-clip-path: none !important;';
     html += '">';
     
-    // 🔴 TEXTO COM ROTAÇÃO DE 180 GRAUS
+    // 🔴 TEXTO COM ROTAÇÃO DE 180 GRAUS E ALINHADO À DIREITA
     if (percentage) {
-        var percentSize = isMobile ? '0.3rem' : '0.35rem';  // 🔴 METADE
-        var labelSize = isMobile ? '0.125rem' : '0.175rem'; // 🔴 METADE
+        var percentSize = isMobile ? '0.3rem' : '0.35rem';
+        var labelSize = isMobile ? '0.125rem' : '0.175rem';
         html += '<span style="';
         html += 'font-size: ' + percentSize + ';';
         html += 'font-weight: 900;';
         html += 'display: block;';
         html += 'line-height: 1;';
-        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
         html += 'transform: rotate(180deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + percentage + '</span>';
@@ -539,7 +540,7 @@ function generateBookmarkBadge(property) {
         html += 'opacity: 0.9;';
         html += 'display: block;';
         html += 'line-height: 1;';
-        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
         html += 'transform: rotate(180deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + displayText + '</span>';
@@ -548,15 +549,13 @@ function generateBookmarkBadge(property) {
         html += 'font-size: 0.2rem;';
         html += 'display: block;';
         html += 'line-height: 1;';
-        // 🔴 ROTAÇÃO DE 180 GRAUS NO TEXTO
+        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
         html += 'transform: rotate(180deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
-
-    // 🔴 CORTE EM "V" REMOVIDO
 
     return html;
 }
