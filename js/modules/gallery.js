@@ -449,14 +449,14 @@ function generateBookmarkBadge(property) {
     }
 
     // ========== PARÂMETROS ==========
-    var baseTop = isMobile ? 8 : 4;
+    var baseTop = isMobile ? 12 : 6;
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
     // 🔴 CONFIGURAÇÃO - LADO DIREITO (FORÇADO COM !important)
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '4px 48px 4px 28px';
+        padding = '4px 48px 4px 48px';
         width = '20px';
         leftOffset = '35px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
@@ -464,7 +464,7 @@ function generateBookmarkBadge(property) {
         textAlign = 'right';
     } else {
         fontSize = '0.65rem';
-        padding = '6px 58px 6px 35px';
+        padding = '6px 58px 6px 55px';
         width = '15px';
         leftOffset = '55px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
