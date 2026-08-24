@@ -507,8 +507,8 @@ function generateBookmarkBadge(property) {
     // 🔴 Texto em duas linhas: "80%" em cima, "DESÁGIO" embaixo
     // 🔴 Rotação: 35 graus (alinhada com a faixa)
     if (percentage) {
-        var percentSize = isMobile ? '0.7rem' : '0.9rem';
-        var labelSize = isMobile ? '0.35rem' : '0.45rem';
+        var percentSize = isMobile ? '0.45rem' : '0.55rem';
+        var labelSize = isMobile ? '0.22rem' : '0.28rem';
         // 🔴 CONTAINER DO TEXTO COM ROTAÇÃO 35°
         html += '<span style="';
         html += 'display: flex;';
