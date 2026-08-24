@@ -448,7 +448,7 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    var baseTop = isMobile ? 18 : 14;
+    var baseTop = isMobile ? 04 : 02;
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
