@@ -505,8 +505,8 @@ function generateBookmarkBadge(property) {
     
     // ========== TEXTO COM ROTAÇÃO 30° ==========
     if (percentage) {
-        var percentSize = isMobile ? '0.25rem' : '0.35rem';
-        var labelSize = isMobile ? '0.12rem' : '0.18rem';
+        var percentSize = isMobile ? '0.20rem' : '0.30rem';
+        var labelSize = isMobile ? '0.10rem' : '0.15rem';
         
         html += '<span style="';
         html += 'display: flex;';
@@ -514,8 +514,8 @@ function generateBookmarkBadge(property) {
         html += 'align-items: center;';
         html += 'justify-content: center;';
         html += 'gap: 0px;';
-        // 🔴 ROTAÇÃO AUMENTADA EM -5 GRAUS: 35 → 30
-        html += 'transform: rotate(30deg) !important;';
+        // 🔴 ROTAÇÃO AUMENTADA EM -5 GRAUS: 35 → 25
+        html += 'transform: rotate(25deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         // 🔴 PERCENTUAL (ex: 80%)
