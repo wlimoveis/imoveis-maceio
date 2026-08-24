@@ -608,15 +608,15 @@ div.property-badge,
 
 /* 🔴 ESTILO BASE PARA O DESTAQUE 3 */
 .diagonal-badge.bookmark-badge {
-    position: absolute;
-    pointer-events: none;
+    position: absolute !important;
+    pointer-events: none !important;
     overflow: visible !important;
-    box-sizing: border-box;
+    box-sizing: border-box !important;
     transition: all 0.3s ease;
-    border-radius: 3px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3);
-    z-index: 15;
+    border-radius: 3px !important;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
+    z-index: 15 !important;
 }
 
 /* 🔴 EFEITO DE BRILHO */
@@ -645,7 +645,7 @@ div.property-badge,
     border-radius: 3px 3px 0 0;
 }
 
-/* 🔴 DESKTOP - DESTAQUE 3 (LADO DIREITO) */
+/* 🔴 DESKTOP - DESTAQUE 3 (LADO DIREITO) - SEM BANDEIROLA */
 @media (min-width: 769px) {
     .diagonal-badge.bookmark-badge {
         font-size: 0.65rem !important;
@@ -653,7 +653,7 @@ div.property-badge,
         font-weight: 700 !important;
         letter-spacing: 1.5px !important;
         width: 200px !important;
-        left: 75px !important;      /* 🔴 AJUSTADO PARA BORDA DIREITA */
+        /* 🔴 left será controlado pelo JavaScript */
         top: 6px !important;
         transform: rotate(38deg) !important;
         text-align: right !important;
@@ -675,7 +675,7 @@ div.property-badge,
     }
 }
 
-/* 🔴 MOBILE - DESTAQUE 3 (LADO DIREITO) */
+/* 🔴 MOBILE - DESTAQUE 3 (LADO DIREITO) - SEM BANDEIROLA */
 @media (max-width: 768px) {
     .diagonal-badge.bookmark-badge {
         font-size: 0.55rem !important;
@@ -683,7 +683,6 @@ div.property-badge,
         font-weight: 700 !important;
         letter-spacing: 1.0px !important;
         width: 160px !important;
-        left: 55px !important;      /* 🔴 AJUSTADO PARA BORDA DIREITA */
         top: 10px !important;
         transform: rotate(38deg) !important;
         text-align: right !important;
