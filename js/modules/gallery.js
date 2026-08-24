@@ -441,7 +441,6 @@ function generateBookmarkBadge(property) {
 
     var color = colors[property.badge3] || { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' };
     
-    // 🔴 EXTRAIR PERCENTUAL PARA EXIBIÇÃO DESTACADA
     var displayText = property.badge3;
     var percentage = '';
     var match = property.badge3.match(/(\d+)%/);
@@ -455,42 +454,35 @@ function generateBookmarkBadge(property) {
     var spacing = isMobile ? 14 : 24;
 
     // ========== CONFIGURAÇÃO DA FAIXA DIAGONAL - LADO DIREITO ==========
-    // 🔴 A faixa fica no lado direito: leftOffset POSITIVO
-    // 🔴 A extremidade superior direita encosta no topo
-    // 🔴 A extremidade inferior esquerda tem a bandeirola
-    
-    var fontSize, padding, width, leftOffset, letterSpacing, topOffset, rightOffset;
+    var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 DESTAQUE 3 - LADO DIREITO
+    // 🔴 AUMENTAR leftOffset PARA CHEGAR NA BORDA DIREITA
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '4px 28px 4px 18px';
         width = '160px';
-        leftOffset = '25px';        // 🔴 LADO DIREITO (positivo)
+        leftOffset = '55px';        // 🔴 AUMENTADO: 25 → 55 (MAIS PERTO DA BORDA)
         topOffset = baseTop;
-        rightOffset = 'auto';
         letterSpacing = '1.0px';
-        textAlign = 'right';        // 🔴 ALINHADO À DIREITA
+        textAlign = 'right';
     } else {
         fontSize = '0.65rem';
         padding = '6px 38px 6px 25px';
         width = '200px';
-        leftOffset = '35px';        // 🔴 LADO DIREITO (positivo)
+        leftOffset = '75px';        // 🔴 AUMENTADO: 35 → 75 (MAIS PERTO DA BORDA)
         topOffset = baseTop;
-        rightOffset = 'auto';
         letterSpacing = '1.5px';
-        textAlign = 'right';        // 🔴 ALINHADO À DIREITA
+        textAlign = 'right';
     }
 
     // ========== GERAR HTML DA FAIXA ==========
     var html = '';
-    html += '<div class="diagonal-badge bookmark-badge"';
-    html += ' style="';
+    html += '<div class="diagonal-badge bookmark-badge" style="';
     html += 'position: absolute;';
     html += 'top: ' + topOffset + 'px;';
-    html += 'left: ' + leftOffset + 'px;';  // 🔴 LADO DIREITO
-    html += 'transform: rotate(38deg);';     // 🔴 DIAGONAL (sentido contrário)
+    html += 'left: ' + leftOffset + 'px;';
+    html += 'transform: rotate(38deg);';
     html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ');';
     html += 'color: ' + color.color + ';';
     html += 'padding: ' + padding + ';';
@@ -502,7 +494,7 @@ function generateBookmarkBadge(property) {
     html += 'width: ' + width + ';';
     html += 'white-space: nowrap;';
     html += 'opacity: 0.92;';
-    html += 'z-index: 15;';  // 🔴 ENTRE AS FAIXAS E O VIDEO-INDICATOR
+    html += 'z-index: 15;';
     html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
     html += 'pointer-events: none;';
     html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
@@ -525,14 +517,15 @@ function generateBookmarkBadge(property) {
     
     html += '</div>';
 
-    // ========== BANDEIROLA (EXTREMIDADE INFERIOR DIREITA) ==========
-    // 🔴 Efeito de bandeirola de festa junina na extremidade inferior direita
-    var flagSize = isMobile ? 10 : 16;
-    var flagWidth = isMobile ? 12 : 18;
-    var flagOffset = isMobile ? 5 : 8;
+    // ========== BANDEIROLA (EXTREMIDADE INFERIOR DIREITA - CONECTADA) ==========
+    var flagSize = isMobile ? 12 : 18;
+    var flagWidth = isMobile ? 10 : 14;
     
-    var flagLeft = parseInt(leftOffset) + parseInt(width) - flagWidth - flagOffset;
-    var flagTop = parseInt(topOffset) + parseInt(padding.split(' ')[0]) + parseInt(fontSize) * 0.5;
+    // 🔴 CALCULAR POSIÇÃO DA BANDEIROLA NA EXTREMIDADE DA FAIXA
+    // A faixa está rotacionada 38deg, então a extremidade inferior direita
+    // está em leftOffset + width (com ajuste para a rotação)
+    var flagLeft = parseInt(leftOffset) + parseInt(width) - flagWidth - 4;
+    var flagTop = parseInt(topOffset) + parseInt(padding.split(' ')[0]) + parseInt(fontSize) * 1.2;
     
     html += '<div style="';
     html += 'position: absolute;';
@@ -545,25 +538,13 @@ function generateBookmarkBadge(property) {
     html += 'overflow: visible;';
     html += '">';
     
-    // 🔴 TRIÂNGULO (BANDEIROLA)
+    // 🔴 TRIÂNGULO (BANDEIROLA) - CONECTADO À FAIXA
     html += '<div style="';
     html += 'width: 0;';
     html += 'height: 0;';
-    html += 'border-left: ' + (flagWidth/2) + 'px solid ' + color.bg + ';';
-    html += 'border-right: ' + (flagWidth/2) + 'px solid transparent;';
-    html += 'border-bottom: ' + flagSize + 'px solid ' + color.bg + ';';
-    html += '"></div>';
-    
-    // 🔴 PONTA DA BANDEIROLA (detalhe)
-    html += '<div style="';
-    html += 'position: absolute;';
-    html += 'top: ' + (flagSize - 2) + 'px;';
-    html += 'left: ' + (flagWidth/2 - 2) + 'px;';
-    html += 'width: 4px;';
-    html += 'height: 4px;';
-    html += 'background: ' + color.border + ';';
-    html += 'border-radius: 50%;';
-    html += 'transform: rotate(45deg);';
+    html += 'border-left: ' + (flagWidth/2) + 'px solid transparent;';
+    html += 'border-right: ' + (flagWidth/2) + 'px solid ' + color.bg + ';';
+    html += 'border-top: ' + flagSize + 'px solid ' + color.bg + ';';
     html += '"></div>';
     
     html += '</div>';
