@@ -452,19 +452,20 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
+    // 🔴 AUMENTAR LARGURA DA FAIXA
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '4px 28px 4px 18px';
-        width = '160px';
-        leftOffset = '65px';
+        padding = '6px 18px 6px 18px';    // 🔴 PADDING MAIS LARGO
+        width = '280px';                  // 🔴 AUMENTADO (160 → 280)
+        leftOffset = '45px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'center';
     } else {
         fontSize = '0.65rem';
-        padding = '6px 38px 6px 25px';
-        width = '200px';
-        leftOffset = '95px';
+        padding = '8px 25px 8px 25px';    // 🔴 PADDING MAIS LARGO
+        width = '350px';                  // 🔴 AUMENTADO (200 → 350)
+        leftOffset = '75px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
         textAlign = 'center';
