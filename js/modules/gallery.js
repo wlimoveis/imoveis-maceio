@@ -455,16 +455,16 @@ function generateBookmarkBadge(property) {
     // 🔴 AUMENTAR LARGURA DA FAIXA
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '6px 18px 6px 18px';    // 🔴 PADDING MAIS LARGO
-        width = '160px';                  // 🔴 AUMENTADO (160 → 280)
+        padding = '6px 12px 6px 12px';    // 🔴 PADDING MAIS LARGO
+        width = '60px';                  // 🔴 AUMENTADO (160 → 280)
         leftOffset = '45px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'center';
     } else {
         fontSize = '0.65rem';
-        padding = '8px 25px 8px 25px';    // 🔴 PADDING MAIS LARGO
-        width = '200px';                  // 🔴 AUMENTADO (200 → 350)
+        padding = '8px 20px 8px 20px';    // 🔴 PADDING MAIS LARGO
+        width = '80px';                  // 🔴 AUMENTADO (200 → 350)
         leftOffset = '75px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
@@ -504,16 +504,16 @@ function generateBookmarkBadge(property) {
     html += '">';
     
     // ========== TEXTO COM ROTAÇÃO 120° ==========
-    // 🔴 90° (em pé) + 30° = 120°
+    // 🔴 90° (em pé)
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
         html += '<span style="';
         html += 'display: inline-block;';
         html += 'text-align: center;';
-        html += 'line-height: 1.2;';
+        html += 'line-height: 0.9;';
         // 🔴 ROTAÇÃO 120 GRAUS
-        html += 'transform: rotate(120deg) !important;';
+        html += 'transform: rotate(90deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block;">' + percentage + '</span>';
@@ -523,8 +523,8 @@ function generateBookmarkBadge(property) {
         html += '<span style="';
         html += 'display: inline-block;';
         html += 'text-align: center;';
-        html += 'line-height: 1.2;';
-        html += 'transform: rotate(120deg) !important;';
+        html += 'line-height: 0.9;';
+        html += 'transform: rotate(90deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + property.badge3 + '</span>';
     }
