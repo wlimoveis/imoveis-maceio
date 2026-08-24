@@ -455,16 +455,16 @@ function generateBookmarkBadge(property) {
     // 🔴 AUMENTAR LARGURA DA FAIXA
     if (isMobile) {
         fontSize = '0.55rem';
-        padding = '15px 15px 15px 15px';    // 🔴 PADDING MAIS LARGO
-        width = '30px';                  // 🔴 AUMENTADO (160 → 280)
+        padding = '18px 18px 18px 18px';    // 🔴 PADDING MAIS LARGO
+        width = '40px';                  // 🔴 AUMENTADO (160 → 280)
         leftOffset = '45px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'center';
     } else {
         fontSize = '0.65rem';
-        padding = '15px 15px 15px 15px';    // 🔴 PADDING MAIS LARGO
-        width = '40px';                  // 🔴 AUMENTADO (200 → 350)
+        padding = '18px 18px 18px 18px';    // 🔴 PADDING MAIS LARGO
+        width = '50px';                  // 🔴 AUMENTADO (200 → 350)
         leftOffset = '75px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
@@ -503,17 +503,17 @@ function generateBookmarkBadge(property) {
     html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO COM ROTAÇÃO 520° ==========
-    // 🔴 90° (em pé)
+    // ========== TEXTO COM ROTAÇÃO 35° ==========
+    // 🔴 35° (em pé)
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
         html += '<span style="';
         html += 'display: inline-block;';
         html += 'text-align: center;';
-        html += 'line-height: 0.52;';
-        // 🔴 ROTAÇÃO 52 GRAUS
-        html += 'transform: rotate(52deg) !important;';
+        html += 'line-height: 0.35;';
+        // 🔴 ROTAÇÃO 35 GRAUS
+        html += 'transform: rotate(35deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block;">' + percentage + '</span>';
@@ -523,8 +523,8 @@ function generateBookmarkBadge(property) {
         html += '<span style="';
         html += 'display: inline-block;';
         html += 'text-align: center;';
-        html += 'line-height: 0.52;';
-        html += 'transform: rotate(52deg) !important;';
+        html += 'line-height: 0.35;';
+        html += 'transform: rotate(35deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + property.badge3 + '</span>';
     }
