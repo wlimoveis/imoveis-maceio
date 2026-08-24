@@ -456,7 +456,7 @@ function generateBookmarkBadge(property) {
         padding = '1px 1px 1px 1px';
         width = '72px';
         height = '45px';
-        topOffset = '10px';
+        topOffset = '0px';
         bottomOffset = '-150px';
         leftValue = '15px';
         rightValue = 'auto';
@@ -465,7 +465,7 @@ function generateBookmarkBadge(property) {
         padding = '2px 2px 2px 2px';
         width = '82px';
         height = '55px';
-        topOffset = '10px';
+        topOffset = '0px';
         bottomOffset = '-160px';
         leftValue = '30px';
         rightValue = 'auto';
