@@ -681,7 +681,7 @@ div.property-badge,
         flex-direction: column !important;
         align-items: flex-start !important;
         justify-content: flex-start !important;
-        right: auto !important;
+        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.55rem !important;
@@ -713,7 +713,7 @@ div.property-badge,
         flex-direction: column !important;
         align-items: flex-start !important;
         justify-content: flex-start !important;
-        right: auto !important;
+        left: auto !important;
     }
     .bookmark-ribbon span {
         font-size: 0.45rem !important;
