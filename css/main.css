@@ -653,7 +653,7 @@ div.property-badge,
         font-weight: 700 !important;
         letter-spacing: 1.5px !important;
         width: 200px !important;
-        left: 35px !important;
+        left: 75px !important;      /* 🔴 AJUSTADO PARA BORDA DIREITA */
         top: 6px !important;
         transform: rotate(38deg) !important;
         text-align: right !important;
@@ -683,7 +683,7 @@ div.property-badge,
         font-weight: 700 !important;
         letter-spacing: 1.0px !important;
         width: 160px !important;
-        left: 25px !important;
+        left: 55px !important;      /* 🔴 AJUSTADO PARA BORDA DIREITA */
         top: 10px !important;
         transform: rotate(38deg) !important;
         text-align: right !important;
