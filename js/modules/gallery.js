@@ -396,14 +396,14 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - FAIXA DIAGONAL LADO DIREITO ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - FAIXA DIAGONAL ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
-    // 🔴 CORES PARA O DESTAQUE 3
+    // 🔴 CORES
     var colors = {
         'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
         'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
@@ -448,37 +448,37 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // ========== PARÂMETROS ==========
     var baseTop = isMobile ? 10 : 6;
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 CONFIGURAÇÃO - LADO DIREITO (FORÇADO COM !important)
+    // 🔴 CONFIGURAÇÃO - LADO DIREITO (TEXTO ACOMPANHA A FAIXA)
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '4px 28px 4px 18px';
-        width = '30px';
-        leftOffset = '65px';        // 🔴 VALOR INICIAL
+        width = '160px';          // 🔴 AUMENTADO para caber o texto
+        leftOffset = '65px';
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'right';
     } else {
         fontSize = '0.65rem';
         padding = '6px 38px 6px 25px';
-        width = '35px';
-        leftOffset = '75px';        // 🔴 VALOR INICIAL
+        width = '200px';          // 🔴 AUMENTADO para caber o texto
+        leftOffset = '95px';
         topOffset = baseTop;
         letterSpacing = '1.5px';
         textAlign = 'right';
     }
 
-    // ========== HTML DA FAIXA (SEM BANDEIROLA) ==========
+    // ========== HTML DA FAIXA ==========
     var html = '';
     html += '<div class="diagonal-badge bookmark-badge"';
     html += ' style="';
     html += 'position: absolute !important;';
     html += 'top: ' + topOffset + 'px !important;';
-    html += 'left: ' + leftOffset + 'px !important;';  // 🔴 FORÇADO
+    html += 'left: ' + leftOffset + 'px !important;';
+    // 🔴 FAIXA NA DIAGONAL (38 graus)
     html += 'transform: rotate(38deg) !important;';
     html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ') !important;';
     html += 'color: ' + color.color + ' !important;';
@@ -501,26 +501,19 @@ function generateBookmarkBadge(property) {
     html += 'overflow: visible !important;';
     html += '">';
     
-    // ========== TEXTO HORIZONTAL (ROTAÇÃO INVERSA) ==========
+    // ========== TEXTO ACOMPANHA A FAIXA (SEM ROTAÇÃO INVERSA) ==========
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
-        // 🔴 TEXTO COM ROTAÇÃO INVERSA (-38 graus) para ficar HORIZONTAL
-        html += '<span style="';
-        html += 'display: inline-block;';
-        html += 'transform: rotate(-38deg) !important;';  // 🔴 INVERSA DA FAIXA
-        html += 'transform-origin: center center !important;';
-        html += '">';
+        // 🔴 TEXTO SEM ROTAÇÃO INVERSA - ACOMPANHA A FAIXA
+        html += '<span style="display: inline-block;">';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900;">' + percentage + '</span>';
         html += ' ';
         html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
         html += '</span>';
     } else {
-        html += '<span style="';
-        html += 'display: inline-block;';
-        html += 'transform: rotate(-38deg) !important;';  // 🔴 INVERSA DA FAIXA
-        html += 'transform-origin: center center !important;';
-        html += '">' + property.badge3 + '</span>';
+        // 🔴 TEXTO SEM ROTAÇÃO INVERSA - ACOMPANHA A FAIXA
+        html += '<span style="display: inline-block;">' + property.badge3 + '</span>';
     }
     
     html += '</div>';
