@@ -503,7 +503,7 @@ function generateBookmarkBadge(property) {
     html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO COM ROTAÇÃO 45° ==========
+    // ========== TEXTO COM ROTAÇÃO 30° ==========
     if (percentage) {
         var percentSize = isMobile ? '0.25rem' : '0.35rem';
         var labelSize = isMobile ? '0.12rem' : '0.18rem';
@@ -514,8 +514,8 @@ function generateBookmarkBadge(property) {
         html += 'align-items: center;';
         html += 'justify-content: center;';
         html += 'gap: 0px;';
-        // 🔴 ROTAÇÃO AUMENTADA EM +10 GRAUS: 35 → 45
-        html += 'transform: rotate(45deg) !important;';
+        // 🔴 ROTAÇÃO AUMENTADA EM -5 GRAUS: 35 → 30
+        html += 'transform: rotate(30deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         // 🔴 PERCENTUAL (ex: 80%)
@@ -541,7 +541,7 @@ function generateBookmarkBadge(property) {
         html += 'align-items: center;';
         html += 'justify-content: center;';
         html += 'gap: 0px;';
-        html += 'transform: rotate(45deg) !important;';
+        html += 'transform: rotate(30deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         html += '<span style="font-size: 0.4rem; font-weight: 700; display: block;">' + property.badge3 + '</span>';
