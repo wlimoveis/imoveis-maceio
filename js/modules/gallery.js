@@ -396,50 +396,52 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - SEM CORTE EM "V" ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - FAIXA DIAGONAL LADO DIREITO ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
     var isRural = property.type === 'rural' || property.rural === true;
     var isMobile = window.innerWidth <= 768;
     
-    // 🔴 CORES SEM ÍCONES
+    // 🔴 CORES PARA O DESTAQUE 3
     var colors = {
-        'Deságio 80%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 70%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 60%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 50%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 40%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 30%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 25%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 20%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 15%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 10%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 7%': { bg: '#c0392b', border: '#e74c3c' },
-        'Deságio 5%': { bg: '#c0392b', border: '#e74c3c' },
-        'Oferta Especial': { bg: '#e67e22', border: '#f39c12' },
-        'Última Chance': { bg: '#8e44ad', border: '#9b59b6' }
+        'Deságio 80%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 70%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 60%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 50%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 40%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 30%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 25%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 20%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 15%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 10%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 7%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Deságio 5%': { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' },
+        'Oferta Especial': { bg: '#e67e22', border: '#f39c12', color: '#ffffff' },
+        'Última Chance': { bg: '#8e44ad', border: '#9b59b6', color: '#ffffff' }
     };
 
+    // 🔴 COR PARA FAZENDAS (VERDE)
     if (isRural) {
-        colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 60%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 50%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 40%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 30%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 25%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 20%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 15%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 10%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 7%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Deságio 5%'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Oferta Especial'] = { bg: '#1e8449', border: '#27ae60' };
-        colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60' };
+        colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 60%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 50%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 40%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 30%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 25%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 20%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 15%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 10%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 7%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Deságio 5%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Oferta Especial'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
+        colors['Última Chance'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
     }
 
-    var color = colors[property.badge3] || { bg: '#e74c3c', border: '#c0392b' };
+    var color = colors[property.badge3] || { bg: '#c0392b', border: '#e74c3c', color: '#ffffff' };
     
+    // 🔴 EXTRAIR PERCENTUAL PARA EXIBIÇÃO DESTACADA
     var displayText = property.badge3;
     var percentage = '';
     var match = property.badge3.match(/(\d+)%/);
@@ -448,112 +450,121 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // 🔴 PARÂMETROS
-    var fontSize, padding, width, height, topOffset, bottomOffset, leftValue, rightValue;
+    // ========== PARÂMETROS BASE ==========
+    var baseTop = isMobile ? 10 : 6;
+    var spacing = isMobile ? 14 : 24;
+
+    // ========== CONFIGURAÇÃO DA FAIXA DIAGONAL - LADO DIREITO ==========
+    // 🔴 A faixa fica no lado direito: leftOffset POSITIVO
+    // 🔴 A extremidade superior direita encosta no topo
+    // 🔴 A extremidade inferior esquerda tem a bandeirola
     
+    var fontSize, padding, width, leftOffset, letterSpacing, topOffset, rightOffset;
+    var textAlign;
+
+    // 🔴 DESTAQUE 3 - LADO DIREITO
     if (isMobile) {
-        fontSize = '0.225rem';
-        padding = '1px 1px 1px 1px';
-        width = '162px';
-        height = '30px';
-        topOffset = '300px';
-        bottomOffset = '10px';
-        leftValue = '15px';
-        rightValue = 'auto';
+        fontSize = '0.55rem';
+        padding = '4px 28px 4px 18px';
+        width = '160px';
+        leftOffset = '25px';        // 🔴 LADO DIREITO (positivo)
+        topOffset = baseTop;
+        rightOffset = 'auto';
+        letterSpacing = '1.0px';
+        textAlign = 'right';        // 🔴 ALINHADO À DIREITA
     } else {
-        fontSize = '0.25rem';
-        padding = '2px 2px 2px 2px';
-        width = '172px';
-        height = '40px';
-        topOffset = '300px';
-        bottomOffset = '10px';
-        leftValue = '30px';
-        rightValue = 'auto';
+        fontSize = '0.65rem';
+        padding = '6px 38px 6px 25px';
+        width = '200px';
+        leftOffset = '35px';        // 🔴 LADO DIREITO (positivo)
+        topOffset = baseTop;
+        rightOffset = 'auto';
+        letterSpacing = '1.5px';
+        textAlign = 'right';        // 🔴 ALINHADO À DIREITA
     }
 
+    // ========== GERAR HTML DA FAIXA ==========
     var html = '';
-    html += '<div class="bookmark-ribbon bookmark-rotated"';
+    html += '<div class="diagonal-badge bookmark-badge"';
     html += ' style="';
-    html += 'position: absolute !important;';
-    
-    if (leftValue !== 'auto') {
-        html += 'left: ' + leftValue + 'px !important;';
-    }
-    if (rightValue !== 'auto') {
-        html += 'right: ' + rightValue + 'px !important;';
-    }
-    
-    if (topOffset !== 'auto') {
-        html += 'top: ' + topOffset + 'px !important;';
-    }
-    if (bottomOffset !== 'auto') {
-        html += 'bottom: ' + bottomOffset + 'px !important;';
-    }
-    
-    html += 'transform: rotate(90deg) !important;';
-    html += 'transform-origin: center center !important;';
-    html += 'background: ' + color.bg + ' !important;';
-    html += 'color: #ffffff !important;';
-    html += 'padding: ' + padding + ' !important;';
-    html += 'font-size: ' + fontSize + ' !important;';
-    html += 'font-weight: 700 !important;';
-    html += 'text-transform: uppercase !important;';
-    html += 'letter-spacing: 0.3px !important;';
-    html += 'width: ' + width + ' !important;';
-    html += 'height: ' + height + ' !important;';
-    html += 'z-index: 25 !important;';
-    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
-    html += 'text-align: left !important;';
-    html += 'box-shadow: 0 2px 8px rgba(0,0,0,0.3) !important;';
-    html += 'border-radius: 0 0 2px 2px !important;';
-    html += 'border-bottom: 3px solid ' + color.border + ' !important;';
-    html += 'display: flex !important;';
-    html += 'flex-direction: column !important;';
-    // 🔴 ALTERAR align-items para flex-end (extrema direita)
-    html += 'align-items: flex-end !important;';
-    html += 'justify-content: flex-start !important;';
-    html += 'gap: 0px !important;';
-    html += 'line-height: 1 !important;';
-    html += 'pointer-events: none !important;';
-    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
-    html += 'overflow: visible !important;';
-    html += 'clip-path: none !important;';
-    html += '-webkit-clip-path: none !important;';
+    html += 'position: absolute;';
+    html += 'top: ' + topOffset + 'px;';
+    html += 'left: ' + leftOffset + 'px;';  // 🔴 LADO DIREITO
+    html += 'transform: rotate(38deg);';     // 🔴 DIAGONAL (sentido contrário)
+    html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ');';
+    html += 'color: ' + color.color + ';';
+    html += 'padding: ' + padding + ';';
+    html += 'font-size: ' + fontSize + ';';
+    html += 'font-weight: 700;';
+    html += 'text-transform: uppercase;';
+    html += 'letter-spacing: ' + letterSpacing + ';';
+    html += 'text-align: ' + textAlign + ';';
+    html += 'width: ' + width + ';';
+    html += 'white-space: nowrap;';
+    html += 'opacity: 0.92;';
+    html += 'z-index: 15;';  // 🔴 ENTRE AS FAIXAS E O VIDEO-INDICATOR
+    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
+    html += 'pointer-events: none;';
+    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
+    html += 'border-radius: 3px;';
+    html += 'border-bottom: 3px solid ' + color.border + ';';
+    html += 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
+    html += 'overflow: visible;';
     html += '">';
     
-    // 🔴 TEXTO COM ROTAÇÃO DE 180 GRAUS E ALINHADO À DIREITA
+    // ========== TEXTO DA FAIXA ==========
     if (percentage) {
-        var percentSize = isMobile ? '0.3rem' : '0.35rem';
-        var labelSize = isMobile ? '0.125rem' : '0.175rem';
-        html += '<span style="';
-        html += 'font-size: ' + percentSize + ';';
-        html += 'font-weight: 900;';
-        html += 'display: block;';
-        html += 'line-height: 1;';
-        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
-        html += 'transform: rotate(180deg) !important;';
-        html += 'transform-origin: center center !important;';
-        html += '">' + percentage + '</span>';
-        html += '<span style="';
-        html += 'font-size: ' + labelSize + ';';
-        html += 'font-weight: 600;';
-        html += 'opacity: 0.9;';
-        html += 'display: block;';
-        html += 'line-height: 1;';
-        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
-        html += 'transform: rotate(180deg) !important;';
-        html += 'transform-origin: center center !important;';
-        html += '">' + displayText + '</span>';
+        var percentSize = isMobile ? '0.7rem' : '0.9rem';
+        var labelSize = isMobile ? '0.35rem' : '0.45rem';
+        html += '<span style="display: inline-block;">' + percentage + '</span>';
+        html += ' ';
+        html += '<span style="font-size: ' + labelSize + '; font-weight: 600; opacity: 0.9;">' + displayText + '</span>';
     } else {
-        html += '<span style="';
-        html += 'font-size: 0.2rem;';
-        html += 'display: block;';
-        html += 'line-height: 1;';
-        html += 'text-align: right !important;';  // 🔴 ALINHAR À DIREITA
-        html += 'transform: rotate(180deg) !important;';
-        html += 'transform-origin: center center !important;';
-        html += '">' + property.badge3 + '</span>';
+        html += '<span>' + property.badge3 + '</span>';
     }
+    
+    html += '</div>';
+
+    // ========== BANDEIROLA (EXTREMIDADE INFERIOR DIREITA) ==========
+    // 🔴 Efeito de bandeirola de festa junina na extremidade inferior direita
+    var flagSize = isMobile ? 10 : 16;
+    var flagWidth = isMobile ? 12 : 18;
+    var flagOffset = isMobile ? 5 : 8;
+    
+    var flagLeft = parseInt(leftOffset) + parseInt(width) - flagWidth - flagOffset;
+    var flagTop = parseInt(topOffset) + parseInt(padding.split(' ')[0]) + parseInt(fontSize) * 0.5;
+    
+    html += '<div style="';
+    html += 'position: absolute;';
+    html += 'left: ' + flagLeft + 'px;';
+    html += 'top: ' + flagTop + 'px;';
+    html += 'width: ' + flagWidth + 'px;';
+    html += 'height: ' + flagSize + 'px;';
+    html += 'z-index: 16;';
+    html += 'pointer-events: none;';
+    html += 'overflow: visible;';
+    html += '">';
+    
+    // 🔴 TRIÂNGULO (BANDEIROLA)
+    html += '<div style="';
+    html += 'width: 0;';
+    html += 'height: 0;';
+    html += 'border-left: ' + (flagWidth/2) + 'px solid ' + color.bg + ';';
+    html += 'border-right: ' + (flagWidth/2) + 'px solid transparent;';
+    html += 'border-bottom: ' + flagSize + 'px solid ' + color.bg + ';';
+    html += '"></div>';
+    
+    // 🔴 PONTA DA BANDEIROLA (detalhe)
+    html += '<div style="';
+    html += 'position: absolute;';
+    html += 'top: ' + (flagSize - 2) + 'px;';
+    html += 'left: ' + (flagWidth/2 - 2) + 'px;';
+    html += 'width: 4px;';
+    html += 'height: 4px;';
+    html += 'background: ' + color.border + ';';
+    html += 'border-radius: 50%;';
+    html += 'transform: rotate(45deg);';
+    html += '"></div>';
     
     html += '</div>';
 
