@@ -505,8 +505,8 @@ function generateBookmarkBadge(property) {
     
     // ========== TEXTO COM ROTAÇÃO 45° ==========
     if (percentage) {
-        var percentSize = isMobile ? '0.45rem' : '0.55rem';
-        var labelSize = isMobile ? '0.22rem' : '0.28rem';
+        var percentSize = isMobile ? '0.25rem' : '0.35rem';
+        var labelSize = isMobile ? '0.12rem' : '0.18rem';
         
         html += '<span style="';
         html += 'display: flex;';
