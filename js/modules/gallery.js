@@ -421,7 +421,6 @@ function generateBookmarkBadge(property) {
         'Última Chance': { bg: '#8e44ad', border: '#9b59b6', color: '#ffffff' }
     };
 
-    // 🔴 COR PARA FAZENDAS (VERDE)
     if (isRural) {
         colors['Deságio 80%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
         colors['Deságio 70%'] = { bg: '#1e8449', border: '#27ae60', color: '#ffffff' };
@@ -449,20 +448,17 @@ function generateBookmarkBadge(property) {
         displayText = 'DESÁGIO';
     }
 
-    // ========== PARÂMETROS BASE ==========
+    // ========== PARÂMETROS ==========
     var baseTop = isMobile ? 10 : 6;
-    var spacing = isMobile ? 14 : 24;
-
-    // ========== CONFIGURAÇÃO DA FAIXA DIAGONAL - LADO DIREITO ==========
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 AUMENTAR leftOffset PARA CHEGAR NA BORDA DIREITA
+    // 🔴 CONFIGURAÇÃO - LADO DIREITO (FORÇADO COM !important)
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '4px 28px 4px 18px';
         width = '160px';
-        leftOffset = '55px';        // 🔴 AUMENTADO: 25 → 55 (MAIS PERTO DA BORDA)
+        leftOffset = '35px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
         letterSpacing = '1.0px';
         textAlign = 'right';
@@ -470,41 +466,42 @@ function generateBookmarkBadge(property) {
         fontSize = '0.65rem';
         padding = '6px 38px 6px 25px';
         width = '200px';
-        leftOffset = '75px';        // 🔴 AUMENTADO: 35 → 75 (MAIS PERTO DA BORDA)
+        leftOffset = '55px';        // 🔴 VALOR INICIAL
         topOffset = baseTop;
         letterSpacing = '1.5px';
         textAlign = 'right';
     }
 
-    // ========== GERAR HTML DA FAIXA ==========
+    // ========== HTML DA FAIXA (SEM BANDEIROLA) ==========
     var html = '';
-    html += '<div class="diagonal-badge bookmark-badge" style="';
-    html += 'position: absolute;';
-    html += 'top: ' + topOffset + 'px;';
-    html += 'left: ' + leftOffset + 'px;';
-    html += 'transform: rotate(38deg);';
-    html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ');';
-    html += 'color: ' + color.color + ';';
-    html += 'padding: ' + padding + ';';
-    html += 'font-size: ' + fontSize + ';';
-    html += 'font-weight: 700;';
-    html += 'text-transform: uppercase;';
-    html += 'letter-spacing: ' + letterSpacing + ';';
-    html += 'text-align: ' + textAlign + ';';
-    html += 'width: ' + width + ';';
-    html += 'white-space: nowrap;';
-    html += 'opacity: 0.92;';
-    html += 'z-index: 15;';
-    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;';
-    html += 'pointer-events: none;';
-    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3);';
-    html += 'border-radius: 3px;';
-    html += 'border-bottom: 3px solid ' + color.border + ';';
-    html += 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15);';
-    html += 'overflow: visible;';
+    html += '<div class="diagonal-badge bookmark-badge"';
+    html += ' style="';
+    html += 'position: absolute !important;';
+    html += 'top: ' + topOffset + 'px !important;';
+    html += 'left: ' + leftOffset + 'px !important;';  // 🔴 FORÇADO
+    html += 'transform: rotate(38deg) !important;';
+    html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ') !important;';
+    html += 'color: ' + color.color + ' !important;';
+    html += 'padding: ' + padding + ' !important;';
+    html += 'font-size: ' + fontSize + ' !important;';
+    html += 'font-weight: 700 !important;';
+    html += 'text-transform: uppercase !important;';
+    html += 'letter-spacing: ' + letterSpacing + ' !important;';
+    html += 'text-align: ' + textAlign + ' !important;';
+    html += 'width: ' + width + ' !important;';
+    html += 'white-space: nowrap !important;';
+    html += 'opacity: 0.92 !important;';
+    html += 'z-index: 15 !important;';
+    html += 'font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif !important;';
+    html += 'pointer-events: none !important;';
+    html += 'text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;';
+    html += 'border-radius: 3px !important;';
+    html += 'border-bottom: 3px solid ' + color.border + ' !important;';
+    html += 'box-shadow: 0 2px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.15) !important;';
+    html += 'overflow: visible !important;';
     html += '">';
     
-    // ========== TEXTO DA FAIXA ==========
+    // ========== TEXTO ==========
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
@@ -514,38 +511,6 @@ function generateBookmarkBadge(property) {
     } else {
         html += '<span>' + property.badge3 + '</span>';
     }
-    
-    html += '</div>';
-
-    // ========== BANDEIROLA (EXTREMIDADE INFERIOR DIREITA - CONECTADA) ==========
-    var flagSize = isMobile ? 12 : 18;
-    var flagWidth = isMobile ? 10 : 14;
-    
-    // 🔴 CALCULAR POSIÇÃO DA BANDEIROLA NA EXTREMIDADE DA FAIXA
-    // A faixa está rotacionada 38deg, então a extremidade inferior direita
-    // está em leftOffset + width (com ajuste para a rotação)
-    var flagLeft = parseInt(leftOffset) + parseInt(width) - flagWidth - 4;
-    var flagTop = parseInt(topOffset) + parseInt(padding.split(' ')[0]) + parseInt(fontSize) * 1.2;
-    
-    html += '<div style="';
-    html += 'position: absolute;';
-    html += 'left: ' + flagLeft + 'px;';
-    html += 'top: ' + flagTop + 'px;';
-    html += 'width: ' + flagWidth + 'px;';
-    html += 'height: ' + flagSize + 'px;';
-    html += 'z-index: 16;';
-    html += 'pointer-events: none;';
-    html += 'overflow: visible;';
-    html += '">';
-    
-    // 🔴 TRIÂNGULO (BANDEIROLA) - CONECTADO À FAIXA
-    html += '<div style="';
-    html += 'width: 0;';
-    html += 'height: 0;';
-    html += 'border-left: ' + (flagWidth/2) + 'px solid transparent;';
-    html += 'border-right: ' + (flagWidth/2) + 'px solid ' + color.bg + ';';
-    html += 'border-top: ' + flagSize + 'px solid ' + color.bg + ';';
-    html += '"></div>';
     
     html += '</div>';
 
