@@ -396,7 +396,7 @@ function renderDiagonalBadges(property) {
     return result;
 }
 
-// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO EM PÉ ==========
+// ========== GERAR BOOKMARK RIBBON (DESTAQUE 3) - TEXTO COM ROTAÇÃO 120° ==========
 function generateBookmarkBadge(property) {
     if (!property.badge3 || property.badge3 === 'Nenhum') return '';
 
@@ -452,7 +452,6 @@ function generateBookmarkBadge(property) {
     var fontSize, padding, width, leftOffset, letterSpacing, topOffset;
     var textAlign;
 
-    // 🔴 CONFIGURAÇÃO - LADO DIREITO
     if (isMobile) {
         fontSize = '0.55rem';
         padding = '4px 28px 4px 18px';
@@ -478,7 +477,6 @@ function generateBookmarkBadge(property) {
     html += 'position: absolute !important;';
     html += 'top: ' + topOffset + 'px !important;';
     html += 'left: ' + leftOffset + 'px !important;';
-    // 🔴 FAIXA NA DIAGONAL (38 graus)
     html += 'transform: rotate(38deg) !important;';
     html += 'background: linear-gradient(135deg, ' + color.bg + ', ' + color.border + ') !important;';
     html += 'color: ' + color.color + ' !important;';
@@ -504,9 +502,8 @@ function generateBookmarkBadge(property) {
     html += 'justify-content: center !important;';
     html += '">';
     
-    // ========== TEXTO EM PÉ (ROTAÇÃO -52 graus) ==========
-    // 🔴 A faixa está a 38 graus, o texto precisa de -52 graus para ficar em pé
-    // 🔴 38 + 52 = 90 graus (perpendicular)
+    // ========== TEXTO COM ROTAÇÃO 120° ==========
+    // 🔴 90° (em pé) + 30° = 120°
     if (percentage) {
         var percentSize = isMobile ? '0.7rem' : '0.9rem';
         var labelSize = isMobile ? '0.35rem' : '0.45rem';
@@ -514,8 +511,8 @@ function generateBookmarkBadge(property) {
         html += 'display: inline-block;';
         html += 'text-align: center;';
         html += 'line-height: 1.2;';
-        // 🔴 TEXTO EM PÉ (perpendicular à faixa)
-        html += 'transform: rotate(-52deg) !important;';  // 🔴 -52 graus
+        // 🔴 ROTAÇÃO 120 GRAUS
+        html += 'transform: rotate(120deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
         html += '<span style="font-size: ' + percentSize + '; font-weight: 900; display: block;">' + percentage + '</span>';
@@ -526,7 +523,7 @@ function generateBookmarkBadge(property) {
         html += 'display: inline-block;';
         html += 'text-align: center;';
         html += 'line-height: 1.2;';
-        html += 'transform: rotate(-52deg) !important;';
+        html += 'transform: rotate(120deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">' + property.badge3 + '</span>';
     }
