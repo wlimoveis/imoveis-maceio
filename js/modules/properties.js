@@ -1,6 +1,6 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.7 - COM DESTAQUES MÚLTIPLOS (badge1, badge2 e badge3)
+// VERSÃO 3.8 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -13,9 +13,10 @@
 // ✅ CORREÇÃO: renderProperties com verificações de segurança
 // ✅ NOVO: Suporte a badge1 (Destaque1) e badge2 (Destaque2)
 // ✅ NOVO: Suporte a badge3 (Destaque3 - Bookmark Ribbon)
+// ✅ CORREÇÃO: badge1, badge2, badge3 enviados para o Supabase
 // ============================================================
 
-console.log('✅ properties.js v3.7 carregado - Gerenciamento de Imóveis (com Destaques Múltiplos e Bookmark)');
+console.log('✅ properties.js v3.8 carregado - Gerenciamento de Imóveis (com correção de badges)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -436,7 +437,7 @@ window.loadPropertiesData = async function() {
         }
         // ============================================================
         
-        // 🔴 CORREÇÃO: Incluir badge3 no mapeamento
+        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no mapeamento
         window.properties = window.properties.map(function(prop) {
             return {
                 ...prop,
@@ -1223,7 +1224,7 @@ window.addNewProperty = async function(propertyData) {
         var supabaseSuccess = false, supabaseId = null;
         if (window.ensureSupabaseCredentials() && typeof window.supabaseSaveProperty === 'function') {
             try {
-                // 🔴 CORREÇÃO: Incluir badge3 no payload do Supabase
+                // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no payload do Supabase
                 var supabaseResponse = await window.supabaseSaveProperty({
                     title: propertyData.title,
                     price: propertyData.price,
@@ -1255,7 +1256,7 @@ window.addNewProperty = async function(propertyData) {
         }
         var newId = (supabaseSuccess && supabaseId) ? supabaseId : (maxId + 1);
         
-        // 🔴 CORREÇÃO: Incluir badge3 no newProperty
+        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no newProperty
         var newProperty = {
             id: newId,
             title: propertyData.title,
@@ -1314,7 +1315,7 @@ window.updateProperty = async function(id, propertyData) {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
         var processedData = Object.assign({}, propertyData, { has_video: window.SharedCore.ensureBooleanVideo(propertyData.has_video) });
         
-        // 🔴 CORREÇÃO: Incluir badge3 no updateData
+        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no updateData
         var updateData = {
             title: processedData.title || window.properties[index].title,
             price: processedData.price || window.properties[index].price,
@@ -2103,14 +2104,15 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.7
+// FIM DO ARQUIVO - properties.js v3.8
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.7
-// Última atualização: 2026-08-21
+// Versão: 3.8
+// Última atualização: 2026-08-26
 // ✅ CORRIGIDO: getInitialProperties restaurada
 // ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
 // ✅ CORRIGIDO: renderProperties com verificações de segurança
+// ✅ CORREÇÃO CRÍTICA: badge1, badge2, badge3 enviados para o Supabase
 // ✅ NOVO: Suporte a badge1 (Destaque1) e badge2 (Destaque2)
 // ✅ NOVO: Suporte a badge3 (Destaque3 - Bookmark Ribbon)
 // ✅ REFATORADO: Correção de URLs delegada ao ImageUtils
