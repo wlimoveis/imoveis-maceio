@@ -4,6 +4,7 @@
 // ✅ Botão deletar (topo direito)
 // ✅ Número (canto inferior esquerdo)
 // ✅ Status (canto inferior direito)
+// ✅ REFATORAÇÃO: escapeHtml centralizado em SharedCore (usa window.escapeHtml)
 
 console.log('🔄 media-unified.js - Core System (versão final com ícones corrigidos)');
 
@@ -476,7 +477,8 @@ const MediaSystem = {
         var container = document.getElementById('uploadPreview');
         if (!container) return;
         var self = this;
-        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
+        // ✅ REFATORADO: usa window.escapeHtml (alias global do SharedCore)
+        var escapeHtmlFn = window.escapeHtml;
         
         var allFiles = this.state.existing.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.files);
         
@@ -563,7 +565,8 @@ const MediaSystem = {
         var container = document.getElementById('pdfUploadPreview');
         if (!container) return;
         var self = this;
-        var escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
+        // ✅ REFATORADO: usa window.escapeHtml (alias global do SharedCore)
+        var escapeHtmlFn = window.escapeHtml;
         
         var allPdfs = this.state.existingPdfs.filter(function(item) { return !item.markedForDeletion; }).concat(this.state.pdfs);
         
