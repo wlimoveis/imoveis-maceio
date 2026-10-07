@@ -1,10 +1,12 @@
 // js/modules/gallery.js - COM SETAS LIQUID GLASS, CONTADOR PERSISTENTE, TIMESTAMPS E FAIXAS DIAGONAIS
-// ✅ Funções de visualização delegadas ao SharedCore
+// ✅ Funções de visualização (getGalleryViews, getTotalGalleryViews, getLastGalleryView)
+//    delegadas ao SharedCore - não duplicadas aqui.
 // ✅ CORREÇÃO: Acessibilidade - aria-label, alt, aria-hidden (PageSpeed Insights)
 // ✅ CORREÇÃO: video-indicator único - gerenciado APENAS por este arquivo
 // ✅ NOVO: Faixas diagonais para Destaques Múltiplos (Destaque1 e Destaque2)
 // ✅ NOVO: Bookmark Ribbon para Destaque3 (Flâmula com corte em "V")
 // ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
+// ✅ REFATORAÇÃO: funções globais de galeria (leitura) removidas - agora só no SharedCore
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais e Bookmark Ribbon');
 
 // ========== VARIÁVEIS GLOBAIS =========
@@ -17,50 +19,13 @@ window.SWIPE_THRESHOLD = 50;
 // ========== FUNÇÃO PARA DETECTAR VÍDEO - CENTRALIZADA NO SHAREDCORE =========
 // A função window.isVideoUrl é fornecida globalmente pelo SharedCore.js
 
-// ========== FUNÇÕES DELEGADAS PARA O SHAREDCORE (COM FALLBACK) ==========
+// ========== FUNÇÕES DE GALERIA DELEGADAS AO SHAREDCORE ==========
+// ✅ getGalleryViews, getTotalGalleryViews, getLastGalleryView
+//    são fornecidas globalmente pelo SharedCore.js (Compatibilidade Global)
+//    Não é necessário duplicar essas funções aqui.
 
-window.getGalleryViews = function(propertyId) {
-    if (window.SharedCore && typeof window.SharedCore.getGalleryViews === 'function') {
-        return window.SharedCore.getGalleryViews(propertyId);
-    }
-    try {
-        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        return views[propertyId] || 0;
-    } catch (error) {
-        return 0;
-    }
-};
-
-window.getTotalGalleryViews = function() {
-    if (window.SharedCore && typeof window.SharedCore.getTotalGalleryViews === 'function') {
-        return window.SharedCore.getTotalGalleryViews();
-    }
-    try {
-        const views = JSON.parse(localStorage.getItem('galleryViews') || '{}');
-        let total = 0;
-        for (let key in views) {
-            if (views.hasOwnProperty(key)) {
-                total += views[key];
-            }
-        }
-        return total;
-    } catch (error) {
-        return 0;
-    }
-};
-
-window.getLastGalleryView = function(propertyId) {
-    if (window.SharedCore && typeof window.SharedCore.getLastGalleryView === 'function') {
-        return window.SharedCore.getLastGalleryView(propertyId);
-    }
-    try {
-        const lastViews = JSON.parse(localStorage.getItem('galleryViewsLast') || '{}');
-        return lastViews[propertyId] || null;
-    } catch (error) {
-        return null;
-    }
-};
-
+// ========== RESET TOTAL DE VISUALIZAÇÕES (ESPECÍFICO DA GALERIA/ADMIN) ==========
+// Mantido aqui porque precisa recarregar a lista de imóveis após o reset.
 window.resetAllGalleryViews = function() {
     if (window.SharedCore && typeof window.SharedCore.resetAllGalleryViews === 'function') {
         const result = window.SharedCore.resetAllGalleryViews();
@@ -73,6 +38,7 @@ window.resetAllGalleryViews = function() {
     return false;
 };
 
+// ========== RESET INDIVIDUAL POR IMÓVEL (ESPECÍFICO DA GALERIA) ==========
 window.resetGalleryViews = function(propertyId, propertyTitle) {
     if (!confirm(`⚠️ TEM CERTEZA que deseja ZERAR as visualizações do imóvel?\n\n"${propertyTitle}"\n\nEsta ação NÃO pode ser desfeita.`)) {
         return false;
