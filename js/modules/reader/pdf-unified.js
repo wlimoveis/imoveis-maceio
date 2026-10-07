@@ -1,5 +1,5 @@
 // js/modules/reader/pdf-unified.js - VERSÃO DEFINITIVA COM RESPONSIVIDADE PARA MOBILE
-// ✅ Função escapeHtml centralizada no SharedCore
+// ✅ Função escapeHtml centralizada no SharedCore (usa window.escapeHtml)
 // ✅ CSS inline movido para admin.css (classes CSS)
 console.log('📄 pdf-unified.js - VERSÃO DEFINITIVA COM RESPONSIVIDADE (CSS externalizado)');
 
@@ -33,8 +33,8 @@ const PdfSystem = (function() {
         modal.id = 'pdfSelectionModal';
         modal.className = 'pdf-selection-modal';
         
-        // OBTER FUNÇÃO ESCAPE HTML CENTRALIZADA
-        const escapeHtmlFn = window.SharedCore ? window.SharedCore.escapeHtml : (function(s){ if(!s)return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); });
+        // ✅ REFATORADO: usa window.escapeHtml (alias global do SharedCore)
+        const escapeHtmlFn = window.escapeHtml;
         
         // Gerar HTML da lista - USANDO CLASSES CSS
         const pdfListHtml = pdfUrls.map((url, index) => {
