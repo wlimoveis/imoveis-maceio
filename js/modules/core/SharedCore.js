@@ -1,7 +1,8 @@
-// js/modules/core/SharedCore.js - VERSÃO OTIMIZADA COM SEGURANÇA E IMAGELOADER DELEGADO
+// js/modules/core/SharedCore.js - VERSÃO OTIMIZADA COM SEGURANÇA, IMAGELOADER DELEGADO E TOAST CENTRALIZADO
 // ✅ CORREÇÃO DE SEGURANÇA: Senhas e chaves NÃO são mais exibidas no console
 // ✅ OTIMIZAÇÃO: ImageLoader delegado ao Support System (fallback silencioso)
-console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.1)');
+// ✅ NOVO: Sistema de Toast centralizado (showToast) — elimina duplicações em properties.js
+console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.2)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -12,12 +13,12 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/ui/media-ui-full.js',
         'debug/ui/admin-list-ui.js',
         'debug/core/diagnostic-registry.js',
-        'performance/performance-system.js',  // ✅ NOVO: Sistema de performance consolidado
+        'performance/performance-system.js',
         'debug/utils/image-recovery.js',
         'debug/utils/core-diagnostics.js',
         'debug/utils/storage-diagnostics.js',
         'debug/utils/gallery-diagnostics.js',
-        'debug/templates/property-template.js', 
+        'debug/templates/property-template.js',
         'debug/ui/location-autocomplete.js',
         'debug/utils/admin-diagnostics.js',
         'debug/utils/core-utilities.js',
@@ -36,7 +37,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         'debug/diagnostics/diagnostics65.js',
         'debug/function-verifier.js',
         'debug/media-logger.js',
-        'debug/media-recovery.js', 
+        'debug/media-recovery.js',
         'debug/pdf-logger.js',
         'debug/utils/media-debug.js',
         'debug/filters/filter-fallbacks.js',
@@ -53,7 +54,7 @@ window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
         return this.supportBaseUrl + modulePath + (this.version ? `?v=${this.version}` : '');
     },
     shouldLoadSupport: function() {
-        return window.location.search.includes('debug=true') || 
+        return window.location.search.includes('debug=true') ||
                window.location.search.includes('test=true') ||
                window.location.hostname.includes('localhost') ||
                window.location.hostname.includes('127.0.0.1');
@@ -81,7 +82,6 @@ if (typeof SUPABASE_CONSTANTS === 'undefined') {
 Object.entries(window.SUPABASE_CONSTANTS).forEach(([key, value]) => {
     if (typeof window[key] === 'undefined' || window[key] === 'undefined') {
         window[key] = value;
-        // Log seguro - oculta informações sensíveis
         const isSensitive = key.includes('KEY') || key.includes('PASSWORD');
         if (isSensitive) {
             console.log(`✅ ${key} definida: 🔒 (oculto por segurança)`);
@@ -108,15 +108,9 @@ const SharedCore = (function() {
     // ========== MANIPULAÇÃO DE STRINGS ==========
     const formatPrice = (price) => {
         if (!price && price !== 0) return 'R$ 0,00';
-        
-        if (typeof price === 'string' && price.includes('R$')) {
-            return price;
-        }
-        
+        if (typeof price === 'string' && price.includes('R$')) return price;
         const numericPrice = parseFloat(price.toString().replace(/[^0-9,-]/g, '').replace(',', '.'));
-        
         if (isNaN(numericPrice)) return 'R$ 0,00';
-        
         return numericPrice.toLocaleString('pt-BR', {
             style: 'currency',
             currency: 'BRL',
@@ -142,7 +136,7 @@ const SharedCore = (function() {
             return '';
         }
     };
-    
+
     const parseFeaturesForStorage = function(value) {
         if (window.SupportCoreUtils?.parseFeaturesForStorage) {
             return window.SupportCoreUtils.parseFeaturesForStorage(value);
@@ -160,7 +154,7 @@ const SharedCore = (function() {
             return '[]';
         }
     };
-    
+
     const ensureBooleanVideo = function(videoValue) {
         if (window.SupportCoreUtils?.ensureBooleanVideo) {
             return window.SupportCoreUtils.ensureBooleanVideo(videoValue);
@@ -175,7 +169,7 @@ const SharedCore = (function() {
         if (typeof videoValue === 'number') return videoValue === 1;
         return Boolean(videoValue);
     };
-    
+
     // ========== UTILITÁRIOS GLOBAIS CENTRALIZADOS ==========
     const escapeHtml = function(str) {
         if (!str) return '';
@@ -189,19 +183,18 @@ const SharedCore = (function() {
     const isVideoUrl = function(url) {
         if (!url) return false;
         const urlLower = url.toLowerCase();
-        return urlLower.includes('.mp4') || 
-               urlLower.includes('.mov') || 
-               urlLower.includes('.webm') || 
+        return urlLower.includes('.mp4') ||
+               urlLower.includes('.mov') ||
+               urlLower.includes('.webm') ||
                urlLower.includes('.avi') ||
                urlLower.includes('video/');
     };
-    
+
     // ========== EXTRAÇÃO DE BAIRRO - CENTRALIZADO ==========
     const extractBairroFromLocation = function(location) {
         if (!location || typeof location !== 'string') return null;
-        
         const locationClean = location.trim();
-        
+
         const bairrosConhecidos = [
             'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
             'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -209,41 +202,39 @@ const SharedCore = (function() {
             'Pinheiro', 'Santa Lúcia', 'Santa Amélia', 'Tabuleiro do Martins',
             'Cidade Universitária', 'Clima Bom', 'Benedito Bentes', 'Santos Dumont',
             'São Jorge', 'Levada', 'Trapiche da Barra', 'Vergel do Lago',
-            'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo', 
+            'Ouro Preto', 'Mutange', 'Fernão Velho', 'Forene', 'Rio Novo',
             'Riacho Doce', 'Pontal da Barra', 'Guaxuma', 'Ipioca', 'Garça Torta',
             'Pescaria', 'Ponta da Terra', 'Murilopes', 'Zona Rural', 'Barra',
             'Barra de São Miguel', 'São Miguel dos Milagres', 'Boa Viagem'
         ];
-        
+
         for (const b of bairrosConhecidos) {
             const regex = new RegExp(`\\b${b.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
-            if (regex.test(locationClean)) {
-                return b;
-            }
+            if (regex.test(locationClean)) return b;
         }
-        
+
         if (locationClean.includes(',')) {
             const parts = locationClean.split(',');
             if (parts.length >= 2) {
                 let possibleBairro = parts[1].trim();
                 possibleBairro = possibleBairro.replace(/Maceió\/AL/i, '').replace(/AL$/i, '').replace(/-.*$/, '').trim();
                 if (possibleBairro.length > 0 && possibleBairro.length < 50) {
-                    possibleBairro = possibleBairro.split(' ').map(word => 
+                    possibleBairro = possibleBairro.split(' ').map(word =>
                         word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()
                     ).join(' ');
                     return possibleBairro;
                 }
             }
         }
-        
-        if (locationClean.toLowerCase().includes('rural') || 
+
+        if (locationClean.toLowerCase().includes('rural') ||
             locationClean.toLowerCase().includes('zona rural')) {
             return 'Zona Rural';
         }
-        
+
         return null;
     };
-    
+
     // ========== FUNÇÕES DE VALIDAÇÃO ==========
     const validateIdForSupabase = function(propertyId) {
         if (window.SupportCoreUtils?.validateIdForSupabase) {
@@ -253,7 +244,7 @@ const SharedCore = (function() {
         const num = Number(propertyId);
         return !isNaN(num) && num > 0 ? num : null;
     };
-    
+
     const manageEditingState = function(id = null) {
         if (window.SupportCoreUtils?.manageEditingState) {
             return window.SupportCoreUtils.manageEditingState(id);
@@ -301,12 +292,12 @@ const SharedCore = (function() {
             if (isNaN(numericValue)) return '';
             return 'R$ ' + this.formatNumberWithSeparators(numericValue);
         },
-        
+
         extractNumbers: function(formattedPrice) {
             if (!formattedPrice) return '';
             return formattedPrice.toString().replace(/\D/g, '');
         },
-        
+
         formatForDisplay: function(value) {
             if (!value && value !== 0) return 'R$ 0,00';
             if (typeof value === 'string' && value.includes('R$') && value.includes(',')) return value;
@@ -336,14 +327,14 @@ const SharedCore = (function() {
         formatForAdmin: function(value) {
             return this.formatForInput(value);
         },
-        
+
         setupAutoFormat: function(inputElement) {
             if (!inputElement || inputElement.tagName !== 'INPUT') return;
             if (inputElement.value && !inputElement.value.startsWith('R$')) {
                 inputElement.value = this.formatForInput(inputElement.value);
             }
             inputElement.addEventListener('input', (e) => {
-                if (e.inputType === 'deleteContentBackward' || 
+                if (e.inputType === 'deleteContentBackward' ||
                     e.inputType === 'deleteContentForward' ||
                     e.inputType === 'deleteByCut') {
                     return;
@@ -363,34 +354,23 @@ const SharedCore = (function() {
     };
 
     // ========== IMAGE LOADER DELEGADO AO SUPPORT SYSTEM ==========
-    // Se o Support System estiver disponível, usa sua versão otimizada
-    // Fallback: função vazia (não crítica) - SILENCIOSA em produção
     const ImageLoader = {
         waitForCriticalImages: function() {
-            // Se o PerformanceSystem estiver disponível, usa sua implementação
             if (window.PerformanceSystem && typeof window.PerformanceSystem.runLowPriority === 'function') {
-                // A implementação real está no Support System
-                // Esta é apenas uma delegação silenciosa
                 return Promise.resolve(0);
             }
-            // Fallback silencioso - NÃO loga em produção
             return Promise.resolve(0);
         },
-        
         waitForAllPropertyImages: function() {
             if (window.PerformanceSystem && window.PerformanceSystem.cache) {
-                // A implementação real está no Support System
                 return Promise.resolve(0);
             }
             return Promise.resolve(0);
         },
-        
         runLowPriority: function(callback) {
-            // Se o PerformanceSystem estiver disponível, usa sua implementação
             if (window.PerformanceSystem && typeof window.PerformanceSystem.runLowPriority === 'function') {
                 return window.PerformanceSystem.runLowPriority(callback);
             }
-            // Fallback: setTimeout simples
             if (typeof callback === 'function') {
                 setTimeout(callback, 100);
             }
@@ -484,30 +464,92 @@ const SharedCore = (function() {
         }
     };
 
+    // ========== SISTEMA DE TOAST CENTRALIZADO ==========
+    /**
+     * Exibe uma notificação toast temporária
+     * @param {string} message - Mensagem a exibir
+     * @param {string} type - 'success' | 'error' | 'info' | 'warning' (default: 'success')
+     * @param {number} duration - Duração em ms (default: 3000)
+     * @returns {HTMLElement|null} O elemento toast criado (ou null se mensagem vazia)
+     */
+    const showToast = function(message, type, duration) {
+        if (!message) return null;
+        type = type || 'success';
+        duration = duration || 3000;
+
+        // Cores por tipo
+        const colors = {
+            success: '#27ae60',
+            error: '#e74c3c',
+            warning: '#f39c12',
+            info: '#3498db'
+        };
+        const bgColor = colors[type] || colors.success;
+
+        // Garantir que o style de animação existe (apenas uma vez)
+        if (!document.getElementById('shared-toast-style')) {
+            const styleEl = document.createElement('style');
+            styleEl.id = 'shared-toast-style';
+            styleEl.textContent = `
+                @keyframes sharedSlideUpFade {
+                    from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+                    to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+                }
+            `;
+            document.head.appendChild(styleEl);
+        }
+
+        // Criar elemento toast
+        const toast = document.createElement('div');
+        toast.textContent = message;
+        toast.setAttribute('role', 'status');
+        toast.setAttribute('aria-live', 'polite');
+        toast.style.cssText =
+            'position:fixed;bottom:30px;left:50%;transform:translateX(-50%);' +
+            'background:' + bgColor + ';color:white;padding:12px 24px;' +
+            'border-radius:50px;font-size:0.9rem;font-weight:600;' +
+            'z-index:10000;box-shadow:0 4px 20px rgba(0,0,0,0.2);' +
+            'animation:sharedSlideUpFade 0.3s ease;pointer-events:none;' +
+            'max-width:90vw;text-align:center;word-wrap:break-word;';
+
+        document.body.appendChild(toast);
+
+        // Remover após duração
+        setTimeout(function() {
+            toast.style.opacity = '0';
+            toast.style.transition = 'opacity 0.3s ease';
+            setTimeout(function() {
+                if (toast.parentNode) toast.parentNode.removeChild(toast);
+            }, 300);
+        }, duration);
+
+        return toast;
+    };
+
     // ========== API PÚBLICA ==========
     return {
         // Performance
         debounce,
-        
+
         // Formatação
         formatPrice,
-        
+
         // Features e Video (Proxy)
         formatFeaturesForDisplay,
         parseFeaturesForStorage,
         ensureBooleanVideo,
-        
+
         // Extração de Bairro
         extractBairroFromLocation,
-        
+
         // Validação de ID e Estado
         validateIdForSupabase,
         manageEditingState,
-        
+
         // Utilitários centralizados
         escapeHtml,
         isVideoUrl,
-        
+
         // Formatação de Preço
         PriceFormatter,
         formatPriceForInput: PriceFormatter.formatForInput.bind(PriceFormatter),
@@ -516,22 +558,25 @@ const SharedCore = (function() {
             const priceField = document.getElementById('propPrice');
             if (priceField) PriceFormatter.setupAutoFormat(priceField);
         },
-        
+
         // Utilitários de Mídia (delegado)
         ImageLoader,
         waitForCriticalImages: ImageLoader.waitForCriticalImages.bind(ImageLoader),
         waitForAllPropertyImages: ImageLoader.waitForAllPropertyImages.bind(ImageLoader),
         runLowPriority: ImageLoader.runLowPriority.bind(ImageLoader),
-        
+
         // Dados
         supabaseFetch,
-        
+
         // Funções de Visualização da Galeria
         getGalleryViews,
         getTotalGalleryViews,
         getLastGalleryView,
         resetAllGalleryViews,
-        
+
+        // Sistema de Toast
+        showToast,
+
         // Constantes
         SUPABASE_CONSTANTS: window.SUPABASE_CONSTANTS
     };
@@ -542,61 +587,61 @@ window.SharedCore = SharedCore;
 // ========== COMPATIBILIDADE GLOBAL ==========
 (function setupGlobalCompatibility() {
     console.log('🔗 Configurando compatibilidade global...');
-    
+
     if (typeof window.formatPrice === 'undefined') {
         window.formatPrice = function(value) {
             return SharedCore.PriceFormatter.formatForCard(value);
         };
     }
-    
+
     if (typeof window.formatPriceForInput === 'undefined') {
         window.formatPriceForInput = function(value) {
             return SharedCore.PriceFormatter.formatForInput(value);
         };
     }
-    
+
     if (typeof window.formatFeaturesForDisplay === 'undefined') {
         window.formatFeaturesForDisplay = function(features) {
             return SharedCore.formatFeaturesForDisplay(features);
         };
     }
-    
+
     if (typeof window.parseFeaturesForStorage === 'undefined') {
         window.parseFeaturesForStorage = function(value) {
             return SharedCore.parseFeaturesForStorage(value);
         };
     }
-    
+
     if (typeof window.ensureBooleanVideo === 'undefined') {
         window.ensureBooleanVideo = function(videoValue) {
             return SharedCore.ensureBooleanVideo(videoValue);
         };
     }
-    
+
     if (typeof window.extractBairroFromLocation === 'undefined') {
         window.extractBairroFromLocation = function(location) {
             return SharedCore.extractBairroFromLocation(location);
         };
     }
-    
+
     if (typeof window.validateIdForSupabase === 'undefined') {
         window.validateIdForSupabase = function(propertyId) {
             return SharedCore.validateIdForSupabase(propertyId);
         };
     }
-    
+
     if (typeof window.manageEditingState === 'undefined') {
         window.manageEditingState = function(id) {
             return SharedCore.manageEditingState(id);
         };
     }
-    
+
     if (typeof window.escapeHtml === 'undefined') {
         window.escapeHtml = function(str) {
             return SharedCore.escapeHtml(str);
         };
     }
-    
+
     if (typeof window.isVideoUrl === 'undefined') {
         window.isVideoUrl = function(url) {
             return SharedCore.isVideoUrl(url);
@@ -626,32 +671,39 @@ window.SharedCore = SharedCore;
             return SharedCore.resetAllGalleryViews();
         };
     }
-    
+
+    // ✅ NOVO: Alias global para showToast
+    if (typeof window.showToast === 'undefined') {
+        window.showToast = function(message, type, duration) {
+            return SharedCore.showToast(message, type, duration);
+        };
+    }
+
     // Aliases para ImageLoader (compatibilidade)
     if (typeof window.waitForCriticalImages === 'undefined') {
         window.waitForCriticalImages = function(selectors, maxWait) {
             return SharedCore.ImageLoader.waitForCriticalImages(selectors, maxWait);
         };
     }
-    
+
     if (typeof window.waitForAllPropertyImages === 'undefined') {
         window.waitForAllPropertyImages = function() {
             return SharedCore.ImageLoader.waitForAllPropertyImages();
         };
     }
-    
+
     if (typeof window.runLowPriority === 'undefined') {
         window.runLowPriority = function(callback) {
             return SharedCore.ImageLoader.runLowPriority(callback);
         };
     }
-    
+
     console.log('✅ Compatibilidade global configurada');
 })();
 
 function initializeGlobalCompatibility() {
     console.log('🔗 Inicializando compatibilidade global...');
-    
+
     const globalExports = {
         debounce: SharedCore.debounce,
         formatPrice: SharedCore.formatPrice,
@@ -671,17 +723,18 @@ function initializeGlobalCompatibility() {
         getTotalGalleryViews: SharedCore.getTotalGalleryViews,
         getLastGalleryView: SharedCore.getLastGalleryView,
         resetAllGalleryViews: SharedCore.resetAllGalleryViews,
+        showToast: SharedCore.showToast,
         waitForCriticalImages: SharedCore.waitForCriticalImages,
         waitForAllPropertyImages: SharedCore.waitForAllPropertyImages,
         runLowPriority: SharedCore.runLowPriority
     };
-    
+
     Object.entries(globalExports).forEach(([name, func]) => {
         if (typeof window[name] === 'undefined' && typeof func === 'function') {
             window[name] = func;
         }
     });
-    
+
     console.log(`✅ ${Object.keys(globalExports).length} funções disponíveis globalmente`);
 }
 
@@ -698,22 +751,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
 setTimeout(() => {
     console.group('🧪 VALIDAÇÃO DO SHAREDCORE');
-    
+
     const essentialFunctions = [
         'debounce', 'formatPrice', 'supabaseFetch',
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation',
         'getGalleryViews', 'getTotalGalleryViews',
-        'waitForCriticalImages', 'runLowPriority'
+        'waitForCriticalImages', 'runLowPriority',
+        'showToast'
     ];
-    
+
     let allAvailable = true;
     essentialFunctions.forEach(func => {
         const available = typeof window[func] === 'function';
         console.log(`${available ? '✅' : '❌'} ${func} disponível`);
         if (!available) allAvailable = false;
     });
-    
-    // ✅ CORREÇÃO DE SEGURANÇA: Validação segura - NÃO exibe valores sensíveis
+
     const essentialConstants = ['SUPABASE_URL', 'SUPABASE_KEY', 'ADMIN_PASSWORD', 'PDF_PASSWORD'];
     essentialConstants.forEach(constant => {
         const exists = window[constant] !== undefined;
@@ -725,9 +778,9 @@ setTimeout(() => {
         }
         if (!exists) allAvailable = false;
     });
-    
+
     console.log(allAvailable ? '🎪 SHAREDCORE VALIDADO' : '⚠️ VERIFICAÇÃO REQUERIDA');
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.1)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.2 com showToast)`);
