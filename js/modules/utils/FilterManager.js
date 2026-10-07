@@ -11,6 +11,7 @@
 // ✅ CORREÇÃO FINAL: "Todos" visível apenas para admin logado
 // ✅ CORREÇÃO: Verificação de properties em filterFn
 // ✅ CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
+// ✅ REFATORAÇÃO: escapeHtml centralizado em SharedCore (função local removida)
 // ============================================================
 
 console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com fallback para residenciais)');
@@ -69,21 +70,15 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
                 if (!properties || !Array.isArray(properties)) return [];
                 return properties.filter(function(p) {
                     // ✅ CORREÇÃO: Identificar residenciais mesmo sem type definido
-                    // 1. Tem type = 'residencial'
                     if (p.type === 'residencial') return true;
-                    // 2. Não tem type definido
                     if (!p.type || p.type === '' || p.type === 'undefined' || p.type === 'null') {
-                        // Se tem rural=false e badge não é de comercial/rural/terreno
                         if (p.rural === false) return true;
-                        // Se tem badge que sugere residencial
                         if (p.badge === 'Novo' || p.badge === 'Destaque' || p.badge === 'Luxo') return true;
-                        // Se não tem badge que sugere outros tipos
                         if (p.badge !== 'Fazenda' && p.badge !== 'Chácara' && 
                             p.badge !== 'Comercial' && p.badge !== 'Terreno' && 
                             p.badge !== 'Incorporação') return true;
                         return false;
                     }
-                    // 3. Tem type que não é comercial/rural/terrenos
                     if (p.type !== 'comercial' && p.type !== 'rural' && p.type !== 'terrenos_incorporacoes') {
                         return true;
                     }
@@ -295,7 +290,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
             const isActive = state.currentBairro === bairro && state.currentFilter === category;
             const option = document.createElement('div');
             option.className = 'filter-dropdown-item' + (isActive ? ' active' : '');
-            option.innerHTML = '<i class="fas fa-location-dot"></i> ' + escapeHtml(bairro);
+            // ✅ REFATORADO: usa window.escapeHtml (alias global criado pelo SharedCore)
+            option.innerHTML = '<i class="fas fa-location-dot"></i> ' + window.escapeHtml(bairro);
             option.onclick = function(e) {
                 e.stopPropagation();
                 state.currentBairro = bairro;
@@ -860,24 +856,15 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
     console.log('🔧 CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"');
     console.log('🏠 CORREÇÃO: "Residencial" como default para visitantes');
     console.log('🛡️ CORREÇÃO: "Todos" visível apenas para admin logado');
+    console.log('🔗 REFATORAÇÃO: escapeHtml local removido - usa window.escapeHtml (alias global do SharedCore)');
 
 })();
-
-// ========== FUNÇÃO DE ESCAPE HTML ==========
-function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/&/g, '&amp;')
-              .replace(/</g, '&lt;')
-              .replace(/>/g, '&gt;')
-              .replace(/"/g, '&quot;')
-              .replace(/'/g, '&#39;');
-}
 
 // ============================================================
 // FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.3 - Correção Final com fallback para residenciais
+// Versão: 2.4 - escapeHtml centralizado em SharedCore
 // Última atualização: 2026-08-10
 // CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
 // CORREÇÃO: Admin só é detectado se painel está VISÍVEL
@@ -885,4 +872,5 @@ function escapeHtml(str) {
 // CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
 // CORREÇÃO: "Residencial" como default para visitantes
 // CORREÇÃO: "Todos" visível apenas para admin logado
+// REFATORAÇÃO: função escapeHtml local removida - usa window.escapeHtml (alias global do SharedCore)
 // ============================================================
