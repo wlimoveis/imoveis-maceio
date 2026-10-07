@@ -1,6 +1,7 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.8 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
+// VERSÃO 3.9 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
+//                + TOAST CENTRALIZADO (showToast do SharedCore)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -14,9 +15,10 @@
 // ✅ NOVO: Suporte a badge1 (Destaque1) e badge2 (Destaque2)
 // ✅ NOVO: Suporte a badge3 (Destaque3 - Bookmark Ribbon)
 // ✅ CORREÇÃO: badge1, badge2, badge3 enviados para o Supabase
+// ✅ REFATORAÇÃO: toasts agora usam window.showToast (SharedCore)
 // ============================================================
 
-console.log('✅ properties.js v3.8 carregado - Gerenciamento de Imóveis (com correção de badges)');
+console.log('✅ properties.js v3.9 carregado - Gerenciamento de Imóveis (com correção de badges + toast centralizado)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -28,65 +30,30 @@ window.selectedProperties = new Set();
 
 window.generateShareLinkForSelected = function() {
     var selectedIds = Array.from(window.selectedProperties);
-    
+
     if (selectedIds.length === 0) {
         alert('⚠️ Nenhum imóvel selecionado. Marque pelo menos um imóvel para compartilhar.');
         return null;
     }
-    
+
     var baseUrl = window.location.origin + window.location.pathname;
     var idsParam = selectedIds.join(',');
     var shareUrl = new URL('?selected_properties=' + encodeURIComponent(idsParam), baseUrl).href;
-    
+
     navigator.clipboard.writeText(shareUrl).then(function() {
-        var toast = document.createElement('div');
-        toast.textContent = '✅ Link copiado! ' + selectedIds.length + ' imóvel(is) selecionado(s). Compartilhe com seu cliente.';
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #27ae60;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            z-index: 10000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            animation: slideUpFade 0.3s ease;
-            pointer-events: none;
-        `;
-        
-        if (!document.querySelector('#shareToastStyle')) {
-            var style = document.createElement('style');
-            style.id = 'shareToastStyle';
-            style.textContent = `
-                @keyframes slideUpFade {
-                    from {
-                        opacity: 0;
-                        transform: translateX(-50%) translateY(20px);
-                    }
-                    to {
-                        opacity: 1;
-                        transform: translateX(-50%) translateY(0);
-                    }
-                }
-            `;
-            document.head.appendChild(style);
+        // ✅ REFATORADO: usa toast centralizado do SharedCore
+        if (typeof window.showToast === 'function') {
+            window.showToast(
+                '✅ Link copiado! ' + selectedIds.length + ' imóvel(is) selecionado(s). Compartilhe com seu cliente.',
+                'success',
+                3000
+            );
         }
-        
-        document.body.appendChild(toast);
-        setTimeout(function() {
-            toast.style.opacity = '0';
-            toast.style.transition = 'opacity 0.3s ease';
-            setTimeout(function() { toast.remove(); }, 300);
-        }, 3000);
     }).catch(function(err) {
         console.error('❌ Erro ao copiar link:', err);
         alert('⚠️ Não foi possível copiar o link. Copie manualmente da barra de endereços.');
     });
-    
+
     return shareUrl;
 };
 
@@ -123,24 +90,24 @@ function updateSelectionCounter() {
     var counterElement = document.getElementById('selectedCount');
     var selectAllCheckbox = document.getElementById('selectAllCheckbox');
     var generateBtn = document.getElementById('generateShareLinkBtn');
-    
+
     if (counterElement) {
         var count = window.selectedProperties.size;
         counterElement.textContent = count + ' imóvel' + (count !== 1 ? 'is' : '') + ' selecionado' + (count !== 1 ? 's' : '');
         counterElement.style.display = count > 0 ? 'inline-flex' : 'none';
     }
-    
+
     if (generateBtn) {
         generateBtn.disabled = window.selectedProperties.size === 0;
         generateBtn.style.opacity = window.selectedProperties.size === 0 ? '0.5' : '1';
         generateBtn.style.cursor = window.selectedProperties.size === 0 ? 'not-allowed' : 'pointer';
     }
-    
+
     if (selectAllCheckbox) {
         var allCheckboxes = document.querySelectorAll('.property-select-checkbox');
         var allChecked = allCheckboxes.length > 0 && Array.from(allCheckboxes).every(function(cb) { return cb.checked; });
         var someChecked = Array.from(allCheckboxes).some(function(cb) { return cb.checked; });
-        
+
         selectAllCheckbox.checked = allChecked;
         selectAllCheckbox.indeterminate = someChecked && !allChecked;
     }
@@ -149,28 +116,28 @@ function updateSelectionCounter() {
 window.loadSelectedPropertiesFromUrl = function() {
     var urlParams = new URLSearchParams(window.location.search);
     var selectedIdsParam = urlParams.get('selected_properties');
-    
+
     if (!selectedIdsParam) {
         return null;
     }
-    
+
     try {
         var idsString = decodeURIComponent(selectedIdsParam);
         var ids = idsString.split(',').map(function(id) { return parseInt(id.trim()); }).filter(function(id) { return !isNaN(id); });
-        
+
         if (ids.length === 0) return null;
-        
+
         var selectedPropertiesList = window.properties.filter(function(p) { return ids.indexOf(p.id) !== -1; });
-        
+
         if (selectedPropertiesList.length === 0) {
             console.warn('⚠️ Nenhum imóvel encontrado com os IDs fornecidos');
             return null;
         }
-        
+
         var container = document.getElementById('properties-container');
         if (container && window.propertyTemplates) {
             container.innerHTML = selectedPropertiesList.map(function(prop) { return window.propertyTemplates.generate(prop); }).join('');
-            
+
             var filterWarning = document.createElement('div');
             filterWarning.style.cssText = `
                 background: #f0f4f8;
@@ -200,7 +167,7 @@ window.loadSelectedPropertiesFromUrl = function() {
             `;
             container.appendChild(filterWarning);
         }
-        
+
         return selectedPropertiesList;
     } catch (error) {
         console.error('❌ Erro ao processar link de seleção:', error);
@@ -210,25 +177,25 @@ window.loadSelectedPropertiesFromUrl = function() {
 
 window.loadPropertiesBasedOnUrl = function() {
     var urlParams = new URLSearchParams(window.location.search);
-    
+
     if (urlParams.has('selected_properties')) {
         var selected = window.loadSelectedPropertiesFromUrl();
         if (selected && selected.length > 0) {
             return;
         }
     }
-    
+
     if (urlParams.has('property')) {
         var propertyIdFromUrl = urlParams.get('property');
         var singleProperty = window.filterPropertyById(propertyIdFromUrl);
-        
+
         var container = document.getElementById('properties-container');
         if (container && singleProperty && window.propertyTemplates) {
             container.innerHTML = window.propertyTemplates.generate(singleProperty);
             return;
         }
     }
-    
+
     if (typeof window.renderProperties === 'function') {
         window.renderProperties('todos');
     }
@@ -251,7 +218,7 @@ window.ensureSupabaseCredentials = function() {
 
 window.calculateMarketTime = function(property) {
     var startDate;
-    
+
     if (property.created_at && property.created_at !== 'undefined' && property.created_at !== null) {
         startDate = new Date(property.created_at);
         if (isNaN(startDate.getTime())) {
@@ -260,11 +227,11 @@ window.calculateMarketTime = function(property) {
     } else {
         startDate = new Date();
     }
-    
+
     var today = new Date();
     var diffTime = Math.abs(today - startDate);
     var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    
+
     return diffDays;
 };
 
@@ -313,57 +280,18 @@ window.shareProperty = async function(id) {
         console.error('❌ Imóvel não encontrado');
         return;
     }
-    
+
     var shareUrl = new URL('?property=' + id, window.location.href).href;
-    
+
     try {
         await navigator.clipboard.writeText(shareUrl);
-        
+
         var card = document.querySelector('.property-card[data-property-id="' + id + '"]');
         if (card) {
-            var toast = document.createElement('div');
-            toast.textContent = '✅ Link copiado! Compartilhe com seus amigos.';
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 30px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: #27ae60;
-                color: white;
-                padding: 12px 24px;
-                border-radius: 50px;
-                font-size: 0.9rem;
-                font-weight: 600;
-                z-index: 10000;
-                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-                animation: slideUpFade 0.3s ease;
-                pointer-events: none;
-            `;
-            
-            if (!document.querySelector('#shareToastStyle')) {
-                var style = document.createElement('style');
-                style.id = 'shareToastStyle';
-                style.textContent = `
-                    @keyframes slideUpFade {
-                        from {
-                            opacity: 0;
-                            transform: translateX(-50%) translateY(20px);
-                        }
-                        to {
-                            opacity: 1;
-                            transform: translateX(-50%) translateY(0);
-                        }
-                    }
-                `;
-                document.head.appendChild(style);
+            // ✅ REFATORADO: usa toast centralizado do SharedCore
+            if (typeof window.showToast === 'function') {
+                window.showToast('✅ Link copiado! Compartilhe com seus amigos.', 'success', 2000);
             }
-            
-            document.body.appendChild(toast);
-            setTimeout(function() {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.3s ease';
-                setTimeout(function() { toast.remove(); }, 300);
-            }, 2000);
         }
     } catch (err) {
         console.error('❌ Erro ao copiar:', err);
@@ -373,32 +301,32 @@ window.shareProperty = async function(id) {
 
 window.filterPropertyById = function(propertyId) {
     if (!propertyId) return null;
-    
+
     var idToFind = Number(propertyId);
-    
+
     if (isNaN(idToFind)) {
         console.warn('⚠️ ID inválido na URL: "' + propertyId + '"');
         return null;
     }
-    
+
     var foundProperty = window.properties.find(function(p) { return p.id === idToFind; });
-    
+
     if (foundProperty) {
         console.log('🔍 Link direto: Exibindo apenas o imóvel ID ' + idToFind + ' - "' + foundProperty.title + '"');
     } else {
         console.warn('⚠️ Link direto: Imóvel com ID ' + idToFind + ' não encontrado.');
     }
-    
+
     return foundProperty;
 };
 
 // ========== CARREGAR PROPRIEDADES ==========
 window.loadPropertiesData = async function() {
     var loading = window.LoadingManager?.show?.('Carregando imóveis...', 'Buscando as melhores oportunidades em Maceió', { variant: 'processing' });
-    
+
     try {
         window.ensureSupabaseCredentials();
-        
+
         var loadStrategies = [
             function() { return window.supabaseLoadProperties?.()?.then(function(r) { return r?.data?.length ? r.data : null; }); },
             function() { return window.supabaseFetch?.('/properties?select=*')?.then(function(r) { return r.ok ? r.data : null; }); },
@@ -407,9 +335,9 @@ window.loadPropertiesData = async function() {
         ];
 
         var propertiesData = null;
-        
+
         setTimeout(function() { loading?.updateMessage?.('Encontre seu imóvel dos sonhos em Maceió 🌴'); }, 800);
-        
+
         for (var i = 0; i < loadStrategies.length; i++) {
             try {
                 propertiesData = await loadStrategies[i]();
@@ -418,8 +346,7 @@ window.loadPropertiesData = async function() {
         }
 
         window.properties = propertiesData || getInitialProperties();
-        
-        // ========== 🔥 CORREÇÃO AUTOMÁTICA DE URLs ==========
+
         if (window.ImageUtils && typeof window.ImageUtils.fixAllProperties === 'function') {
             console.log('🔄 [LOAD] Aplicando correção de URLs via ImageUtils...');
             var result = window.ImageUtils.fixAllProperties();
@@ -435,9 +362,7 @@ window.loadPropertiesData = async function() {
                 window.fixAllPropertiesOnLoad();
             }
         }
-        // ============================================================
-        
-        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no mapeamento
+
         window.properties = window.properties.map(function(prop) {
             return {
                 ...prop,
@@ -450,20 +375,19 @@ window.loadPropertiesData = async function() {
                 badge3: prop.badge3 || 'Nenhum'
             };
         });
-        
+
         window.savePropertiesToStorage();
         loading?.setVariant?.('success');
-        
+
         var propertyCount = window.properties.length;
         var finalMessage = propertyCount === 0 ? 'Pronto para começar! 🏠' :
                           propertyCount === 1 ? '✨ 1 imóvel disponível!' :
                           propertyCount <= 5 ? '✨ ' + propertyCount + ' opções incríveis!' :
                           propertyCount <= 20 ? '🏘️ ' + propertyCount + ' oportunidades em Maceió!' :
                           '🏆 ' + propertyCount + ' imóveis disponíveis!';
-        
+
         loading?.updateMessage?.(finalMessage);
-        
-        // ========== 🔥 CORREÇÃO: Reaplicar filtro após carregar imóveis ==========
+
         if (window.FilterManager && typeof window.FilterManager.refreshFilters === 'function') {
             setTimeout(function() {
                 window.FilterManager.refreshFilters();
@@ -476,21 +400,20 @@ window.loadPropertiesData = async function() {
                 console.log('🔄 [Fallback] Propriedades renderizadas com filtro: ' + currentFilter);
             }, 400);
         }
-        // ============================================================
-        
+
         if (typeof window.loadPropertiesBasedOnUrl === 'function') {
             window.loadPropertiesBasedOnUrl();
         } else if (typeof window.renderProperties === 'function') {
             window.renderProperties('todos');
         }
-        
+
         if (window.PerformanceSystem && window.PerformanceSystem.cache) {
             window.PerformanceSystem.cache.invalidatePattern('properties_data_cache');
             console.log('🧹 Cache de propriedades invalidado via PerformanceSystem');
         } else if (window.SmartCache?.invalidatePropertiesCache) {
             window.SmartCache.invalidatePropertiesCache();
         }
-        
+
     } catch (error) {
         console.error('❌ Erro no carregamento:', error);
         loading?.setVariant?.('error');
@@ -525,7 +448,7 @@ class PropertyTemplateEngine {
     _renderFeaturesList(features, isRural) {
         var displayFeatures = window.SharedCore.formatFeaturesForDisplay(features);
         if (!displayFeatures) return '';
-        
+
         return displayFeatures.split(',').map(function(f) {
             var feature = f.trim();
             if (feature) {
@@ -537,41 +460,41 @@ class PropertyTemplateEngine {
 
     generate(property) {
         if (window.TemplateCache && typeof window.TemplateCache.getTemplate === 'function') {
-            return window.TemplateCache.getTemplate(property, function(prop) { 
-                return this._generateTemplate(prop); 
+            return window.TemplateCache.getTemplate(property, function(prop) {
+                return this._generateTemplate(prop);
             }.bind(this));
         }
-        
+
         var cacheKey = 'prop_' + property.id + '_' + (property.images?.length || 0) + '_' + property.has_video;
         if (this._localCache.has(cacheKey)) {
             return this._localCache.get(cacheKey);
         }
-        
+
         var html = this._generateTemplate(property);
         this._localCache.set(cacheKey, html);
-        
+
         if (this._localCache.size > 30) {
             var keysToDelete = Array.from(this._localCache.keys()).slice(0, 10);
             keysToDelete.forEach(function(key) { this._localCache.delete(key); }.bind(this));
         }
-        
+
         return html;
     }
-    
+
     _generateTemplate(property) {
         var displayFeatures = window.SharedCore.formatFeaturesForDisplay(property.features);
         var descriptionText = property.description || 'Descrição não disponível.';
-        var truncatedDesc = descriptionText.length > 120 
-            ? descriptionText.substring(0, 120) + '...' 
+        var truncatedDesc = descriptionText.length > 120
+            ? descriptionText.substring(0, 120) + '...'
             : descriptionText;
-        
+
         var newBadgeHtml = '';
         var featuresHtml = this._renderFeaturesList(property.features, property.rural);
         var formattedPrice = window.SharedCore.PriceFormatter.formatForCard(property.price);
         var safeTitle = this._safe(property.title) || 'Imóvel';
         var safeLocation = this._safe(property.location) || '';
         var altText = safeTitle + (safeLocation ? ' - ' + safeLocation : '') + ' - foto do imóvel';
-        
+
         var html = `
             <div class="property-card" data-property-id="${property.id}" data-property-title="${this._safe(property.title)}">
                 ${this.generateImageSection(property, newBadgeHtml, altText)}
@@ -605,19 +528,19 @@ class PropertyTemplateEngine {
     generateImageSection(property, newBadgeHtml, altText) {
         newBadgeHtml = newBadgeHtml || '';
         altText = altText || (this._safe(property.title) || 'Imóvel') + ' - foto do imóvel';
-        
+
         var hasImages = property.images && property.images.length > 0 && property.images !== 'EMPTY';
         var imageUrls = hasImages ? property.images.split(',').filter(function(url) { return url && url.trim() !== ''; }) : [];
         var imageCount = imageUrls.length;
         var hasGallery = imageCount > 1;
         var hasPdfs = property.pdfs && property.pdfs !== 'EMPTY' && property.pdfs.trim() !== '';
         var safeTitle = this._safe(property.title) || 'Imóvel';
-        
+
         var fallbackUrl = this.imageFallback;
         if (window.ImageUtils && typeof window.ImageUtils.getFallbackUrl === 'function') {
             fallbackUrl = window.ImageUtils.getFallbackUrl(property.title);
         }
-        
+
         if (hasGallery && typeof window.createPropertyGallery === 'function') {
             try {
                 return window.createPropertyGallery(property);
@@ -625,23 +548,23 @@ class PropertyTemplateEngine {
                 console.warn('❌ Erro na galeria, usando fallback:', e);
             }
         }
-        
+
         var firstImageUrl = imageCount > 0 ? imageUrls[0] : fallbackUrl;
-        
+
         return `
             <div class="property-image ${property.rural ? 'rural-image' : ''}" 
                  style="position: relative; height: 250px; overflow: hidden;">
                 <div class="property-gallery-container" 
                      onclick="if(window.openGalleryAtCurrentIndex) openGalleryAtCurrentIndex(${property.id})" 
                      style="cursor:pointer; position:relative; width:100%; height:100%;">
-                    
+
                     <img src="${firstImageUrl}" 
                          loading="lazy"
                          style="width: 100%; height: 100%; object-fit: cover;"
                          alt="${altText}"
                          data-original-src="${firstImageUrl}"
                          onerror="this.src='${fallbackUrl}'">
-                    
+
                     ${property.badge ? `
                         <div class="property-badge ${property.rural ? 'rural-badge' : ''}" style="
                             position: absolute; 
@@ -658,7 +581,7 @@ class PropertyTemplateEngine {
                             ${this._safe(property.badge)}
                         </div>
                     ` : ''}
-                    
+
                     ${hasGallery ? `
                         <div class="image-count" style="
                             position: absolute;
@@ -676,7 +599,7 @@ class PropertyTemplateEngine {
                             <i class="fas fa-images" aria-hidden="true"></i> ${imageCount}
                         </div>
                     ` : ''}
-                    
+
                     <button class="gallery-expand-icon" 
                             aria-label="Expandir galeria de ${safeTitle}"
                             role="button"
@@ -702,7 +625,7 @@ class PropertyTemplateEngine {
                         <i class="fas fa-expand" aria-hidden="true"></i>
                     </button>
                 </div>
-                
+
                 ${hasPdfs ? `
                     <button class="pdf-access" onclick="event.stopPropagation(); if(window.PdfSystem) window.PdfSystem.showModal(${property.id})" 
                             aria-label="Documentos PDF do imóvel ${safeTitle}"
@@ -732,14 +655,14 @@ class PropertyTemplateEngine {
             </div>
         `;
     }
-    
+
     updateCardContent(propertyId, propertyData) {
         var card = document.querySelector('.property-card[data-property-id="' + propertyId + '"]');
         if (!card) {
             console.warn('⚠️ Card ' + propertyId + ' não encontrado');
             return false;
         }
-        
+
         try {
             if (propertyData.price !== undefined) {
                 var priceElement = card.querySelector('[data-price-field]');
@@ -748,7 +671,7 @@ class PropertyTemplateEngine {
                     priceElement.textContent = formattedPrice;
                 }
             }
-            
+
             if (propertyData.title !== undefined) {
                 var titleElement = card.querySelector('[data-title-field]');
                 if (titleElement) {
@@ -756,29 +679,29 @@ class PropertyTemplateEngine {
                 }
                 card.setAttribute('data-property-title', propertyData.title);
             }
-            
+
             if (propertyData.location !== undefined) {
                 var locationElement = card.querySelector('[data-location-field]');
                 if (locationElement) {
                     locationElement.innerHTML = '<i class="fas fa-map-marker-alt" aria-hidden="true"></i> ' + this._safe(propertyData.location);
                 }
             }
-            
+
             if (propertyData.description !== undefined) {
                 var descriptionElement = card.querySelector('[data-description-field]');
                 if (descriptionElement) {
                     var descriptionText = propertyData.description || 'Descrição não disponível.';
-                    var truncatedDesc = descriptionText.length > 120 
-                        ? descriptionText.substring(0, 120) + '...' 
+                    var truncatedDesc = descriptionText.length > 120
+                        ? descriptionText.substring(0, 120) + '...'
                         : descriptionText;
                     descriptionElement.textContent = this._safe(truncatedDesc);
                 }
             }
-            
+
             if (propertyData.features !== undefined) {
                 var featuresElement = card.querySelector('[data-features-field]');
                 var featuresHtml = this._renderFeaturesList(propertyData.features, propertyData.rural);
-                
+
                 if (featuresElement) {
                     if (featuresHtml) {
                         featuresElement.innerHTML = featuresHtml;
@@ -792,7 +715,7 @@ class PropertyTemplateEngine {
                     }
                 }
             }
-            
+
             if (window.TemplateCache && typeof window.TemplateCache.invalidate === 'function') {
                 window.TemplateCache.invalidate(propertyId);
             } else if (this._localCache) {
@@ -805,20 +728,20 @@ class PropertyTemplateEngine {
                 }
                 keysToDelete.forEach(function(key) { this._localCache.delete(key); }.bind(this));
             }
-            
+
             card.classList.add('highlighted');
             setTimeout(function() {
                 card.classList.remove('highlighted');
             }, 1000);
-            
+
             return true;
-            
+
         } catch (error) {
             console.error('❌ Erro ao atualizar card ' + propertyId + ':', error);
             return false;
         }
     }
-    
+
     clearCache() {
         if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
             return window.TemplateCache.invalidateAll();
@@ -916,28 +839,26 @@ window.FeatureIconMapper = {
         { keywords: ['frigorífico', 'agroindústria', 'agroindustria', 'processamento', 'cadeia de processamento', 'industrialização', 'beneficiamento'], icon: 'fas fa-industry', color: '#7f8c8d', label: 'Agroindústria' },
         { keywords: ['area privativa', 'area construida', 'area util', 'm²', 'metros quadrados', 'area total'], icon: 'fa-home', color: '#6c5ce7', label: 'Área' }
     ],
-    
+
     normalizeText: function(text) {
         if (!text) return '';
         return text.toString().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim();
     },
-    
+
     matchesKeyword: function(text, keywordList) {
         var normalizedText = this.normalizeText(text);
         for (var i = 0; i < keywordList.length; i++) {
             var keyword = keywordList[i];
             var normalizedKeyword = this.normalizeText(keyword);
-            // Correspondência exata ou contém
-            if (normalizedText === normalizedKeyword || 
-                normalizedText.indexOf(normalizedKeyword) !== -1 || 
+            if (normalizedText === normalizedKeyword ||
+                normalizedText.indexOf(normalizedKeyword) !== -1 ||
                 normalizedKeyword.indexOf(normalizedText) !== -1) {
                 return true;
             }
-            // Correspondência por palavra (quebra por espaços)
             var words = normalizedText.split(/\s+/);
             for (var j = 0; j < words.length; j++) {
                 var word = words[j];
-                if (word === normalizedKeyword || 
+                if (word === normalizedKeyword ||
                     (normalizedKeyword.length > 2 && word.indexOf(normalizedKeyword) !== -1)) {
                     return true;
                 }
@@ -945,7 +866,7 @@ window.FeatureIconMapper = {
         }
         return false;
     },
-    
+
     getIconForFeature: function(featureText) {
         if (!featureText) return { icon: 'fa-tag', color: '#95a5a6', label: 'Característica' };
         var lowerText = this.normalizeText(featureText);
@@ -957,7 +878,7 @@ window.FeatureIconMapper = {
         }
         return { icon: 'fa-tag', color: '#95a5a6', label: featureText };
     },
-    
+
     renderFeatureWithIcon: function(featureText, isRural) {
         isRural = isRural || false;
         var iconData = this.getIconForFeature(featureText);
@@ -991,15 +912,10 @@ function getInitialProperties() {
 // DELEGAÇÃO DE FILTROS PARA O FilterManager (Cisão A) - CORRIGIDA
 // ============================================================
 
-/**
- * DELEGADO: filterPropertiesByCategoryAndBairro
- * Agora gerenciado pelo FilterManager
- */
 window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
         return window.FilterManager.applyMainFilter(category);
     }
-    // Fallback: implementação simplificada
     console.warn('⚠️ FilterManager não disponível, usando fallback');
     if (!window.properties || !Array.isArray(window.properties)) return [];
     return window.properties.filter(function(p) {
@@ -1013,10 +929,6 @@ window.filterPropertiesByCategoryAndBairro = function(category, bairro) {
     });
 };
 
-/**
- * DELEGADO: filterPropertiesByCategoryAndDestaque
- * Agora gerenciado pelo FilterManager
- */
 window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue) {
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
         return window.FilterManager.applyMainFilter(category);
@@ -1029,7 +941,7 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
             'Rural': function(p) { return p.type === 'rural' || p.rural === true; },
             'Residencial': function(p) { return p.type === 'residencial'; },
             'Comercial': function(p) { return p.type === 'comercial'; },
-            'TerrenosIncorporacoes': function(p) { 
+            'TerrenosIncorporacoes': function(p) {
                 return p.badge === 'Terreno' || p.badge === 'Incorporação' || p.type === 'terrenos_incorporacoes';
             }
         };
@@ -1042,16 +954,10 @@ window.filterPropertiesByCategoryAndDestaque = function(category, destaqueValue)
     return filtered;
 };
 
-/**
- * DELEGADO: renderPropertiesWithFilter
- * Agora gerenciado pelo FilterManager
- */
 window.renderPropertiesWithFilter = function(filteredProperties) {
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
-        // O FilterManager já renderiza automaticamente
         return;
     }
-    // Fallback
     var container = document.getElementById('properties-container');
     if (!container) return;
     if (!filteredProperties || !Array.isArray(filteredProperties) || filteredProperties.length === 0) {
@@ -1067,29 +973,22 @@ window.renderPropertiesWithFilter = function(filteredProperties) {
     if (countElement) countElement.textContent = filteredProperties.length + ' imóvel(is)';
 };
 
-/**
- * DELEGADO: filterPropertiesByType - CORRIGIDO (retorna array sempre)
- * Agora gerenciado pelo FilterManager
- */
 window.filterPropertiesByType = function(properties, filter) {
-    // 🔴 CORREÇÃO: Verificar se properties é válido
     if (!properties || !Array.isArray(properties)) {
         console.warn('⚠️ filterPropertiesByType: properties não é um array válido');
         return [];
     }
-    
+
     if (window.FilterManager && typeof window.FilterManager.applyMainFilter === 'function') {
-        // O FilterManager já gerencia isso
         return properties;
     }
-    
-    // Fallback
+
     if (filter === 'todos' || !filter) return properties;
     var filterMap = {
         'Residencial': function(p) { return p.type === 'residencial'; },
         'Comercial': function(p) { return p.type === 'comercial'; },
         'Rural': function(p) { return p.type === 'rural' || p.rural === true; },
-        'TerrenosIncorporacoes': function(p) { 
+        'TerrenosIncorporacoes': function(p) {
             return p.badge === 'Terreno' || p.badge === 'Incorporação' || p.type === 'terrenos_incorporacoes';
         }
     };
@@ -1097,16 +996,11 @@ window.filterPropertiesByType = function(properties, filter) {
     return filterFn ? properties.filter(filterFn) : properties;
 };
 
-/**
- * DELEGADO: setupFilters
- * Agora gerenciado pelo FilterManager
- */
 window.setupFilters = function() {
     if (window.FilterManager && typeof window.FilterManager.init === 'function') {
         return window.FilterManager.init();
     }
     console.warn('⚠️ FilterManager não disponível para setupFilters');
-    // Fallback: implementação antiga
     var filterButtons = document.querySelectorAll('.filter-btn');
     if (filterButtons.length) {
         filterButtons.forEach(function(btn) {
@@ -1133,40 +1027,37 @@ window.setupFilters = function() {
 window.renderProperties = function(filter, forceClearCache) {
     filter = filter || 'todos';
     forceClearCache = forceClearCache || false;
-    
+
     if (forceClearCache && window.propertyTemplates?.clearCache) window.propertyTemplates.clearCache();
-    
+
     var container = document.getElementById('properties-container');
     if (!container) return;
-    
-    // 🔴 CORREÇÃO: Verificar se properties existe e é um array
+
     if (!window.properties || !Array.isArray(window.properties)) {
         console.warn('⚠️ renderProperties: window.properties não é um array');
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>';
         return;
     }
-    
+
     if (window.properties.length === 0) {
         container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível.</p>';
         return;
     }
 
-    // 🔴 CORREÇÃO: Garantir que filterPropertiesByType retorne um array
     var filtered = window.filterPropertiesByType(window.properties, filter);
-    
-    // 🔴 CORREÇÃO: Verificar se filtered é um array
+
     if (!filtered || !Array.isArray(filtered)) {
         console.warn('⚠️ renderProperties: filtered não é um array, usando properties');
         filtered = window.properties;
     }
-    
-    if (filtered.length === 0) { 
-        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>'; 
-        return; 
+
+    if (filtered.length === 0) {
+        container.innerHTML = '<p class="no-properties">Nenhum imóvel disponível para este filtro.</p>';
+        return;
     }
 
     container.innerHTML = filtered.map(function(prop) { return window.propertyTemplates.generate(prop); }).join('');
-    
+
     var countElement = document.getElementById('propertyCount');
     if (countElement) countElement.textContent = filtered.length + ' imóveis';
 };
@@ -1194,7 +1085,7 @@ window.contactAgent = function(id) {
 // ========== CRUD OPERATIONS ==========
 window.addNewProperty = async function(propertyData) {
     console.log('📦 addNewProperty recebido:', propertyData);
-    
+
     if (!propertyData.title || !propertyData.price || !propertyData.location) {
         alert('❌ Preencha Título, Preço e Localização!');
         return null;
@@ -1204,8 +1095,7 @@ window.addNewProperty = async function(propertyData) {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
         propertyData.features = window.SharedCore.parseFeaturesForStorage(propertyData.features);
         propertyData.has_video = window.SharedCore.ensureBooleanVideo(propertyData.has_video);
-        
-        // 🔴 CORREÇÃO: Garantir que badges existam
+
         if (!propertyData.badge1) propertyData.badge1 = 'Nenhum';
         if (!propertyData.badge2) propertyData.badge2 = 'Nenhum';
         if (!propertyData.badge3) propertyData.badge3 = 'Nenhum';
@@ -1224,7 +1114,6 @@ window.addNewProperty = async function(propertyData) {
         var supabaseSuccess = false, supabaseId = null;
         if (window.ensureSupabaseCredentials() && typeof window.supabaseSaveProperty === 'function') {
             try {
-                // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no payload do Supabase
                 var supabaseResponse = await window.supabaseSaveProperty({
                     title: propertyData.title,
                     price: propertyData.price,
@@ -1255,8 +1144,7 @@ window.addNewProperty = async function(propertyData) {
             if (pId > maxId) maxId = pId;
         }
         var newId = (supabaseSuccess && supabaseId) ? supabaseId : (maxId + 1);
-        
-        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no newProperty
+
         var newProperty = {
             id: newId,
             title: propertyData.title,
@@ -1278,20 +1166,20 @@ window.addNewProperty = async function(propertyData) {
             savedToSupabase: supabaseSuccess,
             syncStatus: supabaseSuccess ? 'synced' : 'local_only'
         };
-        
+
         console.log('🏠 Novo imóvel criado:', newProperty);
 
         window.properties.unshift(newProperty);
         window.savePropertiesToStorage();
         window.renderProperties('todos', true);
         if (typeof window.loadPropertyList === 'function') setTimeout(function() { window.loadPropertyList(); }, 100);
-        
+
         if (window.TemplateCache && typeof window.TemplateCache.invalidateAll === 'function') {
             window.TemplateCache.invalidateAll();
         } else if (window.SmartCache?.invalidatePropertiesCache) {
             window.SmartCache.invalidatePropertiesCache();
         }
-        
+
         if (typeof MediaSystem?.resetState === 'function') setTimeout(function() { MediaSystem.resetState(); }, 300);
 
         return newProperty;
@@ -1314,8 +1202,7 @@ window.updateProperty = async function(id, propertyData) {
     try {
         if (propertyData.price) propertyData.price = window.SharedCore.PriceFormatter.formatForInput(propertyData.price);
         var processedData = Object.assign({}, propertyData, { has_video: window.SharedCore.ensureBooleanVideo(propertyData.has_video) });
-        
-        // 🔴 CORREÇÃO: Incluir badge1, badge2 e badge3 no updateData
+
         var updateData = {
             title: processedData.title || window.properties[index].title,
             price: processedData.price || window.properties[index].price,
@@ -1341,11 +1228,11 @@ window.updateProperty = async function(id, propertyData) {
                 var validId = window.SharedCore.validateIdForSupabase(id);
                 var response = await fetch(window.SUPABASE_URL + '/rest/v1/properties?id=eq.' + validId, {
                     method: 'PATCH',
-                    headers: { 
-                        'Content-Type': 'application/json', 
-                        'apikey': window.SUPABASE_KEY, 
-                        'Authorization': 'Bearer ' + window.SUPABASE_KEY, 
-                        'Prefer': 'return=representation' 
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': window.SUPABASE_KEY,
+                        'Authorization': 'Bearer ' + window.SUPABASE_KEY,
+                        'Prefer': 'return=representation'
                     },
                     body: JSON.stringify(updateData)
                 });
@@ -1366,7 +1253,7 @@ window.updateProperty = async function(id, propertyData) {
 window.updateLocalProperty = function(propertyId, updatedData) {
     var index = window.properties.findIndex(function(p) { return p.id == propertyId; });
     if (index === -1) return false;
-    
+
     window.properties[index] = Object.assign({}, window.properties[index], updatedData, { id: propertyId, updated_at: new Date().toISOString() });
     window.savePropertiesToStorage();
     if (typeof window.loadPropertyList === 'function') setTimeout(function() { window.loadPropertyList(); }, 100);
@@ -1381,7 +1268,7 @@ window.deleteProperty = async function(id) {
         alert('❌ Imóvel não encontrado!');
         return false;
     }
-    
+
     if (!confirm('⚠️ TEM CERTEZA que deseja excluir o imóvel?\n\n"' + property.title + '"\n\nEsta ação NÃO pode ser desfeita.')) {
         return false;
     }
@@ -1390,11 +1277,11 @@ window.deleteProperty = async function(id) {
     var mediaDeletionError = null;
 
     if (typeof MediaSystem !== 'undefined' && typeof MediaSystem.deleteFilesFromStorage === 'function') {
-        var imageUrls = property.images && property.images !== 'EMPTY' 
-            ? property.images.split(',').filter(function(url) { return url && url.trim() !== ''; }) 
+        var imageUrls = property.images && property.images !== 'EMPTY'
+            ? property.images.split(',').filter(function(url) { return url && url.trim() !== ''; })
             : [];
-        var pdfUrls = property.pdfs && property.pdfs !== 'EMPTY' 
-            ? property.pdfs.split(',').filter(function(url) { return url && url.trim() !== ''; }) 
+        var pdfUrls = property.pdfs && property.pdfs !== 'EMPTY'
+            ? property.pdfs.split(',').filter(function(url) { return url && url.trim() !== ''; })
             : [];
         var allFileUrls = imageUrls.concat(pdfUrls);
 
@@ -1408,7 +1295,7 @@ window.deleteProperty = async function(id) {
             } catch (error) {
                 mediaDeletionError = error.message;
                 mediaDeletionSuccess = false;
-                
+
                 var userConfirmed = confirm('⚠️ ERRO AO EXCLUIR ARQUIVOS:\n\n' + mediaDeletionError + '\n\nDeseja continuar com a exclusão do registro?');
                 if (!userConfirmed) {
                     alert('❌ Exclusão cancelada');
@@ -1443,9 +1330,9 @@ window.deleteProperty = async function(id) {
     }
 
     window.properties = window.properties.filter(function(p) { return p.id !== id; });
-    
+
     var saved = window.savePropertiesToStorage();
-    
+
     if (!saved) {
         console.error('❌ Falha ao salvar após exclusão local');
         alert('⚠️ Erro ao salvar alterações localmente!');
@@ -1491,27 +1378,27 @@ window.adminItemsPerPage = isMobileForPagination ? 3 : 4;
 function createPaginationControls(totalPages, currentPage, itemsPerPage) {
     itemsPerPage = itemsPerPage || null;
     var paginationDiv = document.createElement('div');
-    
+
     var isDesktop = window.innerWidth > 768;
     var isMobile = window.innerWidth <= 768;
-    
+
     if (isDesktop) {
         paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.4rem; margin: 0.5rem 0 0 0; flex-wrap: wrap; padding: 0.3rem 0.5rem;';
     } else {
         paginationDiv.style.cssText = 'display: flex; justify-content: center; align-items: center; gap: 0.3rem; margin: 0.8rem 0 0.3rem 0; flex-wrap: wrap; padding: 0.4rem 0.2rem; overflow-x: auto; -webkit-overflow-scrolling: touch;';
     }
-    
+
     var currentItemsPerPage = itemsPerPage || (isMobile ? 3 : window.adminItemsPerPage || 4);
     var maxVisible = isMobile ? 5 : 8;
-    
-    var prevBtn = createNavButton('◀', currentPage === 1, function() { 
-        if (currentPage > 1) window.loadPropertyList(currentPage - 1); 
+
+    var prevBtn = createNavButton('◀', currentPage === 1, function() {
+        if (currentPage > 1) window.loadPropertyList(currentPage - 1);
     }, isDesktop);
     prevBtn.title = 'Página anterior';
     paginationDiv.appendChild(prevBtn);
-    
+
     var pagesToShow = [];
-    
+
     if (totalPages <= maxVisible) {
         for (var i = 1; i <= totalPages; i++) {
             pagesToShow.push(i);
@@ -1520,15 +1407,15 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
         var halfVisible = Math.floor((maxVisible - 1) / 2);
         var startPage = Math.max(1, currentPage - halfVisible);
         var endPage = Math.min(totalPages, currentPage + halfVisible);
-        
+
         if (currentPage <= halfVisible + 1) {
             endPage = Math.min(totalPages, maxVisible);
         }
-        
+
         if (currentPage > totalPages - halfVisible) {
             startPage = Math.max(1, totalPages - maxVisible + 1);
         }
-        
+
         if (endPage - startPage + 1 < maxVisible) {
             if (startPage === 1) {
                 endPage = Math.min(totalPages, startPage + maxVisible - 1);
@@ -1536,23 +1423,23 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
                 startPage = Math.max(1, endPage - maxVisible + 1);
             }
         }
-        
+
         for (var i = startPage; i <= endPage; i++) {
             pagesToShow.push(i);
         }
     }
-    
+
     pagesToShow.forEach(function(pageNum) {
         var pageBtn = createPageButton(pageNum, currentPage, isDesktop);
         paginationDiv.appendChild(pageBtn);
     });
-    
-    var nextBtn = createNavButton('▶', currentPage === totalPages, function() { 
-        if (currentPage < totalPages) window.loadPropertyList(currentPage + 1); 
+
+    var nextBtn = createNavButton('▶', currentPage === totalPages, function() {
+        if (currentPage < totalPages) window.loadPropertyList(currentPage + 1);
     }, isDesktop);
     nextBtn.title = 'Próxima página';
     paginationDiv.appendChild(nextBtn);
-    
+
     if (isMobile) {
         var pageIndicator = document.createElement('span');
         pageIndicator.textContent = currentPage + '/' + totalPages;
@@ -1567,11 +1454,11 @@ function createPaginationControls(totalPages, currentPage, itemsPerPage) {
         `;
         paginationDiv.appendChild(pageIndicator);
     }
-    
+
     var perPageSelect = createPerPageSelect(currentItemsPerPage, isDesktop);
     perPageSelect.title = 'Itens por página';
     paginationDiv.appendChild(perPageSelect);
-    
+
     return paginationDiv;
 }
 
@@ -1579,12 +1466,12 @@ function createNavButton(text, disabled, onClick, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
     btn.innerHTML = text;
-    
+
     var padding = isDesktop ? '0.3rem 0.6rem' : '0.4rem 0.7rem';
     var fontSize = isDesktop ? '0.7rem' : '0.65rem';
     var minWidth = isDesktop ? '32px' : '28px';
     var height = isDesktop ? '32px' : '28px';
-    
+
     btn.style.cssText = `
         background: ${disabled ? '#e9ecef' : '#1a5276'};
         color: ${disabled ? '#999' : 'white'};
@@ -1603,7 +1490,7 @@ function createNavButton(text, disabled, onClick, isDesktop) {
         opacity: ${disabled ? '0.5' : '1'};
         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     `;
-    
+
     btn.disabled = disabled;
     if (!disabled) {
         btn.onclick = onClick;
@@ -1629,13 +1516,13 @@ function createPageButton(pageNum, currentPage, isDesktop) {
     isDesktop = isDesktop || false;
     var btn = document.createElement('button');
     btn.textContent = pageNum;
-    
+
     var isActive = pageNum === currentPage;
     var padding = isDesktop ? '0.3rem 0.6rem' : '0.3rem 0.5rem';
     var fontSize = isDesktop ? '0.75rem' : '0.65rem';
     var minWidth = isDesktop ? '32px' : '26px';
     var height = isDesktop ? '32px' : '26px';
-    
+
     if (isActive) {
         btn.style.cssText = `
             background: #d4a017 !important;
@@ -1680,7 +1567,7 @@ function createPageButton(pageNum, currentPage, isDesktop) {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         `;
-        
+
         btn.onmouseenter = function() {
             this.style.background = '#e8f4f8';
             this.style.borderColor = '#1a5276';
@@ -1701,25 +1588,25 @@ function createPageButton(pageNum, currentPage, isDesktop) {
             this.style.transform = 'scale(1.05)';
             this.style.boxShadow = '0 2px 8px rgba(26, 82, 118, 0.15)';
         };
-        
-        btn.onclick = function() { 
-            window.loadPropertyList(pageNum); 
+
+        btn.onclick = function() {
+            window.loadPropertyList(pageNum);
         };
     }
-    
+
     btn.title = isActive ? 'Página atual: ' + pageNum : 'Ir para página ' + pageNum;
-    
+
     return btn;
 }
 
 function createPerPageSelect(currentItemsPerPage, isDesktop) {
     isDesktop = isDesktop || false;
     var select = document.createElement('select');
-    
+
     var padding = isDesktop ? '0.2rem 0.3rem' : '0.2rem 0.2rem';
     var fontSize = isDesktop ? '0.65rem' : '0.6rem';
     var marginLeft = isDesktop ? '0.3rem' : '0.2rem';
-    
+
     select.style.cssText = `
         background: white;
         border: 1px solid #d1d8dd;
@@ -1733,16 +1620,16 @@ function createPerPageSelect(currentItemsPerPage, isDesktop) {
         color: #1a5276;
         font-weight: 500;
     `;
-    
+
     select.innerHTML = `
         <option value="3" ${currentItemsPerPage === 3 ? 'selected' : ''}>3</option>
         <option value="4" ${currentItemsPerPage === 4 ? 'selected' : ''}>4</option>
         <option value="8" ${currentItemsPerPage === 8 ? 'selected' : ''}>8</option>
         <option value="12" ${currentItemsPerPage === 12 ? 'selected' : ''}>12</option>
     `;
-    
+
     select.title = 'Itens por página';
-    
+
     select.onchange = function(e) {
         var newValue = parseInt(e.target.value);
         if (!isNaN(newValue) && newValue > 0) {
@@ -1751,46 +1638,46 @@ function createPerPageSelect(currentItemsPerPage, isDesktop) {
             window.loadPropertyList(1);
         }
     };
-    
+
     return select;
 }
 
 window.loadPropertyList = function(page) {
     page = page || window.adminCurrentPage;
-    
+
     if (!window.properties || typeof window.properties.forEach !== 'function') {
         console.error('❌ window.properties não é um array válido');
         return;
     }
-    
+
     var container = document.getElementById('propertyList');
     var countElement = document.getElementById('propertyCount');
-    
+
     if (!container) return;
-    
+
     var isMobile = window.innerWidth <= 768;
     var isDesktop = window.innerWidth > 768;
     var itemsPerPage = isMobile ? 3 : window.adminItemsPerPage;
-    
+
     window.adminCurrentPage = page;
-    
+
     var totalItems = window.properties.length;
     var totalPages = Math.ceil(totalItems / itemsPerPage);
     var startIndex = (page - 1) * itemsPerPage;
     var endIndex = Math.min(startIndex + itemsPerPage, totalItems);
     var paginatedProperties = window.properties.slice(startIndex, endIndex);
-    
+
     container.innerHTML = '';
-    
+
     if (countElement) {
         countElement.textContent = totalItems;
     }
-    
+
     if (totalItems === 0) {
         container.innerHTML = '<p style="text-align: center; color: #666; padding: 2rem;">Nenhum imóvel cadastrado</p>';
         return;
     }
-    
+
     if (isDesktop) {
         container.style.maxHeight = 'none';
         container.style.overflowY = 'visible';
@@ -1803,10 +1690,9 @@ window.loadPropertyList = function(page) {
         container.style.paddingRight = '5px';
         container.style.paddingBottom = '20px';
     }
-    
+
     var totalViews = window.getTotalGalleryViews ? window.getTotalGalleryViews() : 0;
-    
-    // BARRA DE SELEÇÃO MÚLTIPLA
+
     var selectionBar = document.createElement('div');
     selectionBar.style.cssText = `
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -1819,10 +1705,10 @@ window.loadPropertyList = function(page) {
         justify-content: space-between;
         gap: 0.4rem;
     `;
-    
+
     var selectionLeft = document.createElement('div');
     selectionLeft.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;';
-    
+
     var selectAllContainer = document.createElement('label');
     selectAllContainer.style.cssText = 'display: flex; align-items: center; gap: 0.3rem; color: white; cursor: pointer; font-size: 0.7rem;';
     selectAllContainer.innerHTML = `
@@ -1830,7 +1716,7 @@ window.loadPropertyList = function(page) {
         <span><i class="fas fa-check-double" aria-hidden="true"></i> Selecionar Todos</span>
     `;
     selectionLeft.appendChild(selectAllContainer);
-    
+
     var clearBtn = document.createElement('button');
     clearBtn.innerHTML = '<i class="fas fa-times" aria-hidden="true"></i> Limpar';
     clearBtn.style.cssText = `
@@ -1847,10 +1733,10 @@ window.loadPropertyList = function(page) {
     clearBtn.onmouseleave = function() { clearBtn.style.background = 'rgba(255,255,255,0.2)'; };
     clearBtn.onclick = function() { window.clearAllPropertiesSelection(); };
     selectionLeft.appendChild(clearBtn);
-    
+
     var selectionRight = document.createElement('div');
     selectionRight.style.cssText = 'display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;';
-    
+
     var selectedCountSpan = document.createElement('span');
     selectedCountSpan.id = 'selectedCount';
     selectedCountSpan.style.cssText = `
@@ -1863,7 +1749,7 @@ window.loadPropertyList = function(page) {
     `;
     selectedCountSpan.innerHTML = '0';
     selectionRight.appendChild(selectedCountSpan);
-    
+
     var generateLinkBtn = document.createElement('button');
     generateLinkBtn.id = 'generateShareLinkBtn';
     generateLinkBtn.innerHTML = '<i class="fas fa-share-alt" aria-hidden="true"></i> Link';
@@ -1885,53 +1771,52 @@ window.loadPropertyList = function(page) {
     generateLinkBtn.onmouseleave = function() { generateLinkBtn.style.background = '#27ae60'; };
     generateLinkBtn.onclick = function() { window.generateShareLinkForSelected(); };
     selectionRight.appendChild(generateLinkBtn);
-    
+
     selectionBar.appendChild(selectionLeft);
     selectionBar.appendChild(selectionRight);
     container.appendChild(selectionBar);
-    
-    // ESTATÍSTICAS
+
     var statsHeader = document.createElement('div');
     statsHeader.style.cssText = 'background: #e8f4fd; padding: 0.3rem; border-radius: 8px; margin-bottom: 0.4rem; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.3rem;';
-    
+
     var statsContainer = document.createElement('div');
     statsContainer.style.cssText = 'display: flex; flex-wrap: wrap; gap: 0.3rem;';
-    
+
     var viewsSpan = document.createElement('span');
     viewsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
     viewsSpan.innerHTML = '<i class="fas fa-eye" aria-hidden="true"></i> <strong>Views:</strong> ' + totalViews;
     statsContainer.appendChild(viewsSpan);
-    
+
     var itemsSpan = document.createElement('span');
     itemsSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
     itemsSpan.innerHTML = '<i class="fas fa-building" aria-hidden="true"></i> <strong>Total:</strong> ' + totalItems;
     statsContainer.appendChild(itemsSpan);
-    
+
     var showingSpan = document.createElement('span');
     showingSpan.style.cssText = 'display: inline-flex; align-items: center; gap: 0.2rem; font-size: 0.6rem;';
     showingSpan.innerHTML = '<i class="fas fa-list" aria-hidden="true"></i> <strong>Exibindo:</strong> ' + (startIndex + 1) + '-' + endIndex;
     statsContainer.appendChild(showingSpan);
-    
+
     statsHeader.appendChild(statsContainer);
     container.appendChild(statsHeader);
-    
+
     var listContainer = document.createElement('div');
     listContainer.id = 'propertyListItems';
     listContainer.style.cssText = 'margin: 0.2rem 0;';
-    
+
     var defaultImage = 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?ixlib=rb-4.0.3&auto=format&fit=crop&w=100&h=100&q=80';
-    
+
     paginatedProperties.forEach(function(property) {
         var viewCount = window.getGalleryViews ? window.getGalleryViews(property.id) : 0;
         var lastView = window.getLastGalleryView ? window.getLastGalleryView(property.id) : null;
-        
+
         var marketDays = window.calculateMarketTime(property);
         var marketStatus = window.getMarketStatus(marketDays);
         var marketTimeObj = window.formatMarketTime(marketDays);
-        
+
         var firstImage = defaultImage;
         var isVideo = false;
-        
+
         if (property.images && property.images !== 'EMPTY') {
             var imageUrls = property.images.split(',').filter(function(url) { return url && url.trim() !== ''; });
             if (imageUrls.length > 0) {
@@ -1939,25 +1824,25 @@ window.loadPropertyList = function(page) {
                 isVideo = window.SharedCore ? window.SharedCore.isVideoUrl(firstImage) : false;
             }
         }
-        
+
         var isSelected = window.selectedProperties.has(property.id);
-        
+
         var item = document.createElement('div');
         item.className = 'property-item';
-        
+
         if (isDesktop) {
             item.style.cssText = 'background: ' + (isSelected ? '#e8f4fd' : '#f5f5f5') + '; padding: 0.3rem 0.5rem; margin: 0.2rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; border-left: 4px solid ' + (isSelected ? '#2196f3' : 'var(--primary)') + '; transition: all 0.3s ease;';
         } else {
             item.style.cssText = 'background: ' + (isSelected ? '#e8f4fd' : '#f5f5f5') + '; padding: 0.8rem; margin: 0.5rem 0; border-radius: 5px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; border-left: 4px solid ' + (isSelected ? '#2196f3' : 'var(--primary)') + '; transition: all 0.3s ease;';
         }
-        
+
         var escapeTitle = window.SharedCore ? window.SharedCore.escapeHtml(property.title) : (property.title || '').replace(/[&<>]/g, function(m) {
             if (m === '&') return '&amp;';
             if (m === '<') return '&lt;';
             if (m === '>') return '&gt;';
             return m;
         });
-        
+
         var timeDisplayHtml = '';
         if (marketTimeObj.type === 'days') {
             timeDisplayHtml = '<strong style="font-size: ' + (isDesktop ? '0.8rem' : '1rem') + '; color: ' + marketStatus.color + ';">' + marketTimeObj.number + '</strong> <span style="font-size: 0.55rem;">' + marketTimeObj.unit + '</span>';
@@ -1972,12 +1857,12 @@ window.loadPropertyList = function(page) {
                 timeDisplayHtml += ' e <strong style="font-size: ' + (isDesktop ? '0.7rem' : '0.9rem') + '; color: ' + marketStatus.color + ';">' + marketTimeObj.remainingMonths + '</strong> <span style="font-size: 0.55rem;">' + (marketTimeObj.remainingMonths !== 1 ? 'meses' : 'mês') + '</span>';
             }
         }
-        
+
         var titleFontSize = isDesktop ? '0.75rem' : '0.9rem';
         var priceFontSize = isDesktop ? '0.6rem' : '0.75rem';
         var indicatorFontSize = isDesktop ? '0.5rem' : '0.65rem';
         var iconFontSize = isDesktop ? '0.6rem' : '0.8rem';
-        
+
         item.innerHTML = `
             <div style="display: flex; align-items: center; gap: 0.4rem; flex-shrink: 0;">
                 <input type="checkbox" 
@@ -2063,9 +1948,9 @@ window.loadPropertyList = function(page) {
         `;
         listContainer.appendChild(item);
     });
-    
+
     container.appendChild(listContainer);
-    
+
     if (totalPages > 1) {
         var paginationWrapper = document.createElement('div');
         paginationWrapper.style.cssText = isDesktop ? 'margin-top: 0.1rem; padding-top: 0.05rem; border-top: 1px solid #e0e0e0; margin-bottom: 0; padding-bottom: 0;' : 'margin-top: 1rem; padding-top: 0.5rem; border-top: 1px solid #e0e0e0;';
@@ -2073,7 +1958,7 @@ window.loadPropertyList = function(page) {
         paginationWrapper.appendChild(paginationBottom);
         container.appendChild(paginationWrapper);
     }
-    
+
     var selectAllCheckbox = document.getElementById('selectAllCheckbox');
     if (selectAllCheckbox) {
         selectAllCheckbox.onclick = function(e) {
@@ -2084,7 +1969,7 @@ window.loadPropertyList = function(page) {
             }
         };
     }
-    
+
     updateSelectionCounter();
 };
 
@@ -2104,10 +1989,10 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.8
+// FIM DO ARQUIVO - properties.js v3.9
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.8
+// Versão: 3.9
 // Última atualização: 2026-08-26
 // ✅ CORRIGIDO: getInitialProperties restaurada
 // ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
@@ -2119,4 +2004,5 @@ if (document.readyState === 'loading') {
 // ✅ OTIMIZADO: Cache delegado ao TemplateCache
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
+// ✅ REFATORAÇÃO ETAPA 3: toasts agora usam window.showToast (SharedCore)
 // ============================================
