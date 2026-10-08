@@ -7,6 +7,7 @@
 // ✅ NOVO: Bookmark Ribbon para Destaque3 (Flâmula com corte em "V")
 // ✅ CORREÇÃO MOBILE: Ajuste proporcional das faixas para telas pequenas
 // ✅ REFATORAÇÃO: funções globais de galeria (leitura) removidas - agora só no SharedCore
+// ✅ ETAPA 4: estilos inline removidos - movidos para gallery.css
 console.log('🚀 gallery.js carregado - Versão com Faixas Diagonais e Bookmark Ribbon');
 
 // ========== VARIÁVEIS GLOBAIS =========
@@ -480,18 +481,15 @@ function generateBookmarkBadge(property) {
         html += 'align-items: center;';
         html += 'justify-content: center;';
         html += 'gap: 0px;';
-        // 🔴 ROTAÇÃO AUMENTADA EM -5 GRAUS: 35 → 25
         html += 'transform: rotate(25deg) !important;';
         html += 'transform-origin: center center !important;';
         html += '">';
-        // 🔴 PERCENTUAL (ex: 80%)
         html += '<span style="';
         html += 'font-size: ' + percentSize + ';';
         html += 'font-weight: 900;';
         html += 'display: block;';
         html += 'line-height: 1;';
         html += '">' + percentage + '</span>';
-        // 🔴 DESCRIÇÃO (ex: DESÁGIO)
         html += '<span style="';
         html += 'font-size: ' + labelSize + ';';
         html += 'font-weight: 600;';
@@ -963,201 +961,10 @@ window.setupGalleryEvents = function() {
         }, 100);
     });
     
-    const style = document.createElement('style');
-    style.textContent = `
-        .gallery-nav-arrow:hover {
-            background: rgba(255,255,255,0.35) !important;
-            transform: translateY(-50%) scale(1.1) !important;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
-        }
-        .gallery-nav-arrow:active {
-            transform: translateY(-50%) scale(0.95) !important;
-        }
-        
-        .gallery-view-counter:hover {
-            background: rgba(255, 255, 255, 0.35) !important;
-            transform: scale(1.05);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-        
-        .gallery-view-counter i {
-            transition: transform 0.3s ease;
-        }
-        
-        .gallery-view-counter:hover i {
-            transform: scale(1.2);
-        }
-
-        /* ========== FAIXAS DIAGONAIS ========== */
-        .diagonal-badge {
-            position: absolute;
-            pointer-events: none;
-            z-index: 10;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-        }
-
-        .diagonal-badge.large {
-            font-size: 1.1rem;
-            padding: 8px 40px;
-            font-weight: 900;
-            letter-spacing: 3px;
-            width: 220px;
-        }
-
-        .diagonal-badge.medium {
-            font-size: 0.85rem;
-            padding: 6px 30px;
-            font-weight: 700;
-            letter-spacing: 2px;
-            width: 200px;
-        }
-
-        .diagonal-badge.small {
-            font-size: 0.7rem;
-            padding: 5px 25px;
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            width: 180px;
-        }
-
-        .diagonal-badge::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-            pointer-events: none;
-        }
-
-        @media (max-width: 768px) {
-            .diagonal-badge.large {
-                font-size: 0.9rem;
-                padding: 6px 25px;
-                width: 160px;
-                left: -25px;
-            }
-            .diagonal-badge.medium {
-                font-size: 0.7rem;
-                padding: 4px 20px;
-                width: 140px;
-                left: -20px;
-            }
-            .diagonal-badge.small {
-                font-size: 0.6rem;
-                padding: 3px 15px;
-                width: 120px;
-                left: -15px;
-            }
-        }
-
-        .diagonal-badge:hover {
-            transform: rotate(-40deg) scale(1.05);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-        }
-
-        /* ========== BOOKMARK RIBBON (DESTAQUE 3) ========== */
-        .bookmark-ribbon {
-            position: absolute;
-            pointer-events: none;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            box-sizing: border-box;
-            transition: all 0.3s ease;
-            animation: slideInRight 0.5s ease;
-        }
-
-        @keyframes slideInRight {
-            from {
-                transform: translateX(100px);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
-        }
-
-        .bookmark-ribbon::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
-            pointer-events: none;
-            border-radius: 2px 0 0 2px;
-        }
-
-        /* Efeito de pulsação para chamar atenção */
-        .bookmark-ribbon.pulse {
-            animation: pulseRibbon 2s infinite;
-        }
-
-        @keyframes pulseRibbon {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        /* Responsividade do Bookmark Ribbon */
-        @media (max-width: 768px) {
-            .bookmark-ribbon {
-                font-size: 0.55rem !important;
-                padding: 4px 20px 4px 12px !important;
-                width: 90px !important;
-                height: 36px !important;
-                right: 12px !important;
-                top: 12px !important;
-            }
-            .bookmark-ribbon span {
-                font-size: 0.7rem !important;
-            }
-            .bookmark-ribbon span:first-child {
-                font-size: 0.7rem !important;
-            }
-            .bookmark-ribbon span:nth-child(2) {
-                font-size: 0.8rem !important;
-            }
-        }
-
-        @media (min-width: 769px) {
-            .bookmark-ribbon {
-                font-size: 0.7rem !important;
-                padding: 6px 30px 6px 16px !important;
-                width: 130px !important;
-                height: 48px !important;
-                right: 15px !important;
-                top: 15px !important;
-            }
-            .bookmark-ribbon span {
-                font-size: 0.9rem !important;
-            }
-            .bookmark-ribbon span:first-child {
-                font-size: 0.9rem !important;
-            }
-            .bookmark-ribbon span:nth-child(2) {
-                font-size: 1.1rem !important;
-            }
-        }
-
-        .bookmark-ribbon:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
-        }
-    `;
-    document.head.appendChild(style);
+    // ✅ ETAPA 4: Estilos movidos para gallery.css
+    // Não é mais necessário injetar CSS dinamicamente.
+    // Todos os estilos (diagonal-badge, bookmark-badge, animações, etc.)
+    // foram movidos para css/gallery.css.
 };
 
 if (document.readyState === 'loading') {
