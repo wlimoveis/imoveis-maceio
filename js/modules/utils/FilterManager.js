@@ -1,4 +1,4 @@
-// ===========================================================
+// ============================================================
 // js/modules/utils/FilterManager.js
 // SISTEMA DE FILTROS - VERSÃO CORRIGIDA FINAL
 // ============================================================
@@ -13,16 +13,16 @@
 // ✅ CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
 // ✅ REFATORAÇÃO: escapeHtml centralizado em SharedCore (função local removida)
 // ✅ ETAPA 5: extractBairroFromLocation local removida - usa window.extractBairroFromLocation
+// ✅ ETAPA 7: Respeita flag window.urlDirectAccess — não sobrescreve link direto
 // ============================================================
 
-console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com fallback para residenciais)');
+console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com fallback para residenciais + link direto protegido)');
 
 (function() {
     'use strict';
 
     // ========== FUNÇÃO DE EXTRAÇÃO DE BAIRRO DELEGADA AO SHAREDCORE ==========
     // ✅ window.extractBairroFromLocation é fornecida globalmente pelo SharedCore.js
-    //    (alias global criado em setupGlobalCompatibility())
     //    Não é necessário duplicar essa função aqui.
 
     // ========== CONFIGURAÇÃO DOS DROPDOWNS (EXISTENTE) ==========
@@ -173,7 +173,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
         const bairrosMap = new Map();
         filteredProperties.forEach(function(property) {
             if (property.location && property.location.trim() !== '') {
-                // ✅ REFATORADO: usa window.extractBairroFromLocation (alias global do SharedCore)
                 const bairro = window.extractBairroFromLocation(property.location);
                 if (bairro && bairro !== 'Localização não especificada' && bairro !== '') {
                     bairrosMap.set(bairro, (bairrosMap.get(bairro) || 0) + 1);
@@ -273,7 +272,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
             const isActive = state.currentBairro === bairro && state.currentFilter === category;
             const option = document.createElement('div');
             option.className = 'filter-dropdown-item' + (isActive ? ' active' : '');
-            // ✅ REFATORADO: usa window.escapeHtml (alias global criado pelo SharedCore)
             option.innerHTML = '<i class="fas fa-location-dot"></i> ' + window.escapeHtml(bairro);
             option.onclick = function(e) {
                 e.stopPropagation();
@@ -376,7 +374,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 
         if (bairro) {
             filtered = filtered.filter(function(p) {
-                // ✅ REFATORADO: usa window.extractBairroFromLocation (alias global do SharedCore)
                 const propertyBairro = window.extractBairroFromLocation(p.location);
                 return propertyBairro === bairro;
             });
@@ -710,6 +707,12 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
     }
 
     function refreshFilters() {
+        // ✅ ETAPA 7: Se for link direto, NÃO reaplicar filtro
+        if (window.urlDirectAccess) {
+            console.log('🔗 [FilterManager] Link direto — refreshFilters ignorado');
+            return;
+        }
+
         var wasAdmin = state.isAdmin;
         state.isAdmin = FILTER_CONFIG.isAdmin();
     
@@ -741,7 +744,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
             return;
         }
 
-        console.log('🔧 Inicializando FilterManager (Versão Corrigida Final - com fallback para residenciais)...');
+        console.log('🔧 Inicializando FilterManager (Versão Corrigida Final - com fallback para residenciais + link direto protegido)...');
 
         const containers = document.querySelectorAll('.' + DROPDOWN_CONFIG.containerClass);
         if (containers.length === 0) {
@@ -762,7 +765,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
         }
 
         state.isAdmin = FILTER_CONFIG.isAdmin();
-        state.currentMainFilter = getDefaultFilter();
         state.containerId = 'properties-container';
 
         const filterContainer = document.querySelector('.filters');
@@ -772,13 +774,24 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
             console.warn('⚠️ Container de filtros principais não encontrado');
         }
 
-        applyMainFilter(state.currentMainFilter);
+        // ✅ ETAPA 7: Se for link direto, NÃO aplicar filtro padrão
+        if (window.urlDirectAccess) {
+            console.log('🔗 [FilterManager] Link direto detectado — filtro padrão NÃO será aplicado');
+            state.currentMainFilter = null;
+            // ✅ NÃO chama applyMainFilter() — preserva o link direto
+            // ✅ MAS registra listeners e renderiza botões (acima)
+        } else {
+            state.currentMainFilter = getDefaultFilter();
+            applyMainFilter(state.currentMainFilter);
+        }
 
         state.initialized = true;
         console.log('✅ FilterManager completo inicializado - Filtro default: ' + state.currentMainFilter);
         console.log('📊 Modo admin: ' + state.isAdmin);
 
-        if (!state.isAdmin) {
+        if (window.urlDirectAccess) {
+            console.log('🔗 [FilterManager] Modo LINK DIRETO ativo — filtro padrão NÃO aplicado');
+        } else if (!state.isAdmin) {
             console.log('👤 [FilterManager] Visitante detectado - Botão "Todos" OCULTO');
             console.log('🏠 [FilterManager] Filtro default: "Residencial" (com fallback para imóveis sem tipo)');
         } else {
@@ -842,6 +855,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
     console.log('🛡️ CORREÇÃO: "Todos" visível apenas para admin logado');
     console.log('🔗 REFATORAÇÃO: escapeHtml local removido - usa window.escapeHtml (alias global do SharedCore)');
     console.log('🔗 REFATORAÇÃO ETAPA 5: extractBairroFromLocation local removida - usa window.extractBairroFromLocation');
+    console.log('🔗 ETAPA 7: respeita window.urlDirectAccess — não sobrescreve links diretos');
 
 })();
 
@@ -849,8 +863,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 // FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.5 - extractBairroFromLocation centralizado em SharedCore
-// Última atualização: 2026-08-10
+// Versão: 2.6 - Respeita link direto (Etapa 7)
+// Última atualização: 2026-08-26
 // CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
 // CORREÇÃO: Admin só é detectado se painel está VISÍVEL
 // CORREÇÃO: Verificação de properties em filterFn
@@ -859,4 +873,5 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 // CORREÇÃO: "Todos" visível apenas para admin logado
 // REFATORAÇÃO: função escapeHtml local removida - usa window.escapeHtml (alias global do SharedCore)
 // REFATORAÇÃO ETAPA 5: função extractBairroFromLocation local removida - usa window.extractBairroFromLocation
-// ===========================================================
+// ETAPA 7: respeita window.urlDirectAccess — não sobrescreve links diretos
+// ============================================================
