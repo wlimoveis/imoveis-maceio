@@ -1,7 +1,8 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 3.9 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
+// VERSÃO 4.0 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
 //                + TOAST CENTRALIZADO (showToast do SharedCore)
+//                + FUNÇÕES DE MERCADO DELEGADAS AO SHAREDCORE (Etapa 6)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -16,9 +17,10 @@
 // ✅ NOVO: Suporte a badge3 (Destaque3 - Bookmark Ribbon)
 // ✅ CORREÇÃO: badge1, badge2, badge3 enviados para o Supabase
 // ✅ REFATORAÇÃO: toasts agora usam window.showToast (SharedCore)
+// ✅ ETAPA 6: funções de mercado delegadas ao SharedCore
 // ============================================================
 
-console.log('✅ properties.js v3.9 carregado - Gerenciamento de Imóveis (com correção de badges + toast centralizado)');
+console.log('✅ properties.js v4.0 carregado - Gerenciamento de Imóveis (com correção de badges + toast centralizado + funções de mercado delegadas)');
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -216,63 +218,10 @@ window.ensureSupabaseCredentials = function() {
     return !!window.SUPABASE_URL && !!window.SUPABASE_KEY;
 };
 
-window.calculateMarketTime = function(property) {
-    var startDate;
-
-    if (property.created_at && property.created_at !== 'undefined' && property.created_at !== null) {
-        startDate = new Date(property.created_at);
-        if (isNaN(startDate.getTime())) {
-            startDate = new Date();
-        }
-    } else {
-        startDate = new Date();
-    }
-
-    var today = new Date();
-    var diffTime = Math.abs(today - startDate);
-    var diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-    return diffDays;
-};
-
-window.getMarketStatus = function(days) {
-    if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', icon: 'fa-hourglass-start' };
-    if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', icon: 'fa-hourglass-half' };
-    if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', icon: 'fa-hourglass-half' };
-    if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', icon: 'fa-hourglass-end' };
-    return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', icon: 'fa-hourglass-end' };
-};
-
-window.formatMarketTime = function(days) {
-    if (days < 30) {
-        return { number: days, unit: days !== 1 ? 'dias' : 'dia', type: 'days' };
-    }
-    if (days < 365) {
-        var months = Math.floor(days / 30);
-        var remainingDays = days % 30;
-        if (remainingDays === 0) {
-            return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months' };
-        }
-        return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months', remainingDays: remainingDays };
-    }
-    var years = Math.floor(days / 365);
-    var remainingMonths = Math.floor((days % 365) / 30);
-    if (remainingMonths === 0) {
-        return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years' };
-    }
-    return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years', remainingMonths: remainingMonths };
-};
-
-window.formatMarketTimeText = function(days) {
-    var formatted = window.formatMarketTime(days);
-    if (formatted.remainingDays) {
-        return formatted.number + ' ' + formatted.unit + ' e ' + formatted.remainingDays + ' ' + (formatted.remainingDays !== 1 ? 'dias' : 'dia');
-    }
-    if (formatted.remainingMonths) {
-        return formatted.number + ' ' + formatted.unit + ' e ' + formatted.remainingMonths + ' ' + (formatted.remainingMonths !== 1 ? 'meses' : 'mês');
-    }
-    return formatted.number + ' ' + formatted.unit;
-};
+// ========== FUNÇÕES DE MERCADO DELEGADAS AO SHAREDCORE (Etapa 6) ==========
+// ✅ calculateMarketTime, getMarketStatus, formatMarketTime, formatMarketTimeText
+//    são fornecidas globalmente pelo SharedCore.js
+//    Não é necessário duplicar essas funções aqui.
 
 window.shareProperty = async function(id) {
     var property = window.properties.find(function(p) { return p.id === id; });
@@ -1989,10 +1938,10 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v3.9
+// FIM DO ARQUIVO - properties.js v4.0
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 3.9
+// Versão: 4.0
 // Última atualização: 2026-08-26
 // ✅ CORRIGIDO: getInitialProperties restaurada
 // ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
@@ -2005,4 +1954,5 @@ if (document.readyState === 'loading') {
 // ✅ CISÃO A: Filtros delegados ao FilterManager
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
 // ✅ REFATORAÇÃO ETAPA 3: toasts agora usam window.showToast (SharedCore)
+// ✅ REFATORAÇÃO ETAPA 6: funções de mercado delegadas ao SharedCore
 // ============================================
