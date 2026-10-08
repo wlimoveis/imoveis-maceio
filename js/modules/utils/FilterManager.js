@@ -12,12 +12,18 @@
 // ✅ CORREÇÃO: Verificação de properties em filterFn
 // ✅ CORREÇÃO: Fallback para imóveis sem type definido no filtro "Residencial"
 // ✅ REFATORAÇÃO: escapeHtml centralizado em SharedCore (função local removida)
+// ✅ ETAPA 5: extractBairroFromLocation local removida - usa window.extractBairroFromLocation
 // ============================================================
 
 console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com fallback para residenciais)');
 
 (function() {
     'use strict';
+
+    // ========== FUNÇÃO DE EXTRAÇÃO DE BAIRRO DELEGADA AO SHAREDCORE ==========
+    // ✅ window.extractBairroFromLocation é fornecida globalmente pelo SharedCore.js
+    //    (alias global criado em setupGlobalCompatibility())
+    //    Não é necessário duplicar essa função aqui.
 
     // ========== CONFIGURAÇÃO DOS DROPDOWNS (EXISTENTE) ==========
     const DROPDOWN_CONFIG = {
@@ -142,30 +148,6 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 
     // ========== FUNÇÕES EXISTENTES (DROPDOWNS DE BAIRROS) ==========
 
-    function extractBairroFromLocation(location) {
-        if (window.SharedCore && typeof window.SharedCore.extractBairroFromLocation === 'function') {
-            return window.SharedCore.extractBairroFromLocation(location);
-        }
-        if (!location || typeof location !== 'string') return null;
-        const locationClean = location.trim();
-        if (locationClean.includes(',')) {
-            const parts = locationClean.split(',');
-            if (parts.length >= 2) {
-                let possibleBairro = parts[1].trim();
-                possibleBairro = possibleBairro.split(' ').map(function(word) {
-                    return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
-                }).join(' ');
-                if (possibleBairro.length > 0 && possibleBairro.length < 50) {
-                    return possibleBairro;
-                }
-            }
-        }
-        if (locationClean.toLowerCase().includes('rural') || locationClean.toLowerCase().includes('zona rural')) {
-            return 'Zona Rural';
-        }
-        return null;
-    }
-
     const bairrosPrioridade = [
         'Pajuçara', 'Ponta Verde', 'Jatiúca', 'Jacarecica', 'Cruz das Almas',
         'Mangabeiras', 'Poço', 'Barro Duro', 'Gruta de Lourdes', 'Serraria',
@@ -191,7 +173,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
         const bairrosMap = new Map();
         filteredProperties.forEach(function(property) {
             if (property.location && property.location.trim() !== '') {
-                const bairro = extractBairroFromLocation(property.location);
+                // ✅ REFATORADO: usa window.extractBairroFromLocation (alias global do SharedCore)
+                const bairro = window.extractBairroFromLocation(property.location);
                 if (bairro && bairro !== 'Localização não especificada' && bairro !== '') {
                     bairrosMap.set(bairro, (bairrosMap.get(bairro) || 0) + 1);
                 }
@@ -393,7 +376,8 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 
         if (bairro) {
             filtered = filtered.filter(function(p) {
-                const propertyBairro = extractBairroFromLocation(p.location);
+                // ✅ REFATORADO: usa window.extractBairroFromLocation (alias global do SharedCore)
+                const propertyBairro = window.extractBairroFromLocation(p.location);
                 return propertyBairro === bairro;
             });
         }
@@ -857,6 +841,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
     console.log('🏠 CORREÇÃO: "Residencial" como default para visitantes');
     console.log('🛡️ CORREÇÃO: "Todos" visível apenas para admin logado');
     console.log('🔗 REFATORAÇÃO: escapeHtml local removido - usa window.escapeHtml (alias global do SharedCore)');
+    console.log('🔗 REFATORAÇÃO ETAPA 5: extractBairroFromLocation local removida - usa window.extractBairroFromLocation');
 
 })();
 
@@ -864,7 +849,7 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 // FIM DO ARQUIVO - FilterManager.js (Versão Corrigida Final)
 // ============================================================
 // STATUS: ✅ CARREGADO COM SUCESSO
-// Versão: 2.4 - escapeHtml centralizado em SharedCore
+// Versão: 2.5 - extractBairroFromLocation centralizado em SharedCore
 // Última atualização: 2026-08-10
 // CORREÇÃO: isAdmin() NÃO considera ADMIN_PASSWORD global
 // CORREÇÃO: Admin só é detectado se painel está VISÍVEL
@@ -873,4 +858,5 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 // CORREÇÃO: "Residencial" como default para visitantes
 // CORREÇÃO: "Todos" visível apenas para admin logado
 // REFATORAÇÃO: função escapeHtml local removida - usa window.escapeHtml (alias global do SharedCore)
+// REFATORAÇÃO ETAPA 5: função extractBairroFromLocation local removida - usa window.extractBairroFromLocation
 // ============================================================
