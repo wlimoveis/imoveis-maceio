@@ -1,8 +1,9 @@
 // ============================================================
 // js/modules/properties.js
-// VERSÃO 4.0 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
+// VERSÃO 4.1 - COM CORREÇÃO DE BADGES (badge1, badge2, badge3)
 //                + TOAST CENTRALIZADO (showToast do SharedCore)
 //                + FUNÇÕES DE MERCADO DELEGADAS AO SHAREDCORE (Etapa 6)
+//                + CORREÇÃO: Link direto não é mais sobrescrito pelo filtro (Etapa 7)
 // ============================================================
 // ✅ Responsabilidade Única: Gerenciamento de imóveis (CRUD)
 // ✅ Renderização e estado
@@ -18,9 +19,21 @@
 // ✅ CORREÇÃO: badge1, badge2, badge3 enviados para o Supabase
 // ✅ REFATORAÇÃO: toasts agora usam window.showToast (SharedCore)
 // ✅ ETAPA 6: funções de mercado delegadas ao SharedCore
+// ✅ ETAPA 7: flag window.urlDirectAccess — link direto não é sobrescrito
 // ============================================================
 
-console.log('✅ properties.js v4.0 carregado - Gerenciamento de Imóveis (com correção de badges + toast centralizado + funções de mercado delegadas)');
+console.log('✅ properties.js v4.1 carregado - Gerenciamento de Imóveis (com correção de badges + toast centralizado + funções de mercado delegadas + link direto protegido)');
+
+// ========== DETECÇÃO DE ACESSO DIRETO (link compartilhado) ==========
+// ✅ ETAPA 7: Corrige bug onde o filtro padrão sobrescrevia o link direto
+window.urlDirectAccess = (function() {
+    var params = new URLSearchParams(window.location.search);
+    return params.has('property') || params.has('selected_properties');
+})();
+
+if (window.urlDirectAccess) {
+    console.log('🔗 [URL] Modo link direto ativado — filtro padrão será ignorado');
+}
 
 // ========== ESTADO GLOBAL ==========
 window.properties = [];
@@ -337,23 +350,31 @@ window.loadPropertiesData = async function() {
 
         loading?.updateMessage?.(finalMessage);
 
-        if (window.FilterManager && typeof window.FilterManager.refreshFilters === 'function') {
-            setTimeout(function() {
-                window.FilterManager.refreshFilters();
-                console.log('🔄 [FilterManager] Filtros recarregados após carregar imóveis');
-            }, 300);
-        } else if (typeof window.renderProperties === 'function') {
-            setTimeout(function() {
-                var currentFilter = window.currentFilter || 'Residencial';
-                window.renderProperties(currentFilter, true);
-                console.log('🔄 [Fallback] Propriedades renderizadas com filtro: ' + currentFilter);
-            }, 400);
-        }
+        // ✅ ETAPA 7: Se for link direto, NÃO reaplicar filtro padrão
+        if (window.urlDirectAccess) {
+            console.log('🔗 [LOAD] Link direto detectado — pulando refreshFilters');
+            if (typeof window.loadPropertiesBasedOnUrl === 'function') {
+                window.loadPropertiesBasedOnUrl();
+            }
+        } else {
+            if (window.FilterManager && typeof window.FilterManager.refreshFilters === 'function') {
+                setTimeout(function() {
+                    window.FilterManager.refreshFilters();
+                    console.log('🔄 [FilterManager] Filtros recarregados após carregar imóveis');
+                }, 300);
+            } else if (typeof window.renderProperties === 'function') {
+                setTimeout(function() {
+                    var currentFilter = window.currentFilter || 'Residencial';
+                    window.renderProperties(currentFilter, true);
+                    console.log('🔄 [Fallback] Propriedades renderizadas com filtro: ' + currentFilter);
+                }, 400);
+            }
 
-        if (typeof window.loadPropertiesBasedOnUrl === 'function') {
-            window.loadPropertiesBasedOnUrl();
-        } else if (typeof window.renderProperties === 'function') {
-            window.renderProperties('todos');
+            if (typeof window.loadPropertiesBasedOnUrl === 'function') {
+                window.loadPropertiesBasedOnUrl();
+            } else if (typeof window.renderProperties === 'function') {
+                window.renderProperties('todos');
+            }
         }
 
         if (window.PerformanceSystem && window.PerformanceSystem.cache) {
@@ -1938,10 +1959,10 @@ if (document.readyState === 'loading') {
 }
 
 // =============================================
-// FIM DO ARQUIVO - properties.js v4.0
+// FIM DO ARQUIVO - properties.js v4.1
 // ============================================
 // STATUS: ✅ COMPLETO E FUNCIONAL
-// Versão: 4.0
+// Versão: 4.1
 // Última atualização: 2026-08-26
 // ✅ CORRIGIDO: getInitialProperties restaurada
 // ✅ CORRIGIDO: filterPropertiesByType retorna array sempre
@@ -1955,4 +1976,5 @@ if (document.readyState === 'loading') {
 // ✅ SRP: Responsabilidade única (CRUD + Estado + Renderização)
 // ✅ REFATORAÇÃO ETAPA 3: toasts agora usam window.showToast (SharedCore)
 // ✅ REFATORAÇÃO ETAPA 6: funções de mercado delegadas ao SharedCore
+// ✅ ETAPA 7: flag window.urlDirectAccess — link direto não é sobrescrito
 // ============================================
