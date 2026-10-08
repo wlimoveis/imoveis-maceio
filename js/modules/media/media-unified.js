@@ -5,6 +5,7 @@
 // ✅ Número (canto inferior esquerdo)
 // ✅ Status (canto inferior direito)
 // ✅ REFATORAÇÃO: escapeHtml centralizado em SharedCore (usa window.escapeHtml)
+// ✅ ETAPA 5: getDebounceFunction removido - usa window.SharedCore.debounce
 
 console.log('🔄 media-unified.js - Core System (versão final com ícones corrigidos)');
 
@@ -18,22 +19,9 @@ if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     };
 }
 
-const getDebounceFunction = function() {
-    if (window.SharedCore && typeof window.SharedCore.debounce === 'function') {
-        return window.SharedCore.debounce;
-    }
-    return function(func, wait) {
-        let timeout;
-        return function executedFunction(...args) {
-            const later = () => {
-                clearTimeout(timeout);
-                func(...args);
-            };
-            clearTimeout(timeout);
-            timeout = setTimeout(later, wait);
-        };
-    };
-};
+// ========== DEBOUNCE DELEGADO AO SHAREDCORE ==========
+// ✅ window.SharedCore.debounce é fornecido pelo SharedCore.js
+//    Não é necessário duplicar essa função aqui.
 
 const MediaSystem = {
     config: {
@@ -59,7 +47,8 @@ const MediaSystem = {
         this.config.currentSystem = system;
         this.resetState();
         this.setupEventListeners();
-        const debounce = getDebounceFunction();
+        // ✅ ETAPA 5: usa window.SharedCore.debounce diretamente
+        const debounce = window.SharedCore.debounce;
         this.state._debouncedUpdateUI = debounce(() => this.updateUI(), 100);
         return this;
     },
