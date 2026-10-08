@@ -9,7 +9,7 @@
 
 console.log('🔄 media-unified.js - Core System (versão final com ícones corrigidos)');
 
-// ========== SUPABASE CONSTANTS ==========
+// ========== SUPABASE CONSTANTS =========
 if (typeof window.SUPABASE_CONSTANTS === 'undefined') {
     window.SUPABASE_CONSTANTS = {
         URL: 'https://wxdiowpswepsvklumgvx.supabase.co',
