@@ -2,7 +2,8 @@
 // ✅ CORREÇÃO DE SEGURANÇA: Senhas e chaves NÃO são mais exibidas no console
 // ✅ OTIMIZAÇÃO: ImageLoader delegado ao Support System (fallback silencioso)
 // ✅ NOVO: Sistema de Toast centralizado (showToast) — elimina duplicações em properties.js
-console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.2)');
+// ✅ ETAPA 5.1: Alias global window.debounce — elimina assimetria com outros utilitários
+console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.3)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -698,6 +699,11 @@ window.SharedCore = SharedCore;
         };
     }
 
+    // ✅ ETAPA 5.1: Alias global para debounce (corrige assimetria com outros utilitários)
+    if (typeof window.debounce === 'undefined') {
+        window.debounce = SharedCore.debounce;
+    }
+
     console.log('✅ Compatibilidade global configurada');
 })();
 
@@ -783,4 +789,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.2 com showToast)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.3 com showToast + debounce)`);
