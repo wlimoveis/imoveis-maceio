@@ -3,7 +3,8 @@
 // ✅ OTIMIZAÇÃO: ImageLoader delegado ao Support System (fallback silencioso)
 // ✅ NOVO: Sistema de Toast centralizado (showToast) — elimina duplicações em properties.js
 // ✅ ETAPA 5.1: Alias global window.debounce — elimina assimetria com outros utilitários
-console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.3)');
+// ✅ ETAPA 6: Funções de mercado centralizadas (calculateMarketTime, getMarketStatus, formatMarketTime, formatMarketTimeText)
+console.log('🔧 SharedCore.js carregado - Versão Otimizada com Segurança (v2.4)');
 
 // ========== CONFIGURAÇÃO CENTRAL DO SISTEMA ==========
 window.SYSTEM_CONFIG = window.SYSTEM_CONFIG || {
@@ -465,6 +466,82 @@ const SharedCore = (function() {
         }
     };
 
+    // ========== FUNÇÕES DE MERCADO (ETAPA 6 - Centralizadas) ==========
+
+    /**
+     * Calcula o tempo de mercado em dias desde created_at
+     * @param {Object} property - Objeto do imóvel com created_at
+     * @returns {number} Dias no mercado
+     */
+    const calculateMarketTime = function(property) {
+        var startDate;
+        if (property.created_at && property.created_at !== 'undefined' && property.created_at !== null) {
+            startDate = new Date(property.created_at);
+            if (isNaN(startDate.getTime())) {
+                startDate = new Date();
+            }
+        } else {
+            startDate = new Date();
+        }
+        var today = new Date();
+        var diffTime = Math.abs(today - startDate);
+        return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    };
+
+    /**
+     * Retorna status de mercado baseado em dias
+     * @param {number} days - Dias no mercado
+     * @returns {Object} { text, color, bg, iconColor, icon }
+     */
+    const getMarketStatus = function(days) {
+        if (days <= 30) return { text: 'Alta Liquidez', color: '#27ae60', bg: '#e8f8ef', iconColor: '#27ae60', icon: 'fa-hourglass-start' };
+        if (days <= 90) return { text: 'Liquidez Média', color: '#f39c12', bg: '#fef5e7', iconColor: '#f39c12', icon: 'fa-hourglass-half' };
+        if (days <= 180) return { text: 'Baixa Liquidez', color: '#e67e22', bg: '#fdf2e9', iconColor: '#e67e22', icon: 'fa-hourglass-half' };
+        if (days <= 365) return { text: 'Estagnado', color: '#e74c3c', bg: '#fdecea', iconColor: '#e74c3c', icon: 'fa-hourglass-end' };
+        return { text: 'Crítico!', color: '#8b0000', bg: '#fce4e4', iconColor: '#8b0000', icon: 'fa-hourglass-end' };
+    };
+
+    /**
+     * Formata tempo de mercado em objeto estruturado
+     * @param {number} days - Dias no mercado
+     * @returns {Object} { number, unit, type, remainingDays?, remainingMonths? }
+     */
+    const formatMarketTime = function(days) {
+        if (days < 30) {
+            return { number: days, unit: days !== 1 ? 'dias' : 'dia', type: 'days' };
+        }
+        if (days < 365) {
+            var months = Math.floor(days / 30);
+            var remainingDays = days % 30;
+            if (remainingDays === 0) {
+                return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months' };
+            }
+            return { number: months, unit: months !== 1 ? 'meses' : 'mês', type: 'months', remainingDays: remainingDays };
+        }
+        var years = Math.floor(days / 365);
+        var remainingMonths = Math.floor((days % 365) / 30);
+        if (remainingMonths === 0) {
+            return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years' };
+        }
+        return { number: years, unit: years !== 1 ? 'anos' : 'ano', type: 'years', remainingMonths: remainingMonths };
+    };
+
+    /**
+     * Formata tempo de mercado como texto legível
+     * @param {number} days - Dias no mercado
+     * @returns {string} Texto formatado
+     */
+    const formatMarketTimeText = function(days) {
+        var formatted = formatMarketTime(days);
+        if (formatted.remainingDays) {
+            return formatted.number + ' ' + formatted.unit + ' e ' + formatted.remainingDays + ' ' + (formatted.remainingDays !== 1 ? 'dias' : 'dia');
+        }
+        if (formatted.remainingMonths) {
+            return formatted.number + ' ' + formatted.unit + ' e ' + formatted.remainingMonths + ' ' + (formatted.remainingMonths !== 1 ? 'meses' : 'mês');
+        }
+        return formatted.number + ' ' + formatted.unit;
+    };
+
     // ========== SISTEMA DE TOAST CENTRALIZADO ==========
     /**
      * Exibe uma notificação toast temporária
@@ -574,6 +651,12 @@ const SharedCore = (function() {
         getTotalGalleryViews,
         getLastGalleryView,
         resetAllGalleryViews,
+
+        // Funções de Mercado (Etapa 6)
+        calculateMarketTime,
+        getMarketStatus,
+        formatMarketTime,
+        formatMarketTimeText,
 
         // Sistema de Toast
         showToast,
@@ -704,6 +787,31 @@ window.SharedCore = SharedCore;
         window.debounce = SharedCore.debounce;
     }
 
+    // ✅ ETAPA 6: Aliases globais para funções de mercado
+    if (typeof window.calculateMarketTime === 'undefined') {
+        window.calculateMarketTime = function(property) {
+            return SharedCore.calculateMarketTime(property);
+        };
+    }
+
+    if (typeof window.getMarketStatus === 'undefined') {
+        window.getMarketStatus = function(days) {
+            return SharedCore.getMarketStatus(days);
+        };
+    }
+
+    if (typeof window.formatMarketTime === 'undefined') {
+        window.formatMarketTime = function(days) {
+            return SharedCore.formatMarketTime(days);
+        };
+    }
+
+    if (typeof window.formatMarketTimeText === 'undefined') {
+        window.formatMarketTimeText = function(days) {
+            return SharedCore.formatMarketTimeText(days);
+        };
+    }
+
     console.log('✅ Compatibilidade global configurada');
 })();
 
@@ -729,6 +837,10 @@ function initializeGlobalCompatibility() {
         getTotalGalleryViews: SharedCore.getTotalGalleryViews,
         getLastGalleryView: SharedCore.getLastGalleryView,
         resetAllGalleryViews: SharedCore.resetAllGalleryViews,
+        calculateMarketTime: SharedCore.calculateMarketTime,
+        getMarketStatus: SharedCore.getMarketStatus,
+        formatMarketTime: SharedCore.formatMarketTime,
+        formatMarketTimeText: SharedCore.formatMarketTimeText,
         showToast: SharedCore.showToast,
         waitForCriticalImages: SharedCore.waitForCriticalImages,
         waitForAllPropertyImages: SharedCore.waitForAllPropertyImages,
@@ -763,7 +875,9 @@ setTimeout(() => {
         'escapeHtml', 'isVideoUrl', 'extractBairroFromLocation',
         'getGalleryViews', 'getTotalGalleryViews',
         'waitForCriticalImages', 'runLowPriority',
-        'showToast'
+        'showToast',
+        'calculateMarketTime', 'getMarketStatus',
+        'formatMarketTime', 'formatMarketTimeText'
     ];
 
     let allAvailable = true;
@@ -789,4 +903,4 @@ setTimeout(() => {
     console.groupEnd();
 }, 2000);
 
-console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.3 com showToast + debounce)`);
+console.log(`✅ SharedCore.js pronto - Versão otimizada com segurança (v2.4 com showToast + debounce + market functions)`);
