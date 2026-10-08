@@ -1,4 +1,4 @@
-// ============================================================
+// ===========================================================
 // js/modules/utils/FilterManager.js
 // SISTEMA DE FILTROS - VERSÃO CORRIGIDA FINAL
 // ============================================================
@@ -859,4 +859,4 @@ console.log('🎛️ FilterManager.js carregado - Versão Corrigida Final (com f
 // CORREÇÃO: "Todos" visível apenas para admin logado
 // REFATORAÇÃO: função escapeHtml local removida - usa window.escapeHtml (alias global do SharedCore)
 // REFATORAÇÃO ETAPA 5: função extractBairroFromLocation local removida - usa window.extractBairroFromLocation
-// ============================================================
+// ===========================================================
