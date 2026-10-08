@@ -1,4 +1,7 @@
-/* css/gallery.css - ESTILOS OTIMIZADOS (247 linhas - VERSÃO ATUALIZADA) */
+/* css/gallery.css - ESTILOS OTIMIZADOS (VERSÃO ATUALIZADA - Etapa 4) */
+/* ✅ Estilos únicos do bloco <style> dinâmico do gallery.js movidos para cá */
+/* ✅ Não duplica estilos já existentes (.gallery-nav-arrow:hover, .gallery-view-counter:hover) */
+/* ✅ Classe correta: .bookmark-badge (não .bookmark-ribbon) */
 
 /* ANIMAÇÕES */
 @keyframes pulseVideo {
@@ -119,43 +122,41 @@
     position: absolute !important;
     bottom: 10px !important;
     left: 10px !important;
-    background: transparent !important;           /* Fundo totalmente transparente */
-    backdrop-filter: none !important;             /* Remove o efeito glassmorphism */
-    -webkit-backdrop-filter: none !important;     /* Remove para WebKit */
-    border-radius: 0 !important;                 /* Remove borda arredondada */
-    border: none !important;                      /* Remove completamente a borda */
-    padding: 0 !important;                        /* Remove padding - container menor */
-    margin: 0 !important;                         /* Remove margens */
-    font-size: 0.75rem !important;                /* Mantém tamanho original */
+    background: transparent !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    font-size: 0.75rem !important;
     color: white !important;
-    display: inline-flex !important;              /* Container se ajusta ao conteúdo */
+    display: inline-flex !important;
     align-items: center !important;
     justify-content: center !important;
-    gap: 0 !important;                            /* Remove gap entre ícone e número */
+    gap: 0 !important;
     z-index: 20 !important;
-    box-shadow: none !important;                  /* Remove sombra */
+    box-shadow: none !important;
     transition: all 0.3s ease !important;
     cursor: default !important;
-    width: auto !important;                       /* Largura automática */
-    height: auto !important;                      /* Altura automática */
-    min-width: 0 !important;                      /* Remove largura mínima */
-    min-height: 0 !important;                     /* Remove altura mínima */
+    width: auto !important;
+    height: auto !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
 }
 
-/* Estilo específico para o ícone (olho) em negrito */
 .gallery-view-counter i {
-    font-weight: 900 !important;                  /* Negrito máximo no ícone */
-    font-size: 1rem !important;                   /* Mantém tamanho original (ou ajuste) */
-    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important; /* Sombra leve para destacar */
+    font-weight: 900 !important;
+    font-size: 1rem !important;
+    text-shadow: 0 0 2px rgba(0, 0, 0, 0.5) !important;
+    transition: transform 0.3s ease;
 }
 
-/* Estilo para o número de visualizações (opcional - também em negrito) */
 .gallery-view-counter span {
-    font-weight: 700 !important;                  /* Negrito no número */
-    margin-left: 2px !important;                  /* Pequeno espaçamento */
+    font-weight: 700 !important;
+    margin-left: 2px !important;
 }
 
-/* Remove hover effects que não são mais necessários */
 .gallery-view-counter:hover {
     background: transparent !important;
     transform: none !important;
@@ -163,7 +164,7 @@
 }
 
 .gallery-view-counter:hover i {
-    transform: none !important;
+    transform: scale(1.2);
 }
 
 /* INDICADOR DE VÍDEO */
@@ -263,7 +264,7 @@
     width: 44px;
     height: 44px;
     font-size: 1.5rem;
-    z-index: 10002 !important; /* GARANTIR clique */
+    z-index: 10002 !important;
     pointer-events: auto !important;
     cursor: pointer !important;
 }
@@ -337,4 +338,178 @@
 .gallery-modal-close:focus {
     outline: 2px solid #3498db;
     outline-offset: 2px;
+}
+
+/* ============================================================
+   ESTILOS DOS DESTAQUES MÚLTIPLOS E BOOKMARK (Etapa 4)
+   Extraídos do bloco <style> dinâmico de gallery.js
+   ============================================================ */
+
+/* ========== FAIXAS DIAGONAIS ========== */
+.diagonal-badge {
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+.diagonal-badge.large {
+    font-size: 1.1rem;
+    padding: 8px 40px;
+    font-weight: 900;
+    letter-spacing: 3px;
+    width: 220px;
+}
+
+.diagonal-badge.medium {
+    font-size: 0.85rem;
+    padding: 6px 30px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    width: 200px;
+}
+
+.diagonal-badge.small {
+    font-size: 0.7rem;
+    padding: 5px 25px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    width: 180px;
+}
+
+.diagonal-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .diagonal-badge.large {
+        font-size: 0.9rem;
+        padding: 6px 25px;
+        width: 160px;
+        left: -25px;
+    }
+    .diagonal-badge.medium {
+        font-size: 0.7rem;
+        padding: 4px 20px;
+        width: 140px;
+        left: -20px;
+    }
+    .diagonal-badge.small {
+        font-size: 0.6rem;
+        padding: 3px 15px;
+        width: 120px;
+        left: -15px;
+    }
+}
+
+.diagonal-badge:hover {
+    transform: rotate(-40deg) scale(1.05);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+/* ========== BOOKMARK BADGE (DESTAQUE 3) ========== */
+/* ⚠️ CORRIGIDO: classe real é .bookmark-badge (não .bookmark-ribbon) */
+.bookmark-badge {
+    position: absolute;
+    pointer-events: none;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+    animation: slideInRight 0.5s ease;
+}
+
+@keyframes slideInRight {
+    from {
+        transform: translateX(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.bookmark-badge::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.15) 0%, transparent 60%);
+    pointer-events: none;
+    border-radius: 2px 0 0 2px;
+}
+
+.bookmark-badge.pulse {
+    animation: pulseRibbon 2s infinite;
+}
+
+@keyframes pulseRibbon {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+@media (max-width: 768px) {
+    .bookmark-badge {
+        font-size: 0.55rem !important;
+        padding: 4px 20px 4px 12px !important;
+        width: 90px !important;
+        height: 36px !important;
+        right: 12px !important;
+        top: 12px !important;
+    }
+    .bookmark-badge span {
+        font-size: 0.7rem !important;
+    }
+    .bookmark-badge span:first-child {
+        font-size: 0.7rem !important;
+    }
+    .bookmark-badge span:nth-child(2) {
+        font-size: 0.8rem !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .bookmark-badge {
+        font-size: 0.7rem !important;
+        padding: 6px 30px 6px 16px !important;
+        width: 130px !important;
+        height: 48px !important;
+        right: 15px !important;
+        top: 15px !important;
+    }
+    .bookmark-badge span {
+        font-size: 0.9rem !important;
+    }
+    .bookmark-badge span:first-child {
+        font-size: 0.9rem !important;
+    }
+    .bookmark-badge span:nth-child(2) {
+        font-size: 1.1rem !important;
+    }
+}
+
+.bookmark-badge:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+}
+
+/* ========== ANIMAÇÃO PULSE (contador) ========== */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
 }
